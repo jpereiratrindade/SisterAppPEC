@@ -95,6 +95,33 @@ The terrain uses **multi-octave Perlin noise** with selectable profiles:
 - **Ondulado**: Higher peaks and deeper valleys.
 - **Biomes**: Currently single-biome with procedural vegetation (Trees, Grass) influenced by moisture and fertility simulations.
 
+## 🔬 Scientific Models
+
+SisterApp Engine integrates dynamic scientific models to simulate environmental and social resilience, affecting the procedural world generation in real-time.
+
+### 1. Resilience Model
+Parameters interact to shape the terrain topology and resource distribution:
+- **Ecological Resilience (`resEcol`)**:
+  - Influences **terrain roughness** and **biodiversity**.
+  - High resilience = Smoother, more stable terrain with rich vegetation.
+  - Low resilience = Chaotic, jagged terrain with sparse life.
+- **Production Resilience (`resProd`)**:
+  - Controls **resource abundance** (e.g., tree density, crop fertility).
+  - High resilience = Dense forests, fertile soil.
+  - Low resilience = Barren lands, scarcity.
+- **Social Resilience (`resSoc`)**:
+  - Simulates **human impact** and connectivity.
+  - Generates "Social Corridors" (paths/clearings) based on connectivity logic.
+  - High resilience = Improved infrastructure (flatter paths), organized settlements.
+
+### 2. Vegetation Model
+A biological simulation layer driven by:
+- **Moisture & Temperature**: Derived from Perlin noise and height.
+- **Fertility**: Dynamic factor affecting plant growth rates and density.
+- **Visual Feedback**:
+  - **Vegetation ON**: Lush green grass, forest canopies.
+  - **Vegetation OFF**: Terrain turns to Barren Dirt, trees are removed (simulating drought/collapse).
+
 ---
 
 ## 🚀 Technical Features

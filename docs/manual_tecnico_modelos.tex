@@ -1,0 +1,91 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{top=3cm, bottom=2cm, left=2.5cm, right=2.5cm}
+
+\title{\textbf{SisterApp Engine v3.3.0}\\Manual Técnico de Modelos Computacionais}
+\author{José Pedro Trindade}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introdução}
+O \textbf{SisterApp Engine} integra modelos computacionais dinâmicos para simular interações entre resiliência ecológica, capacidade produtiva e dinâmicas sociais em um ambiente voxel procedural. Este documento detalha as bases matemáticas e lógicas dos dois modelos principais: \textbf{Resiliência} e \textbf{Vegetação}.
+
+\section{Modelo de Resiliência}
+O Modelo de Resiliência é composto por três variáveis de estado globais, normalizadas entre $[0.0, 1.0]$. Estas variáveis alteram fundamentalmente os algoritmos de geração de terreno (ruído Perlin) e distribuição de blocos.
+
+\subsection{1. Resiliência Ecológica ($R_{ecol}$)}
+Representa a capacidade do sistema natural de absorver choques e manter sua estrutura.
+\begin{itemize}
+    \item \textbf{Impacto no Terreno:} Modula a frequência e amplitude do ruído de detalhe.
+    \item \textbf{High $R_{ecol}$ ($>0.7$):} Terreno suave, estável, erosão controlada. Fatores de suavização aplicados às oitavas de alta frequência.
+    \item \textbf{Low $R_{ecol}$ ($<0.3$):} Terreno caótico, "quebrado", com picos abruptos e vales profundos, simulando degradação ambiental.
+\end{itemize}
+
+\subsection{2. Resiliência Produtiva ($R_{prod}$)}
+Refere-se à capacidade do sistema de gerar recursos (biomassa).
+\begin{itemize}
+    \item \textbf{Impacto na Vegetação:} Atua como multiplicador direto na densidade de árvores e fertilidade do solo.
+    \item \textbf{Fórmula Simplificada:}
+    \[
+    Density_{tree} = Noise(x, z) \times R_{prod} \times Moisture
+    \]
+    \item \textbf{Baixa $R_{prod}$:} Resulta em escassez de recursos (poucas árvores), solos áridos (substituição de Grass por Dirt/Sand).
+    \item \textbf{Alta $R_{prod}$:} Florestas densas e solos ricos.
+\end{itemize}
+
+\subsection{3. Resiliência Social ($R_{soc}$)}
+Simula a organização humana e conectividade.
+\begin{itemize}
+    \item \textbf{Corredores Sociais:} $R_{soc}$ gera máscaras de "corredores" (estradas, clareiras) usando ruído de Voronoi ou Perlin de baixa frequência.
+    \item \textbf{Conectividade:}
+    \[
+    Mask_{corridor} = |Noise_{lowFreq}(x, z)| < (0.1 \times R_{soc})
+    \]
+    \item \textbf{Visual:} $R_{soc}$ elevado cria caminhos planos e conectados através do terreno, facilitando navegação e simulando infraestrutura. Baixo $R_{soc}$ resulta em isolamento.
+\end{itemize}
+
+\section{Modelo de Vegetação}
+O modelo de vegetação opera sobre o terreno gerado, determinando a cobertura do solo e a flora.
+
+\subsection{Parâmetros Biofísicos}
+Para cada coluna de voxels $(x, z)$, o sistema calcula:
+\begin{enumerate}
+    \item \textbf{Umidade ($M$):} Derivada de ruído Perlin + Proximidade da água.
+    \item \textbf{Temperatura ($T$):} Inversamente proporcional à altitude ($Y$).
+    \item \textbf{Fertilidade ($F$):} Combinação de $R_{prod}$, $M$ e tipo de solo.
+\end{enumerate}
+
+\subsection{Regras de Renderização}
+\begin{itemize}
+    \item \textbf{Grama (Grass):} Cresce em solos férteis. A cor é modulada pela Umidade (Verde vivo vs. Verde seco).
+    \item \textbf{Árvores (Wood/Leaves):} Spawnam apenas em blocos de Grama onde $Density_{tree} > Threshold$.
+    \item \textbf{Feedback Visual (Toggle):}
+    \begin{itemize}
+        \item \textbf{Vegetation ON:} Renderização normal.
+        \item \textbf{Vegetation OFF:} Simula "Colapso": Grama é renderizada com cor de Terra (Dirt), Árvores são removidas.
+    \end{itemize}
+\end{itemize}
+
+\section{Configuração do Usuário}
+O usuário pode manipular estes modelos em tempo real via menu \textit{Tools $\to$ Performance}:
+\begin{description}
+    \item[Resilience Sliders:] Ajuste fino de $R_{ecol}$, $R_{prod}$, $R_{soc}$.
+    \item[Vegetation Toggle:] Ativa/Desativa o sistema de vegetação para visualização de impacto.
+    \item[Model Selection:] Alterna a topologia base (Plano, Suave, Ondulado).
+\end{description}
+
+\end{document}
