@@ -43,7 +43,21 @@ Funcionalidades:
 
 ---
 
+- Janelas auxiliares
+
+---
+
 ## 3. Domain Model & Ubiquitous Language
+
+### 3.1 Domain Logic: Scientific Models
+O coração da simulação reside na interação de três variáveis de resiliência:
+- **Resiliência Ecológica ($R_{ecol}$)**: Governa a estabilidade topológica (suavidade) e biodiversidade.
+- **Resiliência Produtiva ($R_{prod}$)**: Governa a densidade de biomassa (árvores) e fertilidade do solo.
+- **Resiliência Social ($R_{soc}$)**: Governa a conectividade humana (estradas, corredores).
+
+Estas variáveis influenciam diretamente a geração procedural (`generateChunk`) e a renderização (`rebuildChunkMesh`).
+
+### 3.2 Termos Ubíquos
 
 - Application: raiz de composição.
 - Chunk Scheduling: priorização por frustum.
