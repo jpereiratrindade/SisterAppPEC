@@ -64,6 +64,18 @@ Diferente dos modelos anteriores, todas as configurações de declividade são \
 \section{Modelo de Vegetação (Suspenso)}
 Na versão 3.4.0, a geração de vegetação foi temporariamente suspensa para permitir foco total na validação das camadas de análise topológica. O sistema de tipos de solo (Grass, Dirt, Stone) permanece ativo para feedback visual.
 
+\section{Geração de Topologia (Terrain Models)}
+É fundamental distinguir o \textbf{Gerador de Topologia} do \textbf{Analisador de Declividade}. O sistema mantém três perfis de geração baseados em ruído Perlin, que definem a geometria física do mundo:
+
+\begin{itemize}
+    \item \textbf{Rippled Flat:} Baixa frequência base, gera predominantemente classes \textit{Flat} e \textit{Gentle}.
+    \item \textbf{Smooth Hills:} Frequência média, introduz áreas \textit{Rolling}.
+    \item \textbf{Rolling Hills:} Alta amplitude, necessária para gerar áreas \textit{Steep} e \textit{Mountain} para validação.
+\end{itemize}
+
+O fluxo de processamento é:
+\[ \text{Modelo (Geometria)} \rightarrow \text{Voxel Grid} \rightarrow \text{Slope Analysis (Classificação)} \]
+
 \section{Configuração do Usuário}
 Interface atualizada no menu \textit{Tools}:
 \begin{description}
