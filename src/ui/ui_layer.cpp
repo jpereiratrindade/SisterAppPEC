@@ -125,18 +125,20 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                     float resEcol = ctx.terrain->resilienceEcol();
                     if (ImGui::SliderFloat("Ecológica", &resEcol, 0.0f, 1.0f, "%.2f")) {
                         ctx.terrain->setResilienceEcol(resEcol);
-                        if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
                     }
+                    if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
+
                     float resProd = ctx.terrain->resilienceProd();
                     if (ImGui::SliderFloat("Produtiva", &resProd, 0.0f, 1.0f, "%.2f")) {
                         ctx.terrain->setResilienceProd(resProd);
-                        if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
                     }
+                    if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
+
                     float resSoc = ctx.terrain->resilienceSoc();
                     if (ImGui::SliderFloat("Social", &resSoc, 0.0f, 1.0f, "%.2f")) {
                         ctx.terrain->setResilienceSoc(resSoc);
-                        if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
                     }
+                    if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
                     if (requestReset && callbacks_.requestTerrainReset) {
                         callbacks_.requestTerrainReset(1);
                     }
