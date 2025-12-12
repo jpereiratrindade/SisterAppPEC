@@ -1,0 +1,5 @@
+# Hashes of file build rules.
+59d2d3dafe0e834c34ab112d79c40b66 CMakeFiles/shaders_spirv
+cdd65a1bf7cd1d1804baca5199e1b91a shaders/basic.frag.spv
+4b68c1936c575e68e7dfd43eb21a4fc3 shaders/basic.vert.spv
+7916af6837c384f7bec3e1e048959281 shaders/red.frag.spv

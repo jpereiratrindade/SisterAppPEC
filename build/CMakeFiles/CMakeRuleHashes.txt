@@ -1,0 +1,9 @@
+# Hashes of file build rules.
+2090aec7f8202d14c4f377421b7166ab /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag.spv
+4fddfc6b656c8a6db1c6f9204f14db00 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.vert.spv
+4f2c8b346e3d6b7b60142a881fe9fde0 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.frag.spv
+eb50adff792f25e1663d6ee09654e758 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.vert.spv
+a94698c635ea2b99a20fef6bdb3e82ca /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag.spv
+9aee9eaa6e6d038a445c48523b9decb7 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag.spv
+17f06165dc21ee41830eece597faf6ec /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert.spv
+5da289c1b0a6510dcc0fa05360f582b7 CMakeFiles/shaders_spirv
