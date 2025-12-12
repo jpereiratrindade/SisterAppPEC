@@ -330,7 +330,7 @@ private:
     int viewDistance_ = 6;       // chunks
     int maxChunksPerFrame_ = 4;  // async gen budget
     int maxMeshesPerFrame_ = 2;  // rebuild budget
-    bool vegetationEnabled_ = true;
+    std::atomic<bool> vegetationEnabled_{true};
     float vegetationDensity_ = 1.0f; // 0 = none, 1 = default, 2 = dense
     uint32_t vegetationVersion_ = 1;
     TerrainModel terrainModel_ = TerrainModel::SmoothHills;

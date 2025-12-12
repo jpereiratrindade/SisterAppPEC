@@ -125,10 +125,10 @@ On modern hardware (e.g., RX 7900 XTX / Ryzen 9):
 ## 🚀 Roadmap
 
 -   [x] **v3.2.x**: Bookmarks, Stats, Themes, Initial Voxel Terrain.
--   [x] **v3.3.0-beta**:
+-   [x] **v3.3.0**:
     -   [x] Refactored Core Architecture (No bridges).
     -   [x] Optimized Chunk Scheduling (Frustum + Distance).
-    -   [x] Robust Vegetation Toggling.
+    -   [x] Robust Vegetation Toggling (Safe Resource Destruction).
 -   [ ] **v3.4.0**: PCoA Data Visualization restoration.
 -   [ ] **v3.5.0**: Multiplayer exploration / Block interaction.
 -   [ ] **v4.0.0**: VR Support.

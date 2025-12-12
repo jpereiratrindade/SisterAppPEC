@@ -26,3 +26,12 @@
 - v3.3.0-base: stalls e travamentos ao alternar vegetação com VSync off por `vkDeviceWaitIdle` em loop.
 - v3.3.0-fix: coleta diferida baseada em fences, regeneração de vegetação assíncrona, reset mais seguro. Caminho quente do render não bloqueia mais a GPU para descarte.
 - v3.3.0-fix2: GC dependente apenas de fences (sem fallback temporal) e cap de FPS para VSync off, mas crash persiste ao desativar VSync+vegetação (investigação pendente).
+- **v3.3.0 (Final)**: Implementada destruição diferida segura. Recursos são movidos para uma fila de "lixo" associada à fence do frame atual. O GC varre a lista completa a cada frame, liberando apenas o que tem fence sinalizada. Isso eliminou completamente os resets de GPU por Use-After-Free.
+
+## Resolução Final (v3.3.0)
+O problema fundamental era a destruição imediata (ou falsamente segura) de recursos ainda em uso pela GPU durante o overlap de frames (double/triple buffering). A solução definitiva foi:
+1. **Fila de Destruição Não-FIFO**: `std::vector` varrido integralmente, não parando no primeiro item ocupado.
+2. **Associação de Fence**: Cada mesh removido é pareado com a fence do frame onde ocorreu a remoção.
+3. **Scan Agressivo**: `gcFrameResources` roda todo frame antes de updates lógicos.
+
+Resultado: Crash eliminado. Estabilidade confirmada com VSync Off e stress test de vegetação.

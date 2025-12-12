@@ -772,8 +772,8 @@ void VoxelTerrain::update(float cameraX, float cameraZ, const math::Frustum& fru
 }
 
 void VoxelTerrain::setVegetationEnabled(bool enabled) {
-    if (vegetationEnabled_ == enabled) return;
-    vegetationEnabled_ = enabled;
+    if (vegetationEnabled_.load() == enabled) return;
+    vegetationEnabled_.store(enabled);
     if (safeMode_) {
         clearPendingTasks();
         auto chunks = snapshotChunks();
@@ -1286,6 +1286,7 @@ void VoxelTerrain::rebuildChunkMesh(Chunk* chunk) {
     std::vector<Vertex> verticesWater;
     std::vector<uint16_t> indicesWater;
     ResilienceDerived derived = resilienceDerived();
+    bool vegEnabled = vegetationEnabled_.load();
 
     const int chunkWorldX = chunk->getWorldX() * Chunk::CHUNK_SIZE;
     const int chunkWorldZ = chunk->getWorldZ() * Chunk::CHUNK_SIZE;
@@ -1294,13 +1295,22 @@ void VoxelTerrain::rebuildChunkMesh(Chunk* chunk) {
     auto colorForBlock = [&](const Block& block, int lx, int ly, int lz) -> std::array<float,3> {
         (void)ly;
         float r, g, b;
-        getBlockColor(block.type, r, g, b);
+        
+        // VISUALIZATION TWEAK: If vegetation is disabled, render Grass as Dirt to mimic barren soil
+        BlockType typeForColor = block.type;
+        if (!vegEnabled && typeForColor == BlockType::Grass) {
+            typeForColor = BlockType::Dirt;
+        }
+
+        getBlockColor(typeForColor, r, g, b);
         TerrainClass tClass = chunk->terrainClass(lx, lz);
         float corridorMask = 0.0f;
         if (block.type == BlockType::Grass || block.type == BlockType::Leaves) {
             corridorMask = socialCorridorMask(chunkWorldX + lx, chunkWorldZ + lz, derived);
         }
-        if (block.type == BlockType::Grass) {
+        
+        // Only apply grass coloring tweaks if we are still treating it as grass (i.e. Veg On)
+        if (typeForColor == BlockType::Grass) {
             float moisture = moistureAt(chunkWorldX + lx, chunkWorldZ + lz);
             if (tClass == TerrainClass::Slope) {
                 r *= 0.9f; g *= 0.9f; b *= 0.93f;
@@ -1313,7 +1323,7 @@ void VoxelTerrain::rebuildChunkMesh(Chunk* chunk) {
                 float corridorTint = 1.0f - 0.15f * corridorMask * derived.corridorStrength;
                 r *= corridorTint; g *= corridorTint; b *= corridorTint;
             }
-        } else if (block.type == BlockType::Leaves) {
+        } else if (typeForColor == BlockType::Leaves) {
             if (tClass == TerrainClass::Mountain) {
                 r *= 0.85f; g *= 0.8f; b *= 0.85f;
             }
@@ -1411,7 +1421,7 @@ void VoxelTerrain::rebuildChunkMesh(Chunk* chunk) {
                             bool isWater = blk->type == BlockType::Water;
                             bool renderable = waterPass ? isWater : blk->isSolid();
                             if (!renderable) continue;
-                            if (!vegetationEnabled_ && (blk->type == BlockType::Wood || blk->type == BlockType::Leaves)) continue;
+                            if (!vegEnabled && (blk->type == BlockType::Wood || blk->type == BlockType::Leaves)) continue;
 
                             int nwx = chunkWorldX + neigh[0];
                             int nwy = neigh[1];
