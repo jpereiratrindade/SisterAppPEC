@@ -48,7 +48,9 @@ Funcionalidades:
 - Application: raiz de composição.
 - Chunk Scheduling: priorização por frustum.
 - Vegetation Lifecycle: versionamento global.
+- Vegetation Lifecycle: versionamento global.
 - Pruning: descarregamento assíncrono.
+- Visual Feedback: ausência de vegetação muda cor do terreno.
 
 ---
 

@@ -83,7 +83,7 @@ cmake --build build
 - **Ctrl+T**: Toggle Theme
 
 ### Application
-- **Tools → Performance**: Real-time control of Draw Distance, Budgets, Models, and Resilience parameters.
+- **Tools → Performance**: Real-time control of Draw Distance, Budgets, Models, and Resilience parameters. Toggling **Vegetation** off changes Grass to Dirt for visual clarity.
 
 ---
 

@@ -6,6 +6,7 @@
 - **Critical Stability Fix**: Resolved GPU crash/reset when toggling vegetation with VSync disabled.
 - **Safe Resource Destruction**: Implemented fence-aware garbage collection. Resources (meshes) are now queued for destruction and only released when the associated frame fence is signaled, preventing "Use-After-Free" GPU errors.
 - **Robustness**: Validated stability under high-stress conditions (unlimited FPS, rapid asset reloading).
+- **Visual Feedback**: When Vegetation is disabled, Grass blocks render as Dirt to clearly indicate the absence of vegetation (Barren state).
 
 #### Files touched
 - `voxel_terrain.{h,cpp}`: Deferred destruction queue, fence propagation, non-FIFO garbage collection.
