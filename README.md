@@ -103,8 +103,9 @@ SisterApp Engine integrates dynamic scientific models to simulate environmental 
 Parameters interact to shape the terrain topology and resource distribution:
 - **Ecological Resilience (`resEcol`)**:
   - Influences **terrain roughness** and **biodiversity**.
-  - High resilience = Smoother, more stable terrain with rich vegetation.
-  - Low resilience = Chaotic, jagged terrain with sparse life.
+  - High resilience = **Complex**, detailed terrain structure with rich vegetation.
+  - Low resilience = **Simplified**, eroded terrain with sparse life.
+  - *Note: Changing resilience triggers automatic terrain regeneration to apply geometry changes.*
 - **Production Resilience (`resProd`)**:
   - Controls **resource abundance** (e.g., tree density, crop fertility).
   - High resilience = Dense forests, fertile soil.
