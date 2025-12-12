@@ -135,19 +135,20 @@ bool VoxelScene::probeSurface(const math::Ray& ray, float maxDistance, std::stri
     graphics::SurfaceHit hit;
     if (terrain_->probeSurface(ray, maxDistance, hit) && hit.valid) {
         outValid = true;
-        std::string cls = "Flat";
-        if (hit.terrainClass == graphics::TerrainClass::Slope) cls = "Slope";
-        else if (hit.terrainClass == graphics::TerrainClass::Mountain) cls = "Mountain";
+        std::string cls = "Flat (0-3%)";
+        if (hit.terrainClass == graphics::TerrainClass::Slope) cls = "Gentle Slope";
+        else if (hit.terrainClass == graphics::TerrainClass::Mountain) cls = "Steep/Mountain";
 
         std::string vegCls = "None";
         if (hit.vegetation == graphics::VegetationClass::Sparse) vegCls = "Sparse";
         else if (hit.vegetation == graphics::VegetationClass::Rich) vegCls = "Rich";
 
-        outInfo = "Surface: " + cls +
-                  " | slope: " + std::to_string(hit.slopeDeg) + " deg" +
-                  " | veg: " + vegCls +
-                  " | moisture: " + std::to_string(hit.moisture) +
-                  " @ (" + std::to_string(hit.worldX) + ", " + std::to_string(hit.worldY) + ", " + std::to_string(hit.worldZ) + ")";
+        char buffer[256];
+        std::snprintf(buffer, sizeof(buffer), 
+            "Surface: %s | Slope: %.1f%% | Veg: %s | Wet: %.2f @ (%d, %d, %d)",
+            cls.c_str(), hit.slopePct, vegCls.c_str(), hit.moisture, hit.worldX, hit.worldY, hit.worldZ);
+        
+        outInfo = std::string(buffer);
         return true;
     }
     return false;

@@ -24,6 +24,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o.d"
   "CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o"
   "CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o.d"
+  "CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o"
+  "CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o.d"
   "CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o"
   "CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o.d"
   "CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o"

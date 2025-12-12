@@ -120,28 +120,50 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                         ctx.terrain->setVegetationDensity(vegDensity);
                     }
                     bool requestReset = false;
+                    // V3.4.0: Resilience UI removed. Replaced with Slope Analysis Tools.
                     ImGui::Separator();
-                    ImGui::Text("Resiliência do Terreno");
-                    float resEcol = ctx.terrain->resilienceEcol();
-                    if (ImGui::SliderFloat("Ecológica", &resEcol, 0.0f, 1.0f, "%.2f")) {
-                        ctx.terrain->setResilienceEcol(resEcol);
+                    ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Slope Analysis (v3.4)");
+                    
+                    graphics::SlopeConfig currentSlope = ctx.terrain->getSlopeConfig();
+                    bool slopeChanged = false;
+                    
+                    // Flat Range: 0 to FlatMax
+                    if (ImGui::SliderFloat("Flat Limit (%)", &currentSlope.flatMaxPct, 0.0f, 20.0f, "%.1f %%")) {
+                        if (currentSlope.flatMaxPct > currentSlope.gentleMaxPct) currentSlope.gentleMaxPct = currentSlope.flatMaxPct;
+                        slopeChanged = true;
                     }
-                    if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
+                    
+                    // Gentle Range: FlatMax to GentleMax
+                    if (ImGui::SliderFloat("Gentle Limit (%)", &currentSlope.gentleMaxPct, currentSlope.flatMaxPct, 60.0f, "%.1f %%")) {
+                         if (currentSlope.gentleMaxPct > currentSlope.steepMaxPct) currentSlope.steepMaxPct = currentSlope.gentleMaxPct;
+                         if (currentSlope.gentleMaxPct < currentSlope.flatMaxPct) currentSlope.flatMaxPct = currentSlope.gentleMaxPct;
+                         slopeChanged = true;
+                    }
 
-                    float resProd = ctx.terrain->resilienceProd();
-                    if (ImGui::SliderFloat("Produtiva", &resProd, 0.0f, 1.0f, "%.2f")) {
-                        ctx.terrain->setResilienceProd(resProd);
+                    // Steep Range: GentleMax to SteepMax
+                    if (ImGui::SliderFloat("Steep Limit (%)", &currentSlope.steepMaxPct, currentSlope.gentleMaxPct, 100.0f, "%.1f %%")) {
+                        if (currentSlope.steepMaxPct < currentSlope.gentleMaxPct) currentSlope.gentleMaxPct = currentSlope.steepMaxPct;
+                        slopeChanged = true;
                     }
-                    if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
+                    
+                    ImGui::TextDisabled("Mountain: > %.1f %%", currentSlope.steepMaxPct);
 
-                    float resSoc = ctx.terrain->resilienceSoc();
-                    if (ImGui::SliderFloat("Social", &resSoc, 0.0f, 1.0f, "%.2f")) {
-                        ctx.terrain->setResilienceSoc(resSoc);
+                    if (slopeChanged) {
+                        ctx.terrain->setSlopeConfig(currentSlope);
                     }
-                    if (ImGui::IsItemDeactivatedAfterEdit()) requestReset = true;
-                    if (requestReset && callbacks_.requestTerrainReset) {
-                        callbacks_.requestTerrainReset(1);
+                    
+                    // Persistence
+                    ImGui::Separator();
+                    if (ImGui::Button("Save Slope Prefs")) {
+                        // We need access to Preferences instance. Since it's a singleton, we can include the header.
+                        // Assuming valid include.
+                         if (callbacks_.savePreferences) callbacks_.savePreferences();
                     }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Load Slope Prefs")) {
+                         if (callbacks_.loadPreferences) callbacks_.loadPreferences();
+                    }
+
                     if (ImGui::Button("Regenerate Terrain")) {
                         if (callbacks_.requestTerrainReset) {
                             callbacks_.requestTerrainReset(1);
@@ -216,10 +238,13 @@ void UiLayer::drawCamera(UiFrameContext& ctx) {
                 ctx.terrain->setVegetationDensity(vegDensity);
             }
             if (ctx.lastSurfaceValid) {
-                ImGui::TextWrapped("%s", ctx.lastSurfaceInfo.c_str());
-            } else {
-                ImGui::TextDisabled("Click (LMB) to probe surface type");
-            }
+        // Reuse string or update it if we did the probe logic here (it's done in App)
+        // Actually, Application.cpp likely formats this string. Let's check App.
+        ImGui::Text("Surface: %s", ctx.lastSurfaceInfo.c_str());
+    } else {
+        ImGui::Text("Surface: -");
+    }
+            ImGui::TextDisabled("Click (LMB) to probe surface type");
         }
     }
 

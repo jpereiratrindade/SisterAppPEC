@@ -2,6 +2,7 @@
 #include "../graphics/geometry_utils.h"
 #include "../imgui_backend.h"
 #include "../math/math_types.h"
+#include "preferences.h" // v3.4.0
 
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_vulkan.h"
@@ -114,11 +115,24 @@ void Application::init() {
     camera_.teleportTo({0.0f, static_cast<float>(h) + 8.0f, 0.0f});
     std::cout << "[SisterApp v3.3.0-beta] Voxel Terrain Initialized - Minecraft Mode!" << std::endl;
 
+    // V3.4.0: Load preferences on startup
+    core::Preferences::instance().load();
+    terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
+
     ui::Callbacks uiCallbacks{
         [this](const std::string& name) { saveBookmark(name); },
         [this](size_t index) { loadBookmark(index); },
         [this](size_t index) { deleteBookmark(index); },
-        [this](int warmupRadius) { requestTerrainReset(warmupRadius); }
+        [this](int warmupRadius) { requestTerrainReset(warmupRadius); },
+        [this]() { // savePreferences
+            core::Preferences::instance().setSlopeConfig(terrain_->getSlopeConfig());
+            core::Preferences::instance().save();
+        },
+        [this]() { // loadPreferences
+            core::Preferences::instance().load();
+            terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
+            // Optionally force regen or let user decide via UI
+        }
     };
     uiLayer_ = std::make_unique<ui::UiLayer>(uiCallbacks);
     uiLayer_->applyTheme(ui::Theme::Dark);

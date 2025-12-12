@@ -41,6 +41,8 @@ struct Callbacks {
     std::function<void(size_t)> loadBookmark;
     std::function<void(size_t)> deleteBookmark;
     std::function<void(int)> requestTerrainReset;
+    std::function<void()> savePreferences; // v3.4.0
+    std::function<void()> loadPreferences; // v3.4.0
 };
 
 class UiLayer {

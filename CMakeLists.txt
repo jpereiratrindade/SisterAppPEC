@@ -32,7 +32,9 @@ add_executable(sisterapp
     src/voxel_scene.cpp
     src/core/graphics_context.cpp
     src/core/input_manager.cpp
+    src/core/input_manager.cpp
     src/core/application.cpp
+    src/core/preferences.cpp
     src/core/swapchain.cpp
     src/core/command_pool.cpp
     src/core/sync_objects.cpp

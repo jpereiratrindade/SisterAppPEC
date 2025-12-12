@@ -12,6 +12,7 @@ sisterapp: \
   CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o \
   CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o \
   CMakeFiles/sisterapp.dir/src/core/application.cpp.o \
+  CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o \
   CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o \
   CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o \
   CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o \
@@ -88,6 +89,8 @@ CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o:
 CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o:
 
 CMakeFiles/sisterapp.dir/src/core/application.cpp.o:
+
+CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o:
 
 CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o:
 

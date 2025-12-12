@@ -52,13 +52,23 @@ enum class TerrainModel : uint8_t {
     RollingHills = 2   // Ondulado
 };
 
+/**
+ * @brief Configuration for slope classification ranges (in Percentage %)
+ */
+struct SlopeConfig {
+    float flatMaxPct = 3.0f;       // 0 to 3% = Flat (User Request: 3% default)
+    float gentleMaxPct = 10.0f;    // 3% to 10% = Gentle Slope
+    float steepMaxPct = 45.0f;     // 10% to 45% = Steep Slope
+    // > 45% = Mountain
+};
+
 struct SurfaceHit {
     int worldX = 0;
     int worldY = 0;
     int worldZ = 0;
     TerrainClass terrainClass = TerrainClass::Flat;
     BlockType surfaceBlock = BlockType::Air;
-    float slopeDeg = 0.0f;
+    float slopePct = 0.0f; // Slope in Percentage
     float moisture = 0.0f;
     VegetationClass vegetation = VegetationClass::None;
     bool valid = false;
@@ -196,12 +206,23 @@ public:
     TerrainModel terrainModel() const { return terrainModel_; }
     void setSafeMode(bool enabled);
     Block* getBlockIfLoaded(int worldX, int worldY, int worldZ);
+    
+    // Resilience methods preserved for API compatibility but logic disabled
     void setResilienceEcol(float v);
     void setResilienceProd(float v);
     void setResilienceSoc(float v);
     float resilienceEcol() const { return resEcol_.load(std::memory_order_relaxed); }
     float resilienceProd() const { return resProd_.load(std::memory_order_relaxed); }
     float resilienceSoc() const { return resSoc_.load(std::memory_order_relaxed); }
+    
+    // New Slope Analysis Methods (v3.4.0)
+    void setSlopeConfig(const SlopeConfig& config);
+    SlopeConfig getSlopeConfig() const;
+    /**
+     * @brief Get slope in Percentage (0-100%+) at a specific coordinate
+     */
+    float getSlopeAt(int worldX, int worldZ) const;
+
     int chunkCount();
     int pendingTaskCount();
     int pendingVegetationCount();
@@ -301,7 +322,7 @@ private:
     int sampleHeight(int worldX, int worldZ, BlockType& surfaceBlock, BlockType& subBlock) const;
     TerrainClass classifyTerrain(int worldX, int worldZ, int centerHeight) const;
     float moistureAt(int worldX, int worldZ) const;
-    float slopeDegAt(int worldX, int worldZ, int centerHeight) const;
+    float slopePctAt(int worldX, int worldZ, int centerHeight) const;
     void refreshVegetation(Chunk* chunk);
     VegetationClass sampleVegetationAt(int worldX, int worldZ) const;
     void startWorkers();
@@ -330,11 +351,13 @@ private:
     int viewDistance_ = 6;       // chunks
     int maxChunksPerFrame_ = 4;  // async gen budget
     int maxMeshesPerFrame_ = 2;  // rebuild budget
-    std::atomic<bool> vegetationEnabled_{true};
+    std::atomic<bool> vegetationEnabled_{false};
     float vegetationDensity_ = 1.0f; // 0 = none, 1 = default, 2 = dense
     uint32_t vegetationVersion_ = 1;
     TerrainModel terrainModel_ = TerrainModel::SmoothHills;
     bool safeMode_ = true;
+    SlopeConfig slopeConfig_; // v3.4.0
+    mutable std::mutex configMutex_; 
     std::atomic<float> resEcol_{0.5f};
     std::atomic<float> resProd_{0.5f};
     std::atomic<float> resSoc_{0.5f};

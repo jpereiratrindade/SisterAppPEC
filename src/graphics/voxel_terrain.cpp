@@ -336,9 +336,7 @@ void VoxelTerrain::reset(int warmupRadius) {
 void VoxelTerrain::refreshVegetation(Chunk* chunk) {
     std::lock_guard<std::mutex> meshLock(meshMutex_);
     if (!chunk) return;
-    ResilienceDerived derived = resilienceDerived();
-
-    // Remove existing vegetation
+    // V3.4.0: Clean slate execution - clear existing vegetation
     for (int x = 0; x < Chunk::CHUNK_SIZE; x++) {
         for (int z = 0; z < Chunk::CHUNK_SIZE; z++) {
             for (int y = 0; y < Chunk::CHUNK_HEIGHT; y++) {
@@ -350,64 +348,14 @@ void VoxelTerrain::refreshVegetation(Chunk* chunk) {
         }
     }
 
+    // Vegetation completely disabled for now
     if (!vegetationEnabled_) return;
 
-    int chunkWorldX = chunk->getWorldX() * Chunk::CHUNK_SIZE;
-    int chunkWorldZ = chunk->getWorldZ() * Chunk::CHUNK_SIZE;
-
-    for (int x = 2; x < Chunk::CHUNK_SIZE - 2; x++) {
-        for (int z = 2; z < Chunk::CHUNK_SIZE - 2; z++) {
-            TerrainClass tClass = chunk->terrainClass(x, z);
-            float treeNoise = noise_.noise2D(static_cast<float>(chunkWorldX + x), static_cast<float>(chunkWorldZ + z));
-            float moisture = moistureAt(chunkWorldX + x, chunkWorldZ + z);
-            float density = vegetationDensity_;
-            float corridorMask = socialCorridorMask(chunkWorldX + x, chunkWorldZ + z, derived);
-
-            int surfaceY = -1;
-            Block* surfaceBlock = nullptr;
-            for (int y = Chunk::CHUNK_HEIGHT - 1; y >= 0; y--) {
-                Block* b = chunk->getBlock(x, y, z);
-                if (b && b->type != BlockType::Air && b->type != BlockType::Water) {
-                    surfaceY = y;
-                    surfaceBlock = b;
-                    break;
-                }
-            }
-            float normHeight = surfaceY >= 0 ? static_cast<float>(surfaceY) / static_cast<float>(Chunk::CHUNK_HEIGHT) : 1.0f;
-            float fertility = derived.fertilityMoistureWeight * moisture +
-                              derived.fertilityHeightWeight * (1.0f - normHeight) +
-                              derived.fertilityBias;
-            fertility = std::clamp(fertility, 0.0f, 1.0f);
-
-            float treeThreshold = 1.1f;
-            if (tClass == TerrainClass::Flat) {
-                float densityBias = (density - 1.0f) * 0.35f;      // [-0.35, +0.35]
-                float moistureBias = (moisture - 0.5f) * 0.25f;    // [-0.125, +0.125]
-                float fertilityBias = (fertility - 0.5f) * 0.35f;  // [-0.175, +0.175]
-                float corridorPenalty = corridorMask * derived.corridorStrength * 0.6f;
-                treeThreshold = 0.7f - densityBias - moistureBias - fertilityBias + corridorPenalty;
-            } else if (tClass == TerrainClass::Slope) {
-                float densityBias = (density - 1.0f) * 0.3f;
-                float moistureBias = (moisture - 0.5f) * 0.2f;
-                float fertilityBias = (fertility - 0.5f) * 0.25f;
-                float corridorPenalty = corridorMask * derived.corridorStrength * 0.6f;
-                treeThreshold = 0.45f - densityBias - moistureBias - fertilityBias + corridorPenalty;
-            } else if (tClass == TerrainClass::Mountain) {
-                float corridorPenalty = corridorMask * derived.corridorStrength * 0.4f;
-                treeThreshold = 1.2f + corridorPenalty;
-            }
-            treeThreshold = std::clamp(treeThreshold, -0.2f, 1.25f);
-
-            if (treeNoise > treeThreshold && surfaceY > 0 && surfaceY < Chunk::CHUNK_HEIGHT - 10) {
-                if (surfaceBlock && surfaceBlock->type == BlockType::Grass) {
-                    int treeH = 4 + static_cast<int>(treeNoise * 2.0f) + static_cast<int>(fertility * 2.0f);
-                    treeH = std::max(3, std::min(treeH, 8));
-                    generateTree(chunkWorldX + x, surfaceY + 1, chunkWorldZ + z, treeH);
-                }
-            }
-        }
-    }
-
+    // Remaining logic commented out/skipped for v3.4.0 Slope focus
+    /* 
+    ResilienceDerived derived = resilienceDerived();
+    // ... logic ...
+    */
     chunk->setVegetationVersion(vegetationVersion_);
 }
 
@@ -445,41 +393,14 @@ VoxelTerrain::TerrainProfile VoxelTerrain::profileForModel(TerrainModel model) c
 }
 
 int VoxelTerrain::sampleHeight(int worldX, int worldZ, BlockType& surfaceBlock, BlockType& subBlock) const {
+    // V3.4.0: Resilience removed from terrain generation for Slope Analysis model
     TerrainProfile profile = profileForModel(terrainModel_);
-    ResilienceDerived derived = resilienceDerived();
+    
+    // Default weights for new model focus
+    float detailWeight = profile.detailWeight;
+    float baseWeight = profile.baseWeight;
 
-    profile.baseFreq *= derived.baseFreqMul;
-    profile.detailFreq *= derived.detailFreqMul;
-    int plainsRange = static_cast<int>(std::round(static_cast<float>(profile.plainsRange) * derived.plainsRangeMul));
-    int mountainRange = static_cast<int>(std::round(static_cast<float>(profile.mountainRange) * derived.mountainRangeMul));
-    plainsRange = std::max(8, std::min(plainsRange, Chunk::CHUNK_HEIGHT));
-    mountainRange = std::max(12, std::min(mountainRange, Chunk::CHUNK_HEIGHT));
-    float mountainCurve = profile.mountainCurve * derived.mountainCurveMul;
-
-    float corridorMask = socialCorridorMask(worldX, worldZ, derived);
-
-    float detailWeight = std::clamp(profile.detailWeight * derived.detailWeightMul, 0.15f, 0.6f);
-    float baseWeight = std::max(0.2f, profile.baseWeight);
-    float weightSum = baseWeight + detailWeight;
-    baseWeight /= weightSum;
-    detailWeight /= weightSum;
-    if (corridorMask > 0.0f) {
-        float smoothing = derived.smoothingFactor * corridorMask;
-        detailWeight *= (1.0f - 0.5f * smoothing);
-        weightSum = baseWeight + detailWeight;
-        if (weightSum > 0.0001f) {
-            baseWeight /= weightSum;
-            detailWeight /= weightSum;
-        }
-    }
-    detailWeight = std::clamp(detailWeight, 0.12f, 0.55f);
-    weightSum = baseWeight + detailWeight;
-    if (weightSum > 0.0001f) {
-        baseWeight = std::clamp(baseWeight / weightSum, 0.35f, 0.9f);
-        detailWeight = 1.0f - baseWeight;
-    }
-
-    // Multi-layer noise tuned per terrain model with resilience modifiers
+    // Multi-layer noise tuned per terrain model
     float baseNoise = noise_.octaveNoise(static_cast<float>(worldX) * profile.baseFreq, static_cast<float>(worldZ) * profile.baseFreq, profile.baseOctaves, 0.55f);
     float detailNoise = noise_.octaveNoise(static_cast<float>(worldX) * profile.detailFreq, static_cast<float>(worldZ) * profile.detailFreq, profile.detailOctaves, 0.4f);
     float biomeNoise = noise_.noise2D(static_cast<float>(worldX) * profile.biomeFreq, static_cast<float>(worldZ) * profile.biomeFreq);
@@ -490,22 +411,15 @@ int VoxelTerrain::sampleHeight(int worldX, int worldZ, BlockType& surfaceBlock, 
     surfaceBlock = BlockType::Grass;
     subBlock = BlockType::Dirt;
     int baseHeight = profile.plainsBaseHeight;
-    int heightRange = plainsRange;
+    int heightRange = profile.plainsRange; // Use profile range directly
 
     if (biomeNoise > 0.45f) {
         // MOUNTAINS biome - cooler rock underneath, sharper peaks depending on model
         subBlock = BlockType::Stone;
         baseHeight = profile.mountainBaseHeight;
-        heightRange = mountainRange;
-        float curve = mountainCurve * (1.0f - corridorMask * 0.35f * derived.corridorStrength);
-        curve = std::max(0.85f, curve);
+        heightRange = profile.mountainRange;
+        float curve = profile.mountainCurve;
         heightValue = std::pow(heightValue, curve);
-    }
-
-    if (corridorMask > 0.001f) {
-        float flatten = derived.corridorStrength * corridorMask;
-        float target = 0.52f; // Keep midlands near 0.5 for corridors/clareiras
-        heightValue = heightValue * (1.0f - flatten) + target * flatten;
     }
 
     int height = baseHeight + static_cast<int>(heightValue * static_cast<float>(heightRange));
@@ -518,7 +432,7 @@ float VoxelTerrain::moistureAt(int worldX, int worldZ) const {
     return noise_.noise2D(static_cast<float>(worldX) * 0.005f, static_cast<float>(worldZ) * 0.005f) * 0.5f + 0.5f; // [0,1]
 }
 
-float VoxelTerrain::slopeDegAt(int worldX, int worldZ, int centerHeight) const {
+float VoxelTerrain::slopePctAt(int worldX, int worldZ, int centerHeight) const {
     (void)centerHeight;
     BlockType dummySurface, dummySub;
     float hL = static_cast<float>(sampleHeight(worldX - 1, worldZ, dummySurface, dummySub));
@@ -526,10 +440,18 @@ float VoxelTerrain::slopeDegAt(int worldX, int worldZ, int centerHeight) const {
     float hF = static_cast<float>(sampleHeight(worldX, worldZ + 1, dummySurface, dummySub));
     float hB = static_cast<float>(sampleHeight(worldX, worldZ - 1, dummySurface, dummySub));
 
-    float dx = (hR - hL) * 0.5f;
+    float dx = (hR - hL) * 0.5f; // rise over 1 unit (actually 2 units dist, so *0.5 is average slope? wait)
+    // Distance between L and R is 2 units.
+    // Rise = hR - hL. Run = 2. Slope = (hR - hL)/2.
+    // This matches the simplified gradient approximation.
+    
+    // Gradient magnitude:
     float dz = (hF - hB) * 0.5f;
     float slope = std::sqrt(dx * dx + dz * dz);
-    return std::atan(slope) * 57.29578f; // rad->deg
+    
+    // Percentage = tan(angle) * 100 = slope * 100
+    // slope here IS tan(angle) because it is rise/run.
+    return slope * 100.0f;
 }
 
 VegetationClass VoxelTerrain::sampleVegetationAt(int worldX, int worldZ) const {
@@ -572,17 +494,51 @@ VegetationClass VoxelTerrain::sampleVegetationAt(int worldX, int worldZ) const {
     return VegetationClass::None;
 }
 
-TerrainClass VoxelTerrain::classifyTerrain(int worldX, int worldZ, int centerHeight) const {
-    float slopeDeg = slopeDegAt(worldX, worldZ, centerHeight);
+// ... (previous methods)
 
-    if (centerHeight > 48 || slopeDeg > 12.0f) {
-        return TerrainClass::Mountain;
-    } else if (slopeDeg < 3.0f && centerHeight < 38) {
-        return TerrainClass::Flat;
-    } else {
-        return TerrainClass::Slope;
-    }
+void VoxelTerrain::setSlopeConfig(const SlopeConfig& config) {
+    std::lock_guard<std::mutex> lock(configMutex_);
+    slopeConfig_ = config;
+    // Changing slope definition essentially changes terrain classification, 
+    // but not necessarily the height geometry unless we change generation based on it.
+    // However, if visualization depends on classification, we might want to refresh meshes.
+    // For now, let's treat it as a visual update only if we implement slope coloring overlay.
 }
+
+SlopeConfig VoxelTerrain::getSlopeConfig() const {
+    std::lock_guard<std::mutex> lock(configMutex_);
+    return slopeConfig_;
+}
+
+float VoxelTerrain::getSlopeAt(int worldX, int worldZ) const {
+    // We need height samples around the point to calculate normal/slope
+    // Since sampleHeight is const, we can use it directly
+    // This is distinct from slopePctAt which was internal
+    return slopePctAt(worldX, worldZ, 0); 
+}
+
+TerrainClass VoxelTerrain::classifyTerrain(int worldX, int worldZ, int centerHeight) const {
+    float slopePct = slopePctAt(worldX, worldZ, centerHeight);
+    
+    // Acquire config safely
+    SlopeConfig config;
+    {
+        std::lock_guard<std::mutex> lock(configMutex_);
+        config = slopeConfig_;
+    }
+
+    if (slopePct <= config.flatMaxPct) {
+        return TerrainClass::Flat;
+    } else if (slopePct <= config.gentleMaxPct) {
+        return TerrainClass::Slope; // Gentle Slope
+    } else if (slopePct <= config.steepMaxPct) {
+        return TerrainClass::Mountain; // Steep Slope
+    }
+    
+    // > SteepMax (e.g. > 45%)
+    return TerrainClass::Mountain; 
+}
+
 
 bool VoxelTerrain::probeSurface(const math::Ray& ray, float maxDistance, SurfaceHit& outHit) const {
     float step = 0.5f;
@@ -622,7 +578,7 @@ bool VoxelTerrain::probeSurface(const math::Ray& ray, float maxDistance, Surface
             } else {
                 outHit.terrainClass = classifyTerrain(wx, wz, h);
             }
-            outHit.slopeDeg = slopeDegAt(wx, wz, h);
+            outHit.slopePct = slopePctAt(wx, wz, h);
             outHit.moisture = moistureAt(wx, wz);
             outHit.vegetation = sampleVegetationAt(wx, wz);
             outHit.valid = true;

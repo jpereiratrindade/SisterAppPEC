@@ -22,70 +22,53 @@
 \newpage
 
 \section{Introdução}
-O \textbf{SisterApp Engine} integra modelos computacionais dinâmicos para simular interações entre resiliência ecológica, capacidade produtiva e dinâmicas sociais em um ambiente voxel procedural. Este documento detalha as bases matemáticas e lógicas dos dois modelos principais: \textbf{Resiliência} e \textbf{Vegetação}.
+O \textbf{SisterApp Engine} integra sistemas avançados de análise topológica e persistência de dados. A versão 3.4.0 introduz um novo modelo focado na \textbf{Análise de Declividade (Slope Analysis)}, permitindo classificações precisas do terreno para aplicações de engenharia e planejamento.
 
-\section{Modelo de Resiliência}
-O Modelo de Resiliência é composto por três variáveis de estado globais, normalizadas entre $[0.0, 1.0]$. Estas variáveis alteram fundamentalmente os algoritmos de geração de terreno (ruído Perlin) e distribuição de blocos.
+\section{Modelo de Análise de Declividade (Slope Analysis)}
+Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
 
-\subsection{1. Resiliência Ecológica ($R_{ecol}$)}
-Representa a capacidade do sistema natural de absorver choques e manter sua estrutura.
+\subsection{1. Cálculo de Inclinação (Percentual)}
+A declividade é calculada como a razão entre a diferença de altura (rise) e a distância horizontal (run), expressa em porcentagem. Para um ponto no terreno, a inclinação $S_{\%}$ é dada por:
+
+\[
+S_{\%} = \frac{\sqrt{(\Delta x)^2 + (\Delta z)^2}}{\text{run}} \times 100
+\]
+Onde:
 \begin{itemize}
-    \item \textbf{Impacto no Terreno:} Modula a frequência e amplitude do ruído de detalhe.
-    \item \textbf{High $R_{ecol}$ ($>0.7$):} Terreno \textbf{complexo}, robusto e rico em variações de alta frequência, simulando um ecossistema saudável e biodiverso.
-    \item \textbf{Low $R_{ecol}$ ($<0.3$):} Terreno \textbf{simplificado}, erodido e com baixa complexidade topológica, simulando degradação ambiental e perda de estruturas naturais.
+    \item $\Delta x$ e $\Delta z$ são os gradientes de altura nas direções X e Z.
+    \item A distância base (\textit{run}) é definida pela resolução do voxel (2 unidades).
 \end{itemize}
 
-\subsection{2. Resiliência Produtiva ($R_{prod}$)}
-Refere-se à capacidade do sistema de gerar recursos (biomassa).
-\begin{itemize}
-    \item \textbf{Impacto na Vegetação:} Atua como multiplicador direto na densidade de árvores e fertilidade do solo.
-    \item \textbf{Fórmula Simplificada:}
-    \[
-    Density_{tree} = Noise(x, z) \times R_{prod} \times Moisture
-    \]
-    \item \textbf{Baixa $R_{prod}$:} Resulta em escassez de recursos (poucas árvores), solos áridos (substituição de Grass por Dirt/Sand).
-    \item \textbf{Alta $R_{prod}$:} Florestas densas e solos ricos.
-\end{itemize}
+Isto permite uma correlação direta com normas técnicas de engenharia civil.
 
-\subsection{3. Resiliência Social ($R_{soc}$)}
-Simula a organização humana e conectividade.
-\begin{itemize}
-    \item \textbf{Corredores Sociais:} $R_{soc}$ gera máscaras de "corredores" (estradas, clareiras) usando ruído de Voronoi ou Perlin de baixa frequência.
-    \item \textbf{Conectividade:}
-    \[
-    Mask_{corridor} = |Noise_{lowFreq}(x, z)| < (0.1 \times R_{soc})
-    \]
-    \item \textbf{Visual:} $R_{soc}$ elevado cria caminhos planos e conectados através do terreno, facilitando navegação e simulando infraestrutura. Baixo $R_{soc}$ resulta em isolamento.
-\end{itemize}
+\subsection{2. Classificação Topológica}
+O terreno é segmentado em classes configuráveis pelo usuário. Os limiares (thresholds) padrão são:
 
-\section{Modelo de Vegetação}
-O modelo de vegetação opera sobre o terreno gerado, determinando a cobertura do solo e a flora.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Intervalo ($S_{\%}$)} & \textbf{Descrição} \\ \hline
+Flat (Plano) & $0\% - 3\%$ & Áreas adequadas para infraestrutura. \\ \hline
+Gentle Slope (Suave) & $3\% - 10\%$ & Áreas de transição. \\ \hline
+Steep Slope (Íngreme) & $10\% - 45\%$ & Terreno acidentado, requer contenção. \\ \hline
+Mountain (Montanha) & $> 45\%$ & Áreas inacessíveis ou de preservação. \\ \hline
+\end{tabular}
+\caption{Classes de Declividade Padrão (v3.4.0)}
+\end{table}
 
-\subsection{Parâmetros Biofísicos}
-Para cada coluna de voxels $(x, z)$, o sistema calcula:
-\begin{enumerate}
-    \item \textbf{Umidade ($M$):} Derivada de ruído Perlin + Proximidade da água.
-    \item \textbf{Temperatura ($T$):} Inversamente proporcional à altitude ($Y$).
-    \item \textbf{Fertilidade ($F$):} Combinação de $R_{prod}$, $M$ e tipo de solo.
-\end{enumerate}
+\subsection{3. Persistência e Configuração}
+Diferente dos modelos anteriores, todas as configurações de declividade são \textbf{persistentes}. O sistema serializa os limiares definidos pelo usuário em um arquivo JSON (`prefs.json`), garantindo que os critérios de análise sejam mantidos entre sessões.
 
-\subsection{Regras de Renderização}
-\begin{itemize}
-    \item \textbf{Grama (Grass):} Cresce em solos férteis. A cor é modulada pela Umidade (Verde vivo vs. Verde seco).
-    \item \textbf{Árvores (Wood/Leaves):} Spawnam apenas em blocos de Grama onde $Density_{tree} > Threshold$.
-    \item \textbf{Feedback Visual (Toggle):}
-    \begin{itemize}
-        \item \textbf{Vegetation ON:} Renderização normal.
-        \item \textbf{Vegetation OFF:} Simula "Colapso": Grama é renderizada com cor de Terra (Dirt), Árvores são removidas.
-    \end{itemize}
-\end{itemize}
+\section{Modelo de Vegetação (Suspenso)}
+Na versão 3.4.0, a geração de vegetação foi temporariamente suspensa para permitir foco total na validação das camadas de análise topológica. O sistema de tipos de solo (Grass, Dirt, Stone) permanece ativo para feedback visual.
 
 \section{Configuração do Usuário}
-O usuário pode manipular estes modelos em tempo real via menu \textit{Tools $\to$ Performance}:
+Interface atualizada no menu \textit{Tools}:
 \begin{description}
-    \item[Resilience Sliders:] Ajuste fino de $R_{ecol}$, $R_{prod}$, $R_{soc}$.
-    \item[Vegetation Toggle:] Ativa/Desativa o sistema de vegetação para visualização de impacto.
-    \item[Model Selection:] Alterna a topologia base (Plano, Suave, Ondulado).
+    \item[Slope Sliders:] Ajuste dos limites percentuais para cada classe.
+    \item[Probe Tool:] Ferramenta de diagnóstico (clique esquerdo) mostra $S_{\%}$ exato.
+    \item[Persistence:] Botões para salvar/carregar preferências manualmente.
 \end{description}
 
 \end{document}

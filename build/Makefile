@@ -430,6 +430,30 @@ src/core/input_manager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.s
 .PHONY : src/core/input_manager.cpp.s
 
+src/core/preferences.o: src/core/preferences.cpp.o
+.PHONY : src/core/preferences.o
+
+# target to build an object file
+src/core/preferences.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o
+.PHONY : src/core/preferences.cpp.o
+
+src/core/preferences.i: src/core/preferences.cpp.i
+.PHONY : src/core/preferences.i
+
+# target to preprocess a source file
+src/core/preferences.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/core/preferences.cpp.i
+.PHONY : src/core/preferences.cpp.i
+
+src/core/preferences.s: src/core/preferences.cpp.s
+.PHONY : src/core/preferences.s
+
+# target to generate assembly for a file
+src/core/preferences.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/core/preferences.cpp.s
+.PHONY : src/core/preferences.cpp.s
+
 src/core/swapchain.o: src/core/swapchain.cpp.o
 .PHONY : src/core/swapchain.o
 
@@ -932,6 +956,9 @@ help:
 	@echo "... src/core/input_manager.o"
 	@echo "... src/core/input_manager.i"
 	@echo "... src/core/input_manager.s"
+	@echo "... src/core/preferences.o"
+	@echo "... src/core/preferences.i"
+	@echo "... src/core/preferences.s"
 	@echo "... src/core/swapchain.o"
 	@echo "... src/core/swapchain.i"
 	@echo "... src/core/swapchain.s"

@@ -1,8 +1,30 @@
 # SisterApp Engine - Changelog (Updated)
 
+## [3.4.0] - Unreleased
+### Added
+- **Slope Analysis Model (Percentage)**:
+  - New terrain classification system based on slope percentage (Rise/Run * 100).
+  - Configurable Slope Classes:
+    - **Flat**: 0% to Configurable Max (Default 3%).
+    - **Gentle Slope**: Flat Max to Configurable Max (Default 10%).
+    - **Steep**: Gentle Max to Configurable Max (Default 45%).
+    - **Mountain**: > Steep Max.
+- **Persistence System**:
+  - Automatically saves user preferences (`prefs.json`) for Slope configuration.
+  - Loads settings on startup.
+- **User Interface**:
+  - Added Sliders for configuring Slope Class thresholds in %.
+  - Improved Surface Probe (Left Click) to show slope percentage and class.
+  - Added "Save/Load Slope Prefs" buttons (also auto-saves).
+
+### Changed
+- **Terrain Generation**: Removed Ecological Resilience influence on terrain shape. Terrain now relies solely on the selected Model (Smooth Hills, Rolling, etc.) and Slope classification.
+- **Vegetation**: Temporarily disabled vegetation generation to focus on terrain analysis.
+- **Documentation**: Updated Manual and README to reflect Slope Analysis model.
+
 ## [3.3.0] - 2025-12-12
 
-### Highlights
+### Fixed
 - **Critical Stability Fix**: Resolved GPU crash/reset when toggling vegetation with VSync disabled.
 - **Safe Resource Destruction**: Implemented fence-aware garbage collection. Resources (meshes) are now queued for destruction and only released when the associated frame fence is signaled, preventing "Use-After-Free" GPU errors.
 - **Robustness**: Validated stability under high-stress conditions (unlimited FPS, rapid asset reloading).
