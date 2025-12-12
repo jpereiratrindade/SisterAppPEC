@@ -87,13 +87,15 @@ cmake --build build
 
 ---
 
-## 🌍 World Generation
+### Slope Analysis (v3.4.0+)
+Replaces the previous Ecological Resilience model. This system classifies terrain based on its local inclination (Percentage):
+- **Flat (0-3%)**: Plains suitable for construction or agriculture.
+- **Gentle Slope (3-8%)**: Transitional areas.
+- **Rolling/Ondulado (8-20%)**: Moderate slopes requiring earthworks.
+- **Steep Slope (20-45%)**: Challenging terrain, high erosion risk.
+- **Mountain (>45%)**: Inaccessible or extreme terrain.
 
-The terrain uses **multi-octave Perlin noise** with selectable profiles:
-- **Plano**: Gentle rolling plains.
-- **Suave (Default)**: Balanced hills and valleys.
-- **Ondulado**: Higher peaks and deeper valleys.
-- **Biomes**: Currently single-biome with procedural vegetation (Trees, Grass) influenced by moisture and fertility simulations.
+These thresholds are fully configurable via the user interface and persisted between sessions. (Trees, Grass) influenced by moisture and fertility simulations.
 
 - **Social Resilience (`resSoc`)**:
   - Simulates **human impact** and connectivity.

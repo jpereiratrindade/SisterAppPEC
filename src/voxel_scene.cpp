@@ -135,9 +135,11 @@ bool VoxelScene::probeSurface(const math::Ray& ray, float maxDistance, std::stri
     graphics::SurfaceHit hit;
     if (terrain_->probeSurface(ray, maxDistance, hit) && hit.valid) {
         outValid = true;
-        std::string cls = "Flat (0-3%)";
-        if (hit.terrainClass == graphics::TerrainClass::Slope) cls = "Gentle Slope";
-        else if (hit.terrainClass == graphics::TerrainClass::Mountain) cls = "Steep/Mountain";
+        std::string cls = "Flat";
+        if (hit.terrainClass == graphics::TerrainClass::GentleSlope) cls = "Gentle Slope";
+        else if (hit.terrainClass == graphics::TerrainClass::Rolling) cls = "Rolling/Ondulado";
+        else if (hit.terrainClass == graphics::TerrainClass::SteepSlope) cls = "Steep";
+        else if (hit.terrainClass == graphics::TerrainClass::Mountain) cls = "Mountain";
 
         std::string vegCls = "None";
         if (hit.vegetation == graphics::VegetationClass::Sparse) vegCls = "Sparse";

@@ -36,7 +36,9 @@ enum class BlockType : uint8_t {
 
 enum class TerrainClass : uint8_t {
     Flat,
-    Slope,
+    GentleSlope,
+    Rolling,      // Ondulado
+    SteepSlope,
     Mountain
 };
 
@@ -57,8 +59,9 @@ enum class TerrainModel : uint8_t {
  */
 struct SlopeConfig {
     float flatMaxPct = 3.0f;       // 0 to 3% = Flat (User Request: 3% default)
-    float gentleMaxPct = 10.0f;    // 3% to 10% = Gentle Slope
-    float steepMaxPct = 45.0f;     // 10% to 45% = Steep Slope
+    float gentleMaxPct = 8.0f;    // 3% to 8% = Gentle Slope
+    float onduladoMaxPct = 20.0f;    // 8% to 20% = Ondulado
+    float steepMaxPct = 45.0f;     // 20% to 45% = Steep Slope
     // > 45% = Mountain
 };
 

@@ -24,6 +24,8 @@ void Preferences::load() {
             ss >> currentSlopeConfig_.flatMaxPct;
         } else if (key == "slope_gentle_max_pct") {
             ss >> currentSlopeConfig_.gentleMaxPct;
+        } else if (key == "slope_ondulado_max_pct") { // New
+            ss >> currentSlopeConfig_.onduladoMaxPct;
         } else if (key == "slope_steep_max_pct") {
             ss >> currentSlopeConfig_.steepMaxPct;
         }
@@ -40,6 +42,7 @@ void Preferences::save() {
 
     file << "slope_flat_max_pct " << currentSlopeConfig_.flatMaxPct << "\n";
     file << "slope_gentle_max_pct " << currentSlopeConfig_.gentleMaxPct << "\n";
+    file << "slope_ondulado_max_pct " << currentSlopeConfig_.onduladoMaxPct << "\n";
     file << "slope_steep_max_pct " << currentSlopeConfig_.steepMaxPct << "\n";
 
     std::cout << "[Preferences] Saved settings to " << filePath_ << std::endl;

@@ -11,7 +11,7 @@
 
 \geometry{top=3cm, bottom=2cm, left=2.5cm, right=2.5cm}
 
-\title{\textbf{SisterApp Engine v3.3.0}\\Manual Técnico de Modelos Computacionais}
+\title{\textbf{SisterApp Engine v3.4.0}\\Manual Técnico de Modelos Computacionais}
 \author{José Pedro Trindade}
 \date{\today}
 
@@ -22,7 +22,7 @@
 \newpage
 
 \section{Introdução}
-O \textbf{SisterApp Engine} integra sistemas avançados de análise topológica e persistência de dados. A versão 3.4.0 introduz um novo modelo focado na \textbf{Análise de Declividade (Slope Analysis)}, permitindo classificações precisas do terreno para aplicações de engenharia e planejamento.
+O \textbf{SisterApp Engine} integra sistemas avançados de análise topológica e persistência de dados. A versão 3.4.0 (com extensões v3.5) introduz um novo modelo focado na \textbf{Análise de Declividade (Slope Analysis)}, permitindo classificações precisas do terreno.
 
 \section{Modelo de Análise de Declividade (Slope Analysis)}
 Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
@@ -41,7 +41,7 @@ Onde:
 
 Isto permite uma correlação direta com normas técnicas de engenharia civil.
 
-\subsection{2. Classificação Topológica}
+\subsection{2. Classificação Topológica (5 Classes)}
 O terreno é segmentado em classes configuráveis pelo usuário. Os limiares (thresholds) padrão são:
 
 \begin{table}[h]
@@ -49,12 +49,13 @@ O terreno é segmentado em classes configuráveis pelo usuário. Os limiares (th
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Classe} & \textbf{Intervalo ($S_{\%}$)} & \textbf{Descrição} \\ \hline
-Flat (Plano) & $0\% - 3\%$ & Áreas adequadas para infraestrutura. \\ \hline
-Gentle Slope (Suave) & $3\% - 10\%$ & Áreas de transição. \\ \hline
-Steep Slope (Íngreme) & $10\% - 45\%$ & Terreno acidentado, requer contenção. \\ \hline
-Mountain (Montanha) & $> 45\%$ & Áreas inacessíveis ou de preservação. \\ \hline
+Flat (Plano) & $0\% - 3.0\%$ & Áreas adequadas para infraestrutura. \\ \hline
+Gentle Slope (Suave) & $3.0\% - 8.0\%$ & Áreas de transição suave. \\ \hline
+Rolling (Ondulado) & $8.0\% - 20.0\%$ & Terreno ondulado, requer terraplanagem. \\ \hline
+Steep Slope (Íngreme/Forte) & $20.0\% - 45.0\%$ & Encostas fortes, risco de erosão. \\ \hline
+Mountain (Montanha) & $> 45.0\%$ & Áreas inacessíveis ou de preservação. \\ \hline
 \end{tabular}
-\caption{Classes de Declividade Padrão (v3.4.0)}
+\caption{Classes de Declividade Padrão (v3.5)}
 \end{table}
 
 \subsection{3. Persistência e Configuração}

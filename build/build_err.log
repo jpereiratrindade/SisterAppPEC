@@ -1,0 +1,24 @@
+[ 17%] Built target shaders_spirv
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::pruneFarChunks(int, int, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:289:135: warning: conversion to ‘std::vector<VkFence_T*>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  289 |     VkFence currentFence = (frameFences_ && frameIndex >= 0 && frameIndex < static_cast<int>(frameFences_->size())) ? (*frameFences_)[frameIndex] : VK_NULL_HANDLE;
+      |                                                                                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::update(float, float, const math::Frustum&, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:605:135: warning: conversion to ‘std::vector<VkFence_T*>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  605 |     VkFence currentFence = (frameFences_ && frameIndex >= 0 && frameIndex < static_cast<int>(frameFences_->size())) ? (*frameFences_)[frameIndex] : VK_NULL_HANDLE;
+      |                                                                                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:645:48: warning: conversion to ‘std::vector<graphics::VoxelTerrain::update(float, float, const math::Frustum&, int)::ChunkCandidate>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  645 |     candidates.reserve((viewDistance_ * 2 + 1) * (viewDistance_ * 2 + 1));
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::generateChunk(graphics::Chunk*)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:1038:52: error: ‘Slope’ is not a member of ‘graphics::TerrainClass’
+ 1038 |                 } else if (tClass == TerrainClass::Slope) {
+      |                                                    ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In lambda function:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:1273:41: error: ‘Slope’ is not a member of ‘graphics::TerrainClass’
+ 1273 |             if (tClass == TerrainClass::Slope) {
+      |                                         ^~~~~
+make[2]: *** [CMakeFiles/sisterapp.dir/build.make:317: CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2

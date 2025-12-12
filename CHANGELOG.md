@@ -4,10 +4,11 @@
 ### Added
 - **Slope Analysis Model (Percentage)**:
   - New terrain classification system based on slope percentage (Rise/Run * 100).
-  - Configurable Slope Classes:
+  - Configurable Slope Classes (Expanded to 5):
     - **Flat**: 0% to Configurable Max (Default 3%).
-    - **Gentle Slope**: Flat Max to Configurable Max (Default 10%).
-    - **Steep**: Gentle Max to Configurable Max (Default 45%).
+    - **Gentle (Suave)**: Flat Max to Configurable Max (Default 8%).
+    - **Rolling (Ondulado)**: Gentle Max to Configurable Max (Default 20%).
+    - **Steep (Forte)**: Rolling Max to Configurable Max (Default 45%).
     - **Mountain**: > Steep Max.
 - **Persistence System**:
   - Automatically saves user preferences (`prefs.json`) for Slope configuration.

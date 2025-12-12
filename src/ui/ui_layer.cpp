@@ -135,14 +135,21 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                     
                     // Gentle Range: FlatMax to GentleMax
                     if (ImGui::SliderFloat("Gentle Limit (%)", &currentSlope.gentleMaxPct, currentSlope.flatMaxPct, 60.0f, "%.1f %%")) {
-                         if (currentSlope.gentleMaxPct > currentSlope.steepMaxPct) currentSlope.steepMaxPct = currentSlope.gentleMaxPct;
+                         if (currentSlope.gentleMaxPct > currentSlope.onduladoMaxPct) currentSlope.onduladoMaxPct = currentSlope.gentleMaxPct;
                          if (currentSlope.gentleMaxPct < currentSlope.flatMaxPct) currentSlope.flatMaxPct = currentSlope.gentleMaxPct;
                          slopeChanged = true;
                     }
 
-                    // Steep Range: GentleMax to SteepMax
-                    if (ImGui::SliderFloat("Steep Limit (%)", &currentSlope.steepMaxPct, currentSlope.gentleMaxPct, 100.0f, "%.1f %%")) {
-                        if (currentSlope.steepMaxPct < currentSlope.gentleMaxPct) currentSlope.gentleMaxPct = currentSlope.steepMaxPct;
+                    // Rolling/Ondulado Range: GentleMax to OnduladoMax
+                    if (ImGui::SliderFloat("Rolling Limit (%)", &currentSlope.onduladoMaxPct, currentSlope.gentleMaxPct, 80.0f, "%.1f %%")) {
+                        if (currentSlope.onduladoMaxPct > currentSlope.steepMaxPct) currentSlope.steepMaxPct = currentSlope.onduladoMaxPct;
+                        if (currentSlope.onduladoMaxPct < currentSlope.gentleMaxPct) currentSlope.gentleMaxPct = currentSlope.onduladoMaxPct;
+                        slopeChanged = true;
+                    }
+
+                    // Steep Range: OnduladoMax to SteepMax
+                    if (ImGui::SliderFloat("Steep Limit (%)", &currentSlope.steepMaxPct, currentSlope.onduladoMaxPct, 100.0f, "%.1f %%")) {
+                        if (currentSlope.steepMaxPct < currentSlope.onduladoMaxPct) currentSlope.onduladoMaxPct = currentSlope.steepMaxPct;
                         slopeChanged = true;
                     }
                     

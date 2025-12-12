@@ -530,9 +530,11 @@ TerrainClass VoxelTerrain::classifyTerrain(int worldX, int worldZ, int centerHei
     if (slopePct <= config.flatMaxPct) {
         return TerrainClass::Flat;
     } else if (slopePct <= config.gentleMaxPct) {
-        return TerrainClass::Slope; // Gentle Slope
+        return TerrainClass::GentleSlope; // Gentle/Suave
+    } else if (slopePct <= config.onduladoMaxPct) {
+        return TerrainClass::Rolling; // Ondulado
     } else if (slopePct <= config.steepMaxPct) {
-        return TerrainClass::Mountain; // Steep Slope
+        return TerrainClass::SteepSlope; // Forte/Steep
     }
     
     // > SteepMax (e.g. > 45%)
@@ -1033,13 +1035,13 @@ void VoxelTerrain::generateChunk(Chunk* chunk) {
                     float fertilityBias = (fertility - 0.5f) * (0.25f + derived.prod * 0.15f);
                     float corridorPenalty = corridorMask * derived.corridorStrength * 0.6f;
                     treeThreshold = 0.55f - densityBias - moistureBias - fertilityBias + corridorPenalty;
-                } else if (tClass == TerrainClass::Slope) {
+                } else if (tClass == TerrainClass::GentleSlope || tClass == TerrainClass::Rolling) {
                     float densityBias = (density - 1.0f) * 0.1f;
                     float moistureBias = (moisture - 0.5f) * 0.12f;
                     float fertilityBias = (fertility - 0.5f) * 0.2f;
                     float corridorPenalty = corridorMask * derived.corridorStrength * 0.65f;
                     treeThreshold = 0.3f - densityBias - moistureBias - fertilityBias + corridorPenalty;
-                } else if (tClass == TerrainClass::Mountain) {
+                } else if (tClass == TerrainClass::SteepSlope || tClass == TerrainClass::Mountain) {
                     float corridorPenalty = corridorMask * derived.corridorStrength * 0.45f;
                     treeThreshold = 1.2f + corridorPenalty; // effectively disable
                 }
@@ -1268,9 +1270,11 @@ void VoxelTerrain::rebuildChunkMesh(Chunk* chunk) {
         // Only apply grass coloring tweaks if we are still treating it as grass (i.e. Veg On)
         if (typeForColor == BlockType::Grass) {
             float moisture = moistureAt(chunkWorldX + lx, chunkWorldZ + lz);
-            if (tClass == TerrainClass::Slope) {
+            if (tClass == TerrainClass::GentleSlope) {
+                r *= 0.95f; g *= 0.95f; b *= 0.96f;
+            } else if (tClass == TerrainClass::Rolling) {
                 r *= 0.9f; g *= 0.9f; b *= 0.93f;
-            } else if (tClass == TerrainClass::Mountain) {
+            } else if (tClass == TerrainClass::SteepSlope || tClass == TerrainClass::Mountain) {
                 r *= 0.75f; g *= 0.7f; b *= 0.78f;
             }
             r *= (0.9f + moisture * 0.2f);
@@ -1280,7 +1284,7 @@ void VoxelTerrain::rebuildChunkMesh(Chunk* chunk) {
                 r *= corridorTint; g *= corridorTint; b *= corridorTint;
             }
         } else if (typeForColor == BlockType::Leaves) {
-            if (tClass == TerrainClass::Mountain) {
+            if (tClass == TerrainClass::SteepSlope || tClass == TerrainClass::Mountain) {
                 r *= 0.85f; g *= 0.8f; b *= 0.85f;
             }
             if (corridorMask > 0.0f) {
