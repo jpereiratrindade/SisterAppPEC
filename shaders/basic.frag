@@ -1,8 +1,13 @@
 #version 450
+
+
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec3 fragNormal;
 layout(location = 2) in float fragViewDist;
 layout(location = 3) in vec2 fragUV; // v3.6.1 Flux (x), Sediment (y)
+layout(location = 4) flat in float fragAux; // v3.6.3 Basin ID
+layout(location = 5) in float fragAuxSmooth; // v3.6.4 Smooth ID
+layout(location = 6) in vec3 fragWorldPos;   // v3.6.4 World Pos
 
 layout(location = 0) out vec4 outColor;
 
@@ -15,10 +20,13 @@ layout(push_constant) uniform PushConstants {
     layout(offset = 76) float opacity;
     layout(offset = 80) vec4  fixedColor;    // 16 bytes (80-96)
     layout(offset = 96) float useSlopeVis;   // 4 bytes (96-100)
-    // Gap 100-112 to align next vec4 to 16 bytes
+    layout(offset = 100) float drainageIntensity; // 4 bytes (100-104) [NEW]
+    layout(offset = 104) float useBasinOutlines; // 4 bytes (104-108) [NEW]
+    // Gap 108-112 to align next vec4 to 16 bytes
     layout(offset = 112) vec4  cameraPos;     // 16 bytes (112-128)
     layout(offset = 128) float useDrainageVis;// 4 bytes (128-132)
     layout(offset = 132) float useErosionVis; // 4 bytes (132-136)
+    layout(offset = 136) float useWatershedVis; // 4 bytes (136-140)
 } pc;
 
 // Pseudo-random noise
@@ -84,7 +92,7 @@ void main() {
     if (pc.useDrainageVis > 0.5) {
         float flux = fragUV.x;
         if (flux > 1.0) { 
-            float flow = log(flux) * 0.25;
+            float flow = log(flux) * pc.drainageIntensity;
             flow = min(flow, 1.0);
             vec3 waterColor = vec3(0.0, 0.8, 1.0);
             color = mix(color, waterColor, flow * 0.8);
@@ -98,6 +106,48 @@ void main() {
             float intensity = min(sediment * 2.0, 1.0);
             vec3 erosionColor = vec3(0.6, 0.2, 0.1); // Brownish-Red
             color = mix(color, erosionColor, intensity * 0.7);
+        }
+    }
+
+    // 4. Watershed Visualization
+    if (pc.useWatershedVis > 0.5) {
+        int bid = int(round(fragAux));
+        if (bid > 0) {
+            // Generate distinctive color for each basin
+            float r = hash(vec2(float(bid), 12.34));
+            float g = hash(vec2(float(bid), 56.78));
+            float b = hash(vec2(float(bid), 90.12));
+            vec3 basinColor = vec3(r, g, b);
+            // Ensure some brightness
+            if (length(basinColor) < 0.5) basinColor += 0.5;
+            color = mix(color, basinColor, 0.6); // Tint
+            
+            // Outline (v3.6.4)
+            if (pc.useBasinOutlines > 0.5) {
+                // Check if we are in a transition zone (interpolated ID varies)
+                float delta = fwidth(fragAuxSmooth);
+                if (delta > 0.0001) { // Lower threshold to catch shallow angles
+                    // We are in a triangle connecting different IDs.
+                    // To narrow the line, we only draw near the grid cell edge (integer + 0.5)
+                    // Calculate distance to nearest 0.5 coordinate offset
+                    vec2 gridDist = abs(fract(fragWorldPos.xz) - 0.5);
+                    // Use gradients to get screen-space/pixel-width aa
+                    vec2 width = fwidth(fragWorldPos.xz);
+                    // Standard AA grid line logic - Softer falloff (Safe smoothstep)
+                    // We want 1.0 at dist=0, and 0.0 at dist=width*2.5
+                    vec2 gridAA = 1.0 - smoothstep(vec2(0.0), width * 2.5, gridDist);
+                    float lineStr = max(gridAA.x, gridAA.y);
+                    
+                    if (lineStr > 0.0) {
+                        // Apply Dark Line (Softer)
+                         color = mix(color, vec3(0.0), lineStr * 0.5);
+                    }
+                }
+            }
+        } else {
+             // Gray out outside areas
+             float lum = dot(color, vec3(0.299, 0.587, 0.114));
+             color = vec3(lum) * 0.5;
         }
     }
 

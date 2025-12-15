@@ -2,7 +2,7 @@
 
 **SisterApp Engine** is now a high-performance Minecraft-style voxel world exploration tool! This version transforms the scientific visualization engine into an immersive first-person voxel environment with procedural terrain, greedy meshing, and optimized multithreaded loading.
 
-![Version](https://img.shields.io/badge/version-3.6.0-orange.svg)
+![Version](https://img.shields.io/badge/version-3.6.3-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
 ![Status](https://img.shields.io/badge/Status-Stable-green.svg)
 
@@ -16,6 +16,8 @@
 - **Visual Overhaul**: Distance Fog, Hemispheric Lighting, and Procedural Noise texturing.
 - **Performance**: Device Local memory for meshes ensures stability at 4 Million vertices.
 - **Erosion Simulation**: Hydraulic erosion engine (beta).
+- **Watershed Analysis**: Global segmentation and interactive basin delineation (v3.6.3).
+- **Eco-Reports**: Automated generation of hydrological stats (TWI, Drainage Density).
 
 ---
 

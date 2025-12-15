@@ -1,5 +1,6 @@
 #include "application.h"
 #include "../graphics/geometry_utils.h"
+#include "../terrain/watershed.h" // v3.6.3
 #include "../imgui_backend.h"
 #include "../math/math_types.h"
 #include "preferences.h" // v3.4.0
@@ -18,6 +19,30 @@
 #include <iterator>
 
 namespace core {
+
+// Helper for Raycasting Finite Terrain
+bool raycastFiniteTerrain(const terrain::TerrainMap& map, const math::Ray& ray, float maxDist, float gridScale, int& outX, int& outZ) {
+    float t = 0.0f;
+    float step = 0.5f * gridScale; // Precision scales with grid
+    
+    while (t < maxDist) {
+        math::Vec3 p = ray.origin + ray.direction * t;
+        
+        int x = static_cast<int>(std::round(p.x / gridScale));
+        int z = static_cast<int>(std::round(p.z / gridScale));
+        
+        if (x >= 0 && x < map.getWidth() && z >= 0 && z < map.getHeight()) {
+            float h = map.getHeight(x, z);
+            if (p.y <= h) {
+                outX = x;
+                outZ = z;
+                return true;
+            }
+        }
+        t += step;
+    }
+    return false;
+}
 
 Application::Application() 
     : camera_(60.0f * 3.14159f / 180.0f, 16.0f/9.0f, 0.1f, 500.0f) 
@@ -119,6 +144,9 @@ void Application::init() {
         // Re-enable erosion for Drainage Visualization
         finiteGenerator_->applyErosion(*finiteMap_, 250000);
         
+        // v3.6.3: Ensure Drainage is calculated on startup
+        finiteGenerator_->calculateDrainage(*finiteMap_);
+        
         finiteRenderer_->buildMesh(*finiteMap_);
         
         camera_.setCameraMode(graphics::CameraMode::FreeFlight);
@@ -171,8 +199,12 @@ void Application::init() {
                 terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
             }
         },
-        [this](int size, float scale, float amplitude) { // regenerateFiniteWorld
-            regenerateFiniteWorld(size, scale, amplitude);
+        [this](int size, float scale, float amplitude, float resolution) { // regenerateFiniteWorld
+            regenerateFiniteWorld(size, scale, amplitude, resolution);
+        },
+        [this]() { // updateMesh
+            // Defer to next frame start
+            meshUpdateRequested_ = true;
         }
     };
     uiLayer_ = std::make_unique<ui::UiLayer>(uiCallbacks);
@@ -260,6 +292,13 @@ void Application::run() {
         processEvents(deltaSeconds);
         update(deltaSeconds);
         
+        if (regenRequested_) {
+            performRegeneration();
+        }
+        if (meshUpdateRequested_) {
+            performMeshUpdate();
+        }
+
         if (running_) {
             render(currentFrame_);
             
@@ -317,6 +356,35 @@ void Application::processEvents(double dt) {
                     if (voxelScene_->probeSurface(ray, 600.0f, lastSurfaceInfo_, lastSurfaceValid_)) {
                         std::cout << "[Probe] " << lastSurfaceInfo_ << std::endl;
                     }
+                }
+            }
+
+            // Interactive Delineation (Right Click)
+            if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT) {
+                if (useFiniteWorld_ && finiteMap_) {
+                     float w = static_cast<float>(swapchain_->extent().width);
+                     float h = static_cast<float>(swapchain_->extent().height);
+                     math::Vec3 rayDir = camera_.getRayDirection(static_cast<float>(event.button.x), static_cast<float>(event.button.y), w, h);
+                     math::Ray ray{camera_.getPosition(), rayDir};
+                     
+                     int hitX, hitZ;
+                     if (raycastFiniteTerrain(*finiteMap_, ray, 1000.0f * worldResolution_, worldResolution_, hitX, hitZ)) {
+                         std::cout << "[Delineation] Hit at (" << hitX << ", " << hitZ << ")" << std::endl;
+                         
+                         // Clear previous
+                         std::fill(finiteMap_->watershedMap().begin(), finiteMap_->watershedMap().end(), 0);
+                         
+                         // Delineate
+                         terrain::Watershed::delineate(*finiteMap_, hitX, hitZ, 1);
+                         
+                         // Show result
+                         showWatershedVis_ = true;
+                         showSlopeAnalysis_ = false; 
+                         showDrainage_ = false;
+
+                         // Rebuild Mesh
+                         if (finiteRenderer_) finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
+                     }
                 }
             }
         }
@@ -616,7 +684,7 @@ void Application::render(size_t frameIndex) {
         std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
         
         if (finiteRenderer_) {
-             finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), showSlopeAnalysis_, showDrainage_);
+             finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), showSlopeAnalysis_, showDrainage_, drainageIntensity_, showWatershedVis_, showBasinOutlines_);
         }
     } else if (voxelScene_) {
         // Voxel Render (Minecraft Mode)
@@ -641,8 +709,11 @@ void Application::render(size_t frameIndex) {
         /* finiteMap=*/ finiteMap_.get(),
         /* showSlope */ showSlopeAnalysis_,
         /* showDrainage */ showDrainage_,
+        /* intensity */ drainageIntensity_, // [NEW]
         /* showErosion */ showErosion_,
-        /* visible */ visibleCount, 
+        /* showWatershed */ showWatershedVis_,
+        /* showBasinOutlines */ showBasinOutlines_,
+        /* visible */ visibleCount,  
         /* total */ totalChunks,
         pendingTasks,
         pendingVeg,
@@ -752,13 +823,27 @@ void Application::deleteBookmark(size_t index) {
 }
 
 // V3.5.0: Map Regeneration
-void Application::regenerateFiniteWorld(int size, float scale, float amplitude) {
+void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution) {
     // Defer to start of next frame to avoid destroying resources in use by current frame
-    regenRequested_ = true;
     deferredRegenSize_ = size;
     deferredRegenScale_ = scale;
     deferredRegenAmplitude_ = amplitude;
+    deferredRegenResolution_ = resolution; // v3.6.5
+    regenRequested_ = true;
     std::cout << "[SisterApp] Regeneration requested for next frame..." << std::endl;
+}
+
+void Application::performMeshUpdate() {
+    if (!finiteRenderer_ || !finiteMap_) return;
+
+    // Safety: Wait for all GPU operations to finish before destroying the old mesh
+    // This prevents "CS rejected" or "Device Lost" errors due to use-after-free
+    vkDeviceWaitIdle(ctx_->device());
+
+    std::cout << "[SisterApp] Performing deferred mesh update..." << std::endl;
+    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
+    
+    meshUpdateRequested_ = false;
 }
 
 void Application::performRegeneration() {
@@ -785,6 +870,7 @@ void Application::performRegeneration() {
     config.maxHeight = deferredRegenAmplitude_;
     config.noiseScale = deferredRegenScale_;
     config.octaves = 3; 
+    config.resolution = deferredRegenResolution_; // v3.6.6 
 
     finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
     // Erosion (Drainage Viz requires Flux > 5). 250k droplets for adequate flow.
@@ -794,12 +880,14 @@ void Application::performRegeneration() {
     // This provides clean, deterministic river networks without "spots".
     finiteGenerator_->calculateDrainage(*finiteMap_);
 
-    finiteRenderer_->buildMesh(*finiteMap_);
+    // v3.6.5: Apply Resolution to Mesh Build
+    worldResolution_ = deferredRegenResolution_;
+    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
 
     // Teleport
-    float cx = static_cast<float>(deferredRegenSize_) / 2.0f;
-    float cz = static_cast<float>(deferredRegenSize_) / 2.0f;
-    float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
+    float cx = (static_cast<float>(deferredRegenSize_) / 2.0f) * worldResolution_;
+    float cz = (static_cast<float>(deferredRegenSize_) / 2.0f) * worldResolution_;
+    float h = finiteMap_->getHeight(finiteMap_->getWidth()/2, finiteMap_->getHeight()/2); // Height is absolute
     camera_.teleportTo({cx, h + 20.0f, cz});
     
     regenRequested_ = false;

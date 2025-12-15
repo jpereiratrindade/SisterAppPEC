@@ -21,8 +21,10 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
     for (int z = 0; z < h; ++z) {
         for (int x = 0; x < w; ++x) {
             // FBM
-            float nx = static_cast<float>(x) * scale;
-            float nz = static_cast<float>(z) * scale;
+            // v3.6.6: Use Physical Coordinates (x * resolution) for Noise Sampling
+            // This ensures terrain shape/roughness depends on physical distance (meters), not grid index.
+            float nx = (static_cast<float>(x) * config.resolution) * scale;
+            float nz = (static_cast<float>(z) * config.resolution) * scale;
             
             float val = 0.0f;
             float freq = 1.0f;
@@ -99,13 +101,15 @@ void TerrainGenerator::calculateDrainage(TerrainMap& map) {
                 }
             }
             downstream[idx] = receiver;
+            // v3.6.3: Store permanently in map
+            map.flowDirMap()[idx] = receiver;
         }
     }
 
     // 3. Accumulate Flow (Cascade from high to low)
     // Since we iterate from high to low, the upstream nodes are processed before downstream.
     for (int idx : sortedIndices) {
-        int receiver = downstream[idx];
+        int receiver = map.flowDirMap()[idx];
         if (receiver != -1) {
             map.fluxMap()[receiver] += map.fluxMap()[idx];
         }

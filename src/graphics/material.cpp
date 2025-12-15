@@ -164,7 +164,7 @@ void Material::createPipeline(VkRenderPass renderPass, VkExtent2D extent, VkPrim
     VkPushConstantRange range{};
     range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
     range.offset = 0;
-    range.size = 128; // Increased for PointSize (64 mvp + 4 size + padding) 
+    range.size = 144; // Increased for Visualization Flags (was 128) 
 
     VkPipelineLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

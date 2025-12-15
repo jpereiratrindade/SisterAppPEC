@@ -85,8 +85,8 @@ namespace core {
         void loadBookmark(size_t index);
         void deleteBookmark(size_t index);
         void requestTerrainReset(int warmupRadius = 1);
-        void regenerateFiniteWorld(int size, float scale, float amplitude); // v3.5.1
-        void performRegeneration(); // v3.5.0 internal
+    void regenerateFiniteWorld(int size, float scale, float amplitude, float resolution = 1.0f); // v3.6.5
+    void performRegeneration(); // v3.5.0 internal
 
 
     private:    // --- Core Systems ---
@@ -173,11 +173,20 @@ namespace core {
     int deferredRegenSize_ = 1024;
     float deferredRegenScale_ = 0.002f;
     float deferredRegenAmplitude_ = 80.0f; // v3.5.1
+    float deferredRegenResolution_ = 1.0f; // v3.6.5
+    float worldResolution_ = 1.0f; // v3.6.5 Current active resolution
     
     // Visualization State
-    bool showSlopeAnalysis_ = false; // v3.5.2
-    bool showDrainage_ = false; // v3.6.1
-    bool showErosion_ = false; // v3.6.2
+    bool showSlopeAnalysis_ = false; // v3.4.0
+    bool showDrainage_ = false;      // v3.6.1
+    float drainageIntensity_ = 0.5f; // v3.6.1
+    bool showErosion_ = false;       // v3.6.2
+    bool showWatershedVis_ = false;  // v3.6.3
+    bool showBasinOutlines_ = false; // v3.6.4
+    
+    // v3.6.3 Deferred Update Flag
+    bool meshUpdateRequested_ = false;
+    void performMeshUpdate();
     };
 
 } // namespace core

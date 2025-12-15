@@ -9,6 +9,7 @@ struct TerrainConfig {
     int width = 1024;
     int height = 1024;
     float scaleXZ = 1.0f; // Meters per unit
+    float resolution = 1.0f; // v3.6.6: Physical meters per grid cell
     float minHeight = 0.0f;
     float maxHeight = 256.0f; // Meters
     float waterLevel = 64.0f;
@@ -58,6 +59,13 @@ public:
     std::vector<uint8_t>& biomeMap() { return biomeMap_; }
     const std::vector<uint8_t>& biomeMap() const { return biomeMap_; }
 
+    // v3.6.3: Watershed Support
+    std::vector<int>& flowDirMap() { return flowDirMap_; }
+    const std::vector<int>& flowDirMap() const { return flowDirMap_; }
+
+    std::vector<int>& watershedMap() { return watershedMap_; }
+    const std::vector<int>& watershedMap() const { return watershedMap_; }
+
     // Helpers
     // (x,z variants removed to avoid ambiguity with x,y)
     
@@ -75,6 +83,10 @@ private:
     std::vector<float> sedimentMap_; // Accumulated sediment
     std::vector<float> fluxMap_;     // Accumulated water flow (v3.6.1)
     std::vector<uint8_t> biomeMap_;  // ID of the biome
+    
+    // v3.6.3
+    std::vector<int> flowDirMap_;    // Index of receiver cell (-1 if sink)
+    std::vector<int> watershedMap_;  // ID of the drainage basin
 };
 
 } // namespace terrain

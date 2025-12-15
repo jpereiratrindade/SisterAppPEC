@@ -31,7 +31,11 @@ struct UiFrameContext {
     terrain::TerrainMap* finiteMap; // v3.5.0
     bool& showSlopeAnalysis; // v3.5.2
     bool& showDrainage;      // v3.6.1
+    float& drainageIntensity;
+
     bool& showErosion; // v3.6.2
+    bool& showWatershedVis; // v3.6.3
+    bool& showBasinOutlines; // v3.6.4
     int visibleChunks = 0;
     int totalChunks = 0;
     int pendingTasks = 0;
@@ -44,12 +48,17 @@ struct UiFrameContext {
 
 struct Callbacks {
     std::function<void(const std::string&)> saveBookmark;
-    std::function<void(size_t)> loadBookmark;
-    std::function<void(size_t)> deleteBookmark;
+    using LoadBookmarkCallback = std::function<void(size_t)>;
+    using DeleteBookmarkCallback = std::function<void(size_t)>;
+    using RegenerateFiniteWorldCallback = std::function<void(int size, float scale, float amplitude, float resolution)>; // v3.6.5
+    using RequestMeshUpdateCallback = std::function<void()>;
+    LoadBookmarkCallback loadBookmark;
+    DeleteBookmarkCallback deleteBookmark;
     std::function<void(int)> requestTerrainReset;
     std::function<void()> savePreferences; // v3.4.0
     std::function<void()> loadPreferences; // v3.4.0
-    std::function<void(int size, float scale, float amplitude)> regenerateFiniteWorld; // v3.5.1
+    RegenerateFiniteWorldCallback regenerateFiniteWorld; // v3.5.1
+    RequestMeshUpdateCallback updateMesh; // v3.6.3
 };
 
 class UiLayer {

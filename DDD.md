@@ -30,7 +30,11 @@ Entidades:
 - Chunk
 - VoxelScene
 - Renderer
+- VoxelScene
+- Renderer
 - Mesh / Buffer
+- **Watershed Algorithm (Service)**: Segmentação e Delineação de Bacias (v3.6.3).
+- **HydrologyReport (Service)**: Cálculo de estatísticas eco-hidrológicas.
 
 ---
 

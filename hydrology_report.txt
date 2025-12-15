@@ -1,0 +1,92 @@
+=================================================================
+                RELATORIO DE ANALISE HIDROLOGICA                 
+       Analise Estrutural e Funcional de Modelo Idealizado       
+=================================================================
+
+NOTA TEORICA:
+Este relatorio apresenta uma analise estrutural e funcional de um
+modelo hidrologico digital. Os resultados devem ser interpretados
+como propriedades emergentes da topografia e das regras de fluxo,
+respondendo a como o relevo organiza gradientes e fluxos.
+Resultados dependem das resolucoes e parametros adotados no modelo.
+NAO DEVE ser utilizado como previsao de vazao absoluta ou erosao real.
+
+1. INFORMACOES GERAIS
+-----------------------------------------------------------------
+Dimensoes da Grade:      2048 x 2048
+Resolucao Espacial:      1.0 u.m. (simbolica)
+Total de Celulas:        4194304
+Unidade de Medida:       Unidades de Modelo (u.m.)
+
+2. PARAMETROS ESTRUTURAIS (TOPOGRAFIA)
+-----------------------------------------------------------------
+Eleuacao (u.m.):
+  - Minima:              26.35
+  - Maxima:              69.14
+  - Media:               45.24
+  - Amplitude:           42.79
+
+Declividade (tan beta):
+  - Metodo:              Steepest Descent (Maximo declive local 8-vizinhos)
+  - Media:               0.33 (33.29%)
+  - Maxima:              1.19 (118.76%)
+
+3. PARAMETROS FUNCIONAIS (HIDROLOGIA)
+-----------------------------------------------------------------
+Fluxo Acumulado (Area de Contribuicao proxy):
+  - Maximo:              19869.00
+
+Potencia do Fluxo (Stream Power Index ~ A * S):
+  - Maximo:              2609.37
+  - Indicativo de potencial geomorfologico: Regioes com alto SPI sao suscetiveis.
+
+4. PARAMETROS ECO-HIDROLOGICOS
+-----------------------------------------------------------------
+Indice Topografico de Umidade (TWI = ln(A / tanB)):
+  - Minimo:              -0.03 (Zonas secas/divisores)
+  - Maximo:              19.11 (Zonas saturadas)
+  - Medio:               3.35
+  - Area com TWI > 8:    1.20 %
+
+5. REDE DE DRENAGEM
+-----------------------------------------------------------------
+Threshold de Canalizacao: Fluxo > 100
+Densidade de Drenagem:
+  - Densidade:           3.11e-02 streams/pixel
+  - Equivalente:         1 canal a cada ~32 pixels
+  - Vol. Streams:        130565 celulas
+
+6. ESTATISTICAS DE BACIAS (Watershed Segmentation)
+-----------------------------------------------------------------
+Total de Bacias Identificadas: 1682
+Maior Bacia (Area):            19869 celulas
+Dominancia da Maior Bacia:     0.47 % da area total
+
+7. ANALISE DETALHADA: PRINCIPAIS BACIAS
+-----------------------------------------------------------------
+7.1. BACIA ID 1578 (Area: 19869 px)
+   - Elevação (Min/Med/Max):     29.44 / 45.18 / 66.28
+   - Declividade Média:          0.37 (37.10%)
+   - TWI Médio:                  3.50
+   - Saturação (TWI>8):          1.71 %
+   - Densidade Drenagem:         3.04e-02
+   - Stream Power Max:           2452.38
+
+7.2. BACIA ID 728 (Area: 17904 px)
+   - Elevação (Min/Med/Max):     26.35 / 41.92 / 59.50
+   - Declividade Média:          0.35 (34.97%)
+   - TWI Médio:                  3.61
+   - Saturação (TWI>8):          1.32 %
+   - Densidade Drenagem:         2.86e-02
+   - Stream Power Max:           1981.61
+
+7.3. BACIA ID 775 (Area: 16588 px)
+   - Elevação (Min/Med/Max):     27.44 / 42.31 / 60.77
+   - Declividade Média:          0.35 (35.34%)
+   - TWI Médio:                  3.49
+   - Saturação (TWI>8):          1.65 %
+   - Densidade Drenagem:         2.92e-02
+   - Stream Power Max:           1904.97
+
+=================================================================
+Fim do Relatorio.

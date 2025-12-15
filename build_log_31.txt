@@ -1,7 +1,0 @@
-[  2%] Compilando shaders/basic.vert para SPIR-V
-[  4%] Compilando shaders/basic.frag para SPIR-V
-/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag:39: error: 'ambient' : undeclared identifier
-1 error generated.
-gmake[2]: *** [CMakeFiles/shaders_spirv.dir/build.make:80: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag.spv] Error 1
-gmake[1]: *** [CMakeFiles/Makefile2:122: CMakeFiles/shaders_spirv.dir/all] Error 2
-gmake: *** [Makefile:91: all] Error 2

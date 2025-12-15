@@ -4,6 +4,9 @@
 #include "backends/imgui_impl_vulkan.h"
 #include "imgui.h"
 
+#include "../terrain/hydrology_report.h"
+#include "../terrain/watershed.h"
+
 #include <array>
 #include <iostream>
 #include <utility>
@@ -179,6 +182,42 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                         }
                     }
                 }
+                ImGui::EndMenu();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Generate Hydrology Report")) {
+                if (ctx.finiteMap) {
+                    bool success = terrain::HydrologyReport::generateToFile(*ctx.finiteMap, "hydrology_report.txt");
+                    if (success) {
+                        std::cout << "[UI] Hydrology Report generated successfully to 'hydrology_report.txt'" << std::endl;
+                    } else {
+                        std::cerr << "[UI] Failed to generate Hydrology Report." << std::endl;
+                    }
+                } else {
+                     std::cerr << "[UI] No Finite Map available for report." << std::endl;
+                }
+            }
+            ImGui::Separator();
+            if (ImGui::BeginMenu("Watershed Analysis (v3.6.3)")) {
+                if (ImGui::MenuItem("Global Segmentation")) {
+                    if (ctx.finiteMap) {
+                        int count = terrain::Watershed::segmentGlobal(*ctx.finiteMap);
+                        std::cout << "[UI] Global Watershed Segmentation complete. Basins: " << count << std::endl;
+                        // Trigger renderer update
+                        if (callbacks_.updateMesh) callbacks_.updateMesh();
+                        ctx.showWatershedVis = true;
+                        if (ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
+                        if (ctx.showDrainage) ctx.showDrainage = false;
+                    }
+                }
+                ImGui::Separator();
+                ImGui::TextDisabled("Interactive Mode:");
+                ImGui::TextDisabled("Right-Click on map to Delineate Basin");
+                // We need a state bit for "Interactive Watershed Mode", maybe ctx.showSlopeAnalysis is reused or new one?
+                // Let's rely on Right Click logic in `Application` or here if we have input?
+                // `UiLayer` draws UI. Input logic is usually elsewhere.
+                // But we can toggle a flag "Show Watersheds" here.
+                
                 ImGui::EndMenu();
             }
             ImGui::EndMenu();
@@ -435,7 +474,34 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         if (ctx.showSlopeAnalysis && ctx.showDrainage) ctx.showSlopeAnalysis = false; // Mutually exclusive preferred
         
         ImGui::Checkbox("Show Drainage Model (Flux > 1)", &ctx.showDrainage);
+        if (ctx.showDrainage) {
+             ImGui::Indent();
+             ImGui::SliderFloat("Intensity", &ctx.drainageIntensity, 0.05f, 1.0f, "%.2f");
+             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Sensitivity: Lower = Only Rivers, Higher = Catchment Areas");
+             ImGui::Unindent();
+        }
         if (ctx.showDrainage && ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
+
+        bool wasShown = ctx.showWatershedVis;
+        ImGui::Checkbox("Show Watershed Map (Basins)", &ctx.showWatershedVis);
+        if (ctx.showWatershedVis) {
+             ImGui::Indent();
+             ImGui::Checkbox("Show Contours", &ctx.showBasinOutlines);
+             ImGui::Unindent();
+
+             if (!wasShown) {
+                 // Auto-calculate if enabling
+                 if (ctx.finiteMap) {
+                     terrain::Watershed::segmentGlobal(*ctx.finiteMap);
+                     if (callbacks_.updateMesh) callbacks_.updateMesh();
+                 }
+                 if (ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
+                 if (ctx.showDrainage) ctx.showDrainage = false;
+             }
+        }
+
+        // Enforce exclusion if others are toggled on
+        if ((ctx.showSlopeAnalysis || ctx.showDrainage) && ctx.showWatershedVis) ctx.showWatershedVis = false;
 
         
         ImGui::Separator();
@@ -470,11 +536,16 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         ImGui::SliderFloat("Amplitude (Height)", &amplitude, 20.0f, 250.0f, "%.0f m");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Max Height of terrain features.");
 
+        // v3.6.5 Resolution Control
+        static float resolution = 1.0f;
+        ImGui::SliderFloat("Cell Size (Resolution)", &resolution, 0.1f, 2.0f, "%.1f m");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("World units per grid cell.\nLower = Higher Resolution (Smoother)\nHigher = Lower Resolution (Blocky)");
+
         ImGui::Separator();
         
         if (ImGui::Button("Generate New Map", ImVec2(-1, 0))) {
             if (callbacks_.regenerateFiniteWorld) {
-                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude);
+                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution);
             }
         }
 

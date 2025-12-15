@@ -19,9 +19,10 @@ struct Vertex {
     float color[3];  ///< RGB vertex color (0.0 - 1.0)
     float normal[3]; ///< Vertex normal for lighting
     float uv[2];     ///< Texture coordinates / Flux data (v3.6.1)
+    float auxiliary; ///< v3.6.3: Generic data (e.g. Basin ID)
 
     static VkVertexInputBindingDescription getBindingDescription();
-    static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions(); // Updated count to 4
+    static std::array<VkVertexInputAttributeDescription, 5> getAttributeDescriptions(); // Updated count to 5
 };
 
 /**

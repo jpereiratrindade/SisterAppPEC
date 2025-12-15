@@ -17,6 +17,8 @@ void TerrainMap::resize(int width, int height) {
     sedimentMap_.assign(size, 0.0f);
     fluxMap_.assign(size, 0.0f); // v3.6.1
     biomeMap_.assign(size, 0);
+    flowDirMap_.assign(size, -1);   // v3.6.3: -1 means no receiver (sink or undefined)
+    watershedMap_.assign(size, 0);  // v3.6.3: 0 means no basin assigned
 }
 
 void TerrainMap::clear() {
@@ -25,6 +27,8 @@ void TerrainMap::clear() {
     std::fill(sedimentMap_.begin(), sedimentMap_.end(), 0.0f);
     std::fill(fluxMap_.begin(), fluxMap_.end(), 0.0f); // v3.6.1
     std::fill(biomeMap_.begin(), biomeMap_.end(), 0);
+    std::fill(flowDirMap_.begin(), flowDirMap_.end(), -1);
+    std::fill(watershedMap_.begin(), watershedMap_.end(), 0);
 }
 
 float TerrainMap::getHeight(int x, int z) const {

@@ -14,7 +14,7 @@ TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass 
 }
     // Material initialized.
 
-void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
+void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale) {
     int w = map.getWidth();
     int h = map.getHeight();
     
@@ -46,9 +46,9 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
             float len = std::sqrt(nx*nx + ny*ny + nz*nz);
             
             graphics::Vertex v{};
-            v.pos[0] = static_cast<float>(x);
+            v.pos[0] = static_cast<float>(x) * gridScale;
             v.pos[1] = height;
-            v.pos[2] = static_cast<float>(z);
+            v.pos[2] = static_cast<float>(z) * gridScale;
             
             v.normal[0] = nx / len;
             v.normal[1] = ny / len;
@@ -76,6 +76,10 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
             float sed = map.sedimentMap()[z * w + x];
             v.uv[1] = sed;
 
+            // v3.6.3 Watershed Visualization
+            // Store Basin ID in auxiliary
+            v.auxiliary = static_cast<float>(map.watershedMap()[z * w + x]);
+            
             vertices.push_back(v);
         }
     }
@@ -106,7 +110,7 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
     std::cout << "[TerrainRenderer] Mesh Built: " << vertices.size() << " verts. Max Flux: " << maxFlux << std::endl;
 }
 
-void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis, bool showDrainageVis) {
+void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis, bool showDrainageVis, float drainageIntensity, bool showWatershedVis, bool showBasinOutlines) {
     if (!mesh_ || !material_) return;
     
     // Bind Pipeline and Descriptor Sets
@@ -122,10 +126,13 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
         float opacity;          // 76
         float fixedColor[4];    // 80 (vec4)
         float useSlopeVis;      // 96
-        float padding[3];       // 100-112 (align next vec4)
+        float drainageIntensity;// 100 [NEW]
+        float useBasinOutlines; // 104 [NEW] Match Shader!
+        float padding;          // 108 (align next vec4)
         float cameraPos[4];     // 112 (vec4)
         float useDrainageVis;   // 128
         float useErosionVis;    // 132
+        float useWatershedVis;  // 136 [NEW]
     };
 
     PushConstants pc{};
@@ -136,9 +143,12 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
     pc.opacity = 1.0f;
     pc.fixedColor[0] = 0.0f; pc.fixedColor[1] = 0.0f; pc.fixedColor[2] = 0.0f; pc.fixedColor[3] = 1.0f;
     pc.useSlopeVis = showSlopeVis ? 1.0f : 0.0f;
+    pc.drainageIntensity = drainageIntensity; // [NEW]
+    pc.useBasinOutlines = showBasinOutlines ? 1.0f : 0.0f; // [NEW] Correct Offset
     pc.cameraPos[0] = 0.0f; pc.cameraPos[1] = 0.0f; pc.cameraPos[2] = 0.0f; pc.cameraPos[3] = 1.0f;
     pc.useDrainageVis = showDrainageVis ? 1.0f : 0.0f;
     pc.useErosionVis = 0.0f;
+    pc.useWatershedVis = showWatershedVis ? 1.0f : 0.0f;
 
     vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &pc);
 

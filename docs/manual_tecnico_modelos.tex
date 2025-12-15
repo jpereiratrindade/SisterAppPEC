@@ -27,7 +27,7 @@ O \textbf{SisterApp Engine} integra sistemas avançados de análise topológica 
 \section{Modelo de Análise de Declividade (Slope Analysis)}
 Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
 
-\subsection{1. Cálculo de Inclinação (Percentual)}
+\subsection{Cálculo de Inclinação (Percentual)}
 A declividade é calculada como a razão entre a diferença de altura (rise) e a distância horizontal (run), expressa em porcentagem. Para um ponto no terreno, a inclinação $S_{\%}$ é dada por:
 
 \[
@@ -41,7 +41,7 @@ Onde:
 
 Isto permite uma correlação direta com normas técnicas de engenharia civil.
 
-\subsection{2. Classificação Topológica (5 Classes)}
+\subsection{Classificação Topológica (5 Classes)}
 O terreno é segmentado em classes configuráveis pelo usuário. Os limiares (thresholds) padrão são:
 
 \begin{table}[h]
@@ -58,7 +58,7 @@ Mountain (Montanha) & $> 45.0\%$ & Áreas inacessíveis ou de preservação. \\ 
 \caption{Classes de Declividade Padrão (v3.5)}
 \end{table}
 
-\subsection{3. Persistência e Configuração}
+\subsection{Persistência e Configuração}
 Diferente dos modelos anteriores, todas as configurações de declividade são \textbf{persistentes}. O sistema serializa os limiares definidos pelo usuário em um arquivo JSON (`prefs.json`), garantindo que os critérios de análise sejam mantidos entre sessões.
 
 \section{Modelo de Vegetação (Suspenso)}
@@ -87,25 +87,68 @@ Interface atualizada no menu \textit{Tools}:
 \section{Modelo de Drenagem (D8 Flow)}
 A partir da versão v3.6.0, o sistema substituiu o modelo estocástico de erosão por partículas por um algoritmo determinístico de drenagem D8 (Steepest Descent).
 
-\subsection{1. Direção do Fluxo (Flow Direction)}
+\subsection{Direção do Fluxo (Flow Direction)}
 Para cada célula do grid de terreno, o algoritmo determina a direção de escoamento para um dos 8 vizinhos com maior gradiente descendente.
 \[
 \text{Receiver} = \text{argmax}_{n \in \text{Neighbors}} (H_{\text{current}} - H_n)
 \]
 Se $H_{\text{current}} - H_n \leq 0$ para todos os vizinhos (mínimo local), a célula é um "sink" (sumidouro).
 
-\subsection{2. Acumulação de Fluxo (Flow Accumulation)}
+\subsection{Acumulação de Fluxo (Flow Accumulation)}
 O fluxo é calculado iterativamente, ordenando as células por altura (decrescente). Cada célula transfere seu valor de fluxo acumulado para o seu vizinho receptor (Receiver), simulando a conservação de massa da água.
 \[
 F_{\text{receiver}} += F_{\text{upstream}}
 \]
 O resultado é um \textit{Flux Map} onde valores altos representam rios e canais principais.
 
-\subsection{3. Visualização}
+\subsection{Visualização}
 O shader utiliza o mapa de fluxo acumulado para renderizar recursos hídricos:
 \begin{itemize}
     \item \textbf{Canais Principais:} Células com fluxo $F > 1.0$ (limite visual configurável) são coloridas em Cyan (0.0, 0.8, 1.0).
     \item \textbf{Continuidade:} O método D8 garante redes de drenagem dendríticas contínuas sem artefatos geométricos ("spots").
 \end{itemize}
+
+\section{Análise de Bacias Hidrográficas (Watershed Analysis)}
+Introduzido na versão v3.6.3, este módulo permite a identificação e delimitação de bacias de drenagem baseadas na topologia D8.
+
+\subsection{Segmentação Global}
+O algoritmo de segmentação particiona todo o terreno em bacias distintas. O processo ocorre em duas etapas:
+\begin{enumerate}
+    \item \textbf{Identificação de Sinks}: Localização de todos os "sumidouros" (minimos locais ou bordas do mapa). Cada sink recebe um ID único.
+    \item \textbf{Propagação Upstream (BFS)}: Um algoritmo de busca em largura (Breadth-First Search) percorre a rede de fluxo no sentido inverso (de jusante para montante), atribuindo o ID do sink a todas as células constituintes de sua área de contribuição.
+\end{enumerate}
+
+\subsection{2. Delineação Interativa}
+Permite ao usuário consultar a bacia de contribuição de um ponto arbitrário $P(x,y)$. O sistema rastreia recursivamente todos os vizinhos que fluem para $P$, gerando uma máscara binária instantânea da área de captação a montante.
+
+\subsection{3. Visualização de Contornos}
+O usuário pode habilitar a opção "Show Contours" na interface. O sistema utiliza a derivada parcial do ID da bacia (via shader \texttt{fwidth}) para detectar arestas onde o ID muda, desenhando uma linha escura de 1 pixel sobre os limites das bacias para melhor distinção visual.
+
+\section{Métricas Eco-Hidrológicas}
+O Relatório Hidrológico foi expandido para incluir indicadores funcionais derivados da topografia:
+
+\subsection{Índice Topográfico de Umidade (TWI)}
+\[ TWI = \ln \left( \frac{A}{\tan \beta} \right) \]
+Onde $A$ é a área de contribuição específica (fluxo) e $\tan \beta$ é a declividade local. O TWI estima zonas de saturação do solo. O sistema reporta a porcentagem da área com $TWI > 8.0$ como proxy para zonas úmidas.
+
+\subsection{Densidade de Drenagem ($D_d$)}
+\[ D_d = \frac{L_{total}}{Area_{total}} \]
+Calculado como a razão entre células classificadas como "rio" (Fluxo > 100) e o total de células. Indica a permeabilidade e dissecação do relevo.
+
+\subsection{Estatísticas por Bacia (Basin-Level Metrics)}
+O sistema agora agrega métricas de elevação, declividade, TWI e densidade de drenagem individualmente para as 3 maiores bacias identificadas, permitindo uma análise comparativa da resposta hidrológica de diferentes sub-regiões do modelo.
+
+\section{Resolução Espacial Variável (V3.6.5)}
+Para atender à necessidade de maior definição nos limites de bacias e redes de drenagem, foi introduzido o controle de \textbf{Cell Size (Resolução)}.
+
+\subsection{Definição de Escala}
+O usuário pode ajustar o tamanho métrico de cada célula (pixel) da grade de simulação:
+\begin{itemize}
+    \item \textbf{1.0 m (Padrão):} Equilíbrio entre cobertura de área e detalhe.
+    \item \textbf{$< 1.0$ m (Alta Resolução):} Aumenta a densidade de vértices por unidade de área. Ideal para suavizar limites de bacias e detalhar canais de drenagem, reduzindo o efeito de "pixelização" (aliasing geométrico).
+    \item \textbf{$> 1.0$ m (Baixa Resolução):} Permite cobrir grandes extents geográficos com menor custo computacional.
+\end{itemize}
+
+O sistema ajusta automaticamente a visualização e a lógica de interação (raycasting) para manter a coerência espacial independentemente da escala escolhida.
 
 \end{document}

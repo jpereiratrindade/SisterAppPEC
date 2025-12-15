@@ -1,5 +1,0 @@
-[ 16%] Built target shaders_spirv
-[ 18%] Building CXX object CMakeFiles/sisterapp.dir/main.cpp.o
-[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
-[ 23%] Linking CXX executable sisterapp
-[100%] Built target sisterapp

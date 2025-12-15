@@ -17,13 +17,14 @@ public:
     /**
      * @brief Build the GPU mesh from the terrain map.
      * This is a "heavy" operation for large maps.
+     * @param gridScale World units per grid cell (default 1.0)
      */
-    void buildMesh(const terrain::TerrainMap& map);
+    void buildMesh(const terrain::TerrainMap& map, float gridScale = 1.0f);
 
     /**
      * @brief Record draw commands
      */
-    void render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis = false, bool showDrainageVis = false);
+    void render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis = false, bool showDrainageVis = false, float drainageIntensity = 0.25f, bool showWatershedVis = false, bool showBasinOutlines = false);
 
 private:
     const core::GraphicsContext& ctx_;
