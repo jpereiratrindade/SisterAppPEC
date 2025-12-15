@@ -1,5 +1,12 @@
 # SisterApp Engine - Changelog (Updated)
 
+## [3.5.0] - Unreleased
+### Added (Finite World Architecture)
+- **TerrainMap**: New central data structure for finite terrain (height, moisture, sediment).
+- **TerrainGenerator**:
+    - FBM Noise generation for base terrain.
+    - **Hydraulic Erosion**: Simulation of water flow, erosion, and sediment deposition.
+
 ## [3.4.0] - 2025-12-15
 ### Added
 - **Slope Analysis Model (Percentage)**:
