@@ -84,6 +84,19 @@ Interface atualizada no menu \textit{Tools}:
     \item[Persistence:] Botões para salvar/carregar preferências manualmente.
 \end{description}
 
+\subsection{Variáveis de Controle Espacial}
+O sistema permite o ajuste fino da topografia através de três variáveis principais:
+\begin{enumerate}
+    \item \textbf{Feature Size (Frequência):} Controla o tamanho horizontal das montanhas. Valores menores geram grandes maciços; valores maiores geram colinas frequentes.
+    \item \textbf{Roughness (Persistência):} Controla a irregularidade da superfície. 
+    \begin{itemize}
+        \item Baixa ($<0.5$): Colinas suaves e dunas.
+        \item Alta ($>0.5$): Terreno rochoso, escarpado e ruidoso.
+    \end{itemize}
+    \item \textbf{Amplitude:} A altura máxima vertical em metros.
+    \item \textbf{Cell Size (Resolução):} A dimensão física de cada pixel da grade (em metros).
+\end{enumerate}
+
 \section{Modelo de Drenagem (D8 Flow)}
 A partir da versão v3.6.0, o sistema substituiu o modelo estocástico de erosão por partículas por um algoritmo determinístico de drenagem D8 (Steepest Descent).
 
@@ -150,5 +163,26 @@ O usuário pode ajustar o tamanho métrico de cada célula (pixel) da grade de s
 \end{itemize}
 
 O sistema ajusta automaticamente a visualização e a lógica de interação (raycasting) para manter a coerência espacial independentemente da escala escolhida.
+
+\section{Módulo de Análise de Solos (V3.7.0)}
+O sistema inclui agora uma camada de pedologia probabilística baseada na declividade, conforme a tabela de relação Relevo-Solo definida pelo usuário.
+
+\subsection{Metodologia Estocástica}
+Como uma mesma classe de relevo pode apresentar múltiplos tipos de solo (ex: Plano pode ser Hidromórfico ou B Textural), o sistema utiliza um algoritmo de \textit{hashing espacial} para distribuir os subtipos. Isso garante que:
+\begin{itemize}
+    \item A distribuição respeita as proporções da tabela (ex: 33\% para cada tipo no relevo plano).
+    \item O resultado é determinístico: uma mesma coordenada $(x,z)$ sempre terá o mesmo solo.
+    \item A visualização (mapa de cores) e a ferramenta de sonda (Probe) estão perfeitamente sincronizadas.
+\end{itemize}
+
+\subsection{Classes e Cores}
+\begin{itemize}
+    \item \textbf{Plano (0-3\%):} Hidromórfico (Teal), B Textural (Laranja), Argila Expansiva (Roxo).
+    \item \textbf{Suave (3-8\%):} B Textural, Bem Desenvolvido (Terracota), Argila Expansiva.
+    \item \textbf{Ondulado (8-20\%):} B Textural, Argila Expansiva.
+    \item \textbf{Forte (20-45\%):} B Textural, Solo Raso (Amarelo).
+    \item \textbf{Montanhoso (45-75\%):} Solo Raso (Amarelo).
+    \item \textbf{Escarpado ($>75\%$):} Afloramento Rochoso (Cinza).
+\end{itemize}
 
 \end{document}

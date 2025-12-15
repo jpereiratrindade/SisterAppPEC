@@ -24,7 +24,13 @@ public:
     /**
      * @brief Record draw commands
      */
-    void render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis = false, bool showDrainageVis = false, float drainageIntensity = 0.25f, bool showWatershedVis = false, bool showBasinOutlines = false);
+    void render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, 
+                bool showSlopeVis, bool showDrainageVis, float drainageIntensity, 
+                bool showWatershedVis, bool showBasinOutlines, bool showSoilVis,
+                // Soil Whitelist
+                bool soilHidroAllowed, bool soilBTextAllowed, bool soilArgilaAllowed, 
+                bool soilBemDesAllowed, bool soilRasoAllowed, bool soilRochaAllowed,
+                float sunAzimuth, float sunElevation, float fogDensity);
 
 private:
     const core::GraphicsContext& ctx_;

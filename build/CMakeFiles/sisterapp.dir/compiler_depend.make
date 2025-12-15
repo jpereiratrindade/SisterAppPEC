@@ -2236,8 +2236,11 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: /run/media/jpereiratrindade
   /usr/include/c++/15/bits/istream.tcc \
   /usr/include/c++/15/bits/locale_classes.h \
   /usr/include/c++/15/bits/locale_classes.tcc \
+  /usr/include/c++/15/bits/locale_conv.h \
   /usr/include/c++/15/bits/locale_facets.h \
   /usr/include/c++/15/bits/locale_facets.tcc \
+  /usr/include/c++/15/bits/locale_facets_nonio.h \
+  /usr/include/c++/15/bits/locale_facets_nonio.tcc \
   /usr/include/c++/15/bits/localefwd.h \
   /usr/include/c++/15/bits/memory_resource.h \
   /usr/include/c++/15/bits/memoryfwd.h \
@@ -2252,6 +2255,7 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: /run/media/jpereiratrindade
   /usr/include/c++/15/bits/postypes.h \
   /usr/include/c++/15/bits/predefined_ops.h \
   /usr/include/c++/15/bits/ptr_traits.h \
+  /usr/include/c++/15/bits/quoted_string.h \
   /usr/include/c++/15/bits/range_access.h \
   /usr/include/c++/15/bits/refwrap.h \
   /usr/include/c++/15/bits/requires_hosted.h \
@@ -2259,6 +2263,7 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: /run/media/jpereiratrindade
   /usr/include/c++/15/bits/shared_ptr_atomic.h \
   /usr/include/c++/15/bits/shared_ptr_base.h \
   /usr/include/c++/15/bits/specfun.h \
+  /usr/include/c++/15/bits/sstream.tcc \
   /usr/include/c++/15/bits/std_abs.h \
   /usr/include/c++/15/bits/std_function.h \
   /usr/include/c++/15/bits/std_mutex.h \
@@ -2329,12 +2334,14 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: /run/media/jpereiratrindade
   /usr/include/c++/15/fstream \
   /usr/include/c++/15/functional \
   /usr/include/c++/15/initializer_list \
+  /usr/include/c++/15/iomanip \
   /usr/include/c++/15/ios \
   /usr/include/c++/15/iosfwd \
   /usr/include/c++/15/iostream \
   /usr/include/c++/15/istream \
   /usr/include/c++/15/iterator \
   /usr/include/c++/15/limits \
+  /usr/include/c++/15/locale \
   /usr/include/c++/15/map \
   /usr/include/c++/15/math.h \
   /usr/include/c++/15/memory \
@@ -2348,6 +2355,7 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: /run/media/jpereiratrindade
   /usr/include/c++/15/queue \
   /usr/include/c++/15/ratio \
   /usr/include/c++/15/set \
+  /usr/include/c++/15/sstream \
   /usr/include/c++/15/stdexcept \
   /usr/include/c++/15/stdlib.h \
   /usr/include/c++/15/streambuf \
@@ -2384,7 +2392,9 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: /run/media/jpereiratrindade
   /usr/include/c++/15/x86_64-redhat-linux/bits/error_constants.h \
   /usr/include/c++/15/x86_64-redhat-linux/bits/gthr-default.h \
   /usr/include/c++/15/x86_64-redhat-linux/bits/gthr.h \
+  /usr/include/c++/15/x86_64-redhat-linux/bits/messages_members.h \
   /usr/include/c++/15/x86_64-redhat-linux/bits/os_defines.h \
+  /usr/include/c++/15/x86_64-redhat-linux/bits/time_members.h \
   /usr/include/ctype.h \
   /usr/include/endian.h \
   /usr/include/errno.h \
@@ -2393,6 +2403,7 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: /run/media/jpereiratrindade
   /usr/include/gnu/stubs-64.h \
   /usr/include/gnu/stubs.h \
   /usr/include/inttypes.h \
+  /usr/include/libintl.h \
   /usr/include/limits.h \
   /usr/include/linux/errno.h \
   /usr/include/linux/limits.h \
@@ -11045,6 +11056,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o: /run/media/jpereira
   /usr/include/c++/15/cstdint \
   /usr/include/c++/15/cstdio \
   /usr/include/c++/15/cstdlib \
+  /usr/include/c++/15/cstring \
   /usr/include/c++/15/cwchar \
   /usr/include/c++/15/cwctype \
   /usr/include/c++/15/debug/assertions.h \
@@ -12704,18 +12716,6 @@ CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o:
 
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:
 
-CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o:
-
-/usr/include/c++/15/x86_64-redhat-linux/bits/messages_members.h:
-
-/usr/include/c++/15/locale:
-
-/usr/include/c++/15/bits/quoted_string.h:
-
-/usr/include/c++/15/bits/locale_facets_nonio.tcc:
-
-/usr/include/c++/15/bits/locale_facets_nonio.h:
-
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/hydrology_report.h:
 
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/resources/buffer.cpp:
@@ -12754,23 +12754,27 @@ CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o:
 
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/swapchain.cpp:
 
-/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/renderer.cpp:
-
-/usr/include/c++/15/sstream:
-
-/usr/include/c++/15/bits/sstream.tcc:
-
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/input_manager.cpp:
 
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/graphics_context.cpp:
 
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/command_pool.cpp:
 
+CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o:
+
+/usr/include/c++/15/x86_64-redhat-linux/bits/messages_members.h:
+
 /usr/include/c++/15/x86_64-redhat-linux/bits/c++io.h:
 
 /usr/include/c++/15/x86_64-redhat-linux/bits/basic_file.h:
 
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/renderer.cpp:
+
+/usr/include/c++/15/sstream:
+
 /usr/include/c++/15/pstl/glue_algorithm_defs.h:
+
+/usr/include/c++/15/locale:
 
 /usr/include/c++/15/iterator:
 
@@ -12779,6 +12783,14 @@ CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o:
 /usr/include/c++/15/bits/uniform_int_dist.h:
 
 /usr/include/c++/15/bits/stream_iterator.h:
+
+/usr/include/c++/15/bits/sstream.tcc:
+
+/usr/include/c++/15/bits/quoted_string.h:
+
+/usr/include/c++/15/bits/locale_facets_nonio.tcc:
+
+/usr/include/c++/15/bits/locale_facets_nonio.h:
 
 /usr/include/c++/15/bits/fstream.tcc:
 

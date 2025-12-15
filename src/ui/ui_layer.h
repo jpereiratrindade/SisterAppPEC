@@ -36,6 +36,19 @@ struct UiFrameContext {
     bool& showErosion; // v3.6.2
     bool& showWatershedVis; // v3.6.3
     bool& showBasinOutlines; // v3.6.4
+    bool& showSoilVis; // v3.7.0
+    // v3.7.5 Soil Whitelist
+    bool& soilHidroAllowed;
+    bool& soilBTextAllowed;
+    bool& soilArgilaAllowed;
+    bool& soilBemDesAllowed;
+    bool& soilRasoAllowed;
+    bool& soilRochaAllowed;
+
+    // v3.7.3 Visual Controls
+    float& sunAzimuth;
+    float& sunElevation;
+    float& fogDensity;
     int visibleChunks = 0;
     int totalChunks = 0;
     int pendingTasks = 0;
@@ -44,13 +57,14 @@ struct UiFrameContext {
     std::vector<Bookmark>& bookmarks;
     std::string& lastSurfaceInfo;
     bool& lastSurfaceValid;
+    float* lastSurfaceColor; // 3 floats
 };
 
 struct Callbacks {
     std::function<void(const std::string&)> saveBookmark;
     using LoadBookmarkCallback = std::function<void(size_t)>;
     using DeleteBookmarkCallback = std::function<void(size_t)>;
-    using RegenerateFiniteWorldCallback = std::function<void(int size, float scale, float amplitude, float resolution)>; // v3.6.5
+    using RegenerateFiniteWorldCallback = std::function<void(int size, float scale, float amplitude, float resolution, float persistence)>; // v3.7.1
     using RequestMeshUpdateCallback = std::function<void()>;
     LoadBookmarkCallback loadBookmark;
     DeleteBookmarkCallback deleteBookmark;

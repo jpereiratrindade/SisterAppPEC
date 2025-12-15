@@ -35,13 +35,14 @@ void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
 void UiLayer::drawStats(UiFrameContext& ctx) {
     if (!showStatsOverlay_) return;
 
-    ImGui::SetNextWindowPos(ImVec2(10, ImGui::GetIO().DisplaySize.y - 130), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(10, ImGui::GetIO().DisplaySize.y - 200), ImGuiCond_FirstUseEver); // Allow moving
     ImGui::SetNextWindowBgAlpha(0.65f);
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+    // Allow Decoration (Title Bar) so it can be moved. Disallow Collapse for simplicity.
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | 
                              ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
                              ImGuiWindowFlags_NoNav;
 
-    if (ImGui::Begin("Stats##Overlay", &showStatsOverlay_, flags)) {
+    if (ImGui::Begin("Probe & Stats", &showStatsOverlay_, flags)) {
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
         ImGui::Text("Mode: %s", ctx.camera.getCameraMode() == graphics::CameraMode::FreeFlight ? "Free Flight" : "Orbital");
         auto pos = ctx.camera.getPosition();
@@ -49,6 +50,22 @@ void UiLayer::drawStats(UiFrameContext& ctx) {
         ImGui::Separator();
         ImGui::Text("Chunks: %d visible / %d total", ctx.visibleChunks, ctx.totalChunks);
         ImGui::Text("Pending Tasks: %d (veg: %d)", ctx.pendingTasks, ctx.pendingVeg);
+        
+        if (ctx.lastSurfaceValid) {
+            ImGui::Separator();
+            ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Probe Results:");
+            // Assuming lastSurfaceInfo contains multiple lines or formatted text. 
+            // Currently it is constructed as a stream in Application.cpp but not stored?
+            // Wait, Application.cpp prints to std::cout. It doesn't seem to populate lastSurfaceInfo_?
+            // I need to fix that in Application.cpp too if it's empty.
+            // But let's assume I fix it.
+            
+            // Color Display
+            float* c = ctx.lastSurfaceColor;
+            ImGui::ColorButton("##probeColor", ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop);
+            ImGui::SameLine();
+            ImGui::TextWrapped("%s", ctx.lastSurfaceInfo.c_str());
+        }
     }
     ImGui::End();
 }
@@ -501,10 +518,55 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         }
 
         // Enforce exclusion if others are toggled on
-        if ((ctx.showSlopeAnalysis || ctx.showDrainage) && ctx.showWatershedVis) ctx.showWatershedVis = false;
+        if ((ctx.showSlopeAnalysis || ctx.showDrainage || ctx.showSoilVis) && ctx.showWatershedVis) ctx.showWatershedVis = false;
+        if (ctx.showSoilVis && (ctx.showSlopeAnalysis || ctx.showDrainage)) { ctx.showSlopeAnalysis = false; ctx.showDrainage = false; }
 
-        
+        ImGui::Checkbox("Show Soil Map (v3.7)", &ctx.showSoilVis);
+        if (ctx.showSoilVis) {
+             ImGui::Indent();
+             ImGui::Text("Legenda de Solos (V3.7):");
+             
+             // Define Colors matching Shader exactly (normalized 0-1)
+             // cHidro: 0.0, 0.3, 0.3
+             // cBText: 0.7, 0.35, 0.05
+             // cArgila: 0.4, 0.0, 0.5
+             // cBemDes: 0.5, 0.15, 0.1
+             // cRaso: 0.7, 0.7, 0.2
+             // cRocha: 0.2, 0.2, 0.2
+             
+             ImGui::ColorButton("##cHidro", ImVec4(0.0f, 0.3f, 0.3f, 1.0f)); 
+             ImGui::SameLine(); ImGui::Checkbox("Hidromorfico (Plano)", &ctx.soilHidroAllowed);
+             
+             ImGui::ColorButton("##cBText", ImVec4(0.7f, 0.35f, 0.05f, 1.0f)); 
+             ImGui::SameLine(); ImGui::Checkbox("Horizonte B Textural", &ctx.soilBTextAllowed);
+             
+             ImGui::ColorButton("##cArgila", ImVec4(0.4f, 0.0f, 0.5f, 1.0f)); 
+             ImGui::SameLine(); ImGui::Checkbox("Argila Expansiva", &ctx.soilArgilaAllowed);
+             
+             ImGui::ColorButton("##cBemDes", ImVec4(0.5f, 0.15f, 0.1f, 1.0f)); 
+             ImGui::SameLine(); ImGui::Checkbox("Bem Desenvolvido", &ctx.soilBemDesAllowed);
+             
+             ImGui::ColorButton("##cRaso", ImVec4(0.7f, 0.7f, 0.2f, 1.0f)); 
+             ImGui::SameLine(); ImGui::Checkbox("Solo Raso", &ctx.soilRasoAllowed);
+             
+             ImGui::ColorButton("##cRocha", ImVec4(0.2f, 0.2f, 0.2f, 1.0f)); 
+             ImGui::SameLine(); ImGui::Checkbox("Afloramento/Rocha", &ctx.soilRochaAllowed);
+             
+             ImGui::Unindent();
+        }
+
         ImGui::Separator();
+        
+        // --- Visual Settings (v3.7.3) ---
+        if (ImGui::CollapsingHeader("Visual & Lighting Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+             // Direct binding to Application State via Reference
+             ImGui::SliderFloat("Sun Azimuth", &ctx.sunAzimuth, 0.0f, 360.0f, "%.0f deg");
+             ImGui::SliderFloat("Sun Elevation", &ctx.sunElevation, 0.0f, 90.0f, "%.0f deg");
+             ImGui::SliderFloat("Fog Density", &ctx.fogDensity, 0.0f, 0.01f, "%.5f");
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Terrain Generator Options");
         
         const char* terrainTypes[] = { "Hills", "Mountains", "Plains", "Valleys" };
 
@@ -530,10 +592,14 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         ImGui::SameLine();
         if (ImGui::RadioButton("2048", selectedSize == 2048)) selectedSize = 2048;
 
-         ImGui::SliderFloat("Scale (Roughness)", &scale, 0.0001f, 0.01f, "%.4f");
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Smaller = Smoother/Larger Hills\nLarger = More Rough/Frequent");
+        ImGui::SliderFloat("Feature Size (Base Freq)", &scale, 0.0001f, 0.01f, "%.4f");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls the size of mountains.\nLower = Larger features\nHigher = Smaller features");
 
-        ImGui::SliderFloat("Amplitude (Height)", &amplitude, 20.0f, 250.0f, "%.0f m");
+        static float persistence = 0.5f; // v3.7.1
+        ImGui::SliderFloat("Roughness (Persistence)", &persistence, 0.2f, 0.8f, "%.2f");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls jaggy-ness/detail.\nLower = Smooth hills\nHigher = Rocky/Noisy");
+
+        ImGui::SliderFloat("Height Amplitude", &amplitude, 50.0f, 500.0f, "%.0f m");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Max Height of terrain features.");
 
         // v3.6.5 Resolution Control
@@ -545,7 +611,7 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         
         if (ImGui::Button("Generate New Map", ImVec2(-1, 0))) {
             if (callbacks_.regenerateFiniteWorld) {
-                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution);
+                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution, persistence);
             }
         }
 

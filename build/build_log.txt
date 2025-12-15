@@ -1,10 +1,677 @@
-CMake Error at CMakeLists.txt:112 (add_subdirectory):
-  The source directory
-
-    /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain
-
-  does not contain a CMakeLists.txt file.
-
-
--- Configuring incomplete, errors occurred!
-make: *** [Makefile:1030: cmake_check_build_system] Error 1
+[ 15%] Built target shaders_spirv
+[ 17%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::processEvents(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:388:37: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  388 |                          float wx = hitX * worldResolution_ * 0.1f;
+      |                                     ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:389:37: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  389 |                          float wz = hitZ * worldResolution_ * 0.1f;
+      |                                     ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:420:54: error: ‘idx’ was not declared in this scope; did you mean ‘ix’?
+  420 |                                       if (current == idx) { soilType = "Hidromorfico"; std::memcpy(lastSurfaceColor_, cHidro, 12); }
+      |                                                      ^~~
+      |                                                      ix
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:424:54: error: ‘idx’ was not declared in this scope; did you mean ‘ix’?
+  424 |                                       if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); }
+      |                                                      ^~~
+      |                                                      ix
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:428:54: error: ‘idx’ was not declared in this scope; did you mean ‘ix’?
+  428 |                                       if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); }
+      |                                                      ^~~
+      |                                                      ix
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:379:32: warning: unused variable ‘slopePct’ [-Wunused-variable]
+  379 |                          float slopePct = std::sqrt(dz_dx*dz_dx + dz_dz*dz_dz) * 100.0f;
+      |                                ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:407:32: warning: unused variable ‘rnd’ [-Wunused-variable]
+  407 |                          float rnd = l1 * (1.0f - uz) + l2 * uz;
+      |                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:414:41: warning: unused variable ‘cBemDes’ [-Wunused-variable]
+  414 |                                   float cBemDes[3] = {0.5f, 0.15f, 0.1f};
+      |                                         ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:415:41: warning: unused variable ‘cRaso’ [-Wunused-variable]
+  415 |                                   float cRaso[3]   = {0.7f, 0.7f, 0.2f};
+      |                                         ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:416:41: warning: unused variable ‘cRocha’ [-Wunused-variable]
+  416 |                                   float cRocha[3]  = {0.2f, 0.2f, 0.2f};
+      |                                         ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:433:36: error: ‘slopePct’ was not declared in this scope
+  433 |                           else if (slopePct < 8.0f) {
+      |                                    ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:439:49: error: ‘soilType’ was not declared in this scope
+  439 |                               if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+      |                                                 ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:442:51: error: ‘rnd’ was not declared in this scope; did you mean ‘rand’?
+  442 |                                   int idx = (int)(rnd / seg);
+      |                                                   ^~~
+      |                                                   rand
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:451:82: error: ‘soilType’ was not declared in this scope
+  451 |                                   if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
+      |                                                                                  ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:452:83: error: ‘soilType’ was not declared in this scope
+  452 |                                   if (soilBemDesAllowed_) { if (current == idx) { soilType = "Solo bem desenvolvido"; std::memcpy(lastSurfaceColor_, cBemDes, 12); } current++; }
+      |                                                                                   ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:453:83: error: ‘soilType’ was not declared in this scope
+  453 |                                   if (soilArgilaAllowed_) { if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); } current++; }
+      |                                                                                   ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:461:49: error: ‘soilType’ was not declared in this scope
+  461 |                               if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+      |                                                 ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:464:51: error: ‘rnd’ was not declared in this scope; did you mean ‘rand’?
+  464 |                                   int idx = (int)(rnd / seg);
+      |                                                   ^~~
+      |                                                   rand
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:471:82: error: ‘soilType’ was not declared in this scope
+  471 |                                   if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
+      |                                                                                  ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:472:83: error: ‘soilType’ was not declared in this scope
+  472 |                                   if (soilArgilaAllowed_) { if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); } current++; }
+      |                                                                                   ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:480:49: error: ‘soilType’ was not declared in this scope
+  480 |                               if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+      |                                                 ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:483:51: error: ‘rnd’ was not declared in this scope; did you mean ‘rand’?
+  483 |                                   int idx = (int)(rnd / seg);
+      |                                                   ^~~
+      |                                                   rand
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:490:82: error: ‘soilType’ was not declared in this scope
+  490 |                                   if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
+      |                                                                                  ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:491:81: error: ‘soilType’ was not declared in this scope
+  491 |                                   if (soilRasoAllowed_) { if (current == idx) { soilType = "Solo Raso"; std::memcpy(lastSurfaceColor_, cRaso, 12); } current++; }
+      |                                                                                 ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:496:55: error: ‘soilType’ was not declared in this scope
+  496 |                               if (soilRasoAllowed_) { soilType = "Solo Raso"; std::memcpy(lastSurfaceColor_, cRaso, 12); }
+      |                                                       ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:497:38: error: ‘soilType’ was not declared in this scope
+  497 |                               else { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+      |                                      ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:501:56: error: ‘soilType’ was not declared in this scope
+  501 |                               if (soilRochaAllowed_) { soilType = "Afloramento rochoso"; std::memcpy(lastSurfaceColor_, cRocha, 12); }
+      |                                                        ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:502:38: error: ‘soilType’ was not declared in this scope
+  502 |                               else { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+      |                                      ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:506:66: error: ‘hitX’ was not declared in this scope
+  506 |                          float elevation = finiteMap_->getHeight(hitX, hitZ);
+      |                                                                  ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:506:72: error: ‘hitZ’ was not declared in this scope
+  506 |                          float elevation = finiteMap_->getHeight(hitX, hitZ);
+      |                                                                        ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:513:70: error: ‘slopePct’ was not declared in this scope
+  513 |                          ss << "Decliv: " << std::setprecision(1) << slopePct << "%\n";
+      |                                                                      ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:514:44: error: ‘soilType’ was not declared in this scope
+  514 |                          ss << "Solo: " << soilType << "\n";
+      |                                            ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:340:16: warning: unused variable ‘currentTimeSeconds’ [-Wunused-variable]
+  340 |         double currentTimeSeconds = static_cast<double>(SDL_GetTicks()) / 1000.0;
+      |                ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:558:9: error: expected unqualified-id before ‘if’
+  558 |         if (event.type == SDL_QUIT) {
+      |         ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:561:9: error: expected unqualified-id before ‘if’
+  561 |         if (event.type == SDL_WINDOWEVENT &&
+      |         ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:567:9: error: expected unqualified-id before ‘if’
+  567 |         if (event.type == SDL_KEYDOWN) {
+      |         ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:641:5: error: ‘inputManager_’ does not name a type
+  641 |     inputManager_.recordKeyboardState(state);
+      |     ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:642:1: error: expected declaration before ‘}’ token
+  642 | }
+      | ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:644:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  644 | void Application::rebuildMaterials() {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void rebuildMaterials()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:645:5: error: ‘lineMaterial_’ was not declared in this scope
+  645 |     lineMaterial_ = createMaterial(swapchain_->renderPass(), swapchain_->extent(), VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_FILL);
+      |     ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:645:36: error: ‘swapchain_’ was not declared in this scope
+  645 |     lineMaterial_ = createMaterial(swapchain_->renderPass(), swapchain_->extent(), VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_FILL);
+      |                                    ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:645:21: error: ‘createMaterial’ was not declared in this scope
+  645 |     lineMaterial_ = createMaterial(swapchain_->renderPass(), swapchain_->extent(), VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_FILL);
+      |                     ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:646:5: error: ‘pointMaterial_’ was not declared in this scope
+  646 |     pointMaterial_ = createMaterial(swapchain_->renderPass(), swapchain_->extent(), VK_PRIMITIVE_TOPOLOGY_POINT_LIST, VK_POLYGON_MODE_FILL);
+      |     ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:647:5: error: ‘solidMaterial_’ was not declared in this scope; did you mean ‘rebuildMaterials’?
+  647 |     solidMaterial_ = createMaterial(swapchain_->renderPass(), swapchain_->extent(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL);
+      |     ^~~~~~~~~~~~~~
+      |     rebuildMaterials
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:649:9: error: ‘wireframeSupported_’ was not declared in this scope
+  649 |     if (wireframeSupported_) {
+      |         ^~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:650:9: error: ‘wireframeMaterial_’ was not declared in this scope
+  650 |         wireframeMaterial_ = createMaterial(swapchain_->renderPass(), swapchain_->extent(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_LINE);
+      |         ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:652:9: error: ‘wireframeMaterial_’ was not declared in this scope
+  652 |         wireframeMaterial_.reset(); // Ensure it's null if not supported
+      |         ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:654:54: error: ‘ctx_’ was not declared in this scope
+  654 |     auto envVs = std::make_shared<graphics::Shader>(*ctx_, "shaders/environment.vert.spv");
+      |                                                      ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:656:5: error: ‘environmentMaterial_’ was not declared in this scope
+  656 |     environmentMaterial_ = std::make_unique<graphics::Material>(*ctx_, swapchain_->renderPass(), swapchain_->extent(), envVs, envFs,
+      |     ^~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:660:5: error: ‘voxelMaterial_’ was not declared in this scope
+  660 |     voxelMaterial_ = std::make_unique<graphics::Material>(*ctx_, swapchain_->renderPass(), swapchain_->extent(), voxVs, voxFs,
+      |     ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:663:5: error: ‘waterMaterial_’ was not declared in this scope
+  663 |     waterMaterial_ = std::make_unique<graphics::Material>(*ctx_, swapchain_->renderPass(), swapchain_->extent(), voxVs, voxFs,
+      |     ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:666:9: error: ‘voxelScene_’ was not declared in this scope; did you mean ‘VoxelScene’?
+  666 |     if (voxelScene_) {
+      |         ^~~~~~~~~~~
+      |         VoxelScene
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:670:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  670 | void Application::update(double dt) {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void update(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:674:5: error: ‘camera_’ was not declared in this scope
+  674 |     camera_.processKeyboard(keyState, static_cast<float>(dt));
+      |     ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:676:9: error: ‘voxelScene_’ was not declared in this scope; did you mean ‘VoxelScene’?
+  676 |     if (voxelScene_) {
+      |         ^~~~~~~~~~~
+      |         VoxelScene
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:678:59: error: ‘currentFrame_’ was not declared in this scope
+  678 |         voxelScene_->update(dt, camera_, static_cast<int>(currentFrame_));
+      |                                                           ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:684:9: error: ‘animationEnabled_’ was not declared in this scope
+  684 |     if (animationEnabled_) {
+      |         ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:685:9: error: ‘gridAnimator_’ was not declared in this scope
+  685 |         gridAnimator_.update(static_cast<float>(dt));
+      |         ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:686:9: error: ‘axesAnimator_’ was not declared in this scope
+  686 |         axesAnimator_.update(static_cast<float>(dt));
+      |         ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:691:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  691 | void Application::recreateSwapchain() {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void recreateSwapchain()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:692:22: error: ‘ctx_’ was not declared in this scope
+  692 |     vkDeviceWaitIdle(ctx_->device());
+      |                      ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:695:5: error: ‘renderer_’ was not declared in this scope
+  695 |     renderer_.destroy();
+      |     ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:697:9: error: ‘commandPool_’ was not declared in this scope; did you mean ‘VkCommandPool_T’?
+  697 |     if (commandPool_) {
+      |         ^~~~~~~~~~~~
+      |         VkCommandPool_T
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:698:28: error: ‘commandBuffers_’ was not declared in this scope; did you mean ‘VkCommandBuffer_T’?
+  698 |         commandPool_->free(commandBuffers_);
+      |                            ^~~~~~~~~~~~~~~
+      |                            VkCommandBuffer_T
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:700:5: error: ‘commandBuffers_’ was not declared in this scope; did you mean ‘VkCommandBuffer_T’?
+  700 |     commandBuffers_.clear();
+      |     ^~~~~~~~~~~~~~~
+      |     VkCommandBuffer_T
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:702:5: error: ‘syncObjects_’ was not declared in this scope
+  702 |     syncObjects_.reset();
+      |     ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:704:5: error: ‘swapchain_’ was not declared in this scope
+  704 |     swapchain_->recreate(sdl_.window, vsyncEnabled_);
+      |     ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:704:26: error: ‘sdl_’ was not declared in this scope
+  704 |     swapchain_->recreate(sdl_.window, vsyncEnabled_);
+      |                          ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:704:39: error: ‘vsyncEnabled_’ was not declared in this scope
+  704 |     swapchain_->recreate(sdl_.window, vsyncEnabled_);
+      |                                       ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:705:37: error: ‘SyncObjects’ was not declared in this scope; did you mean ‘core::SyncObjects’?
+  705 |     syncObjects_ = std::make_unique<SyncObjects>(*ctx_, static_cast<uint32_t>(swapchain_->images().size()));
+      |                                     ^~~~~~~~~~~
+      |                                     core::SyncObjects
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.h:8,
+                 from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/sync_objects.h:20:7: note: ‘core::SyncObjects’ declared here
+   20 | class SyncObjects {
+      |       ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:706:9: error: ‘terrain_’ was not declared in this scope; did you mean ‘terrain’?
+  706 |     if (terrain_) {
+      |         ^~~~~~~~
+      |         terrain
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:711:5: error: ‘imagesInFlight_’ was not declared in this scope
+  711 |     imagesInFlight_.clear();
+      |     ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:714:23: error: ‘commandPool_’ was not declared in this scope; did you mean ‘VkCommandPool_T’?
+  714 |     commandBuffers_ = commandPool_->allocate(static_cast<uint32_t>(swapchain_->images().size()));
+      |                       ^~~~~~~~~~~~
+      |                       VkCommandPool_T
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:716:111: error: ‘descriptorPool_’ was not declared in this scope; did you mean ‘VkDescriptorPool_T’?
+  716 |     if (!initImGuiVulkan(*ctx_, swapchain_->renderPass(), static_cast<uint32_t>(swapchain_->images().size()), descriptorPool_)) {
+      |                                                                                                               ^~~~~~~~~~~~~~~
+      |                                                                                                               VkDescriptorPool_T
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:724:5: error: ‘camera_’ was not declared in this scope
+  724 |     camera_.setAspect(static_cast<float>(swapchain_->extent().width) / static_cast<float>(swapchain_->extent().height));
+      |     ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:726:5: error: ‘currentFrame_’ was not declared in this scope
+  726 |     currentFrame_ = 0;
+      |     ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:727:5: error: ‘needsRecreate_’ was not declared in this scope
+  727 |     needsRecreate_ = false;
+      |     ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:730:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  730 | void Application::render(size_t frameIndex) {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void render(size_t)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:731:9: error: ‘needsRecreate_’ was not declared in this scope
+  731 |     if (needsRecreate_) {
+      |         ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:736:5: error: ‘syncObjects_’ was not declared in this scope
+  736 |     syncObjects_->waitForFence(frameIndex);
+      |     ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:739:42: error: ‘ctx_’ was not declared in this scope
+  739 |     VkResult res = vkAcquireNextImageKHR(ctx_->device(), swapchain_->handle(), UINT64_MAX,
+      |                                          ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:739:58: error: ‘swapchain_’ was not declared in this scope
+  739 |     VkResult res = vkAcquireNextImageKHR(ctx_->device(), swapchain_->handle(), UINT64_MAX,
+      |                                                          ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:743:9: error: ‘needsRecreate_’ was not declared in this scope
+  743 |         needsRecreate_ = true;
+      |         ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:748:9: error: ‘imagesInFlight_’ was not declared in this scope
+  748 |     if (imagesInFlight_[imageIndex] != VK_NULL_HANDLE) {
+      |         ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:752:5: error: ‘imagesInFlight_’ was not declared in this scope
+  752 |     imagesInFlight_[imageIndex] = syncObjects_->inFlight(frameIndex);
+      |     ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:755:26: error: ‘commandBuffers_’ was not declared in this scope; did you mean ‘VkCommandBuffer_T’?
+  755 |     vkResetCommandBuffer(commandBuffers_[imageIndex], 0);
+      |                          ^~~~~~~~~~~~~~~
+      |                          VkCommandBuffer_T
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:782:25: error: ‘camera_’ was not declared in this scope
+  782 |     const float* view = camera_.viewMatrix();
+      |                         ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:799:9: error: ‘skyDomeMesh_’ was not declared in this scope
+  799 |     if (skyDomeMesh_) {
+      |         ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:803:9: error: ‘renderer_’ was not declared in this scope; did you mean ‘render’?
+  803 |         renderer_.record(cmd, skyDomeMesh_.get(), environmentMaterial_.get(), swapchain_->extent(), mvp, opts);
+      |         ^~~~~~~~~
+      |         render
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:803:51: error: ‘environmentMaterial_’ was not declared in this scope
+  803 |         renderer_.record(cmd, skyDomeMesh_.get(), environmentMaterial_.get(), swapchain_->extent(), mvp, opts);
+      |                                                   ^~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:807:10: error: ‘terrain_’ was not declared in this scope; did you mean ‘terrain’?
+  807 |     if (!terrain_) {
+      |          ^~~~~~~~
+      |          terrain
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:812:13: error: ‘renderer_’ was not declared in this scope; did you mean ‘render’?
+  812 |             renderer_.record(cmd, gridMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
+      |             ^~~~~~~~~
+      |             render
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:812:35: error: ‘gridMesh_’ was not declared in this scope
+  812 |             renderer_.record(cmd, gridMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
+      |                                   ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:812:52: error: ‘lineMaterial_’ was not declared in this scope
+  812 |             renderer_.record(cmd, gridMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
+      |                                                    ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:816:13: error: ‘distanceMarkersMesh_’ was not declared in this scope
+  816 |         if (distanceMarkersMesh_) {
+      |             ^~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:819:13: error: ‘renderer_’ was not declared in this scope; did you mean ‘render’?
+  819 |             renderer_.record(cmd, distanceMarkersMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
+      |             ^~~~~~~~~
+      |             render
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:819:63: error: ‘lineMaterial_’ was not declared in this scope
+  819 |             renderer_.record(cmd, distanceMarkersMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
+      |                                                               ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:826:17: error: ‘animationEnabled_’ was not declared in this scope
+  826 |             if (animationEnabled_) {
+      |                 ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:829:17: error: ‘axesAnimator_’ was not declared in this scope
+  829 |                 axesAnimator_.transform().toMatrix(modelMat);
+      |                 ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:842:13: error: ‘renderer_’ was not declared in this scope; did you mean ‘render’?
+  842 |             renderer_.record(cmd, axesMesh_.get(), lineMaterial_.get(), swapchain_->extent(), axesMVP, opts);
+      |             ^~~~~~~~~
+      |             render
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:842:35: error: ‘axesMesh_’ was not declared in this scope
+  842 |             renderer_.record(cmd, axesMesh_.get(), lineMaterial_.get(), swapchain_->extent(), axesMVP, opts);
+      |                                   ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:842:52: error: ‘lineMaterial_’ was not declared in this scope
+  842 |             renderer_.record(cmd, axesMesh_.get(), lineMaterial_.get(), swapchain_->extent(), axesMVP, opts);
+      |                                                    ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:847:9: error: ‘useFiniteWorld_’ was not declared in this scope
+  847 |     if (useFiniteWorld_) {
+      |         ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:852:13: error: ‘finiteRenderer_’ was not declared in this scope
+  852 |         if (finiteRenderer_) {
+      |             ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:854:27: error: ‘showSlopeAnalysis_’ was not declared in this scope
+  854 |               /* slope */ showSlopeAnalysis_,
+      |                           ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:855:24: error: ‘showDrainage_’ was not declared in this scope
+  855 |         /* drainage */ showDrainage_, drainageIntensity_,
+      |                        ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:855:39: error: ‘drainageIntensity_’ was not declared in this scope
+  855 |         /* drainage */ showDrainage_, drainageIntensity_,
+      |                                       ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:856:25: error: ‘showWatershedVis_’ was not declared in this scope
+  856 |         /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
+      |                         ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:856:44: error: ‘showBasinOutlines_’ was not declared in this scope
+  856 |         /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
+      |                                            ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:856:64: error: ‘showSoilVis_’ was not declared in this scope
+  856 |         /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
+      |                                                                ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:857:30: error: ‘soilHidroAllowed_’ was not declared in this scope
+  857 |         /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                              ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:857:49: error: ‘soilBTextAllowed_’ was not declared in this scope
+  857 |         /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                 ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:857:68: error: ‘soilArgilaAllowed_’ was not declared in this scope
+  857 |         /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                                    ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:857:88: error: ‘soilBemDesAllowed_’ was not declared in this scope
+  857 |         /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                                                        ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:857:108: error: ‘soilRasoAllowed_’ was not declared in this scope
+  857 |         /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                                                                            ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:857:126: error: ‘soilRochaAllowed_’ was not declared in this scope
+  857 |         /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                                                                                              ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:858:22: error: ‘sunAzimuth_’ was not declared in this scope
+  858 |         /* visual */ sunAzimuth_, sunElevation_, fogDensity_); // v3.7.3
+      |                      ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:858:35: error: ‘sunElevation_’ was not declared in this scope
+  858 |         /* visual */ sunAzimuth_, sunElevation_, fogDensity_); // v3.7.3
+      |                                   ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:858:50: error: ‘fogDensity_’ was not declared in this scope
+  858 |         /* visual */ sunAzimuth_, sunElevation_, fogDensity_); // v3.7.3
+      |                                                  ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:860:16: error: ‘voxelScene_’ was not declared in this scope; did you mean ‘VoxelScene’?
+  860 |     } else if (voxelScene_) {
+      |                ^~~~~~~~~~~
+      |                VoxelScene
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:862:55: error: ‘voxelStats_’ was not declared in this scope
+  862 |         voxelScene_->render(cmd, view, proj, camera_, voxelStats_, swapchain_->extent());
+      |                                                       ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:870:9: error: ‘running_’ was not declared in this scope
+  870 |         running_,
+      |         ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:871:9: error: ‘needsRecreate_’ was not declared in this scope
+  871 |         needsRecreate_,
+      |         ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:872:9: error: ‘vsyncEnabled_’ was not declared in this scope
+  872 |         vsyncEnabled_,
+      |         ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:873:9: error: ‘limitIdleFps_’ was not declared in this scope
+  873 |         limitIdleFps_,
+      |         ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:874:9: error: ‘fpsCapEnabled_’ was not declared in this scope
+  874 |         fpsCapEnabled_,
+      |         ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:875:9: error: ‘fpsCapTarget_’ was not declared in this scope
+  875 |         fpsCapTarget_,
+      |         ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:876:9: error: ‘animationEnabled_’ was not declared in this scope
+  876 |         animationEnabled_,
+      |         ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:877:9: error: ‘showVegetation_’ was not declared in this scope
+  877 |         showVegetation_,
+      |         ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:879:25: error: ‘terrain_’ was not declared in this scope; did you mean ‘terrain’?
+  879 |         /* terrain = */ terrain_.get(),
+      |                         ^~~~~~~~
+      |                         terrain
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:880:25: error: ‘finiteMap_’ was not declared in this scope; did you mean ‘finitel’?
+  880 |         /* finiteMap=*/ finiteMap_.get(),
+      |                         ^~~~~~~~~~
+      |                         finitel
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:881:25: error: ‘showSlopeAnalysis_’ was not declared in this scope
+  881 |         /* showSlope */ showSlopeAnalysis_,
+      |                         ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:882:28: error: ‘showDrainage_’ was not declared in this scope
+  882 |         /* showDrainage */ showDrainage_,
+      |                            ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:883:25: error: ‘drainageIntensity_’ was not declared in this scope
+  883 |         /* intensity */ drainageIntensity_, // [NEW]
+      |                         ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:884:27: error: ‘showErosion_’ was not declared in this scope
+  884 |         /* showErosion */ showErosion_,
+      |                           ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:885:29: error: ‘showWatershedVis_’ was not declared in this scope
+  885 |         /* showWatershed */ showWatershedVis_,
+      |                             ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:886:33: error: ‘showBasinOutlines_’ was not declared in this scope
+  886 |         /* showBasinOutlines */ showBasinOutlines_,
+      |                                 ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:887:27: error: ‘showSoilVis_’ was not declared in this scope
+  887 |         /* showSoilVis */ showSoilVis_,
+      |                           ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:888:29: error: ‘soilHidroAllowed_’ was not declared in this scope
+  888 |         /* soilWhitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                             ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:888:48: error: ‘soilBTextAllowed_’ was not declared in this scope
+  888 |         /* soilWhitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:888:67: error: ‘soilArgilaAllowed_’ was not declared in this scope
+  888 |         /* soilWhitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                                   ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:888:87: error: ‘soilBemDesAllowed_’ was not declared in this scope
+  888 |         /* soilWhitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                                                       ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:888:107: error: ‘soilRasoAllowed_’ was not declared in this scope
+  888 |         /* soilWhitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                                                                           ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:888:125: error: ‘soilRochaAllowed_’ was not declared in this scope
+  888 |         /* soilWhitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+      |                                                                                                                             ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:889:28: error: ‘sunAzimuth_’ was not declared in this scope
+  889 |         /* visual state */ sunAzimuth_, sunElevation_, fogDensity_, // v3.7.3
+      |                            ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:889:41: error: ‘sunElevation_’ was not declared in this scope
+  889 |         /* visual state */ sunAzimuth_, sunElevation_, fogDensity_, // v3.7.3
+      |                                         ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:889:56: error: ‘fogDensity_’ was not declared in this scope
+  889 |         /* visual state */ sunAzimuth_, sunElevation_, fogDensity_, // v3.7.3
+      |                                                        ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:894:9: error: ‘axesAnimator_’ was not declared in this scope
+  894 |         axesAnimator_,
+      |         ^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:895:9: error: ‘bookmarks_’ was not declared in this scope
+  895 |         bookmarks_,
+      |         ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:896:9: error: ‘lastSurfaceInfo_’ was not declared in this scope
+  896 |         lastSurfaceInfo_,
+      |         ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:897:9: error: ‘lastSurfaceValid_’ was not declared in this scope
+  897 |         lastSurfaceValid_,
+      |         ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:898:9: error: ‘lastSurfaceColor_’ was not declared in this scope; did you mean ‘SDL_SetSurfaceColorMod’?
+  898 |         lastSurfaceColor_
+      |         ^~~~~~~~~~~~~~~~~
+      |         SDL_SetSurfaceColorMod
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:901:5: error: ‘uiLayer_’ was not declared in this scope
+  901 |     uiLayer_->render(uiCtx, cmd);
+      |     ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:937:37: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  937 | std::unique_ptr<graphics::Material> Application::createMaterial(VkRenderPass renderPass, VkExtent2D extent, VkPrimitiveTopology topology, VkPolygonMode polygonMode) {
+      |                                     ^~~~~~~~~~~
+      |                                     VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘std::unique_ptr<graphics::Material> createMaterial(VkRenderPass, VkExtent2D, VkPrimitiveTopology, VkPolygonMode)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:938:51: error: ‘ctx_’ was not declared in this scope
+  938 |     auto vs = std::make_shared<graphics::Shader>(*ctx_, "shaders/basic.vert.spv");
+      |                                                   ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:945:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  945 | void Application::requestTerrainReset(int warmupRadius) {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void requestTerrainReset(int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:946:9: error: ‘voxelScene_’ was not declared in this scope; did you mean ‘VoxelScene’?
+  946 |     if (voxelScene_) {
+      |         ^~~~~~~~~~~
+      |         VoxelScene
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:953:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  953 | void Application::saveBookmark(const std::string& name) {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void saveBookmark(const std::string&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:955:66: error: ‘bookmarks_’ was not declared in this scope; did you mean ‘bookmark’?
+  955 |     bookmark.name = name.empty() ? ("Bookmark " + std::to_string(bookmarks_.size() + 1)) : name;
+      |                                                                  ^~~~~~~~~~
+      |                                                                  bookmark
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:956:25: error: ‘camera_’ was not declared in this scope
+  956 |     bookmark.position = camera_.getPosition();
+      |                         ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:970:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  970 | void Application::loadBookmark(size_t index) {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void loadBookmark(size_t)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:971:18: error: ‘bookmarks_’ was not declared in this scope
+  971 |     if (index >= bookmarks_.size()) {
+      |                  ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:976:28: error: ‘bookmarks_’ was not declared in this scope; did you mean ‘bookmark’?
+  976 |     const auto& bookmark = bookmarks_[index];
+      |                            ^~~~~~~~~~
+      |                            bookmark
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:979:9: error: ‘camera_’ was not declared in this scope
+  979 |     if (camera_.getCameraMode() != bookmark.mode) {
+      |         ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:984:5: error: ‘camera_’ was not declared in this scope
+  984 |     camera_.teleportTo(bookmark.position);
+      |     ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:989:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+  989 | void Application::deleteBookmark(size_t index) {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void deleteBookmark(size_t)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:990:18: error: ‘bookmarks_’ was not declared in this scope
+  990 |     if (index >= bookmarks_.size()) {
+      |                  ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:995:24: error: ‘bookmarks_’ was not declared in this scope
+  995 |     std::string name = bookmarks_[index].name;
+      |                        ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1001:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+ 1001 | void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence) {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void regenerateFiniteWorld(int, float, float, float, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1003:5: error: ‘deferredRegenSize_’ was not declared in this scope
+ 1003 |     deferredRegenSize_ = size;
+      |     ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1004:5: error: ‘deferredRegenScale_’ was not declared in this scope
+ 1004 |     deferredRegenScale_ = scale;
+      |     ^~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1005:5: error: ‘deferredRegenAmplitude_’ was not declared in this scope
+ 1005 |     deferredRegenAmplitude_ = amplitude;
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1006:5: error: ‘deferredRegenResolution_’ was not declared in this scope
+ 1006 |     deferredRegenResolution_ = resolution; // v3.6.5
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1007:5: error: ‘deferredRegenPersistence_’ was not declared in this scope
+ 1007 |     deferredRegenPersistence_ = persistence; // v3.7.1
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1008:5: error: ‘regenRequested_’ was not declared in this scope
+ 1008 |     regenRequested_ = true;
+      |     ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1012:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+ 1012 | void Application::performMeshUpdate() {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void performMeshUpdate()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1013:10: error: ‘finiteRenderer_’ was not declared in this scope
+ 1013 |     if (!finiteRenderer_ || !finiteMap_) return;
+      |          ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1013:30: error: ‘finiteMap_’ was not declared in this scope; did you mean ‘finitel’?
+ 1013 |     if (!finiteRenderer_ || !finiteMap_) return;
+      |                              ^~~~~~~~~~
+      |                              finitel
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1017:22: error: ‘ctx_’ was not declared in this scope
+ 1017 |     vkDeviceWaitIdle(ctx_->device());
+      |                      ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1020:5: error: ‘finiteRenderer_’ was not declared in this scope
+ 1020 |     finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
+      |     ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1020:33: error: ‘finiteMap_’ was not declared in this scope; did you mean ‘finitel’?
+ 1020 |     finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
+      |                                 ^~~~~~~~~~
+      |                                 finitel
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1020:45: error: ‘worldResolution_’ was not declared in this scope
+ 1020 |     finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
+      |                                             ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1022:5: error: ‘meshUpdateRequested_’ was not declared in this scope
+ 1022 |     meshUpdateRequested_ = false;
+      |     ^~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1025:6: error: ‘Application’ has not been declared; did you mean ‘VkApplicationInfo’?
+ 1025 | void Application::performRegeneration() {
+      |      ^~~~~~~~~~~
+      |      VkApplicationInfo
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘void performRegeneration()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1026:10: error: ‘regenRequested_’ was not declared in this scope
+ 1026 |     if (!regenRequested_) return;
+      |          ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1028:70: error: ‘deferredRegenSize_’ was not declared in this scope
+ 1028 |     std::cout << "[SisterApp] Performing Deferred Regeneration: " << deferredRegenSize_ << "x" << deferredRegenSize_ << std::endl;
+      |                                                                      ^~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1031:22: error: ‘ctx_’ was not declared in this scope
+ 1031 |     vkDeviceWaitIdle(ctx_->device());
+      |                      ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1034:5: error: ‘finiteRenderer_’ was not declared in this scope
+ 1034 |     finiteRenderer_.reset();
+      |     ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1035:5: error: ‘finiteGenerator_’ was not declared in this scope
+ 1035 |     finiteGenerator_.reset();
+      |     ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1036:5: error: ‘finiteMap_’ was not declared in this scope; did you mean ‘finitel’?
+ 1036 |     finiteMap_.reset();
+      |     ^~~~~~~~~~
+      |     finitel
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1043:71: error: ‘swapchain_’ was not declared in this scope
+ 1043 |     finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
+      |                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1046:24: error: ‘deferredRegenAmplitude_’ was not declared in this scope
+ 1046 |     config.maxHeight = deferredRegenAmplitude_;
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1047:25: error: ‘deferredRegenScale_’ was not declared in this scope
+ 1047 |     config.noiseScale = deferredRegenScale_;
+      |                         ^~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1048:25: error: ‘deferredRegenResolution_’ was not declared in this scope
+ 1048 |     config.resolution = deferredRegenResolution_; // v3.6.6
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1049:26: error: ‘deferredRegenPersistence_’ was not declared in this scope
+ 1049 |     config.persistence = deferredRegenPersistence_; // v3.7.1
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1061:5: error: ‘worldResolution_’ was not declared in this scope
+ 1061 |     worldResolution_ = deferredRegenResolution_;
+      |     ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1068:5: error: ‘camera_’ was not declared in this scope
+ 1068 |     camera_.teleportTo({cx, h + 20.0f, cz});
+      |     ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1070:5: error: ‘regenRequested_’ was not declared in this scope
+ 1070 |     regenRequested_ = false;
+      |     ^~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1074:1: error: expected declaration before ‘}’ token
+ 1074 | } // namespace core
+      | ^
+make[2]: *** [CMakeFiles/sisterapp.dir/build.make:205: CMakeFiles/sisterapp.dir/src/core/application.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2

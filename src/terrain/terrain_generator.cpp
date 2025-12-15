@@ -34,7 +34,7 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
             for(int i=0; i<config.octaves; ++i) {
                 val += noise_.noise2D(nx * freq, nz * freq) * amp;
                 maxAmp += amp;
-                amp *= 0.5f;
+                amp *= config.persistence; // v3.7.1
                 freq *= 2.0f;
             }
             

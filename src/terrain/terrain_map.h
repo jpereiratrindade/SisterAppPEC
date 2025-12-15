@@ -14,6 +14,7 @@ struct TerrainConfig {
     float maxHeight = 256.0f; // Meters
     float waterLevel = 64.0f;
     float noiseScale = 0.002f; // v3.5.0: New parameter for smoothness
+    float persistence = 0.5f;  // v3.7.1: Controls roughness/jaggedness
     int octaves = 4;           // v3.5.0: New parameter for detail
     int seed = 12345;
 };

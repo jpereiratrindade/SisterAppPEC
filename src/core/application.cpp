@@ -16,12 +16,13 @@
 #include <cmath>
 #include <cstdio> // for snprintf
 #include <cstring> // for std::memcpy
+#include <iomanip> // v3.7.0
 #include <iterator>
 
 namespace core {
 
 // Helper for Raycasting Finite Terrain
-bool raycastFiniteTerrain(const terrain::TerrainMap& map, const math::Ray& ray, float maxDist, float gridScale, int& outX, int& outZ) {
+bool raycastFiniteTerrain(const terrain::TerrainMap& map, const math::Ray& ray, float maxDist, float gridScale, int& outX, int& outZ, math::Vec3& outHitPos) {
     float t = 0.0f;
     float step = 0.5f * gridScale; // Precision scales with grid
     
@@ -36,6 +37,7 @@ bool raycastFiniteTerrain(const terrain::TerrainMap& map, const math::Ray& ray, 
             if (p.y <= h) {
                 outX = x;
                 outZ = z;
+                outHitPos = p; // Capture exact hit position
                 return true;
             }
         }
@@ -199,8 +201,9 @@ void Application::init() {
                 terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
             }
         },
-        [this](int size, float scale, float amplitude, float resolution) { // regenerateFiniteWorld
-            regenerateFiniteWorld(size, scale, amplitude, resolution);
+        // v3.6.5 Resolution
+        [this](int size, float scale, float amp, float res, float pers) { // regenerateFiniteWorld
+            this->regenerateFiniteWorld(size, scale, amp, res, pers);
         },
         [this]() { // updateMesh
             // Defer to next frame start
@@ -348,7 +351,7 @@ void Application::processEvents(double dt) {
             
             // Terrain probe on Left Click (Free Flight)
             if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                if (voxelScene_ && terrain_ && camera_.getCameraMode() == graphics::CameraMode::FreeFlight) {
+                if (voxelScene_ && !useFiniteWorld_ && camera_.getCameraMode() == graphics::CameraMode::FreeFlight) {
                     float w = static_cast<float>(swapchain_->extent().width);
                     float h = static_cast<float>(swapchain_->extent().height);
                     math::Vec3 rayDir = camera_.getRayDirection(static_cast<float>(event.button.x), static_cast<float>(event.button.y), w, h);
@@ -356,6 +359,171 @@ void Application::processEvents(double dt) {
                     if (voxelScene_->probeSurface(ray, 600.0f, lastSurfaceInfo_, lastSurfaceValid_)) {
                         std::cout << "[Probe] " << lastSurfaceInfo_ << std::endl;
                     }
+                }
+                else if (useFiniteWorld_ && finiteMap_) { // v3.7.0 Probe
+                     float w = static_cast<float>(swapchain_->extent().width);
+                     float h = static_cast<float>(swapchain_->extent().height);
+                     math::Vec3 rayDir = camera_.getRayDirection(static_cast<float>(event.button.x), static_cast<float>(event.button.y), w, h);
+                     math::Ray ray{camera_.getPosition(), rayDir};
+                     
+                     int hitX, hitZ;
+                     math::Vec3 hitPos;
+                     if (raycastFiniteTerrain(*finiteMap_, ray, 1000.0f * worldResolution_, worldResolution_, hitX, hitZ, hitPos)) {
+                         // Calculate Slope
+                         float hL = finiteMap_->getHeight(std::max(0, hitX-1), hitZ);
+                         float hR = finiteMap_->getHeight(std::min(finiteMap_->getWidth()-1, hitX+1), hitZ);
+                         float hD = finiteMap_->getHeight(hitX, std::max(0, hitZ-1));
+                         float hU = finiteMap_->getHeight(hitX, std::min(finiteMap_->getHeight()-1, hitZ+1));
+                         
+                         float dz_dx = (hR - hL) / (2.0f * worldResolution_);
+                         float dz_dz = (hU - hD) / (2.0f * worldResolution_);
+                         
+                         float slopePct = std::sqrt(dz_dx*dz_dx + dz_dz*dz_dz) * 100.0f;
+                         
+                         // Stochastic Soil Selection (Match Shader Value Noise v3.7.2)
+                         auto noiseHash = [](float x, float z) -> float {
+                             float p = x * 12.9898f + z * 78.233f;
+                             float r = std::sin(p) * 43758.5453f;
+                             return r - std::floor(r);
+                         };
+                         
+                         // Use exact hit position for noise to match Shader's fragment world pos
+                         float wx = hitPos.x * 0.1f;
+                         float wz = hitPos.z * 0.1f;
+                         
+                         float ix = std::floor(wx);
+                         float iz = std::floor(wz);
+                         float fx = wx - ix;
+                         float fz = wz - iz;
+                         
+                         // Smoothstep
+                         float ux = fx * fx * (3.0f - 2.0f * fx);
+                         float uz = fz * fz * (3.0f - 2.0f * fz);
+                         
+                         float a = noiseHash(ix, iz);
+                         float b = noiseHash(ix + 1.0f, iz);
+                         float c = noiseHash(ix, iz + 1.0f);
+                         float d = noiseHash(ix + 1.0f, iz + 1.0f);
+                         
+                         float l1 = a * (1.0f - ux) + b * ux;
+                         float l2 = c * (1.0f - ux) + d * ux;
+                         float rnd = l1 * (1.0f - uz) + l2 * uz;
+
+                         std::string soilType;
+                         // Color Definitions (Sync with Shader)
+                         float cHidro[3]  = {0.0f, 0.3f, 0.3f};
+                         float cBText[3]  = {0.7f, 0.35f, 0.05f};
+                         float cArgila[3] = {0.4f, 0.0f, 0.5f};
+                         float cBemDes[3] = {0.5f, 0.15f, 0.1f};
+                         float cRaso[3]   = {0.7f, 0.7f, 0.2f};
+                         float cRocha[3]  = {0.2f, 0.2f, 0.2f};
+
+                          if (slopePct < 3.0f) {
+                              int count = 0;
+                              if (soilHidroAllowed_) count++;
+                              if (soilBTextAllowed_) count++;
+                              if (soilArgilaAllowed_) count++;
+                              
+                              if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+                              else {
+                                  float seg = 1.0f / (float)count;
+                                  int idx = (int)(rnd / seg);
+                                  if (idx >= count) idx = count - 1;
+                                  
+                                  int current = 0;
+                                  if (soilHidroAllowed_) { 
+                                      if (current == idx) { soilType = "Hidromorfico"; std::memcpy(lastSurfaceColor_, cHidro, 12); } 
+                                      current++; 
+                                  }
+                                  if (soilBTextAllowed_) { 
+                                      if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } 
+                                      current++; 
+                                  }
+                                  if (soilArgilaAllowed_) { 
+                                      if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); } 
+                                      current++; 
+                                  }
+                              }
+                          }
+                          else if (slopePct < 8.0f) {
+                              int count = 0;
+                              if (soilBTextAllowed_) count++;
+                              if (soilBemDesAllowed_) count++;
+                              if (soilArgilaAllowed_) count++;
+                              
+                              if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+                              else {
+                                  float seg = 1.0f / (float)count;
+                                  int idx = (int)(rnd / seg);
+                                  if (idx >= count) idx = count - 1;
+                                  
+                                  int current = 0;
+                                  if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
+                                  if (soilBemDesAllowed_) { if (current == idx) { soilType = "Solo bem desenvolvido"; std::memcpy(lastSurfaceColor_, cBemDes, 12); } current++; }
+                                  if (soilArgilaAllowed_) { if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); } current++; }
+                              }
+                          }
+                          else if (slopePct < 20.0f) {
+                              int count = 0;
+                              if (soilBTextAllowed_) count++;
+                              if (soilArgilaAllowed_) count++;
+                              
+                              if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+                              else {
+                                  float seg = 1.0f / (float)count;
+                                  int idx = (int)(rnd / seg);
+                                  if (idx >= count) idx = count - 1;
+                                  
+                                  int current = 0;
+                                  if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
+                                  if (soilArgilaAllowed_) { if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); } current++; }
+                              }
+                          }
+                          else if (slopePct < 45.0f) {
+                              int count = 0;
+                              if (soilBTextAllowed_) count++;
+                              if (soilRasoAllowed_) count++;
+                              
+                              if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+                              else {
+                                  float seg = 1.0f / (float)count;
+                                  int idx = (int)(rnd / seg);
+                                  if (idx >= count) idx = count - 1;
+                                  
+                                  int current = 0;
+                                  if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
+                                  if (soilRasoAllowed_) { if (current == idx) { soilType = "Solo Raso"; std::memcpy(lastSurfaceColor_, cRaso, 12); } current++; }
+                              }
+                          }
+                          else if (slopePct < 75.0f) {
+                              if (soilRasoAllowed_) { soilType = "Solo Raso"; std::memcpy(lastSurfaceColor_, cRaso, 12); }
+                              else { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+                          }
+                          else {
+                              if (soilRochaAllowed_) { soilType = "Afloramento rochoso"; std::memcpy(lastSurfaceColor_, cRocha, 12); }
+                              else { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
+                          }
+                         
+                         // v3.7.1: Expanded Probe Data
+                         float elevation = finiteMap_->getHeight(hitX, hitZ);
+                         float flux = finiteMap_->fluxMap()[hitZ * finiteMap_->getWidth() + hitX];
+                         int basinID = finiteMap_->watershedMap()[hitZ * finiteMap_->getWidth() + hitX];
+                         
+                         std::stringstream ss;
+                         ss << "Loc: (" << hitX << ", " << hitZ << ")\n";
+                         ss << "Elev: " << std::fixed << std::setprecision(2) << elevation << " m\n";
+                         ss << "Decliv: " << std::setprecision(1) << slopePct << "%\n";
+                         ss << "Solo: " << soilType << "\n";
+                         ss << "Fluxo: " << std::setprecision(1) << flux << " m2\n";
+                         ss << "Bacia ID: " << basinID;
+                         
+                         lastSurfaceInfo_ = ss.str();
+                         lastSurfaceValid_ = true;
+                         
+                         // Keep console output for debug
+                         std::cout << "[Probe] " << lastSurfaceInfo_ << std::endl;
+                         std::cout << "-----------------------------------" << std::endl;
+                     }
                 }
             }
 
@@ -368,7 +536,8 @@ void Application::processEvents(double dt) {
                      math::Ray ray{camera_.getPosition(), rayDir};
                      
                      int hitX, hitZ;
-                     if (raycastFiniteTerrain(*finiteMap_, ray, 1000.0f * worldResolution_, worldResolution_, hitX, hitZ)) {
+                     math::Vec3 hitPos;
+                     if (raycastFiniteTerrain(*finiteMap_, ray, 1000.0f * worldResolution_, worldResolution_, hitX, hitZ, hitPos)) {
                          std::cout << "[Delineation] Hit at (" << hitX << ", " << hitZ << ")" << std::endl;
                          
                          // Clear previous
@@ -684,7 +853,12 @@ void Application::render(size_t frameIndex) {
         std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
         
         if (finiteRenderer_) {
-             finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), showSlopeAnalysis_, showDrainage_, drainageIntensity_, showWatershedVis_, showBasinOutlines_);
+             finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), 
+              /* slope */ showSlopeAnalysis_,
+        /* drainage */ showDrainage_, drainageIntensity_,
+        /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
+        /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_, 
+        /* visual */ sunAzimuth_, sunElevation_, fogDensity_); // v3.7.3
         }
     } else if (voxelScene_) {
         // Voxel Render (Minecraft Mode)
@@ -713,6 +887,9 @@ void Application::render(size_t frameIndex) {
         /* showErosion */ showErosion_,
         /* showWatershed */ showWatershedVis_,
         /* showBasinOutlines */ showBasinOutlines_,
+        /* showSoilVis */ showSoilVis_,
+        /* soilWhitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
+        /* visual state */ sunAzimuth_, sunElevation_, fogDensity_, // v3.7.3
         /* visible */ visibleCount,  
         /* total */ totalChunks,
         pendingTasks,
@@ -720,7 +897,8 @@ void Application::render(size_t frameIndex) {
         axesAnimator_,
         bookmarks_,
         lastSurfaceInfo_,
-        lastSurfaceValid_
+        lastSurfaceValid_,
+        lastSurfaceColor_
     };
 
     uiLayer_->render(uiCtx, cmd);
@@ -823,12 +1001,13 @@ void Application::deleteBookmark(size_t index) {
 }
 
 // V3.5.0: Map Regeneration
-void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution) {
+void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence) {
     // Defer to start of next frame to avoid destroying resources in use by current frame
     deferredRegenSize_ = size;
     deferredRegenScale_ = scale;
     deferredRegenAmplitude_ = amplitude;
     deferredRegenResolution_ = resolution; // v3.6.5
+    deferredRegenPersistence_ = persistence; // v3.7.1
     regenRequested_ = true;
     std::cout << "[SisterApp] Regeneration requested for next frame..." << std::endl;
 }
@@ -869,8 +1048,9 @@ void Application::performRegeneration() {
     terrain::TerrainConfig config;
     config.maxHeight = deferredRegenAmplitude_;
     config.noiseScale = deferredRegenScale_;
-    config.octaves = 3; 
     config.resolution = deferredRegenResolution_; // v3.6.6 
+    config.persistence = deferredRegenPersistence_; // v3.7.1
+    config.octaves = 4; // Reset manually if needed, or expose later
 
     finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
     // Erosion (Drainage Viz requires Flux > 5). 250k droplets for adequate flow.

@@ -1,6 +1,8 @@
 #include "terrain_renderer.h"
 #include "../graphics/geometry_utils.h"
 #include <iostream>
+#include <cstring>
+#include <cmath>
 
 namespace shape {
 
@@ -41,7 +43,7 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale)
             // Roughly (-dx, 2, -dz)
             
             float nx = -dx;
-            float ny = 2.0f; // Scale factor affecting steepness
+            float ny = 2.0f * gridScale; // Correctly scale run by gridScale
             float nz = -dz;
             float len = std::sqrt(nx*nx + ny*ny + nz*nz);
             
@@ -110,7 +112,12 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale)
     std::cout << "[TerrainRenderer] Mesh Built: " << vertices.size() << " verts. Max Flux: " << maxFlux << std::endl;
 }
 
-void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis, bool showDrainageVis, float drainageIntensity, bool showWatershedVis, bool showBasinOutlines) {
+void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, 
+                             bool showSlopeVis, bool showDrainageVis, float drainageIntensity, 
+                             bool showWatershedVis, bool showBasinOutlines, bool showSoilVis,
+                             bool soilHidroAllowed, bool soilBTextAllowed, bool soilArgilaAllowed, 
+                             bool soilBemDesAllowed, bool soilRasoAllowed, bool soilRochaAllowed,
+                             float sunAzimuth, float sunElevation, float fogDensity) {
     if (!mesh_ || !material_) return;
     
     // Bind Pipeline and Descriptor Sets
@@ -118,39 +125,59 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
 
     // Define PC struct matching shader
     // Unified PushConstants Layout (Aligned)
-    struct PushConstants {
-        float mvp[16];          // 0
-        float pointSize;        // 64
-        float useLighting;      // 68
-        float useFixedColor;    // 72
-        float opacity;          // 76
-        float fixedColor[4];    // 80 (vec4)
-        float useSlopeVis;      // 96
-        float drainageIntensity;// 100 [NEW]
-        float useBasinOutlines; // 104 [NEW] Match Shader!
-        float padding;          // 108 (align next vec4)
-        float cameraPos[4];     // 112 (vec4)
-        float useDrainageVis;   // 128
-        float useErosionVis;    // 132
-        float useWatershedVis;  // 136 [NEW]
-    };
+    struct PushConstantsPacked {
+        float mvp[16];
+        float sunDir[4];
+        float fixedColor[4];
+        float params[4]; // x=opacity, y=drainageIntensity, z=fogDensity, w=pointSize
+        uint32_t flags;  // Bitmask: 1=Lit, 2=FixCol, 4=Slope, 8=Drain, 16=Eros, 32=Water, 64=Soil, 128=Basin
+        float pad[3];
+    } pc;
+    static_assert(sizeof(pc) == 128, "PC size mismatch");
 
-    PushConstants pc{};
-    std::copy(mvp.begin(), mvp.end(), pc.mvp);
-    pc.pointSize = 1.0f;
-    pc.useLighting = 1.0f; 
-    pc.useFixedColor = 0.0f;
-    pc.opacity = 1.0f;
-    pc.fixedColor[0] = 0.0f; pc.fixedColor[1] = 0.0f; pc.fixedColor[2] = 0.0f; pc.fixedColor[3] = 1.0f;
-    pc.useSlopeVis = showSlopeVis ? 1.0f : 0.0f;
-    pc.drainageIntensity = drainageIntensity; // [NEW]
-    pc.useBasinOutlines = showBasinOutlines ? 1.0f : 0.0f; // [NEW] Correct Offset
-    pc.cameraPos[0] = 0.0f; pc.cameraPos[1] = 0.0f; pc.cameraPos[2] = 0.0f; pc.cameraPos[3] = 1.0f;
-    pc.useDrainageVis = showDrainageVis ? 1.0f : 0.0f;
-    pc.useErosionVis = 0.0f;
-    pc.useWatershedVis = showWatershedVis ? 1.0f : 0.0f;
+    std::memcpy(pc.mvp, mvp.data(), sizeof(float) * 16);
+    
+    // SunDir (Normalize here)
+    float toRad = 3.14159265f / 180.0f;
+    float radAz = sunAzimuth * toRad;
+    float radEl = sunElevation * toRad;
+    pc.sunDir[0] = std::cos(radEl) * std::sin(radAz);
+    pc.sunDir[1] = std::sin(radEl);
+    pc.sunDir[2] = std::cos(radEl) * std::cos(radAz);
+    pc.sunDir[3] = 0.0f;
 
-    vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &pc);
+    pc.fixedColor[0] = 1.0f; pc.fixedColor[1] = 1.0f; pc.fixedColor[2] = 1.0f; pc.fixedColor[3] = 1.0f;
+    
+    pc.params[0] = 1.0f; // Opacity
+    pc.params[1] = drainageIntensity;
+    pc.params[2] = fogDensity;
+    pc.params[3] = 1.0f; // PointSize
+
+    // Pack Flags
+    int mask = 0;
+    if (showSlopeVis || showSoilVis) { /* Lighting logic? User says FORCE it. */ mask |= 1; } // Use Lighting Always?
+    // Wait, step 1258 says "pc.useLighting = 1.0f" ALWAYS.
+    mask |= 1; // lighting default ON
+    
+    if (false) mask |= 2; // FixedColor unused currently or 0
+    if (showSlopeVis) mask |= 4;
+    if (showDrainageVis) mask |= 8;
+    // Erosion? Internal/Deprecated, let's keep slot: mask |= 16;
+    if (showWatershedVis) mask |= 32;
+    if (showSoilVis) mask |= 64;
+    if (showBasinOutlines) mask |= 128;
+    
+    // Soil Whitelist Bits (8-13)
+    if (soilHidroAllowed)  mask |= 256;
+    if (soilBTextAllowed)  mask |= 512;
+    if (soilArgilaAllowed) mask |= 1024;
+    if (soilBemDesAllowed) mask |= 2048;
+    if (soilRasoAllowed)   mask |= 4096;
+    if (soilRochaAllowed)  mask |= 8192;
+    
+    pc.flags = static_cast<uint32_t>(mask);
+
+    vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(pc), &pc);
 
     // Draw using Mesh API
     mesh_->draw(cmd);

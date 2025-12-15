@@ -85,7 +85,7 @@ namespace core {
         void loadBookmark(size_t index);
         void deleteBookmark(size_t index);
         void requestTerrainReset(int warmupRadius = 1);
-    void regenerateFiniteWorld(int size, float scale, float amplitude, float resolution = 1.0f); // v3.6.5
+    void regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence); // v3.7.1
     void performRegeneration(); // v3.5.0 internal
 
 
@@ -130,7 +130,8 @@ namespace core {
         VoxelSceneStats voxelStats_{};
         bool showVegetation_ = true;
         std::string lastSurfaceInfo_;
-        bool lastSurfaceValid_ = false;
+    bool lastSurfaceValid_ = false;
+    float lastSurfaceColor_[3] = {0.0f, 0.0f, 0.0f}; // Probe Color
 
         // --- State ---
         bool running_ = true;
@@ -172,8 +173,9 @@ namespace core {
     bool regenRequested_ = false;
     int deferredRegenSize_ = 1024;
     float deferredRegenScale_ = 0.002f;
-    float deferredRegenAmplitude_ = 80.0f; // v3.5.1
+    float deferredRegenAmplitude_ = 100.0f; // v3.5.1
     float deferredRegenResolution_ = 1.0f; // v3.6.5
+    float deferredRegenPersistence_ = 0.5f; // v3.7.1
     float worldResolution_ = 1.0f; // v3.6.5 Current active resolution
     
     // Visualization State
@@ -183,6 +185,20 @@ namespace core {
     bool showErosion_ = false;       // v3.6.2
     bool showWatershedVis_ = false;  // v3.6.3
     bool showBasinOutlines_ = false; // v3.6.4
+    bool showSoilVis_ = false;       // v3.7.0
+    
+    //    // Soil Whitelist
+    bool soilHidroAllowed_ = true;
+    bool soilBTextAllowed_ = true;
+    bool soilArgilaAllowed_ = true;
+    bool soilBemDesAllowed_ = true;
+    bool soilRasoAllowed_ = true;
+    bool soilRochaAllowed_ = true;
+
+    // Visual Controls
+    float sunAzimuth_ = 45.0f;
+    float sunElevation_ = 60.0f;
+    float fogDensity_ = 0.0015f;
     
     // v3.6.3 Deferred Update Flag
     bool meshUpdateRequested_ = false;
@@ -190,3 +206,4 @@ namespace core {
     };
 
 } // namespace core
+

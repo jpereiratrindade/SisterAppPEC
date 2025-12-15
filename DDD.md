@@ -1,4 +1,4 @@
-# SisterApp Engine v3.5.0 - Domain-Driven Design (DDD)
+# SisterApp Engine v3.7.3 - Domain-Driven Design (DDD)
 
 ## 1. Overview
 A partir da versão v3.5.0, a engine suporta **dois modos de operação distintos**:
@@ -30,8 +30,6 @@ Entidades:
 - Chunk
 - VoxelScene
 - Renderer
-- VoxelScene
-- Renderer
 - Mesh / Buffer
 - **Watershed Algorithm (Service)**: Segmentação e Delineação de Bacias (v3.6.3).
 - **HydrologyReport (Service)**: Cálculo de estatísticas eco-hidrológicas.
@@ -44,10 +42,6 @@ Responsabilidade: interface via Dear ImGui.
 Funcionalidades:
 - Stats Overlay
 - Tools Menu
-- Janelas auxiliares
-
----
-
 - Janelas auxiliares
 
 ---
@@ -66,7 +60,6 @@ Estas variáveis influenciam diretamente a geração procedural (`generateChunk`
 
 - Application: raiz de composição.
 - Chunk Scheduling: priorização por frustum.
-- Vegetation Lifecycle: versionamento global.
 - Vegetation Lifecycle: versionamento global.
 - Pruning: descarregamento assíncrono.
 - Visual Feedback: ausência de vegetação muda cor do terreno.
@@ -118,6 +111,13 @@ MT-02 Workers não publicam estado renderizável.
 
 MM-01 Mesh final em DEVICE_LOCAL.
 MM-02 Uploads usam pipeline dedicado.
+
+### 5.6 Future: Semantic Data Architecture (v4.0 Planned)
+**Princípio**: "A GPU não decide o solo. Ela apenas pinta."
+- **CPU Authority**: A classificação de solo (id) deve ser calculada deterministicamente na CPU.
+- **Data Driven**: Enviar IDs via atributos de vértice ou buffer SSBO.
+- **Lookup GPU**: Shader faz apenas `lookupColor(id)`.
+- **Zero Sync**: O probe (CPU) apenas lê o estado local, garantindo consistência perfeita sem round-trip à GPU.
 
 ---
 

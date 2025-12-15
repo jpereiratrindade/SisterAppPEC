@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.7.3] - 2025-12-15
+### Fixed
+-   **Soil Classification**: Fixed discrepancy between visual rendering (GPU) and probe logic (CPU).
+    -   **Renderer**: Corrected normal calculation in `TerrainRenderer` to account for `gridScale`. Flat terrain now correctly renders as flat (Purple/Argila) instead of steep (Green/Raso).
+    -   **Probe**: Improved noise sampling precision to use exact raycast hit position, ensuring 1:1 match with visual stochastic noise.
+
 ## [v3.6.3] - 2025-12-15
 ### Added
 -   **Watershed Analysis**: New module for drainage basin delineation.
