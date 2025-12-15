@@ -109,4 +109,5 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 elseif (MSVC)
     target_compile_options(sisterapp PRIVATE /W4 /permissive-)
 endif()
-add_subdirectory(src/terrain)
+
+target_sources(sisterapp PRIVATE src/terrain/terrain_map.cpp src/terrain/terrain_generator.cpp src/terrain/terrain_renderer.cpp)

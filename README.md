@@ -145,7 +145,12 @@ On modern hardware (e.g., RX 7900 XTX / Ryzen 9):
     -   [x] Optimized Chunk Scheduling (Frustum + Distance).
     -   [x] Robust Vegetation Toggling (Safe Resource Destruction).
 -   [x] **v3.4.0**: Slope Analysis, Persistence, Standardized Versioning.
--   [ ] **v3.5.0**: Multiplayer exploration / Block interaction.
+- [ ] **v3.5.0 (In Progress)**:
+    - [x] Finite World Architecture (TerrainMap).
+    - [x] Hydraulic Erosion Simulation.
+    - [x] Smooth Terrain Rendering.
+    - [ ] Dynamic Map Regeneration UI.
+    - [ ] Advanced Texturing (Splatting).xploration / Block interaction.
 -   [ ] **v4.0.0**: VR Support.
 
 ---

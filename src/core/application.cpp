@@ -109,13 +109,41 @@ void Application::init() {
     voxelScene_ = std::make_unique<VoxelScene>(terrain_.get(), voxelMaterial_.get(), waterMaterial_.get());
     voxelScene_->setRenderer(&renderer_);
     voxelStats_ = {};
+
+    // --- V3.5.0: Finite World Initialization ---
+    if (useFiniteWorld_) {
+        std::cout << "[SisterApp v3.5.0] Initializing Finite World (1024x1024)..." << std::endl;
+        finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
+        finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(12345);
+        finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_);
+        
+        terrain::TerrainConfig config; // use default
+        finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
+        // Apply significant erosion for realistic look
+        finiteGenerator_->applyErosion(*finiteMap_, 500000); 
+        
+        finiteRenderer_->buildMesh(*finiteMap_);
+        
+        // Disable Voxel Scene updates if finite world is active to save perf
+        // or we can allow toggling at runtime. For now, prioritize starting here.
+        camera_.setCameraMode(graphics::CameraMode::FreeFlight);
+        // Spawn high above center
+        float cx = 1024.0f / 2.0f;
+        float cz = 1024.0f / 2.0f;
+        float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
+        camera_.teleportTo({cx, h + 100.0f, cz});
+        
+        std::cout << "[SisterApp v3.5.0] Finite World Ready!" << std::endl;
+    } else {
+        // ... (Voxel Spawn Logic) ...
+    
     
     // Start in Free Flight mode for voxel world exploration
-    camera_.setCameraMode(graphics::CameraMode::FreeFlight);
     // Spawn above terrain height at origin so scene is immediately visible
     int h = terrain_->getTerrainHeight(0, 0);
     camera_.teleportTo({0.0f, static_cast<float>(h) + 8.0f, 0.0f});
     std::cout << "[" << APP_NAME << " " << APP_VERSION_TAG << "] Voxel Terrain Initialized - Minecraft Mode!" << std::endl;
+    }
 
     // V3.4.0: Load preferences on startup
     core::Preferences::instance().load();
@@ -575,7 +603,15 @@ void Application::render(size_t frameIndex) {
     // I need to update VoxelScene signature as well.
     // For now, let's put the call assuming the new signature for VoxelScene::render.
     
-    if (voxelScene_) {
+    if (useFiniteWorld_ && finiteRenderer_) {
+        // v3.5.0 Render Path
+        std::array<float, 16> mvpArray;
+        std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
+        finiteRenderer_->render(cmd, mvpArray, swapchain_->extent());
+        
+        // Also render axes/grid if needed? Maybe not for realistic view.
+        // Sky dome could be useful here.
+    } else if (voxelScene_) {
         voxelScene_->render(cmd, view, proj, camera_, voxelStats_, swapchain_->extent());
         visibleCount = voxelStats_.visibleChunks;
         totalChunks = voxelStats_.totalChunks;

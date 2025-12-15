@@ -6,6 +6,12 @@
 - **TerrainGenerator**:
     - FBM Noise generation for base terrain.
     - **Hydraulic Erosion**: Simulation of water flow, erosion, and sediment deposition.
+- **TerrainRenderer**:
+    - Smooth Mesh Rendering (Vertices & Indices) instead of Voxels.
+    - Slope and Sediment-based Debug Coloring.
+- **Core Integration**:
+    - Added "Finite World Mode" toggle in Application (enabled by default for dev).
+    - Parallel existence with Voxel Engine (can switch in code).
 
 ## [3.4.0] - 2025-12-15
 ### Added

@@ -17,6 +17,9 @@
 #include "../ui/ui_layer.h"
 #include "../ui/bookmark.h"
 #include "input_manager.h"
+#include "../terrain/terrain_map.h"
+#include "../terrain/terrain_generator.h"
+#include "../terrain/terrain_renderer.h"
 #include <memory>
 #include <vector>
 #include <string>
@@ -145,6 +148,12 @@ namespace core {
     // Safety & Stability (v3.3.0)
     std::vector<VkFence> imagesInFlight_;
     bool wireframeSupported_ = false;
+
+    // --- Finite Terrain System (v3.5.0) ---
+    std::unique_ptr<terrain::TerrainMap> finiteMap_;
+    std::unique_ptr<terrain::TerrainGenerator> finiteGenerator_;
+    std::unique_ptr<shape::TerrainRenderer> finiteRenderer_;
+    bool useFiniteWorld_ = true; // Toggle for v3.5.0 logic
 
     // Performance Settings
     bool vsyncEnabled_ = false;  // Default: Off (High FPS)
