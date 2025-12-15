@@ -112,10 +112,28 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
     // Bind Pipeline and Descriptor Sets
     material_->bind(cmd);
 
-    // Push Constants (MVP)
-    // Assuming simple vertex shader that takes MVP in push constants like basic.vert
-    // Adjust range/layout if needed, basic shader expects mat4 at offset 0
-    vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(mvp), mvp.data());
+    // Define PC struct matching shader
+    struct PushConstants {
+        std::array<float, 16> mvp;
+        float pointSize;
+        float useLighting;
+        float useFixedColor;
+        float opacity;
+        float pad[3]; // vec3 alignment padding if needed, but here packed tight? 
+        // vec3 fixedColor (12 bytes)
+        float r, g, b;
+    };
+
+    PushConstants pc{};
+    pc.mvp = mvp;
+    pc.pointSize = 1.0f;
+    pc.useLighting = 1.0f; // Enable lighting
+    pc.useFixedColor = 0.0f;
+    pc.opacity = 1.0f; // Visible!
+    pc.r = 0.0f; pc.g = 0.0f; pc.b = 0.0f;
+
+    // Push Constants (MVP + Params)
+    vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(pc), &pc);
 
     // Draw using Mesh API
     mesh_->draw(cmd);
