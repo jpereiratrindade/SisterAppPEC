@@ -4,19 +4,15 @@
 
 namespace shape {
 
-TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx) : ctx_(ctx) {
+TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass renderPass) : ctx_(ctx) {
     // Reuse existing basic shader for v1 (Vertex Color)
     auto vs = std::make_shared<graphics::Shader>(ctx_, "shaders/basic.vert.spv");
     auto fs = std::make_shared<graphics::Shader>(ctx_, "shaders/basic.frag.spv");
-    material_ = std::make_unique<graphics::Material>(ctx_, VK_NULL_HANDLE, VkExtent2D{1280,720}, vs, fs); 
-    // Note: RenderPass and Extent will need to be dynamic or updated, simplified constr here for prototype
-    // Actually Material needs a valid RenderPass to create pipeline.
-    // Ideally we pass the render pass from Application into init or build.
-    // For now we will defer material creation or accept it's broken until linked with Application.
-    // Let's assume we pass renderPass later or fix this API. 
-    // FIX: Just store shaders for now and init material properly when needed? 
-    // No, let's assume we use the existing material system.
+    
+    // Create Material with VALID RenderPass!
+    material_ = std::make_unique<graphics::Material>(ctx_, renderPass, VkExtent2D{1280,720}, vs, fs, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL, true, true); 
 }
+    // Material initialized.
 
 void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
     int w = map.getWidth();

@@ -1,5 +1,6 @@
 #pragma once
 #include "terrain_map.h"
+#include <vulkan/vulkan.h>
 #include "../core/graphics_context.h"
 #include "../graphics/material.h"
 #include "../graphics/mesh.h"
@@ -10,7 +11,7 @@ namespace shape {
 
 class TerrainRenderer {
 public:
-    TerrainRenderer(const core::GraphicsContext& ctx);
+    TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass renderPass);
     ~TerrainRenderer() = default;
 
     /**

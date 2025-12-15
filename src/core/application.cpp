@@ -102,48 +102,47 @@ void Application::init() {
     graphics::createDistanceMarkers(markersVerts, markersIndices, 50, 10);
     distanceMarkersMesh_ = std::make_unique<graphics::Mesh>(*ctx_, markersVerts, markersIndices);
     
-    // V3.2.2.5-beta: Initialize voxel terrain
-    terrain_ = std::make_unique<graphics::VoxelTerrain>(*ctx_, 12345);
-    terrain_->setFrameFences(&syncObjects_->inFlightFences());
-    showVegetation_ = true;
-    voxelScene_ = std::make_unique<VoxelScene>(terrain_.get(), voxelMaterial_.get(), waterMaterial_.get());
-    voxelScene_->setRenderer(&renderer_);
-    voxelStats_ = {};
-
     // --- V3.5.0: Finite World Initialization ---
+    // Toggle via member var or preference. For now, hardcoded true.
     if (useFiniteWorld_) {
         std::cout << "[SisterApp v3.5.0] Initializing Finite World (1024x1024)..." << std::endl;
         finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
         finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(12345);
-        finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_);
         
-        terrain::TerrainConfig config; // use default
+        // Pass the correct RenderPass!
+        finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
+        
+        terrain::TerrainConfig config;
         finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
-        // Apply significant erosion for realistic look
         finiteGenerator_->applyErosion(*finiteMap_, 500000); 
         
         finiteRenderer_->buildMesh(*finiteMap_);
         
-        // Disable Voxel Scene updates if finite world is active to save perf
-        // or we can allow toggling at runtime. For now, prioritize starting here.
         camera_.setCameraMode(graphics::CameraMode::FreeFlight);
-        // Spawn high above center
         float cx = 1024.0f / 2.0f;
         float cz = 1024.0f / 2.0f;
         float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
-        camera_.teleportTo({cx, h + 100.0f, cz});
+        camera_.teleportTo({cx, h + 150.0f, cz}); // Higher up
         
         std::cout << "[SisterApp v3.5.0] Finite World Ready!" << std::endl;
     } else {
-        // ... (Voxel Spawn Logic) ...
-    
-    
-    // Start in Free Flight mode for voxel world exploration
-    // Spawn above terrain height at origin so scene is immediately visible
-    int h = terrain_->getTerrainHeight(0, 0);
-    camera_.teleportTo({0.0f, static_cast<float>(h) + 8.0f, 0.0f});
-    std::cout << "[" << APP_NAME << " " << APP_VERSION_TAG << "] Voxel Terrain Initialized - Minecraft Mode!" << std::endl;
+        // V3.2.2.5-beta: Initialize voxel terrain
+        terrain_ = std::make_unique<graphics::VoxelTerrain>(*ctx_, 12345);
+        terrain_->setFrameFences(&syncObjects_->inFlightFences());
+        showVegetation_ = true;
+        voxelScene_ = std::make_unique<VoxelScene>(terrain_.get(), voxelMaterial_.get(), waterMaterial_.get());
+        voxelScene_->setRenderer(&renderer_);
+        voxelStats_ = {};
+
+        // Start in Free Flight mode for voxel world exploration
+        camera_.setCameraMode(graphics::CameraMode::FreeFlight);
+        // Spawn above terrain height at origin so scene is immediately visible
+        int h = terrain_->getTerrainHeight(0, 0);
+        camera_.teleportTo({0.0f, static_cast<float>(h) + 8.0f, 0.0f});
+        std::cout << "[" << APP_NAME << " " << APP_VERSION_TAG << "] Voxel Terrain Initialized - Minecraft Mode!" << std::endl;
     }
+    // End of Finite/Voxel Branch
+    // Common setup continues below...
 
     // V3.4.0: Load preferences on startup
     core::Preferences::instance().load();
