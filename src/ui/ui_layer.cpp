@@ -23,6 +23,7 @@ void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
     drawAnimation(ctx);
     drawBookmarks(ctx);
     drawResetCamera(ctx);
+    drawFiniteTools(ctx);
 
     endGuiFrame();
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
@@ -98,10 +99,11 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                     if (ImGui::SliderInt("Meshes/Frame Budget", &meshBudget, 1, 6)) {
                         ctx.terrain->setMeshBudgetPerFrame(meshBudget);
                     }
-                    constexpr std::array<const char*, 3> kTerrainModelOptions = {
+                    constexpr std::array<const char*, 4> kTerrainModelOptions = {
                         "Plano com ondulações",
                         "Suave ondulado",
-                        "Ondulado"
+                        "Ondulado",
+                        "Montanhoso (Steep)"
                     };
                     int terrainModel = static_cast<int>(ctx.terrain->terrainModel());
                     if (ImGui::Combo("Modelo de Terreno", &terrainModel, kTerrainModelOptions.data(), static_cast<int>(kTerrainModelOptions.size()))) {
@@ -412,6 +414,36 @@ void UiLayer::applyTheme(Theme theme) {
         style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.5f, 0.6f, 0.8f, 1.0f);
         std::cout << "[Theme] Applied Light theme" << std::endl;
     }
+}
+
+void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
+    if (ctx.terrain) return; // Only for Finite World mode
+
+    ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(250, 180), ImGuiCond_FirstUseEver);
+
+    if (ImGui::Begin("Map Generator (v3.5)", nullptr, ImGuiWindowFlags_NoCollapse)) {
+        static int selectedSize = 1024;
+        ImGui::Text("Map Size:");
+        if (ImGui::RadioButton("512", selectedSize == 512)) selectedSize = 512;
+        ImGui::SameLine();
+        if (ImGui::RadioButton("1024", selectedSize == 1024)) selectedSize = 1024;
+        ImGui::SameLine();
+        if (ImGui::RadioButton("2048", selectedSize == 2048)) selectedSize = 2048;
+
+        static float scale = 0.0015f;
+        ImGui::SliderFloat("Smoothness", &scale, 0.0005f, 0.005f, "%.4f");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Smaller = Smoother/Larger Hills\nLarger = More Rough/Frequent");
+
+        ImGui::Separator();
+        
+        if (ImGui::Button("Generate New Map", ImVec2(-1, 0))) {
+            if (callbacks_.regenerateFiniteWorld) {
+                callbacks_.regenerateFiniteWorld(selectedSize, scale);
+            }
+        }
+    }
+    ImGui::End();
 }
 
 } // namespace ui

@@ -85,6 +85,9 @@ namespace core {
         void loadBookmark(size_t index);
         void deleteBookmark(size_t index);
         void requestTerrainReset(int warmupRadius = 1);
+        void regenerateFiniteWorld(int size, float scale); // v3.5.0
+        void performRegeneration(); // v3.5.0 internal
+
 
     private:    // --- Core Systems ---
         SDLContext sdl_;
@@ -163,6 +166,11 @@ namespace core {
     // Cap adicional quando VSync está OFF para evitar runaway de frames
     float vsyncOffFpsCap_ = 240.0f;
     InputManager inputManager_;
+
+    // Deferred Actions (v3.5.0 fix)
+    bool regenRequested_ = false;
+    int deferredRegenSize_ = 1024;
+    float deferredRegenScale_ = 0.002f;
     };
 
 } // namespace core

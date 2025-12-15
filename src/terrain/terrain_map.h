@@ -9,7 +9,11 @@ struct TerrainConfig {
     int width = 1024;
     int height = 1024;
     float scaleXZ = 1.0f; // Meters per unit
+    float minHeight = 0.0f;
     float maxHeight = 256.0f; // Meters
+    float waterLevel = 64.0f;
+    float noiseScale = 0.002f; // v3.5.0: New parameter for smoothness
+    int octaves = 4;           // v3.5.0: New parameter for detail
     int seed = 12345;
 };
 

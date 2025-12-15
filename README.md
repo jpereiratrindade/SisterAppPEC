@@ -2,19 +2,19 @@
 
 **SisterApp Engine** is now a high-performance Minecraft-style voxel world exploration tool! This version transforms the scientific visualization engine into an immersive first-person voxel environment with procedural terrain, greedy meshing, and optimized multithreaded loading.
 
-![Version](https://img.shields.io/badge/version-3.4.0-orange.svg)
+![Version](https://img.shields.io/badge/version-3.5.0-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
 ![Status](https://img.shields.io/badge/Status-Stable-green.svg)
 
 ---
 
-## 🎯 What's New (v3.3.0)
+## 🎯 What's New (v3.5.0)
 
-- **Optimized Scheduling**: Chunk generation and meshing now prioritize visible chunks (Frustum Culling), vastly improving responsiveness when moving fast.
-- **Architectural Refactor**: Simplified core by removing legacy bridges. Now using a unified `GraphicsContext` and `VoxelScene` architecture.
-- **Greedy Meshing**: Optimized mesh generation for solids and water, with transparent pass and correct winding.
-- **Improved Vegetation**: Thread-safe vegetation toggling/regeneration without crashes.
-- **Metrics Overlay**: Detailed stats including "Chunks Visible/Total" and prioritized task queues.
+- **Finite World Mode**: Transition to high-fidelity terrain maps (up to 2048x2048) with realistic generation.
+- **Regenerator UI**: Real-time terrain creation with configurable size and smoothness.
+- **Visual Overhaul**: Distance Fog, Hemispheric Lighting, and Procedural Noise texturing.
+- **Performance**: Device Local memory for meshes ensures stability at 4 Million vertices.
+- **Erosion Simulation**: Hydraulic erosion engine (beta).
 
 ---
 
@@ -145,12 +145,12 @@ On modern hardware (e.g., RX 7900 XTX / Ryzen 9):
     -   [x] Optimized Chunk Scheduling (Frustum + Distance).
     -   [x] Robust Vegetation Toggling (Safe Resource Destruction).
 -   [x] **v3.4.0**: Slope Analysis, Persistence, Standardized Versioning.
-- [ ] **v3.5.0 (In Progress)**:
+- [x] **v3.5.0**:
     - [x] Finite World Architecture (TerrainMap).
     - [x] Hydraulic Erosion Simulation.
-    - [x] Smooth Terrain Rendering.
-    - [ ] Dynamic Map Regeneration UI.
-    - [ ] Advanced Texturing (Splatting).xploration / Block interaction.
+    - [x] Smooth Terrain Rendering (Fog, Lighting).
+    - [x] Dynamic Map Regeneration UI.
+    - [ ] Advanced Texturing (Splatting).
 -   [ ] **v4.0.0**: VR Support.
 
 ---

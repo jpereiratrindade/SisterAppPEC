@@ -51,7 +51,8 @@ enum class VegetationClass : uint8_t {
 enum class TerrainModel : uint8_t {
     RippledFlat = 0,   // Plano com poucas ondulações
     SmoothHills = 1,   // Suave ondulado (default)
-    RollingHills = 2   // Ondulado
+    RollingHills = 2,  // Ondulado
+    Mountainous = 3    // Montanhoso
 };
 
 /**

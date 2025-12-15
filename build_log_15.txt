@@ -1,0 +1,21 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/mesh.cpp: In constructor ‘graphics::Mesh::Mesh(const core::GraphicsContext&, const std::vector<graphics::Vertex>&, const std::vector<unsigned int>&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/mesh.cpp:59:10: error: ‘cout’ is not a member of ‘std’
+   59 |     std::cout << "[Mesh] Creating Mesh with 32-bit indices. count=" << indexCount_ << std::endl;
+      |          ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/mesh.cpp:2:1: note: ‘std::cout’ is defined in header ‘<iostream>’; this is probably fixable by adding ‘#include <iostream>’
+    1 | #include "mesh.h"
+  +++ |+#include <iostream>
+    2 | 
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/mesh.cpp:59:92: error: ‘endl’ is not a member of ‘std’
+   59 |     std::cout << "[Mesh] Creating Mesh with 32-bit indices. count=" << indexCount_ << std::endl;
+      |                                                                                            ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/mesh.cpp:2:1: note: ‘std::endl’ is defined in header ‘<ostream>’; this is probably fixable by adding ‘#include <ostream>’
+    1 | #include "mesh.h"
+  +++ |+#include <ostream>
+    2 | 
+gmake[2]: *** [CMakeFiles/sisterapp.dir/build.make:289: CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

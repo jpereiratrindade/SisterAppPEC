@@ -304,4 +304,39 @@ CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o: \
  /usr/include/c++/15/backward/auto_ptr.h \
  /usr/include/c++/15/pstl/glue_memory_defs.h \
  /usr/include/c++/15/pstl/execution_defs.h /usr/include/c++/15/array \
- /usr/include/c++/15/compare
+ /usr/include/c++/15/compare /usr/include/c++/15/iostream \
+ /usr/include/c++/15/ostream /usr/include/c++/15/bits/ostream.h \
+ /usr/include/c++/15/ios /usr/include/c++/15/bits/char_traits.h \
+ /usr/include/c++/15/bits/localefwd.h \
+ /usr/include/c++/15/x86_64-redhat-linux/bits/c++locale.h \
+ /usr/include/c++/15/clocale /usr/include/locale.h \
+ /usr/include/bits/locale.h /usr/include/c++/15/cctype \
+ /usr/include/c++/15/bits/ios_base.h \
+ /usr/include/c++/15/bits/locale_classes.h /usr/include/c++/15/string \
+ /usr/include/c++/15/bits/ostream_insert.h \
+ /usr/include/c++/15/bits/cxxabi_forced.h \
+ /usr/include/c++/15/bits/basic_string.h /usr/include/c++/15/string_view \
+ /usr/include/c++/15/bits/string_view.tcc \
+ /usr/include/c++/15/ext/string_conversions.h /usr/include/c++/15/cstdio \
+ /usr/include/c++/15/cerrno /usr/include/errno.h \
+ /usr/include/bits/errno.h /usr/include/linux/errno.h \
+ /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
+ /usr/include/asm-generic/errno-base.h /usr/include/bits/types/error_t.h \
+ /usr/include/c++/15/bits/charconv.h \
+ /usr/include/c++/15/bits/basic_string.tcc \
+ /usr/include/c++/15/bits/locale_classes.tcc \
+ /usr/include/c++/15/system_error \
+ /usr/include/c++/15/x86_64-redhat-linux/bits/error_constants.h \
+ /usr/include/c++/15/stdexcept /usr/include/c++/15/streambuf \
+ /usr/include/c++/15/bits/streambuf.tcc \
+ /usr/include/c++/15/bits/basic_ios.h \
+ /usr/include/c++/15/bits/locale_facets.h /usr/include/c++/15/cwctype \
+ /usr/include/wctype.h /usr/include/bits/wctype-wchar.h \
+ /usr/include/c++/15/x86_64-redhat-linux/bits/ctype_base.h \
+ /usr/include/c++/15/bits/streambuf_iterator.h \
+ /usr/include/c++/15/x86_64-redhat-linux/bits/ctype_inline.h \
+ /usr/include/c++/15/bits/locale_facets.tcc \
+ /usr/include/c++/15/bits/basic_ios.tcc \
+ /usr/include/c++/15/bits/ostream.tcc /usr/include/c++/15/istream \
+ /usr/include/c++/15/bits/istream.tcc \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/../core/command_pool.h

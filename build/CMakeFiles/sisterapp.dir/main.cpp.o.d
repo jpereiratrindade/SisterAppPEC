@@ -368,6 +368,9 @@ CMakeFiles/sisterapp.dir/main.cpp.o: \
  /usr/include/c++/15/bits/hashtable_policy.h \
  /usr/include/c++/15/bits/enable_special_members.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/input_manager.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_map.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_generator.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_renderer.h \
  /usr/include/c++/15/iostream /usr/include/c++/15/ostream \
  /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/ios \
  /usr/include/c++/15/bits/ios_base.h \

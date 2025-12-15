@@ -5,6 +5,7 @@ layout(location = 2) in vec3 inNormal;
 
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec3 fragNormal;
+layout(location = 2) out float fragViewDist;
 
 layout(push_constant) uniform PushConstants {
     mat4 mvp;
@@ -16,4 +17,11 @@ void main() {
     gl_PointSize = pc.pointSize;
     fragColor = inColor;
     fragNormal = inNormal;
+    
+    // Pass View Depth (z-distance) roughly or just distance from camera
+    // Since MVP is combined, we don't have View Space easily without separating matrices.
+    // However, for simple fog, gl_Position.w is roughly the depth/distance.
+    // Or we can pass World Pos if we had Model Matrix.
+    // For now, let's use gl_Position.z / gl_Position.w as a depth approximation or just w.
+    fragViewDist = gl_Position.w; 
 }

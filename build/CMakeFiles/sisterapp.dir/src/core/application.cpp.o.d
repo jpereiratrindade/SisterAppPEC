@@ -368,6 +368,9 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /usr/include/c++/15/bits/hashtable_policy.h \
  /usr/include/c++/15/bits/enable_special_members.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/input_manager.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_map.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_generator.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_renderer.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/geometry_utils.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../imgui_backend.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/preferences.h \
@@ -390,6 +393,7 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /usr/include/c++/15/x86_64-redhat-linux/bits/basic_file.h \
  /usr/include/c++/15/x86_64-redhat-linux/bits/c++io.h \
  /usr/include/c++/15/bits/fstream.tcc /usr/include/c++/15/iostream \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/version.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/backends/imgui_impl_sdl2.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imgui.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imconfig.h \

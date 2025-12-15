@@ -1,0 +1,10 @@
+CMake Error at CMakeLists.txt:112 (add_subdirectory):
+  The source directory
+
+    /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain
+
+  does not contain a CMakeLists.txt file.
+
+
+-- Configuring incomplete, errors occurred!
+make: *** [Makefile:1030: cmake_check_build_system] Error 1

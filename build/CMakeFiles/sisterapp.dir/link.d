@@ -34,6 +34,9 @@ sisterapp: \
   CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o \
   CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o \
   CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o \
+  CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o \
+  CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o \
+  CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o \
   /usr/lib64/libSDL2-2.0.so.0.3200.56 \
   /lib64/libvulkan.so \
   /usr/lib/gcc/x86_64-redhat-linux/15/libstdc++.so \
@@ -133,6 +136,12 @@ CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o:
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o:
 
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o:
+
+CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o:
+
+CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o:
+
+CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o:
 
 /usr/lib64/libSDL2-2.0.so.0.3200.56:
 

@@ -1,11 +1,12 @@
-# SisterApp Engine v3.4.0 - Domain-Driven Design (DDD)
+# SisterApp Engine v3.5.0 - Domain-Driven Design (DDD)
 
 ## 1. Overview
-Branch voxel-first (Minecraft mode). Renderização usa greedy meshing separado para sólidos e água, AO por face e água transparente. Terreno é gerado e meshado em threads de trabalho com priorização por frustum e culling; UI expõe métricas detalhadas, controles de desempenho e sliders de resiliência.
+A partir da versão v3.5.0, a engine suporta **dois modos de operação distintos**:
+1. **Modo Voxel (Infinite)**: Minecraft-style, chunks paginados, greedy meshing. (Clássico v3.4)
+2. **Modo Finite World (High-Fidelity)**: Mapa de terreno contíguo (Ex: 2048x2048), renderização smooth, erosão hidráulica e iluminação avançada.
 
-A versão v3.3.0 consolida a arquitetura removendo a ponte legada VulkanContext e unificando a gestão de recursos gráficos em core::GraphicsContext e Application.
-
-Este documento formaliza boas práticas arquiteturais obrigatórias para garantir segurança de ciclo de vida GPU, previsibilidade de frame e escalabilidade sob alta carga (VSync off, streaming agressivo, alternância dinâmica de vegetação).
+A arquitetura unificada (`GraphicsContext`, `Application`) serve a ambos os modos, mas o pipeline de renderização se bifurca (`VoxelTerrain` vs `TerrainRenderer`).
+Este documento formaliza boas práticas para ambos os contextos.
 
 ---
 

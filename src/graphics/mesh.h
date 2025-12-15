@@ -51,6 +51,13 @@ private:
     std::unique_ptr<resources::Buffer> indexBuffer_;
     uint32_t indexCount_ = 0;
     VkIndexType indexType_ = VK_INDEX_TYPE_UINT16;
+    
+    // Helper for Staging Buffer Copy
+    std::unique_ptr<resources::Buffer> createDeviceLocalBuffer(
+        const core::GraphicsContext& context, 
+        const void* data, 
+        VkDeviceSize size, 
+        VkBufferUsageFlags usage);
 };
 
 } // namespace graphics

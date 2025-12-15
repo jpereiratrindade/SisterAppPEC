@@ -93,7 +93,7 @@ void Application::init() {
     // NEW: Sky Dome
     std::vector<graphics::Vertex> skyVerts;
     std::vector<uint16_t> skyIndices;
-    graphics::createSkyDome(skyVerts, skyIndices, 100.0f, 32);
+    graphics::createSkyDome(skyVerts, skyIndices, 5000.0f, 32); // Huge dome to cover world
     skyDomeMesh_ = std::make_unique<graphics::Mesh>(*ctx_, skyVerts, skyIndices);
     
     // NEW: Distance Markers
@@ -105,23 +105,25 @@ void Application::init() {
     // --- V3.5.0: Finite World Initialization ---
     // Toggle via member var or preference. For now, hardcoded true.
     if (useFiniteWorld_) {
-        std::cout << "[SisterApp v3.5.0] Initializing Finite World (512x512)..." << std::endl;
-        finiteMap_ = std::make_unique<terrain::TerrainMap>(512, 512);
+        std::cout << "[SisterApp v3.5.0] Initializing Finite World (1024x1024)..." << std::endl;
+        finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
         finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(12345);
         
         // Pass the correct RenderPass!
         finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
         
         terrain::TerrainConfig config;
-        config.maxHeight = 50.0f; // Debug: Flatten terrain to isolate spikes
+        config.maxHeight = 80.0f; // Gentle rolling hills
         finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
-        finiteGenerator_->applyErosion(*finiteMap_, 500000); 
+        
+        // Re-enable erosion (conservative count)
+        // finiteGenerator_->applyErosion(*finiteMap_, 100000); // Suspended by user request
         
         finiteRenderer_->buildMesh(*finiteMap_);
         
         camera_.setCameraMode(graphics::CameraMode::FreeFlight);
-        float cx = 512.0f / 2.0f;
-        float cz = 512.0f / 2.0f;
+        float cx = 1024.0f / 2.0f;
+        float cz = 1024.0f / 2.0f;
         float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
         camera_.teleportTo({cx, h + 20.0f, cz}); // Low flight, immersive
         // camera_.lookAt({cx, h, cz}); // Removed, user controls view
@@ -168,7 +170,9 @@ void Application::init() {
             if (terrain_) {
                 terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
             }
-            // Optionally force regen or let user decide via UI
+        },
+        [this](int size, float scale) { // regenerateFiniteWorld
+            regenerateFiniteWorld(size, scale);
         }
     };
     uiLayer_ = std::make_unique<ui::UiLayer>(uiCallbacks);
@@ -241,6 +245,9 @@ void Application::run() {
 
     // Idle limit logic
     while (running_) {
+        // V3.5.0: Check for deferred regeneration tasks BEFORE frame start
+        performRegeneration();
+
         std::uint64_t frameStart = SDL_GetPerformanceCounter();
         double deltaSeconds = static_cast<double>(frameStart - prevCounter) / freq;
         prevCounter = frameStart;
@@ -554,15 +561,13 @@ void Application::render(size_t frameIndex) {
     };
     mulMat4(proj, view, mvp); 
 
-    // Sky Dome disabled - was blocking view of terrain
-    /*
+    // Sky Dome - Re-enabled for V3.5.0
     if (skyDomeMesh_) {
         graphics::RenderOptions opts;
         opts.pointSize = 1.0f;
-        opts.useLighting = true;
+        opts.useLighting = false; // Sky is self-illuminated (unlit)
         renderer_.record(cmd, skyDomeMesh_.get(), environmentMaterial_.get(), swapchain_->extent(), mvp, opts);
     }
-    */
 
     // V3.2.2.1-beta: Hide grid, axes, markers in Minecraft mode
     if (!terrain_) {
@@ -750,6 +755,56 @@ void Application::deleteBookmark(size_t index) {
     std::string name = bookmarks_[index].name;
     bookmarks_.erase(bookmarks_.begin() + static_cast<long>(index));
     std::cout << "[Bookmarks] Deleted: " << name << std::endl;
+}
+
+// V3.5.0: Map Regeneration
+void Application::regenerateFiniteWorld(int size, float scale) {
+    // Defer to start of next frame to avoid destroying resources in use by current frame
+    regenRequested_ = true;
+    deferredRegenSize_ = size;
+    deferredRegenScale_ = scale;
+    std::cout << "[SisterApp] Regeneration requested for next frame..." << std::endl;
+}
+
+void Application::performRegeneration() {
+    if (!regenRequested_) return;
+    
+    std::cout << "[SisterApp] Performing Deferred Regeneration: " << deferredRegenSize_ << "x" << deferredRegenSize_ << std::endl;
+    
+    // SAFE: We are outside of any render pass here
+    vkDeviceWaitIdle(ctx_->device());
+    
+    // Destroy old resources first (Explicitly)
+    finiteRenderer_.reset(); 
+    finiteGenerator_.reset();
+    finiteMap_.reset();
+    
+    // Recreate
+    finiteMap_ = std::make_unique<terrain::TerrainMap>(deferredRegenSize_, deferredRegenSize_);
+    finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(rand()); // vary seed? or fixed? let's keep fixed for now or rand()
+    
+    // Re-init Renderer
+    finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
+
+    terrain::TerrainConfig config;
+    config.maxHeight = 80.0f;
+    config.noiseScale = deferredRegenScale_;
+    config.octaves = 3; 
+
+    finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
+    // Erosion suspended
+    // finiteGenerator_->applyErosion(*finiteMap_, 100000); 
+
+    finiteRenderer_->buildMesh(*finiteMap_);
+
+    // Teleport
+    float cx = static_cast<float>(deferredRegenSize_) / 2.0f;
+    float cz = static_cast<float>(deferredRegenSize_) / 2.0f;
+    float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
+    camera_.teleportTo({cx, h + 20.0f, cz});
+    
+    regenRequested_ = false;
+    std::cout << "[SisterApp] Regeneration Complete." << std::endl;
 }
 
 } // namespace core

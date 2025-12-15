@@ -1,0 +1,86 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::pruneFarChunks(int, int, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:289:135: warning: conversion to ‘std::vector<VkFence_T*>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  289 |     VkFence currentFence = (frameFences_ && frameIndex >= 0 && frameIndex < static_cast<int>(frameFences_->size())) ? (*frameFences_)[frameIndex] : VK_NULL_HANDLE;
+      |                                                                                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::update(float, float, const math::Frustum&, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:614:135: warning: conversion to ‘std::vector<VkFence_T*>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  614 |     VkFence currentFence = (frameFences_ && frameIndex >= 0 && frameIndex < static_cast<int>(frameFences_->size())) ? (*frameFences_)[frameIndex] : VK_NULL_HANDLE;
+      |                                                                                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:654:48: warning: conversion to ‘std::vector<graphics::VoxelTerrain::update(float, float, const math::Frustum&, int)::ChunkCandidate>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  654 |     candidates.reserve((viewDistance_ * 2 + 1) * (viewDistance_ * 2 + 1));
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+[ 23%] Building CXX object CMakeFiles/sisterapp.dir/src/renderer.cpp.o
+[ 25%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:19: warning: ignoring ‘#pragma omp parallel’ [-Wunknown-pragmas]
+   19 |     #pragma omp parallel for collapse(2)
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h: In constructor ‘terrain::TerrainGenerator::TerrainGenerator(int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:19:9: warning: ‘terrain::TerrainGenerator::seed_’ will be initialized after [-Wreorder]
+   19 |     int seed_;
+      |         ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:18:23: warning:   ‘math::PerlinNoise terrain::TerrainGenerator::noise_’ [-Wreorder]
+   18 |     math::PerlinNoise noise_;
+      |                       ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:7:1: warning:   when initialized here [-Wreorder]
+    7 | TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {}
+      | ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:7:68: warning: conversion to ‘unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {}
+      |                                                                    ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In member function ‘void terrain::TerrainGenerator::applyErosion(terrain::TerrainMap&, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:85:27: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+   85 |             float u = x - nodeX;
+      |                           ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:86:27: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+   86 |             float v = y - nodeY;
+      |                           ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:92:41: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   92 |             float h00 = map.heightMap()[cellIndex];
+      |                                         ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:93:51: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   93 |             float h10 = map.heightMap()[cellIndex + 1];
+      |                                         ~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:94:51: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |             float h01 = map.heightMap()[cellIndex + width];
+      |                                         ~~~~~~~~~~^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:95:59: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   95 |             float h11 = map.heightMap()[cellIndex + width + 1];
+      |                                         ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:114:36: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  114 |             if (x < 0 || x >= width-1 || y < 0 || y >= height-1) break;
+      |                               ~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:114:62: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  114 |             if (x < 0 || x >= width-1 || y < 0 || y >= height-1) break;
+      |                                                        ~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:127:39: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  127 |                     map.sedimentMap()[cellIndex] += amount;
+      |                                       ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:138:35: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  138 |                 map.sedimentMap()[cellIndex] += amount;
+      |                                   ^~~~~~~~~
+[ 27%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::buildMesh(const terrain::TerrainMap&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:23:24: warning: conversion to ‘std::vector<graphics::Vertex>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   23 |     vertices.reserve(w * h);
+      |                      ~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:24:39: warning: conversion to ‘std::vector<unsigned int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   24 |     indices.reserve((w - 1) * (h - 1) * 6);
+      |                     ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:70:49: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   70 |             float sed = map.sedimentMap()[z * w + x];
+      |                                           ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::render(VkCommandBuffer, const std::array<float, 16>&, VkExtent2D)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:105:96: warning: unused parameter ‘viewport’ [-Wunused-parameter]
+  105 | void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport) {
+      |                                                                                     ~~~~~~~~~~~^~~~~~~~
+[ 30%] Building CXX object CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawMenuBar(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:123:26: warning: unused variable ‘requestReset’ [-Wunused-variable]
+  123 |                     bool requestReset = false;
+      |                          ^~~~~~~~~~~~
+[ 32%] Building CXX object CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o
+[ 34%] Linking CXX executable sisterapp
+[100%] Built target sisterapp

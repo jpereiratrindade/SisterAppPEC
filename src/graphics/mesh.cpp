@@ -1,5 +1,6 @@
 #include "mesh.h"
 #include <iostream>
+#include "../core/command_pool.h"
 
 namespace graphics {
 
@@ -36,46 +37,70 @@ std::array<VkVertexInputAttributeDescription, 3> Vertex::getAttributeDescription
 Mesh::Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint16_t>& indices)
     : indexCount_(static_cast<uint32_t>(indices.size())), indexType_(VK_INDEX_TYPE_UINT16) {
     
-    // Vertex Buffer
     VkDeviceSize vertexSize = sizeof(Vertex) * vertices.size();
-    vertexBuffer_ = std::make_unique<resources::Buffer>(
-        context, vertexSize, 
-        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-    );
-    vertexBuffer_->upload(vertices.data(), vertexSize);
+    vertexBuffer_ = createDeviceLocalBuffer(context, vertices.data(), vertexSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
-    // Index Buffer (u16)
     VkDeviceSize indexSize = sizeof(uint16_t) * indices.size();
-    indexBuffer_ = std::make_unique<resources::Buffer>(
-        context, indexSize, 
-        VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-    );
-    indexBuffer_->upload(indices.data(), indexSize);
+    indexBuffer_ = createDeviceLocalBuffer(context, indices.data(), indexSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 }
 
 Mesh::Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
     : indexCount_(static_cast<uint32_t>(indices.size())), indexType_(VK_INDEX_TYPE_UINT32) {
-    std::cout << "[Mesh] Creating Mesh with 32-bit indices. count=" << indexCount_ << std::endl;
 
-    // Vertex Buffer
     VkDeviceSize vertexSize = sizeof(Vertex) * vertices.size();
-    vertexBuffer_ = std::make_unique<resources::Buffer>(
-        context, vertexSize, 
-        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-    );
-    vertexBuffer_->upload(vertices.data(), vertexSize);
+    vertexBuffer_ = createDeviceLocalBuffer(context, vertices.data(), vertexSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
-    // Index Buffer (u32)
     VkDeviceSize indexSize = sizeof(uint32_t) * indices.size();
-    indexBuffer_ = std::make_unique<resources::Buffer>(
-        context, indexSize, 
-        VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
+    indexBuffer_ = createDeviceLocalBuffer(context, indices.data(), indexSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+}
+
+std::unique_ptr<resources::Buffer> Mesh::createDeviceLocalBuffer(
+    const core::GraphicsContext& context, 
+    const void* data, 
+    VkDeviceSize size, 
+    VkBufferUsageFlags usage) 
+{
+    // 1. Staging Buffer (Host Visible)
+    resources::Buffer staging(
+        context, size, 
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
     );
-    indexBuffer_->upload(indices.data(), indexSize);
+    staging.upload(data, size);
+
+    // 2. Device Buffer (Device Local)
+    auto deviceBuffer = std::make_unique<resources::Buffer>(
+        context, size, 
+        usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT, 
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+    );
+
+    // 3. Copy Command
+    core::CommandPool pool(context, context.queueFamilyIndex());
+    VkCommandBuffer cmd = pool.allocate(1)[0];
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    vkBeginCommandBuffer(cmd, &beginInfo);
+
+    VkBufferCopy copyRegion{};
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size = size;
+    vkCmdCopyBuffer(cmd, staging.handle(), deviceBuffer->handle(), 1, &copyRegion);
+
+    vkEndCommandBuffer(cmd);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cmd;
+
+    vkQueueSubmit(context.graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(context.graphicsQueue());
+
+    return deviceBuffer;
 }
 
 void Mesh::draw(VkCommandBuffer cmd) const {
@@ -84,9 +109,6 @@ void Mesh::draw(VkCommandBuffer cmd) const {
     
     vkCmdBindVertexBuffers(cmd, 0, 1, buffers, offsets);
     vkCmdBindIndexBuffer(cmd, indexBuffer_->handle(), 0, indexType_);
-    
-    // Debug log (once per mesh, maybe too spammy? No, only visible if attached)
-    // std::cout << "[Mesh] Draw: count=" << indexCount_ << " type=" << indexType_ << std::endl;
     
     vkCmdDrawIndexed(cmd, indexCount_, 1, 0, 0, 0);
 }

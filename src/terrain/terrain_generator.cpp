@@ -12,9 +12,9 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
     int w = map.getWidth();
     int h = map.getHeight();
 
-    // Noise parameters (can be tuned or passed via config)
+    // Noise parameters
     // Scale: smaller number = larger features
-    float scale = 0.002f; // Smoother, larger hills
+    float scale = config.noiseScale;
     
     #pragma omp parallel for collapse(2)
     for (int z = 0; z < h; ++z) {
@@ -28,8 +28,8 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
             float amp = 1.0f;
             float maxAmp = 0.0f;
             
-            // 4 Octaves (Less jitter)
-            for(int i=0; i<4; ++i) {
+            // Octaves
+            for(int i=0; i<config.octaves; ++i) {
                 val += noise_.noise2D(nx * freq, nz * freq) * amp;
                 maxAmp += amp;
                 amp *= 0.5f;
@@ -39,8 +39,19 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
             // Normalize to [0,1]
             val /= maxAmp; 
             
-            // Apply exponential curve for mountains
-            // val = std::pow(val, 1.5f); 
+            // Bias towards lower ground (val^2) to make hills stand out from plains
+            val = val * 0.5f + 0.5f; // Remap -1..1 to 0..1 first if noise is signed? 
+            // FastNoiseLite usually returns -1..1. Let's assume 0..1 behavior or fix it.
+            // Actually noise2D might be -1..1.
+            // If it's -1..1, the previous logic (val /= maxAmp) keeps it -1..1.
+            // Then `val * config.maxHeight` would produce NEGATIVE heights! 
+            // THIS MIGHT BE THE CAUSE OF SPIKES/HOLES! Negative values!
+            
+            // Fix range to 0..1
+            val = (val + 1.0f) * 0.5f;
+            
+            // Apply exponential curve (optional, keep linear for now for smoothness)
+            val = std::pow(val, 2.0f); 
             
             // Set Height (Meters)
             map.setHeight(x, z, val * config.maxHeight);
@@ -117,28 +128,35 @@ void TerrainGenerator::applyErosion(TerrainMap& map, int iterations) {
             float newHeight = map.getHeight(static_cast<int>(x), static_cast<int>(y)); // simplified sampling
             float diff = (h00 + h10 + h01 + h11) * 0.25f - newHeight; // Approx old height vs new
 
-            if (diff > 0) {
-                float sedimentCapacity = std::max(-diff, minSlope) * speed * water * capacity;
-                if (sediment > sedimentCapacity) {
-                    float amount = (sediment - sedimentCapacity) * deposition;
-                    sediment -= amount;
-                    map.setHeight(nodeX, nodeY, h00 + amount); // deposit at old pos (simplified)
-                    // Accumulate sediment map
-                    map.sedimentMap()[cellIndex] += amount; 
-                } else {
-                    float amount = std::min((sedimentCapacity - sediment) * erosion, -diff);
-                    sediment += amount;
-                    map.setHeight(nodeX, nodeY, h00 - amount); // erode
-                }
-            } else {
-                // Moving uphill (depression), deposit everything
-                float amount = std::min(sediment, -diff);
-                sediment -= amount;
-                map.setHeight(nodeX, nodeY, h00 + amount);
-                map.sedimentMap()[cellIndex] += amount;
-            }
+                if (nodeX < 0 || nodeX >= width || nodeY < 0 || nodeY >= height) break;
+
+                // Safe deposit/erode
+                 float currentH = map.getHeight(nodeX, nodeY);
+                 if (diff > 0) {
+                        float sedimentCapacity = std::max(diff, minSlope) * speed * water * capacity;
+                        if (sediment > sedimentCapacity) {
+                            float amount = (sediment - sedimentCapacity) * deposition;
+                            amount = std::min(amount, 0.5f); // Clamp deposition (max 0.5m/step)
+                            sediment -= amount;
+                            map.setHeight(nodeX, nodeY, currentH + amount); // deposit
+                            map.sedimentMap()[cellIndex] += amount; 
+                        } else {
+                            float amount = std::min((sedimentCapacity - sediment) * erosion, diff);
+                            amount = std::min(amount, 0.5f); // Clamp erosion (max 0.5m/step)
+                            sediment += amount;
+                            map.setHeight(nodeX, nodeY, currentH - amount); // erode
+                        }
+                    } else {
+                        // Moving uphill (depression), deposit everything
+                        float amount = std::min(sediment, -diff);
+                         amount = std::min(amount, 0.5f); // Clamp fill
+                        sediment -= amount;
+                        map.setHeight(nodeX, nodeY, currentH + amount);
+                        map.sedimentMap()[cellIndex] += amount;
+                    }
 
             speed = std::sqrt(speed * speed + diff * gravity);
+            speed = std::min(speed, 10.0f); // Limit speed to prevent kinetic explosions
             water *= (1 - evaporation);
             
             if (water < 0.01f) break;

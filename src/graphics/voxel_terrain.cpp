@@ -379,6 +379,15 @@ VoxelTerrain::TerrainProfile VoxelTerrain::profileForModel(TerrainModel model) c
                 /*mountainBaseHeight*/26, /*mountainRange*/36,
                 /*biomeFreq*/0.01f, /*mountainCurve*/1.35f
             };
+        case TerrainModel::Mountainous: // NEW
+            return TerrainProfile{
+                /*baseFreq*/0.012f, /*detailFreq*/0.06f,
+                /*baseOctaves*/5, /*detailOctaves*/4,
+                /*baseWeight*/0.6f, /*detailWeight*/0.4f,
+                /*plainsBaseHeight*/15, /*plainsRange*/25,
+                /*mountainBaseHeight*/40, /*mountainRange*/50, // Huge range for steepness
+                /*biomeFreq*/0.015f, /*mountainCurve*/1.8f
+            };
         case TerrainModel::SmoothHills:
         default:
             return TerrainProfile{

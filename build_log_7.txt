@@ -1,0 +1,12 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::init()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:113:85: error: ‘class graphics::Renderer’ has no member named ‘renderPass’
+  113 |         finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, renderer_.renderPass());
+      |                                                                                     ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:126:17: error: ‘class graphics::Camera’ has no member named ‘lookAt’
+  126 |         camera_.lookAt({cx, h, cz}); // Look down at terrain
+      |                 ^~~~~~
+gmake[2]: *** [CMakeFiles/sisterapp.dir/build.make:205: CMakeFiles/sisterapp.dir/src/core/application.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

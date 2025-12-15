@@ -43,6 +43,7 @@ struct Callbacks {
     std::function<void(int)> requestTerrainReset;
     std::function<void()> savePreferences; // v3.4.0
     std::function<void()> loadPreferences; // v3.4.0
+    std::function<void(int size, float scale)> regenerateFiniteWorld; // v3.5.0
 };
 
 class UiLayer {
@@ -59,6 +60,7 @@ private:
     void drawAnimation(UiFrameContext& ctx);
     void drawBookmarks(UiFrameContext& ctx);
     void drawResetCamera(UiFrameContext& ctx);
+    void drawFiniteTools(UiFrameContext& ctx); // v3.5.0
 
     Theme currentTheme_ = Theme::Dark;
     bool showStatsOverlay_ = true;

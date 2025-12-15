@@ -1,6 +1,6 @@
 # SisterApp Engine - Changelog (Updated)
 
-## [3.5.0] - Unreleased
+## [3.5.0] - 2025-12-15
 ### Added (Finite World Architecture)
 - **TerrainMap**: New central data structure for finite terrain (height, moisture, sediment).
 - **TerrainGenerator**:
@@ -8,7 +8,13 @@
     - **Hydraulic Erosion**: Simulation of water flow, erosion, and sediment deposition.
 - **TerrainRenderer**:
     - Smooth Mesh Rendering (Vertices & Indices) instead of Voxels.
-    - Slope and Sediment-based Debug Coloring.
+    - **Staging Buffers** & **Device Local Memory**: Highly optimized mesh upload for large terrains.
+    - **32-bit Indices**: Support for >65k vertices (enabling 2048x2048 maps).
+    - **Visuals**: Distance Fog, Hemispheric Lighting, Procedural Noise.
+- **UI & Interaction**:
+    - **Map Generator**: Real-time terrain regeneration window.
+    - **Controls**: Size (512-2048) and Smoothness sliders.
+    - **Stability**: Deferred regeneration system prevents GPU crashes.
 - **Core Integration**:
     - Added "Finite World Mode" toggle in Application (enabled by default for dev).
     - Parallel existence with Voxel Engine (can switch in code).

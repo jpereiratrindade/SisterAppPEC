@@ -838,6 +838,78 @@ src/shader_loader.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/shader_loader.cpp.s
 .PHONY : src/shader_loader.cpp.s
 
+src/terrain/terrain_generator.o: src/terrain/terrain_generator.cpp.o
+.PHONY : src/terrain/terrain_generator.o
+
+# target to build an object file
+src/terrain/terrain_generator.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o
+.PHONY : src/terrain/terrain_generator.cpp.o
+
+src/terrain/terrain_generator.i: src/terrain/terrain_generator.cpp.i
+.PHONY : src/terrain/terrain_generator.i
+
+# target to preprocess a source file
+src/terrain/terrain_generator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.i
+.PHONY : src/terrain/terrain_generator.cpp.i
+
+src/terrain/terrain_generator.s: src/terrain/terrain_generator.cpp.s
+.PHONY : src/terrain/terrain_generator.s
+
+# target to generate assembly for a file
+src/terrain/terrain_generator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.s
+.PHONY : src/terrain/terrain_generator.cpp.s
+
+src/terrain/terrain_map.o: src/terrain/terrain_map.cpp.o
+.PHONY : src/terrain/terrain_map.o
+
+# target to build an object file
+src/terrain/terrain_map.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o
+.PHONY : src/terrain/terrain_map.cpp.o
+
+src/terrain/terrain_map.i: src/terrain/terrain_map.cpp.i
+.PHONY : src/terrain/terrain_map.i
+
+# target to preprocess a source file
+src/terrain/terrain_map.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.i
+.PHONY : src/terrain/terrain_map.cpp.i
+
+src/terrain/terrain_map.s: src/terrain/terrain_map.cpp.s
+.PHONY : src/terrain/terrain_map.s
+
+# target to generate assembly for a file
+src/terrain/terrain_map.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.s
+.PHONY : src/terrain/terrain_map.cpp.s
+
+src/terrain/terrain_renderer.o: src/terrain/terrain_renderer.cpp.o
+.PHONY : src/terrain/terrain_renderer.o
+
+# target to build an object file
+src/terrain/terrain_renderer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
+.PHONY : src/terrain/terrain_renderer.cpp.o
+
+src/terrain/terrain_renderer.i: src/terrain/terrain_renderer.cpp.i
+.PHONY : src/terrain/terrain_renderer.i
+
+# target to preprocess a source file
+src/terrain/terrain_renderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.i
+.PHONY : src/terrain/terrain_renderer.cpp.i
+
+src/terrain/terrain_renderer.s: src/terrain/terrain_renderer.cpp.s
+.PHONY : src/terrain/terrain_renderer.s
+
+# target to generate assembly for a file
+src/terrain/terrain_renderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.s
+.PHONY : src/terrain/terrain_renderer.cpp.s
+
 src/ui/ui_layer.o: src/ui/ui_layer.cpp.o
 .PHONY : src/ui/ui_layer.o
 
@@ -1007,6 +1079,15 @@ help:
 	@echo "... src/shader_loader.o"
 	@echo "... src/shader_loader.i"
 	@echo "... src/shader_loader.s"
+	@echo "... src/terrain/terrain_generator.o"
+	@echo "... src/terrain/terrain_generator.i"
+	@echo "... src/terrain/terrain_generator.s"
+	@echo "... src/terrain/terrain_map.o"
+	@echo "... src/terrain/terrain_map.i"
+	@echo "... src/terrain/terrain_map.s"
+	@echo "... src/terrain/terrain_renderer.o"
+	@echo "... src/terrain/terrain_renderer.i"
+	@echo "... src/terrain/terrain_renderer.s"
 	@echo "... src/ui/ui_layer.o"
 	@echo "... src/ui/ui_layer.i"
 	@echo "... src/ui/ui_layer.s"
