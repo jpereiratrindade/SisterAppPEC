@@ -1,4 +1,5 @@
 #include "mesh.h"
+#include <iostream>
 
 namespace graphics {
 
@@ -56,6 +57,7 @@ Mesh::Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vert
 
 Mesh::Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
     : indexCount_(static_cast<uint32_t>(indices.size())), indexType_(VK_INDEX_TYPE_UINT32) {
+    std::cout << "[Mesh] Creating Mesh with 32-bit indices. count=" << indexCount_ << std::endl;
 
     // Vertex Buffer
     VkDeviceSize vertexSize = sizeof(Vertex) * vertices.size();

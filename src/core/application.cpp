@@ -178,13 +178,19 @@ void Application::init() {
 }
 
 void Application::cleanup() {
-    // Wait for GPU work to finish before tearing down resources the command buffers might reference
+    // Terrain contains Vulkan buffers that must be destroyed while device is valid
+    terrain_.reset();
+    finiteRenderer_.reset();
+    finiteGenerator_.reset();
+    finiteMap_.reset();
+    
+    // v3.3.0: Explicitly destroy sync objects
+    syncObjects_.reset(); // Fences/Semaphores need device
+    
+    // Wait for idle to ensure no commands are pending before destroying pools
     if (ctx_) {
         vkDeviceWaitIdle(ctx_->device());
     }
-
-    // Terrain contains Vulkan buffers that must be destroyed while device is valid
-    terrain_.reset();
     
     shutdownImGuiVulkanIfNeeded();
     ImGui_ImplSDL2_Shutdown();
