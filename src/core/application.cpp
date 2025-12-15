@@ -146,7 +146,9 @@ void Application::init() {
 
     // V3.4.0: Load preferences on startup
     core::Preferences::instance().load();
-    terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
+    if (terrain_) {
+        terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
+    }
 
     ui::Callbacks uiCallbacks{
         [this](const std::string& name) { saveBookmark(name); },
@@ -154,12 +156,16 @@ void Application::init() {
         [this](size_t index) { deleteBookmark(index); },
         [this](int warmupRadius) { requestTerrainReset(warmupRadius); },
         [this]() { // savePreferences
-            core::Preferences::instance().setSlopeConfig(terrain_->getSlopeConfig());
+            if (terrain_) {
+                core::Preferences::instance().setSlopeConfig(terrain_->getSlopeConfig());
+            }
             core::Preferences::instance().save();
         },
         [this]() { // loadPreferences
             core::Preferences::instance().load();
-            terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
+            if (terrain_) {
+                terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
+            }
             // Optionally force regen or let user decide via UI
         }
     };
