@@ -32,9 +32,22 @@ float TerrainMap::getHeight(int x, int z) const {
     return heightMap_[z * width_ + x];
 }
 
-void TerrainMap::setHeight(int x, int z, float h) {
-    if (isValid(x, z)) {
-        heightMap_[z * width_ + x] = h;
+void TerrainMap::setHeight(int x, int y, float h) {
+    if (x >= 0 && x < width_ && y >= 0 && y < height_) {
+        heightMap_[y * width_ + x] = h;
+    }
+}
+
+float TerrainMap::getFlux(int x, int y) const {
+    if (x >= 0 && x < width_ && y >= 0 && y < height_) {
+        return fluxMap_[y * width_ + x];
+    }
+    return 0.0f;
+}
+
+void TerrainMap::setFlux(int x, int y, float f) {
+    if (x >= 0 && x < width_ && y >= 0 && y < height_) {
+        fluxMap_[y * width_ + x] = f;
     }
 }
 

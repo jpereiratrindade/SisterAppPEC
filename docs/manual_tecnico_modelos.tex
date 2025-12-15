@@ -84,4 +84,28 @@ Interface atualizada no menu \textit{Tools}:
     \item[Persistence:] Botões para salvar/carregar preferências manualmente.
 \end{description}
 
+\section{Modelo de Drenagem (D8 Flow)}
+A partir da versão v3.6.0, o sistema substituiu o modelo estocástico de erosão por partículas por um algoritmo determinístico de drenagem D8 (Steepest Descent).
+
+\subsection{1. Direção do Fluxo (Flow Direction)}
+Para cada célula do grid de terreno, o algoritmo determina a direção de escoamento para um dos 8 vizinhos com maior gradiente descendente.
+\[
+\text{Receiver} = \text{argmax}_{n \in \text{Neighbors}} (H_{\text{current}} - H_n)
+\]
+Se $H_{\text{current}} - H_n \leq 0$ para todos os vizinhos (mínimo local), a célula é um "sink" (sumidouro).
+
+\subsection{2. Acumulação de Fluxo (Flow Accumulation)}
+O fluxo é calculado iterativamente, ordenando as células por altura (decrescente). Cada célula transfere seu valor de fluxo acumulado para o seu vizinho receptor (Receiver), simulando a conservação de massa da água.
+\[
+F_{\text{receiver}} += F_{\text{upstream}}
+\]
+O resultado é um \textit{Flux Map} onde valores altos representam rios e canais principais.
+
+\subsection{3. Visualização}
+O shader utiliza o mapa de fluxo acumulado para renderizar recursos hídricos:
+\begin{itemize}
+    \item \textbf{Canais Principais:} Células com fluxo $F > 1.0$ (limite visual configurável) são coloridas em Cyan (0.0, 0.8, 1.0).
+    \item \textbf{Continuidade:} O método D8 garante redes de drenagem dendríticas contínuas sem artefatos geométricos ("spots").
+\end{itemize}
+
 \end{document}

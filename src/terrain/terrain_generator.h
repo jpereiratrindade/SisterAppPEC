@@ -1,4 +1,3 @@
-#pragma once
 #include "terrain_map.h"
 #include "../math/noise.h"
 #include <memory>
@@ -11,7 +10,9 @@ public:
     
     // Main processing chain
     void generateBaseTerrain(TerrainMap& map, const TerrainConfig& config);
-    void applyErosion(TerrainMap& map, int iterations = 50000);
+    // Replaced applyErosion with calculateDrainage (User Request)
+    void calculateDrainage(TerrainMap& map);
+    void applyErosion(TerrainMap& map, int iterations); // Kept for legacy/optional
     void generateRivers(TerrainMap& map);
 
 private:

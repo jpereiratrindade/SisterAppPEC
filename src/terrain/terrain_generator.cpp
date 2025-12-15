@@ -1,10 +1,12 @@
 #include "terrain_generator.h"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 namespace terrain {
 
-TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {}
+TerrainGenerator::TerrainGenerator(int seed) : noise_(seed), seed_(seed) {
+}
 
 void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig& config) {
     std::cout << "[TerrainGenerator] Generating Base Terrain (" << map.getWidth() << "x" << map.getHeight() << ")..." << std::endl;
@@ -13,13 +15,12 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
     int h = map.getHeight();
 
     // Noise parameters
-    // Scale: smaller number = larger features
     float scale = config.noiseScale;
     
     #pragma omp parallel for collapse(2)
     for (int z = 0; z < h; ++z) {
         for (int x = 0; x < w; ++x) {
-            // FBM (Fractal Brownian Motion)
+            // FBM
             float nx = static_cast<float>(x) * scale;
             float nz = static_cast<float>(z) * scale;
             
@@ -28,7 +29,6 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
             float amp = 1.0f;
             float maxAmp = 0.0f;
             
-            // Octaves
             for(int i=0; i<config.octaves; ++i) {
                 val += noise_.noise2D(nx * freq, nz * freq) * amp;
                 maxAmp += amp;
@@ -36,141 +36,93 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
                 freq *= 2.0f;
             }
             
-            // Normalize to [0,1]
             val /= maxAmp; 
             
-            // Bias towards lower ground (val^2) to make hills stand out from plains
-            val = val * 0.5f + 0.5f; // Remap -1..1 to 0..1 first if noise is signed? 
-            // FastNoiseLite usually returns -1..1. Let's assume 0..1 behavior or fix it.
-            // Actually noise2D might be -1..1.
-            // If it's -1..1, the previous logic (val /= maxAmp) keeps it -1..1.
-            // Then `val * config.maxHeight` would produce NEGATIVE heights! 
-            // THIS MIGHT BE THE CAUSE OF SPIKES/HOLES! Negative values!
-            
-            // Fix range to 0..1
+            // Map -1..1 to 0..1
             val = (val + 1.0f) * 0.5f;
             
-            // Apply exponential curve (optional, keep linear for now for smoothness)
+            // Apply curve
             val = std::pow(val, 2.0f); 
             
-            // Set Height (Meters)
+            // Set Height
             map.setHeight(x, z, val * config.maxHeight);
         }
     }
 }
 
-void TerrainGenerator::applyErosion(TerrainMap& map, int iterations) {
-    if (iterations <= 0) return;
-    std::cout << "[TerrainGenerator] Applying Hydraulic Erosion (" << iterations << " drops)..." << std::endl;
+void TerrainGenerator::calculateDrainage(TerrainMap& map) {
+    std::cout << "[TerrainGenerator] Calculating Drainage (D8 Algorithm)..." << std::endl;
+    int w = map.getWidth();
+    int h = map.getHeight();
+    int size = w * h;
 
-    int width = map.getWidth();
-    int height = map.getHeight();
+    // Reset Flux
+    std::fill(map.fluxMap().begin(), map.fluxMap().end(), 1.0f);
+
+    // 1. Calculate Downstream Indices (Steepest Descent)
+    std::vector<int> downstream(size, -1);
     
-    // Simple hydraulic erosion parameters
-    const float inertia = 0.05f;      // How much velocity is kept
-    const float minSlope = 0.01f;     // Minimum slope for flow
-    const float capacity = 4.0f;      // Sediment capacity factor
-    const float deposition = 0.3f;    // Deposition rate
-    const float erosion = 0.3f;       // Erosion rate
-    const float gravity = 4.0f;
-    const float evaporation = 0.02f;
-    const int maxLifetime = 30;
+    // Sort cells by height (highest to lowest) to accumulate flow
+    // Storing indices
+    std::vector<int> sortedIndices(size);
+    for(int i=0; i<size; ++i) sortedIndices[i] = i;
+    
+    // We need access to heightMap for sorting.
+    const auto& heightMap = map.heightMap();
+    std::sort(sortedIndices.begin(), sortedIndices.end(), [&](int a, int b){
+        return heightMap[a] > heightMap[b];
+    });
 
-    for (int i = 0; i < iterations; ++i) {
-        // Random start position
-        float x = static_cast<float>(rand() % (width - 1));
-        float y = static_cast<float>(rand() % (height - 1));
-        
-        float dirX = 0;
-        float dirY = 0;
-        float speed = 1.0f;
-        float water = 1.0f;
-        float sediment = 0.0f;
+    // 2. Determine Receiver for each cell
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            int idx = y * w + x;
+            float currentH = heightMap[idx];
+            float maxDrop = 0.0f;
+            int receiver = -1;
 
-        for (int step = 0; step < maxLifetime; ++step) {
-            int nodeX = static_cast<int>(x);
-            int nodeY = static_cast<int>(y);
-            int cellIndex = nodeY * width + nodeX;
-            
-            // Calculate gradient
-            float u = x - nodeX;
-            float v = y - nodeY;
-            
-            // Get heights of 4 neighbors
-            // Note: Boundary checks omitted for speed, reliant on safe margin or clamp
-            if (nodeX < 0 || nodeX >= width-1 || nodeY < 0 || nodeY >= height-1) break;
-
-            float h00 = map.heightMap()[cellIndex];
-            float h10 = map.heightMap()[cellIndex + 1];
-            float h01 = map.heightMap()[cellIndex + width];
-            float h11 = map.heightMap()[cellIndex + width + 1];
-
-            float gx = (h10 - h00) * (1 - v) + (h11 - h01) * v;
-            float gy = (h01 - h00) * (1 - u) + (h11 - h10) * u;
-
-            // Descent direction
-            dirX = (dirX * inertia - gx * (1 - inertia));
-            dirY = (dirY * inertia - gy * (1 - inertia));
-            
-            // Normalize
-            float len = std::sqrt(dirX * dirX + dirY * dirY);
-            if (len != 0) {
-                dirX /= len;
-                dirY /= len;
-            }
-
-            x += dirX;
-            y += dirY;
-
-            if (x < 0 || x >= width-1 || y < 0 || y >= height-1) break;
-
-            // Height difference
-            float newHeight = map.getHeight(static_cast<int>(x), static_cast<int>(y)); // simplified sampling
-            float diff = (h00 + h10 + h01 + h11) * 0.25f - newHeight; // Approx old height vs new
-
-                if (nodeX < 0 || nodeX >= width || nodeY < 0 || nodeY >= height) break;
-
-                // Safe deposit/erode
-                 float currentH = map.getHeight(nodeX, nodeY);
-                 if (diff > 0) {
-                        float sedimentCapacity = std::max(diff, minSlope) * speed * water * capacity;
-                        if (sediment > sedimentCapacity) {
-                            float amount = (sediment - sedimentCapacity) * deposition;
-                            amount = std::min(amount, 0.5f); // Clamp deposition (max 0.5m/step)
-                            sediment -= amount;
-                            map.setHeight(nodeX, nodeY, currentH + amount); // deposit
-                            map.sedimentMap()[cellIndex] += amount; 
-                        } else {
-                            float amount = std::min((sedimentCapacity - sediment) * erosion, diff);
-                            amount = std::min(amount, 0.5f); // Clamp erosion (max 0.5m/step)
-                            sediment += amount;
-                            map.setHeight(nodeX, nodeY, currentH - amount); // erode
-                        }
-                        // Moving uphill (depression), deposit everything
-                        float amount = std::min(sediment, -diff);
-                         amount = std::min(amount, 0.5f); // Clamp fill
-                        sediment -= amount;
-                        map.setHeight(nodeX, nodeY, currentH + amount);
-                        map.sedimentMap()[cellIndex] += amount;
-                    }
+            // Check 8 neighbors
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dx = -1; dx <= 1; ++dx) {
+                    if (dx == 0 && dy == 0) continue;
                     
-                    // v3.6.1: Accumulate Water Flux (Drainage)
-                    // Accumulate `water` amount passing through this cell.
-                    // To avoid accumulation explosion, we add a fraction or just 1.0 per droplet visit.
-                    // Logging visits is common. Let's start with raw accumulation.
-                    map.fluxMap()[cellIndex] += 1.0f; // Count visits or use `water` volume? Visits is often cleaner for "stream paths".
-
-            speed = std::sqrt(speed * speed + diff * gravity);
-            speed = std::min(speed, 10.0f); // Limit speed to prevent kinetic explosions
-            water *= (1 - evaporation);
-            
-            if (water < 0.01f) break;
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    
+                    if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                        float drop = currentH - heightMap[ny * w + nx];
+                        if (drop > 0 && drop > maxDrop) {
+                             maxDrop = drop;
+                             receiver = ny * w + nx;
+                        }
+                    }
+                }
+            }
+            downstream[idx] = receiver;
         }
     }
+
+    // 3. Accumulate Flow (Cascade from high to low)
+    // Since we iterate from high to low, the upstream nodes are processed before downstream.
+    for (int idx : sortedIndices) {
+        int receiver = downstream[idx];
+        if (receiver != -1) {
+            map.fluxMap()[receiver] += map.fluxMap()[idx];
+        }
+    }
+    
+    std::cout << "[TerrainGenerator] Drainage Calculation Complete." << std::endl;
+}
+
+// Keeping empty implementation for now to satisfy link, or basic one.
+void TerrainGenerator::applyErosion(TerrainMap& map, int /*iterations*/) {
+    // Optional: Can add simple erosion based on the calculated flux later.
+    // Stream Power Law: Erosion = K * Flux^m * Slope^n
+    // For now, user wants just Drainage.
+    (void)map;
 }
 
 void TerrainGenerator::generateRivers(TerrainMap& map) {
-    // Placeholder for river generation
     (void)map;
 }
 

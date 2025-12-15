@@ -177,6 +177,7 @@ namespace core {
     // Visualization State
     bool showSlopeAnalysis_ = false; // v3.5.2
     bool showDrainage_ = false; // v3.6.1
+    bool showErosion_ = false; // v3.6.2
     };
 
 } // namespace core

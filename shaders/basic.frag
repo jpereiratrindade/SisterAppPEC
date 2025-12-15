@@ -2,21 +2,23 @@
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec3 fragNormal;
 layout(location = 2) in float fragViewDist;
-layout(location = 3) in vec2 fragUV; // v3.6.1 Flux
+layout(location = 3) in vec2 fragUV; // v3.6.1 Flux (x), Sediment (y)
 
 layout(location = 0) out vec4 outColor;
 
-// Unified PushConstants (Matches src/renderer.cpp + custom fields)
+// Unified PushConstants (Explicit Layout for Safety)
 layout(push_constant) uniform PushConstants {
-    mat4 mvp;               // Offset 0
-    float pointSize;        // Offset 64
-    float useLighting;      // Offset 68
-    float useFixedColor;    // Offset 72
-    float opacity;          // Offset 76
-    vec3  fixedColor;       // Offset 80
-    float useSlopeVis;      // Offset 92 (Replaces padding)
-    vec3  cameraPos;        // Offset 96
-    float useDrainageVis;   // Offset 108 (New in v3.6.1)
+    layout(offset = 0) mat4 mvp;
+    layout(offset = 64) float pointSize;
+    layout(offset = 68) float useLighting;
+    layout(offset = 72) float useFixedColor;
+    layout(offset = 76) float opacity;
+    layout(offset = 80) vec4  fixedColor;    // 16 bytes (80-96)
+    layout(offset = 96) float useSlopeVis;   // 4 bytes (96-100)
+    // Gap 100-112 to align next vec4 to 16 bytes
+    layout(offset = 112) vec4  cameraPos;     // 16 bytes (112-128)
+    layout(offset = 128) float useDrainageVis;// 4 bytes (128-132)
+    layout(offset = 132) float useErosionVis; // 4 bytes (132-136)
 } pc;
 
 // Pseudo-random noise
@@ -29,7 +31,7 @@ void main() {
     
     // 0. Base Color (Albedo)
     if (pc.useFixedColor > 0.5) {
-        color = pc.fixedColor;
+        vec3 finalColor = pc.fixedColor.rgb;
     } 
     else if (pc.useSlopeVis > 0.5) {
         // --- Slope Visualization Analysis (Standardized Classes) ---
@@ -73,20 +75,29 @@ void main() {
         }
     }
     else {
-        // Natural Terrain Color + Noise
-        float noise = hash(fragNormal.xy * 10.0 + gl_FragCoord.xy * 0.1); 
-        color += (noise - 0.5) * 0.05; 
+        // Natural Terrain Color (No Noise)
+        // float noise = hash(fragNormal.xy * 10.0 + gl_FragCoord.xy * 0.1); 
+        // color += (noise - 0.5) * 0.02; 
     }
     
-    // 2. Drainage / Flux Overlay (v3.6.1)
+    // 2. Drainage / Flux Overlay
     if (pc.useDrainageVis > 0.5) {
         float flux = fragUV.x;
-        if (flux > 5.0) { // Threshold
-            float flow = log(flux) * 0.15;
+        if (flux > 1.0) { 
+            float flow = log(flux) * 0.25;
             flow = min(flow, 1.0);
-            vec3 waterColor = vec3(0.0, 0.2, 0.8); // Deep Blue
-            // Mix water on top of terrain (or slope analysis)
-            color = mix(color, waterColor, flow);
+            vec3 waterColor = vec3(0.0, 0.8, 1.0);
+            color = mix(color, waterColor, flow * 0.8);
+        }
+    }
+    
+    // 3. Erosion / Sediment Overlay
+    if (pc.useErosionVis > 0.5) {
+        float sediment = fragUV.y;
+        if (sediment > 0.05) { // Sensitivity
+            float intensity = min(sediment * 2.0, 1.0);
+            vec3 erosionColor = vec3(0.6, 0.2, 0.1); // Brownish-Red
+            color = mix(color, erosionColor, intensity * 0.7);
         }
     }
 

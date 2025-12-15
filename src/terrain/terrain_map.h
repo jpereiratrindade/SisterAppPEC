@@ -27,9 +27,22 @@ public:
 
     // Data Access
     int getWidth() const { return width_; }
-    int getHeight() const { return height_; }
+    int getHeight() const { return height_; } // Keep existing getHeight() for consistency with other accessors
     
-    // Direct buffer access for generators/renderer
+    // Helpers (renamed from original "Helpers" section, now includes direct accessors)
+    float getHeight(int x, int y) const;
+    void setHeight(int x, int y, float h);
+    
+    float getMoisture(int x, int y) const; // Changed z to y
+    void setMoisture(int x, int y, float m); // Changed z to y
+
+    float getFlux(int x, int y) const;
+    void setFlux(int x, int y, float f);
+
+    float getSediment(int x, int y) const;
+    void setSediment(int x, int y, float s);
+    
+    // Direct buffer access for generators/renderer (reordered and consolidated)
     std::vector<float>& heightMap() { return heightMap_; }
     const std::vector<float>& heightMap() const { return heightMap_; }
 
@@ -46,14 +59,10 @@ public:
     const std::vector<uint8_t>& biomeMap() const { return biomeMap_; }
 
     // Helpers
-    float getHeight(int x, int z) const;
-    void setHeight(int x, int z, float h);
+    // (x,z variants removed to avoid ambiguity with x,y)
     
-    float getMoisture(int x, int z) const;
-    void setMoisture(int x, int z, float m);
-
-    bool isValid(int x, int z) const {
-        return x >= 0 && x < width_ && z >= 0 && z < height_;
+    bool isValid(int x, int y) const {
+        return x >= 0 && x < width_ && y >= 0 && y < height_;
     }
 
 private:

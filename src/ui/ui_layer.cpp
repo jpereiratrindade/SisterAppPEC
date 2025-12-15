@@ -432,16 +432,16 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
              ImGui::TextColored(ImVec4(1.0,0.5,0.0,1), "45-75%%: V.Steep");
              ImGui::TextColored(ImVec4(0.8,0.0,0.0,1), ">75%%: Extreme");
         }
+        if (ctx.showSlopeAnalysis && ctx.showDrainage) ctx.showSlopeAnalysis = false; // Mutually exclusive preferred
         
-        // v3.6.1 Drainage Visualization
-        ImGui::Checkbox("Show Drainage Model", &ctx.showDrainage);
-        if (ctx.showDrainage) {
-            ImGui::SameLine(); 
-            ImGui::TextColored(ImVec4(0.0, 0.5, 1.0, 1.0), "(Flux > 5)");
-        }
+        ImGui::Checkbox("Show Drainage Model (Flux > 1)", &ctx.showDrainage);
+        if (ctx.showDrainage && ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
 
+        
         ImGui::Separator();
         
+        const char* terrainTypes[] = { "Hills", "Mountains", "Plains", "Valleys" };
+
         // 1. State Declarations
         static int selectedSize = 1024;
         static float scale = 0.002f;
@@ -464,7 +464,7 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         ImGui::SameLine();
         if (ImGui::RadioButton("2048", selectedSize == 2048)) selectedSize = 2048;
 
-        ImGui::SliderFloat("Smoothness", &scale, 0.0005f, 0.005f, "%.4f");
+         ImGui::SliderFloat("Scale (Roughness)", &scale, 0.0001f, 0.01f, "%.4f");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Smaller = Smoother/Larger Hills\nLarger = More Rough/Frequent");
 
         ImGui::SliderFloat("Amplitude (Height)", &amplitude, 20.0f, 250.0f, "%.0f m");

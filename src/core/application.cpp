@@ -116,8 +116,8 @@ void Application::init() {
         config.maxHeight = 80.0f; // Gentle rolling hills
         finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
         
-        // Re-enable erosion (conservative count)
-        // finiteGenerator_->applyErosion(*finiteMap_, 100000); // Suspended by user request
+        // Re-enable erosion for Drainage Visualization
+        finiteGenerator_->applyErosion(*finiteMap_, 250000);
         
         finiteRenderer_->buildMesh(*finiteMap_);
         
@@ -609,28 +609,15 @@ void Application::render(size_t frameIndex) {
         }
     }
     
-    // V3.2.2.1-beta: Render Voxel Terrain Chunks with Frustum Culling
-    // VoxelScene render needs updating or we need to check if it depends on RenderContext.
-    // Assuming voxelScene->render needs update too, but checking header first.
-    // Wait, voxelScene passes vk_ to render. Need to check VoxelScene.h next.
-    // Assuming VoxelScene uses RenderContext in signature. 
-    // I will pass `renderer_` (which is stateless mostly) but `voxelScene` might call `renderer_.record`.
-    // VoxelScene::render likely calls renderer. Let's assume for now I need to update VoxelScene too.
-    // For this ReplaceFileContent call, I will pass `vk_` as placeholder if needed? No, I must fix VoxelScene.
-    // I will call voxelScene_->render(cmd, view, proj, camera_, voxelStats_, swapchain_->extent()); 
-    // I need to update VoxelScene signature as well.
-    // For now, let's put the call assuming the new signature for VoxelScene::render.
-    
-    if (useFiniteWorld_ && finiteRenderer_) {
+    // Render Finite World if active
+    if (useFiniteWorld_) {
         // v3.5.0 Render Path
         std::array<float, 16> mvpArray;
         std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
         
         if (finiteRenderer_) {
-            finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), showSlopeAnalysis_, showDrainage_);
+             finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), showSlopeAnalysis_, showDrainage_);
         }
-        // Also render axes/grid if needed? Maybe not for realistic view.
-        // Sky dome could be useful here.
     } else if (voxelScene_) {
         // Voxel Render (Minecraft Mode)
         voxelScene_->render(cmd, view, proj, camera_, voxelStats_, swapchain_->extent());
@@ -654,6 +641,7 @@ void Application::render(size_t frameIndex) {
         /* finiteMap=*/ finiteMap_.get(),
         /* showSlope */ showSlopeAnalysis_,
         /* showDrainage */ showDrainage_,
+        /* showErosion */ showErosion_,
         /* visible */ visibleCount, 
         /* total */ totalChunks,
         pendingTasks,
@@ -799,8 +787,12 @@ void Application::performRegeneration() {
     config.octaves = 3; 
 
     finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
-    // Erosion suspended
-    // finiteGenerator_->applyErosion(*finiteMap_, 100000); 
+    // Erosion (Drainage Viz requires Flux > 5). 250k droplets for adequate flow.
+    // finiteGenerator_->applyErosion(*finiteMap_, 250000); 
+
+    // v3.6.3: Use D8 Drainage instead of Hydraulic Erosion (User Request)
+    // This provides clean, deterministic river networks without "spots".
+    finiteGenerator_->calculateDrainage(*finiteMap_);
 
     finiteRenderer_->buildMesh(*finiteMap_);
 

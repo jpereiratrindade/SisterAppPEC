@@ -12,6 +12,7 @@
 
 - **Finite World Mode**: Transition to high-fidelity terrain maps (up to 2048x2048) with realistic generation.
 - **Regenerator UI**: Real-time terrain creation with configurable size and smoothness.
+- **Drainage Analysis (D8)**: Deterministic flow accumulation visualization (Blue line networks).
 - **Visual Overhaul**: Distance Fog, Hemispheric Lighting, and Procedural Noise texturing.
 - **Performance**: Device Local memory for meshes ensures stability at 4 Million vertices.
 - **Erosion Simulation**: Hydraulic erosion engine (beta).

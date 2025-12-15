@@ -1,0 +1,10 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/main.cpp.o
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::performRegeneration()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:797:46: error: ‘scene_’ was not declared in this scope
+  797 |     finiteRenderer_->buildMesh(*finiteMap_, *scene_);
+      |                                              ^~~~~~
+gmake[2]: *** [CMakeFiles/sisterapp.dir/build.make:205: CMakeFiles/sisterapp.dir/src/core/application.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

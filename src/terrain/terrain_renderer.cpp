@@ -66,46 +66,44 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
                 v.color[0] = 0.4f; v.color[1] = 0.4f; v.color[2] = 0.45f; // Blue-Grey Rock
             }
             
-            // Sediment Visualization (Red tint)
-            float sed = map.sedimentMap()[z * w + x];
-            if (sed > 0.1f) {
-                v.color[0] += std::min(sed * 0.5f, 0.5f);
-                v.color[1] *= 0.5f;
-                v.color[2] *= 0.5f;
-            }
-            
             // v3.6.1 Flux (Drainage) Visualization
             // Store flux in UV.x for shader-based visualization toggling.
             float flux = map.fluxMap()[z * w + x];
-            v.uv[0] = flux; // Store raw flux value
-            v.uv[1] = 0.0f; // Unused for now
+            v.uv[0] = flux;
+            
+            // v3.6.2 Erosion (Sediment) Visualization
+            // Store sediment in UV.y
+            float sed = map.sedimentMap()[z * w + x];
+            v.uv[1] = sed;
 
             vertices.push_back(v);
         }
     }
 
-    // 2. Generate Indices (Triangle Strip or List)
+    // Indices (same as before)
     for (int z = 0; z < h - 1; ++z) {
         for (int x = 0; x < w - 1; ++x) {
-            uint32_t topLeft = static_cast<uint32_t>((z + 1) * w + x);
-            uint32_t topRight = static_cast<uint32_t>((z + 1) * w + (x + 1));
-            uint32_t bottomLeft = static_cast<uint32_t>(z * w + x);
-            uint32_t bottomRight = static_cast<uint32_t>(z * w + (x + 1));
+            int topLeft = z * w + x;
+            int topRight = topLeft + 1;
+            int bottomLeft = (z + 1) * w + x;
+            int bottomRight = bottomLeft + 1;
 
-            // Triangle 1
+            indices.push_back(topLeft);
             indices.push_back(bottomLeft);
             indices.push_back(topRight);
-            indices.push_back(topLeft);
-            
-            // Triangle 2
+
+            indices.push_back(topRight);
             indices.push_back(bottomLeft);
             indices.push_back(bottomRight);
-            indices.push_back(topRight);
         }
     }
 
     mesh_ = std::make_unique<graphics::Mesh>(ctx_, vertices, indices);
-    std::cout << "[TerrainRenderer] Mesh Built: " << vertices.size() << " verts, " << indices.size() / 3 << " tris." << std::endl;
+    
+    // Debug Flux
+    float maxFlux = 0.0f;
+    for (const auto& v : vertices) maxFlux = std::max(maxFlux, v.uv[0]);
+    std::cout << "[TerrainRenderer] Mesh Built: " << vertices.size() << " verts. Max Flux: " << maxFlux << std::endl;
 }
 
 void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis, bool showDrainageVis) {
@@ -115,17 +113,19 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
     material_->bind(cmd);
 
     // Define PC struct matching shader
-    // Unified PushConstants Layout
+    // Unified PushConstants Layout (Aligned)
     struct PushConstants {
         float mvp[16];          // 0
         float pointSize;        // 64
         float useLighting;      // 68
         float useFixedColor;    // 72
         float opacity;          // 76
-        float fixedColor[3];    // 80
-        float useSlopeVis;      // 92 (Padding slot)
-        float cameraPos[3];     // 96
-        float useDrainageVis;   // 108
+        float fixedColor[4];    // 80 (vec4)
+        float useSlopeVis;      // 96
+        float padding[3];       // 100-112 (align next vec4)
+        float cameraPos[4];     // 112 (vec4)
+        float useDrainageVis;   // 128
+        float useErosionVis;    // 132
     };
 
     PushConstants pc{};
@@ -134,10 +134,11 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
     pc.useLighting = 1.0f; 
     pc.useFixedColor = 0.0f;
     pc.opacity = 1.0f;
-    pc.fixedColor[0] = 0.0f; pc.fixedColor[1] = 0.0f; pc.fixedColor[2] = 0.0f;
+    pc.fixedColor[0] = 0.0f; pc.fixedColor[1] = 0.0f; pc.fixedColor[2] = 0.0f; pc.fixedColor[3] = 1.0f;
     pc.useSlopeVis = showSlopeVis ? 1.0f : 0.0f;
-    pc.cameraPos[0] = 0.0f; pc.cameraPos[1] = 0.0f; pc.cameraPos[2] = 0.0f; // Unused by Terrain for now
+    pc.cameraPos[0] = 0.0f; pc.cameraPos[1] = 0.0f; pc.cameraPos[2] = 0.0f; pc.cameraPos[3] = 1.0f;
     pc.useDrainageVis = showDrainageVis ? 1.0f : 0.0f;
+    pc.useErosionVis = 0.0f;
 
     vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &pc);
 

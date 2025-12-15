@@ -10200,9 +10200,11 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: /run/media/jpereir
   /usr/include/bits/wchar.h \
   /usr/include/bits/wctype-wchar.h \
   /usr/include/bits/wordsize.h \
+  /usr/include/c++/15/algorithm \
   /usr/include/c++/15/backward/auto_ptr.h \
   /usr/include/c++/15/backward/binders.h \
   /usr/include/c++/15/bit \
+  /usr/include/c++/15/bits/algorithmfwd.h \
   /usr/include/c++/15/bits/align.h \
   /usr/include/c++/15/bits/alloc_traits.h \
   /usr/include/c++/15/bits/allocated_ptr.h \
@@ -10252,10 +10254,12 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: /run/media/jpereir
   /usr/include/c++/15/bits/shared_ptr_base.h \
   /usr/include/c++/15/bits/specfun.h \
   /usr/include/c++/15/bits/std_abs.h \
+  /usr/include/c++/15/bits/stl_algo.h \
   /usr/include/c++/15/bits/stl_algobase.h \
   /usr/include/c++/15/bits/stl_bvector.h \
   /usr/include/c++/15/bits/stl_construct.h \
   /usr/include/c++/15/bits/stl_function.h \
+  /usr/include/c++/15/bits/stl_heap.h \
   /usr/include/c++/15/bits/stl_iterator.h \
   /usr/include/c++/15/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/15/bits/stl_iterator_base_types.h \
@@ -10268,6 +10272,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: /run/media/jpereir
   /usr/include/c++/15/bits/streambuf_iterator.h \
   /usr/include/c++/15/bits/string_view.tcc \
   /usr/include/c++/15/bits/stringfwd.h \
+  /usr/include/c++/15/bits/uniform_int_dist.h \
   /usr/include/c++/15/bits/unique_ptr.h \
   /usr/include/c++/15/bits/uses_allocator.h \
   /usr/include/c++/15/bits/uses_allocator_args.h \
@@ -10305,6 +10310,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: /run/media/jpereir
   /usr/include/c++/15/new \
   /usr/include/c++/15/ostream \
   /usr/include/c++/15/pstl/execution_defs.h \
+  /usr/include/c++/15/pstl/glue_algorithm_defs.h \
   /usr/include/c++/15/pstl/glue_memory_defs.h \
   /usr/include/c++/15/pstl/pstl_config.h \
   /usr/include/c++/15/stdexcept \

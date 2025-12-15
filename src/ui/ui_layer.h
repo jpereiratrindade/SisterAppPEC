@@ -31,6 +31,7 @@ struct UiFrameContext {
     terrain::TerrainMap* finiteMap; // v3.5.0
     bool& showSlopeAnalysis; // v3.5.2
     bool& showDrainage;      // v3.6.1
+    bool& showErosion; // v3.6.2
     int visibleChunks = 0;
     int totalChunks = 0;
     int pendingTasks = 0;

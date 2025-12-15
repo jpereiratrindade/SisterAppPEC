@@ -1,0 +1,9 @@
+[  2%] Compilando shaders/basic.frag para SPIR-V
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag:46: error: 'p' : undeclared identifier
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag:46: error: 'dot' : no matching overloaded function found
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag:46: error: 'return' : void function cannot return a value
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag:49: error: 'main' : function already has a body
+4 errors generated.
+gmake[2]: *** [CMakeFiles/shaders_spirv.dir/build.make:80: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag.spv] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:122: CMakeFiles/shaders_spirv.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

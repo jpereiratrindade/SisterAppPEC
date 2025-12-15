@@ -1,0 +1,39 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::buildMesh(const terrain::TerrainMap&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:23:24: warning: conversion to ‘std::vector<graphics::Vertex>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   23 |     vertices.reserve(w * h);
+      |                      ~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:24:39: warning: conversion to ‘std::vector<unsigned int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   24 |     indices.reserve((w - 1) * (h - 1) * 6);
+      |                     ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:71:46: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |             float flux = map.fluxMap()[z * w + x];
+      |                                        ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:76:49: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   76 |             float sed = map.sedimentMap()[z * w + x];
+      |                                           ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:91:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   91 |             indices.push_back(topLeft);
+      |                               ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:92:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   92 |             indices.push_back(bottomLeft);
+      |                               ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:93:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   93 |             indices.push_back(topRight);
+      |                               ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:95:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   95 |             indices.push_back(topRight);
+      |                               ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:96:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   96 |             indices.push_back(bottomLeft);
+      |                               ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:97:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   97 |             indices.push_back(bottomRight);
+      |                               ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::render(VkCommandBuffer, const std::array<float, 16>&, VkExtent2D, bool, bool)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:109:96: warning: unused parameter ‘viewport’ [-Wunused-parameter]
+  109 | void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis, bool showDrainageVis) {
+      |                                                                                     ~~~~~~~~~~~^~~~~~~~
+[ 20%] Linking CXX executable sisterapp
+[100%] Built target sisterapp

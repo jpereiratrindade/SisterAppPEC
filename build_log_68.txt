@@ -1,0 +1,62 @@
+[ 16%] Built target shaders_spirv
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:21: warning: ignoring ‘#pragma omp parallel’ [-Wunknown-pragmas]
+   21 |     #pragma omp parallel for collapse(2)
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h: In constructor ‘terrain::TerrainGenerator::TerrainGenerator(int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:21:9: warning: ‘terrain::TerrainGenerator::seed_’ will be initialized after [-Wreorder]
+   21 |     int seed_;
+      |         ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:20:23: warning:   ‘math::PerlinNoise terrain::TerrainGenerator::noise_’ [-Wreorder]
+   20 |     math::PerlinNoise noise_;
+      |                       ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:8:1: warning:   when initialized here [-Wreorder]
+    8 | TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {
+      | ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:8:68: warning: conversion to ‘unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    8 | TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {
+      |                                                                    ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:9:5: error: ‘rng’ was not declared in this scope
+    9 |     rng.seed(seed_);
+      |     ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In member function ‘void terrain::TerrainGenerator::calculateDrainage(terrain::TerrainMap&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:64:33: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   64 |     std::vector<int> downstream(size, -1);
+      |                                 ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:68:36: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   68 |     std::vector<int> sortedIndices(size);
+      |                                    ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:69:45: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |     for(int i=0; i<size; ++i) sortedIndices[i] = i;
+      |                                             ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In lambda function:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:74:26: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   74 |         return heightMap[a] > heightMap[b];
+      |                          ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:74:41: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   74 |         return heightMap[a] > heightMap[b];
+      |                                         ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In member function ‘void terrain::TerrainGenerator::calculateDrainage(terrain::TerrainMap&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:81:40: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   81 |             float currentH = heightMap[idx];
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:94:66: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |                         float drop = currentH - heightMap[ny * w + nx];
+      |                                                           ~~~~~~~^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:102:24: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |             downstream[idx] = receiver;
+      |                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:109:35: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  109 |         int receiver = downstream[idx];
+      |                                   ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:111:27: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  111 |             map.fluxMap()[receiver] += map.fluxMap()[idx];
+      |                           ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:111:54: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  111 |             map.fluxMap()[receiver] += map.fluxMap()[idx];
+      |                                                      ^~~
+gmake[2]: *** [CMakeFiles/sisterapp.dir/build.make:541: CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o] Error 1
+gmake[2]: ** Esperando que outros processos terminem.
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

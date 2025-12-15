@@ -1,0 +1,192 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/main.cpp.o
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+[ 23%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:19: warning: ignoring ‘#pragma omp parallel’ [-Wunknown-pragmas]
+   19 |     #pragma omp parallel for collapse(2)
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h: In constructor ‘terrain::TerrainGenerator::TerrainGenerator(int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:19:9: warning: ‘terrain::TerrainGenerator::seed_’ will be initialized after [-Wreorder]
+   19 |     int seed_;
+      |         ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:18:23: warning:   ‘math::PerlinNoise terrain::TerrainGenerator::noise_’ [-Wreorder]
+   18 |     math::PerlinNoise noise_;
+      |                       ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:7:1: warning:   when initialized here [-Wreorder]
+    7 | TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {}
+      | ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:7:68: warning: conversion to ‘unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {}
+      |                                                                    ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In member function ‘void terrain::TerrainGenerator::applyErosion(terrain::TerrainMap&, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:96:27: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+   96 |             float u = x - nodeX;
+      |                           ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:97:27: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+   97 |             float v = y - nodeY;
+      |                           ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:103:41: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  103 |             float h00 = map.heightMap()[cellIndex];
+      |                                         ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:104:51: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  104 |             float h10 = map.heightMap()[cellIndex + 1];
+      |                                         ~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:105:51: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  105 |             float h01 = map.heightMap()[cellIndex + width];
+      |                                         ~~~~~~~~~~^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:106:59: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  106 |             float h11 = map.heightMap()[cellIndex + width + 1];
+      |                                         ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:125:36: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  125 |             if (x < 0 || x >= width-1 || y < 0 || y >= height-1) break;
+      |                               ~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:125:62: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  125 |             if (x < 0 || x >= width-1 || y < 0 || y >= height-1) break;
+      |                                                        ~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:142:43: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  142 |                         map.sedimentMap()[cellIndex] += amount;
+      |                                           ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:159:39: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  159 |                     map.sedimentMap()[cellIndex] += amount;
+      |                                       ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:166:35: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  166 |                     map.fluxMap()[cellIndex] += 1.0f; // Count visits or use `water` volume? Visits is often cleaner for "stream paths".
+      |                                   ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:188:32: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  188 |             smoothed[z * width + x] = sum / 9.0f;
+      |                      ~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:195:52: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  195 |             map.setHeight(x, z, smoothed[z * width + x]);
+      |                                          ~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:212:36: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  212 |             smoothedFlux[z * width + x] = sum / 9.0f;
+      |                          ~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:219:37: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  219 |             map.fluxMap()[z * width + x] = smoothedFlux[z * width + x];
+      |                           ~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:219:67: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  219 |             map.fluxMap()[z * width + x] = smoothedFlux[z * width + x];
+      |                                                         ~~~~~~~~~~^~~
+[ 25%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘float terrain::TerrainMap::getHeight(int, int) const’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:32:34: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   32 |     return heightMap_[z * width_ + x];
+      |                       ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘void terrain::TerrainMap::setHeight(int, int, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:37:31: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   37 |         heightMap_[y * width_ + x] = h;
+      |                    ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘float terrain::TerrainMap::getFlux(int, int) const’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:43:36: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   43 |         return fluxMap_[y * width_ + x];
+      |                         ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘void terrain::TerrainMap::setFlux(int, int, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:50:29: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   50 |         fluxMap_[y * width_ + x] = f;
+      |                  ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘float terrain::TerrainMap::getMoisture(int, int) const’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:56:36: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   56 |     return moistureMap_[z * width_ + x];
+      |                         ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘void terrain::TerrainMap::setMoisture(int, int, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:61:33: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   61 |         moistureMap_[z * width_ + x] = m;
+      |                      ~~~~~~~~~~~^~~
+[ 27%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::buildMesh(const terrain::TerrainMap&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:23:24: warning: conversion to ‘std::vector<graphics::Vertex>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   23 |     vertices.reserve(w * h);
+      |                      ~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:24:39: warning: conversion to ‘std::vector<unsigned int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   24 |     indices.reserve((w - 1) * (h - 1) * 6);
+      |                     ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:71:46: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |             float flux = map.fluxMap()[z * w + x];
+      |                                        ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:76:49: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   76 |             float sed = map.sedimentMap()[z * w + x];
+      |                                           ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:91:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   91 |             indices.push_back(topLeft);
+      |                               ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:92:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   92 |             indices.push_back(bottomLeft);
+      |                               ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:93:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   93 |             indices.push_back(topRight);
+      |                               ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:95:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   95 |             indices.push_back(topRight);
+      |                               ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:96:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   96 |             indices.push_back(bottomLeft);
+      |                               ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:97:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   97 |             indices.push_back(bottomRight);
+      |                               ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::render(VkCommandBuffer, const std::array<float, 16>&, VkExtent2D, bool, bool, bool)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:109:96: warning: unused parameter ‘viewport’ [-Wunused-parameter]
+  109 | void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis, bool showDrainageVis, bool showErosionVis) {
+      |                                                                                     ~~~~~~~~~~~^~~~~~~~
+[ 30%] Building CXX object CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawMenuBar(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:124:26: warning: unused variable ‘requestReset’ [-Wunused-variable]
+  124 |                     bool requestReset = false;
+      |                          ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawFiniteTools(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:428:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  428 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:428:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘4.0000000000000002e-1’ to ‘4.00000006e-1f’ [-Wfloat-conversion]
+  428 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:428:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  428 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:429:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  429 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:429:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  429 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:429:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  429 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:430:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  430 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:430:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  430 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:430:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  430 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:431:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  431 |              ImGui::TextColored(ImVec4(0.8,0.8,0.0,1), "20-45%%: Steep");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:431:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  431 |              ImGui::TextColored(ImVec4(0.8,0.8,0.0,1), "20-45%%: Steep");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:433:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  433 |              ImGui::TextColored(ImVec4(0.8,0.0,0.0,1), ">75%%: Extreme");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:494:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  494 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:495:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  495 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:499:63: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  499 |                 ctx.camera.setDistance(ctx.finiteMap->getWidth() * 0.8f); // Fit view
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:507:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  507 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:508:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  508 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:444:21: warning: unused variable ‘terrainTypes’ [-Wunused-variable]
+  444 |         const char* terrainTypes[] = { "Hills", "Mountains", "Plains", "Valleys" };
+      |                     ^~~~~~~~~~~~
+[ 32%] Linking CXX executable sisterapp
+[100%] Built target sisterapp

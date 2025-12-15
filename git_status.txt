@@ -1,0 +1,60 @@
+On branch feature/terrain-slopes-v3.4.0
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   CHANGELOG.md
+	modified:   build/CMakeFiles/sisterapp.dir/compiler_depend.internal
+	modified:   build/CMakeFiles/sisterapp.dir/compiler_depend.make
+	modified:   build/CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+	modified:   build/CMakeFiles/sisterapp.dir/src/renderer.cpp.o
+	modified:   build/CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o
+	modified:   build/CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o.d
+	modified:   build/CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o
+	modified:   build/CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
+	modified:   build/CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o
+	modified:   build/sisterapp
+	modified:   docs/manual_tecnico_modelos.tex
+	modified:   imgui.ini
+	modified:   shaders/basic.frag
+	modified:   shaders/basic.frag.spv
+	modified:   src/core/application.cpp
+	modified:   src/core/application.h
+	modified:   src/renderer.cpp
+	modified:   src/terrain/terrain_generator.cpp
+	modified:   src/terrain/terrain_generator.h
+	modified:   src/terrain/terrain_map.cpp
+	modified:   src/terrain/terrain_map.h
+	modified:   src/terrain/terrain_renderer.cpp
+	modified:   src/ui/ui_layer.cpp
+	modified:   src/ui/ui_layer.h
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	app_log.txt
+	build_log_49.txt
+	build_log_50.txt
+	build_log_51.txt
+	build_log_52.txt
+	build_log_53.txt
+	build_log_54.txt
+	build_log_55.txt
+	build_log_56.txt
+	build_log_57.txt
+	build_log_58.txt
+	build_log_59.txt
+	build_log_60.txt
+	build_log_61.txt
+	build_log_62.txt
+	build_log_63.txt
+	build_log_64.txt
+	build_log_65.txt
+	build_log_66.txt
+	build_log_67.txt
+	build_log_68.txt
+	build_log_69.txt
+	build_log_70.txt
+	build_log_71.txt
+	build_log_72.txt
+	git_status.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")

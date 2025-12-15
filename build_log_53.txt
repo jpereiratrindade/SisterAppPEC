@@ -1,0 +1,77 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:19: warning: ignoring ‘#pragma omp parallel’ [-Wunknown-pragmas]
+   19 |     #pragma omp parallel for collapse(2)
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h: In constructor ‘terrain::TerrainGenerator::TerrainGenerator(int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:19:9: warning: ‘terrain::TerrainGenerator::seed_’ will be initialized after [-Wreorder]
+   19 |     int seed_;
+      |         ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:18:23: warning:   ‘math::PerlinNoise terrain::TerrainGenerator::noise_’ [-Wreorder]
+   18 |     math::PerlinNoise noise_;
+      |                       ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:7:1: warning:   when initialized here [-Wreorder]
+    7 | TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {}
+      | ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:7:68: warning: conversion to ‘unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | TerrainGenerator::TerrainGenerator(int seed) : seed_(seed), noise_(seed) {}
+      |                                                                    ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In member function ‘void terrain::TerrainGenerator::applyErosion(terrain::TerrainMap&, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:96:27: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+   96 |             float u = x - nodeX;
+      |                           ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:97:27: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+   97 |             float v = y - nodeY;
+      |                           ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:103:41: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  103 |             float h00 = map.heightMap()[cellIndex];
+      |                                         ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:104:51: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  104 |             float h10 = map.heightMap()[cellIndex + 1];
+      |                                         ~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:105:51: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  105 |             float h01 = map.heightMap()[cellIndex + width];
+      |                                         ~~~~~~~~~~^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:106:59: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  106 |             float h11 = map.heightMap()[cellIndex + width + 1];
+      |                                         ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:125:36: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  125 |             if (x < 0 || x >= width-1 || y < 0 || y >= height-1) break;
+      |                               ~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:125:62: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  125 |             if (x < 0 || x >= width-1 || y < 0 || y >= height-1) break;
+      |                                                        ~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:142:47: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  142 |                             map.sedimentMap()[cellIndex] += amount;
+      |                                               ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:143:35: error: redeclaration of ‘float amount’
+  143 |                             float amount = std::min((sedimentCapacity - sediment) * erosion, diff);
+      |                                   ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:138:35: note: ‘float amount’ previously declared here
+  138 |                             float amount = (sediment - sedimentCapacity) * deposition;
+      |                                   ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:154:31: error: redeclaration of ‘float amount’
+  154 |                         float amount = std::min(sediment, -diff);
+      |                               ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:138:35: note: ‘float amount’ previously declared here
+  138 |                             float amount = (sediment - sedimentCapacity) * deposition;
+      |                                   ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:158:43: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  158 |                         map.sedimentMap()[cellIndex] += amount;
+      |                                           ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:165:35: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  165 |                     map.fluxMap()[cellIndex] += 1.0f; // Count visits or use `water` volume? Visits is often cleaner for "stream paths".
+      |                                   ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:176:38: error: qualified-id in declaration before ‘(’ token
+  176 | void TerrainGenerator::generateRivers(TerrainMap& map) {
+      |                                      ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:181:2: error: expected ‘}’ at end of input
+  181 | } // namespace terrain
+      |  ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:5:19: note: to match this ‘{’
+    5 | namespace terrain {
+      |                   ^
+gmake[2]: *** [CMakeFiles/sisterapp.dir/build.make:541: CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2
