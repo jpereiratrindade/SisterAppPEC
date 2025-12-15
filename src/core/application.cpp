@@ -3,6 +3,7 @@
 #include "../imgui_backend.h"
 #include "../math/math_types.h"
 #include "preferences.h" // v3.4.0
+#include "version.h"
 
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_vulkan.h"
@@ -29,7 +30,8 @@ Application::~Application() {
 }
 
 void Application::init() {
-    if (!initSDL(sdl_, "SisterApp Engine - v3.3.0", 1280, 720)) {
+    std::string title = std::string(APP_NAME) + " - " + std::string(APP_VERSION_TAG);
+    if (!initSDL(sdl_, title.c_str(), 1280, 720)) {
         throw std::runtime_error("Failed to initialize SDL");
     }
 
@@ -113,7 +115,7 @@ void Application::init() {
     // Spawn above terrain height at origin so scene is immediately visible
     int h = terrain_->getTerrainHeight(0, 0);
     camera_.teleportTo({0.0f, static_cast<float>(h) + 8.0f, 0.0f});
-    std::cout << "[SisterApp v3.3.0-beta] Voxel Terrain Initialized - Minecraft Mode!" << std::endl;
+    std::cout << "[" << APP_NAME << " " << APP_VERSION_TAG << "] Voxel Terrain Initialized - Minecraft Mode!" << std::endl;
 
     // V3.4.0: Load preferences on startup
     core::Preferences::instance().load();

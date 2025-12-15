@@ -1,4 +1,4 @@
-# SisterApp Engine v3.3.0 - Domain-Driven Design (DDD)
+# SisterApp Engine v3.4.0 - Domain-Driven Design (DDD)
 
 ## 1. Overview
 Branch voxel-first (Minecraft mode). Renderização usa greedy meshing separado para sólidos e água, AO por face e água transparente. Terreno é gerado e meshado em threads de trabalho com priorização por frustum e culling; UI expõe métricas detalhadas, controles de desempenho e sliders de resiliência.

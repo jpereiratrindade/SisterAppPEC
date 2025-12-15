@@ -1,8 +1,8 @@
-# SisterApp Engine v3.3.0 (Minecraft Mode) 🎮
+# SisterApp Engine v3.4.0 (Minecraft Mode) 🎮
 
 **SisterApp Engine** is now a high-performance Minecraft-style voxel world exploration tool! This version transforms the scientific visualization engine into an immersive first-person voxel environment with procedural terrain, greedy meshing, and optimized multithreaded loading.
 
-![Version](https://img.shields.io/badge/version-3.3.0-orange.svg)
+![Version](https://img.shields.io/badge/version-3.4.0-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
 ![Status](https://img.shields.io/badge/Status-Stable-green.svg)
 
@@ -144,7 +144,7 @@ On modern hardware (e.g., RX 7900 XTX / Ryzen 9):
     -   [x] Refactored Core Architecture (No bridges).
     -   [x] Optimized Chunk Scheduling (Frustum + Distance).
     -   [x] Robust Vegetation Toggling (Safe Resource Destruction).
--   [ ] **v3.4.0**: PCoA Data Visualization restoration.
+-   [x] **v3.4.0**: Slope Analysis, Persistence, Standardized Versioning.
 -   [ ] **v3.5.0**: Multiplayer exploration / Block interaction.
 -   [ ] **v4.0.0**: VR Support.
 

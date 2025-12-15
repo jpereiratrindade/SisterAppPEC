@@ -1,6 +1,6 @@
 # SisterApp Engine - Changelog (Updated)
 
-## [3.4.0] - Unreleased
+## [3.4.0] - 2025-12-15
 ### Added
 - **Slope Analysis Model (Percentage)**:
   - New terrain classification system based on slope percentage (Rise/Run * 100).
