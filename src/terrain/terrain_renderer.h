@@ -23,7 +23,7 @@ public:
     /**
      * @brief Record draw commands
      */
-    void render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport);
+    void render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis = false);
 
 private:
     const core::GraphicsContext& ctx_;

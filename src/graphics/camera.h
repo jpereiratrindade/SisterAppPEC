@@ -56,6 +56,10 @@ public:
     float getRollDegrees() const { return roll_; }
     void resetRoll() { roll_ = 0.0f; dirtyView_ = true; }
     
+    void setTarget(const math::Vec3& target) { target_ = {target.x, target.y, target.z}; dirtyView_ = true; }
+    void setMoveSpeed(float speed) { moveSpeed_ = speed; }
+    float getMoveSpeed() const { return moveSpeed_; }
+
     // FOV helpers
     void setFovDegrees(float degrees);
     float getFovDegrees() const;

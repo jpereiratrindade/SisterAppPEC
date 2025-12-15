@@ -360,6 +360,7 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/camera.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/animation.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/ui_layer.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/../terrain/terrain_map.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/bookmark.h \
  /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h \
  /usr/include/c++/15/unordered_map \
@@ -368,7 +369,6 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /usr/include/c++/15/bits/hashtable_policy.h \
  /usr/include/c++/15/bits/enable_special_members.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/input_manager.h \
- /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_map.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_generator.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_renderer.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/geometry_utils.h \

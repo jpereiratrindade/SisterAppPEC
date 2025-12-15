@@ -1,0 +1,26 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/main.cpp.o
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In lambda function:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:175:34: error: no matching function for call to ‘core::Application::regenerateFiniteWorld(int&, float&)’
+  175 |             regenerateFiniteWorld(size, scale);
+      |             ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:175:34: note: there is 1 candidate
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.h:88:14: note: candidate 1: ‘void core::Application::regenerateFiniteWorld(int, float, float)’
+   88 |         void regenerateFiniteWorld(int size, float scale, float amplitude); // v3.5.1
+      |              ^~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.h:88:14: note: candidate expects 3 arguments, 2 provided
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::init()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:174:9: error: could not convert ‘<lambda closure object>core::Application::init()::<lambda(int, float)>{((core::Application*)this)}’ from ‘core::Application::init()::<lambda(int, float)>’ to ‘std::function<void(int, float, float)>’
+  174 |         [this](int size, float scale) { // regenerateFiniteWorld
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |         |
+      |         core::Application::init()::<lambda(int, float)>
+  175 |             regenerateFiniteWorld(size, scale);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  176 |         }
+      |         ~
+gmake[2]: *** [CMakeFiles/sisterapp.dir/build.make:205: CMakeFiles/sisterapp.dir/src/core/application.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

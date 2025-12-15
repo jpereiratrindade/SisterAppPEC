@@ -1,5 +1,20 @@
 # SisterApp Engine - Changelog (Updated)
 
+## [3.6.0] - 2025-12-15
+### Added
+- **Advanced Slope Analysis**:
+    - **Continuous Gradient**: Smooth heatmap visualization (Blue -> Cyan -> Green -> Yellow -> Orange -> Red).
+    - **Standardized Classes**: Strict GIS percentage thresholds (0-3%, 3-8%, 8-20%, 20-45%, 45-75%, >75%).
+    - **3D Integration**: Analysis layer now receives full lighting (Shadows, Ambient, AO), preserving terrain depth.
+    - **UI Legend**: Dynamic legend explains color coding in real-time.
+- **Terrain Customization**:
+    - **Presets**: Instant configuration for "Plains", "Hills", "Mountains", "Alpine".
+    - **Amplitude Control**: Slider to adjust maximum terrain height (20m - 250m).
+    - **Visual Palette**: Switched from generic green to realistic Soil/Rock colors based on slope.
+- **Map Viewer**:
+    - **Flight Controls**: Orbit around map center, adjusted flight speed, "Fly to Center" button.
+    - **Teleport**: Quick travel to map origin.
+
 ## [3.5.0] - 2025-12-15
 ### Added (Finite World Architecture)
 - **TerrainMap**: New central data structure for finite terrain (height, moisture, sediment).

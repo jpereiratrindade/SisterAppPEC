@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../graphics/camera.h"
+#include "../graphics/camera.h"
 #include "../graphics/voxel_terrain.h"
+#include "../terrain/terrain_map.h" // v3.5.0
 #include "../graphics/animation.h"
 #include "../math/math_types.h"
 #include "bookmark.h"
@@ -26,6 +28,8 @@ struct UiFrameContext {
     bool& showVegetation;
     graphics::Camera& camera;
     graphics::VoxelTerrain* terrain;
+    terrain::TerrainMap* finiteMap; // v3.5.0
+    bool& showSlopeAnalysis; // v3.5.2
     int visibleChunks = 0;
     int totalChunks = 0;
     int pendingTasks = 0;
@@ -43,7 +47,7 @@ struct Callbacks {
     std::function<void(int)> requestTerrainReset;
     std::function<void()> savePreferences; // v3.4.0
     std::function<void()> loadPreferences; // v3.4.0
-    std::function<void(int size, float scale)> regenerateFiniteWorld; // v3.5.0
+    std::function<void(int size, float scale, float amplitude)> regenerateFiniteWorld; // v3.5.1
 };
 
 class UiLayer {

@@ -158,7 +158,7 @@ void Application::init() {
         [this](const std::string& name) { saveBookmark(name); },
         [this](size_t index) { loadBookmark(index); },
         [this](size_t index) { deleteBookmark(index); },
-        [this](int warmupRadius) { requestTerrainReset(warmupRadius); },
+        [this](int warmup) { requestTerrainReset(warmup); },
         [this]() { // savePreferences
             if (terrain_) {
                 core::Preferences::instance().setSlopeConfig(terrain_->getSlopeConfig());
@@ -171,8 +171,8 @@ void Application::init() {
                 terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
             }
         },
-        [this](int size, float scale) { // regenerateFiniteWorld
-            regenerateFiniteWorld(size, scale);
+        [this](int size, float scale, float amplitude) { // regenerateFiniteWorld
+            regenerateFiniteWorld(size, scale, amplitude);
         }
     };
     uiLayer_ = std::make_unique<ui::UiLayer>(uiCallbacks);
@@ -625,7 +625,7 @@ void Application::render(size_t frameIndex) {
         // v3.5.0 Render Path
         std::array<float, 16> mvpArray;
         std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
-        finiteRenderer_->render(cmd, mvpArray, swapchain_->extent());
+        finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), showSlopeAnalysis_);
         
         // Also render axes/grid if needed? Maybe not for realistic view.
         // Sky dome could be useful here.
@@ -648,6 +648,8 @@ void Application::render(size_t frameIndex) {
         showVegetation_,
         camera_,
         terrain_.get(),
+        finiteMap_.get(), // v3.5.0
+        showSlopeAnalysis_, // v3.5.2
         visibleCount,
         totalChunks,
         pendingTasks,
@@ -758,11 +760,12 @@ void Application::deleteBookmark(size_t index) {
 }
 
 // V3.5.0: Map Regeneration
-void Application::regenerateFiniteWorld(int size, float scale) {
+void Application::regenerateFiniteWorld(int size, float scale, float amplitude) {
     // Defer to start of next frame to avoid destroying resources in use by current frame
     regenRequested_ = true;
     deferredRegenSize_ = size;
     deferredRegenScale_ = scale;
+    deferredRegenAmplitude_ = amplitude;
     std::cout << "[SisterApp] Regeneration requested for next frame..." << std::endl;
 }
 
@@ -787,7 +790,7 @@ void Application::performRegeneration() {
     finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
 
     terrain::TerrainConfig config;
-    config.maxHeight = 80.0f;
+    config.maxHeight = deferredRegenAmplitude_;
     config.noiseScale = deferredRegenScale_;
     config.octaves = 3; 
 

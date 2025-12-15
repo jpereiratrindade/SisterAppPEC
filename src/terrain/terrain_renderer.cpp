@@ -58,12 +58,12 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
             // Slope-based coloring
             float slope = 1.0f - v.normal[1]; // 0 = flat, 1 = vertical
             
-            if (slope < 0.1f) { // Flat
-                v.color[0] = 0.2f; v.color[1] = 0.6f; v.color[2] = 0.2f; // Green
-            } else if (slope < 0.3f) { // Hill
-                v.color[0] = 0.4f; v.color[1] = 0.5f; v.color[2] = 0.2f; // Olive
-            } else { // Cliff
-                v.color[0] = 0.5f; v.color[1] = 0.45f; v.color[2] = 0.4f; // Grey/Brown
+            if (slope < 0.15f) { // Flat (Soil/Dirt)
+                v.color[0] = 0.55f; v.color[1] = 0.47f; v.color[2] = 0.36f; // Light Brown
+            } else if (slope < 0.4f) { // Hill (Darker Soil/Rock mix)
+                v.color[0] = 0.45f; v.color[1] = 0.38f; v.color[2] = 0.31f; // Darker Brown
+            } else { // Cliff (Rock)
+                v.color[0] = 0.4f; v.color[1] = 0.4f; v.color[2] = 0.45f; // Blue-Grey Rock
             }
             
             // Sediment Visualization (Red tint)
@@ -102,7 +102,7 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
     std::cout << "[TerrainRenderer] Mesh Built: " << vertices.size() << " verts, " << indices.size() / 3 << " tris." << std::endl;
 }
 
-void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport) {
+void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis) {
     if (!mesh_ || !material_) return;
     
     // Bind Pipeline and Descriptor Sets
@@ -114,18 +114,25 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
         float pointSize;
         float useLighting;
         float useFixedColor;
+        float useSlopeVis; // v3.5.2
         float opacity;
-        float pad[3]; // vec3 alignment padding if needed, but here packed tight? 
-        // vec3 fixedColor (12 bytes)
+        float pad[2]; // Align to 16 bytes/vec4 boundaries if strictly needed, but GLSL std430/push_constant is usually packed floats. 
+                      // vec3 fixedColor is 12 bytes (3 floats).
+                      // Let's verify layout. 
+                      // mvp (64) + pointSize(4) + useLighting(4) + useFixedColor(4) + useSlopeVis(4) + opacity(4) = 84 bytes.
+                      // Next is vec3 fixedColor. 
+                      // Alignment of vec3 is 16 bytes in some std140, but usually 4 in push_constants unless it crosses vec4 boundary.
+                      // Safest is to just list floats matching the shader order exactly.
         float r, g, b;
     };
 
     PushConstants pc{};
     pc.mvp = mvp;
     pc.pointSize = 1.0f;
-    pc.useLighting = 1.0f; // Enable lighting
+    pc.useLighting = 1.0f; 
     pc.useFixedColor = 0.0f;
-    pc.opacity = 1.0f; // Visible!
+    pc.useSlopeVis = showSlopeVis ? 1.0f : 0.0f;
+    pc.opacity = 1.0f; 
     pc.r = 0.0f; pc.g = 0.0f; pc.b = 0.0f;
 
     // Push Constants (MVP + Params)

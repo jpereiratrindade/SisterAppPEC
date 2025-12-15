@@ -85,7 +85,7 @@ namespace core {
         void loadBookmark(size_t index);
         void deleteBookmark(size_t index);
         void requestTerrainReset(int warmupRadius = 1);
-        void regenerateFiniteWorld(int size, float scale); // v3.5.0
+        void regenerateFiniteWorld(int size, float scale, float amplitude); // v3.5.1
         void performRegeneration(); // v3.5.0 internal
 
 
@@ -168,9 +168,14 @@ namespace core {
     InputManager inputManager_;
 
     // Deferred Actions (v3.5.0 fix)
+    // Deferred Actions (v3.5.0 fix)
     bool regenRequested_ = false;
     int deferredRegenSize_ = 1024;
     float deferredRegenScale_ = 0.002f;
+    float deferredRegenAmplitude_ = 80.0f; // v3.5.1
+    
+    // Visualization State
+    bool showSlopeAnalysis_ = false; // v3.5.2
     };
 
 } // namespace core

@@ -1,0 +1,24 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawMenuBar(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:124:26: warning: unused variable ‘requestReset’ [-Wunused-variable]
+  124 |                     bool requestReset = false;
+      |                          ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawFiniteTools(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:474:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  474 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:475:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  475 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:479:63: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  479 |                 ctx.camera.setDistance(ctx.finiteMap->getWidth() * 0.8f); // Fit view
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:487:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  487 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:488:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  488 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+[ 20%] Linking CXX executable sisterapp
+[100%] Built target sisterapp

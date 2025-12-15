@@ -10,6 +10,7 @@ layout(push_constant) uniform PushConstants {
     float pointSize;
     float useLighting;   // 0.0 or 1.0
     float useFixedColor; // 0.0 or 1.0
+    float useSlopeVis;   // 0.0 or 1.0 (v3.5.2)
     float opacity;       // Alpha
     vec3  fixedColor;    // Color Override
 } pc;
@@ -22,16 +23,58 @@ float hash(vec2 p) {
 void main() {
     vec3 color = fragColor;
     
-    // 0. Base Color & Noise
+    // 0. Base Color (Albedo)
     if (pc.useFixedColor > 0.5) {
         color = pc.fixedColor;
-    } else {
-        // Add minimal noise texture for "grass" detail
+    } 
+    else if (pc.useSlopeVis > 0.5) {
+        // --- Slope Visualization Analysis (Standardized Classes) ---
+        vec3 N = normalize(fragNormal);
+        float dotUp = clamp(N.y, 0.0, 1.0);
+        float angle = acos(dotUp);
+        float slopePercent = tan(angle) * 100.0;
+        
+        // Classes (Keyframes):
+        // 0%  : Blue   (0.1, 0.3, 0.8)
+        // 3%  : Cyan   (0.0, 0.8, 1.0)
+        // 8%  : Green  (0.4, 0.8, 0.2)
+        // 20% : Steep  (1.0, 0.9, 0.1) // Yellowish
+        // 45% : V.Steep(1.0, 0.5, 0.0) // Orange
+        // 75% : Extreme(0.8, 0.0, 0.0) // Red
+
+        vec3 cBlue   = vec3(0.1, 0.3, 0.8);
+        vec3 cCyan   = vec3(0.0, 0.8, 1.0);
+        vec3 cGreen  = vec3(0.4, 0.8, 0.2);
+        vec3 cYellow = vec3(1.0, 0.9, 0.1);
+        vec3 cOrange = vec3(1.0, 0.5, 0.0);
+        vec3 cRed    = vec3(0.8, 0.0, 0.0);
+
+        if (slopePercent < 3.0) {
+            float t = slopePercent / 3.0;
+            color = mix(cBlue, cCyan, t);
+        } else if (slopePercent < 8.0) {
+            float t = (slopePercent - 3.0) / (8.0 - 3.0);
+            color = mix(cCyan, cGreen, t);
+        } else if (slopePercent < 20.0) {
+            float t = (slopePercent - 8.0) / (20.0 - 8.0);
+            color = mix(cGreen, cYellow, t);
+        } else if (slopePercent < 45.0) {
+            float t = (slopePercent - 20.0) / (45.0 - 20.0);
+            color = mix(cYellow, cOrange, t);
+        } else if (slopePercent < 75.0) {
+            float t = (slopePercent - 45.0) / (75.0 - 45.0);
+            color = mix(cOrange, cRed, t);
+        } else {
+            color = cRed;
+        }
+    }
+    else {
+        // Natural Terrain Color + Noise
         float noise = hash(fragNormal.xy * 10.0 + gl_FragCoord.xy * 0.1); 
-        color += (noise - 0.5) * 0.05; // Subtle variation
+        color += (noise - 0.5) * 0.05; 
     }
 
-    // 1. Lighting
+    // 1. Lighting (Applied to Albedo)
     if (pc.useLighting > 0.5) {
         vec3 norm = normalize(fragNormal);
         vec3 lightDir = normalize(vec3(0.5, 1.0, 0.5)); // Sun from side
@@ -42,8 +85,7 @@ void main() {
         vec3 diffuse = diff * sunColor * 0.8;
         
         // Hemispheric Ambient (Sky Blue -> Ground Brown)
-        // Up (0,1,0) = Sky, Down (0,-1,0) = Ground
-        float hemi = (norm.y * 0.5 + 0.5); // 0..1
+        float hemi = (norm.y * 0.5 + 0.5); 
         vec3 skyAmbient = vec3(0.53, 0.81, 0.92) * 0.5;
         vec3 gndAmbient = vec3(0.2, 0.15, 0.1) * 0.3;
         vec3 ambient = mix(gndAmbient, skyAmbient, hemi);
@@ -55,7 +97,6 @@ void main() {
     }
 
     // 2. Distance Fog
-    // Density 0.0015 -> visibility ~700m
     float fogDensity = 0.0015; 
     float fogFactor = 1.0 - exp(-fragViewDist * fogDensity);
     fogFactor = clamp(fogFactor, 0.0, 1.0);

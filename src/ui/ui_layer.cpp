@@ -420,10 +420,35 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
     if (ctx.terrain) return; // Only for Finite World mode
 
     ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(250, 180), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(250, 260), ImGuiCond_FirstUseEver);
 
     if (ImGui::Begin("Map Generator (v3.5)", nullptr, ImGuiWindowFlags_NoCollapse)) {
+        ImGui::Checkbox("Show Slope Analysis", &ctx.showSlopeAnalysis);
+        if (ctx.showSlopeAnalysis) {
+             ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+             ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+             ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+             ImGui::TextColored(ImVec4(0.8,0.8,0.0,1), "20-45%%: Steep");
+             ImGui::TextColored(ImVec4(1.0,0.5,0.0,1), "45-75%%: V.Steep");
+             ImGui::TextColored(ImVec4(0.8,0.0,0.0,1), ">75%%: Extreme");
+        }
+        ImGui::Separator();
+        
+        // 1. State Declarations
         static int selectedSize = 1024;
+        static float scale = 0.002f;
+        static float amplitude = 80.0f;
+        static int preset = 1; // 0=Plains, 1=Hills, 2=Mountains, 3=Alpine
+
+        // 2. Terrain Type Preset
+        if (ImGui::Combo("Terrain Type", &preset, "Plains\0Hills\0Mountains\0Alpine\0\0")) {
+            if (preset == 0) { scale = 0.001f; amplitude = 40.0f; }      // Plains
+            if (preset == 1) { scale = 0.002f; amplitude = 80.0f; }      // Hills
+            if (preset == 2) { scale = 0.003f; amplitude = 180.0f; }     // Mountains
+            if (preset == 3) { scale = 0.004f; amplitude = 250.0f; }     // Alpine
+        }
+
+        // 3. Manual Controls
         ImGui::Text("Map Size:");
         if (ImGui::RadioButton("512", selectedSize == 512)) selectedSize = 512;
         ImGui::SameLine();
@@ -431,15 +456,51 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         ImGui::SameLine();
         if (ImGui::RadioButton("2048", selectedSize == 2048)) selectedSize = 2048;
 
-        static float scale = 0.0015f;
         ImGui::SliderFloat("Smoothness", &scale, 0.0005f, 0.005f, "%.4f");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Smaller = Smoother/Larger Hills\nLarger = More Rough/Frequent");
+
+        ImGui::SliderFloat("Amplitude (Height)", &amplitude, 20.0f, 250.0f, "%.0f m");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Max Height of terrain features.");
 
         ImGui::Separator();
         
         if (ImGui::Button("Generate New Map", ImVec2(-1, 0))) {
             if (callbacks_.regenerateFiniteWorld) {
-                callbacks_.regenerateFiniteWorld(selectedSize, scale);
+                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude);
+            }
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Viewer Controls:");
+
+        // Speed Control
+        float currentSpeed = ctx.camera.getMoveSpeed();
+        if (ImGui::SliderFloat("Fly Speed", &currentSpeed, 10.0f, 200.0f, "%.0f m/s")) {
+            ctx.camera.setMoveSpeed(currentSpeed);
+        }
+
+        // Orbit Map Center
+        if (ImGui::Button("Orbit Map", ImVec2(100, 0))) {
+            if (ctx.finiteMap) {
+                float cx = ctx.finiteMap->getWidth() / 2.0f;
+                float cz = ctx.finiteMap->getHeight() / 2.0f;
+                // Height at center (approx 40 + noise) - look at base
+                ctx.camera.setTarget({cx, 40.0f, cz});
+                ctx.camera.setCameraMode(graphics::CameraMode::Orbital);
+                ctx.camera.setDistance(ctx.finiteMap->getWidth() * 0.8f); // Fit view
+            }
+        }
+        ImGui::SameLine();
+        
+        // Teleport to Center
+        if (ImGui::Button("Fly Center", ImVec2(100, 0))) {
+            if (ctx.finiteMap) {
+                float cx = ctx.finiteMap->getWidth() / 2.0f;
+                float cz = ctx.finiteMap->getHeight() / 2.0f;
+                // Get terrain height if possible, else safe height
+                float h = ctx.finiteMap->getHeight(static_cast<int>(cx), static_cast<int>(cz));
+                ctx.camera.teleportTo({cx, h + 50.0f, cz});
+                ctx.camera.setCameraMode(graphics::CameraMode::FreeFlight);
             }
         }
     }
