@@ -84,6 +84,10 @@ void Mesh::draw(VkCommandBuffer cmd) const {
     
     vkCmdBindVertexBuffers(cmd, 0, 1, buffers, offsets);
     vkCmdBindIndexBuffer(cmd, indexBuffer_->handle(), 0, indexType_);
+    
+    // Debug log (once per mesh, maybe too spammy? No, only visible if attached)
+    // std::cout << "[Mesh] Draw: count=" << indexCount_ << " type=" << indexType_ << std::endl;
+    
     vkCmdDrawIndexed(cmd, indexCount_, 1, 0, 0, 0);
 }
 

@@ -105,8 +105,8 @@ void Application::init() {
     // --- V3.5.0: Finite World Initialization ---
     // Toggle via member var or preference. For now, hardcoded true.
     if (useFiniteWorld_) {
-        std::cout << "[SisterApp v3.5.0] Initializing Finite World (1024x1024)..." << std::endl;
-        finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
+        std::cout << "[SisterApp v3.5.0] Initializing Finite World (512x512)..." << std::endl;
+        finiteMap_ = std::make_unique<terrain::TerrainMap>(512, 512);
         finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(12345);
         
         // Pass the correct RenderPass!
@@ -120,8 +120,8 @@ void Application::init() {
         finiteRenderer_->buildMesh(*finiteMap_);
         
         camera_.setCameraMode(graphics::CameraMode::FreeFlight);
-        float cx = 1024.0f / 2.0f;
-        float cz = 1024.0f / 2.0f;
+        float cx = 512.0f / 2.0f;
+        float cz = 512.0f / 2.0f;
         float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
         camera_.teleportTo({cx, h + 20.0f, cz}); // Low flight, immersive
         // camera_.lookAt({cx, h, cz}); // Removed, user controls view
