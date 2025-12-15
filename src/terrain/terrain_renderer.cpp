@@ -73,6 +73,12 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
                 v.color[1] *= 0.5f;
                 v.color[2] *= 0.5f;
             }
+            
+            // v3.6.1 Flux (Drainage) Visualization
+            // Store flux in UV.x for shader-based visualization toggling.
+            float flux = map.fluxMap()[z * w + x];
+            v.uv[0] = flux; // Store raw flux value
+            v.uv[1] = 0.0f; // Unused for now
 
             vertices.push_back(v);
         }
@@ -102,41 +108,38 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
     std::cout << "[TerrainRenderer] Mesh Built: " << vertices.size() << " verts, " << indices.size() / 3 << " tris." << std::endl;
 }
 
-void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis) {
+void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis, bool showDrainageVis) {
     if (!mesh_ || !material_) return;
     
     // Bind Pipeline and Descriptor Sets
     material_->bind(cmd);
 
     // Define PC struct matching shader
+    // Unified PushConstants Layout
     struct PushConstants {
-        std::array<float, 16> mvp;
-        float pointSize;
-        float useLighting;
-        float useFixedColor;
-        float useSlopeVis; // v3.5.2
-        float opacity;
-        float pad[2]; // Align to 16 bytes/vec4 boundaries if strictly needed, but GLSL std430/push_constant is usually packed floats. 
-                      // vec3 fixedColor is 12 bytes (3 floats).
-                      // Let's verify layout. 
-                      // mvp (64) + pointSize(4) + useLighting(4) + useFixedColor(4) + useSlopeVis(4) + opacity(4) = 84 bytes.
-                      // Next is vec3 fixedColor. 
-                      // Alignment of vec3 is 16 bytes in some std140, but usually 4 in push_constants unless it crosses vec4 boundary.
-                      // Safest is to just list floats matching the shader order exactly.
-        float r, g, b;
+        float mvp[16];          // 0
+        float pointSize;        // 64
+        float useLighting;      // 68
+        float useFixedColor;    // 72
+        float opacity;          // 76
+        float fixedColor[3];    // 80
+        float useSlopeVis;      // 92 (Padding slot)
+        float cameraPos[3];     // 96
+        float useDrainageVis;   // 108
     };
 
     PushConstants pc{};
-    pc.mvp = mvp;
+    std::copy(mvp.begin(), mvp.end(), pc.mvp);
     pc.pointSize = 1.0f;
     pc.useLighting = 1.0f; 
     pc.useFixedColor = 0.0f;
+    pc.opacity = 1.0f;
+    pc.fixedColor[0] = 0.0f; pc.fixedColor[1] = 0.0f; pc.fixedColor[2] = 0.0f;
     pc.useSlopeVis = showSlopeVis ? 1.0f : 0.0f;
-    pc.opacity = 1.0f; 
-    pc.r = 0.0f; pc.g = 0.0f; pc.b = 0.0f;
+    pc.cameraPos[0] = 0.0f; pc.cameraPos[1] = 0.0f; pc.cameraPos[2] = 0.0f; // Unused by Terrain for now
+    pc.useDrainageVis = showDrainageVis ? 1.0f : 0.0f;
 
-    // Push Constants (MVP + Params)
-    vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(pc), &pc);
+    vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &pc);
 
     // Draw using Mesh API
     mesh_->draw(cmd);

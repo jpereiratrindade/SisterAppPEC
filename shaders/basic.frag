@@ -2,17 +2,21 @@
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec3 fragNormal;
 layout(location = 2) in float fragViewDist;
+layout(location = 3) in vec2 fragUV; // v3.6.1 Flux
 
 layout(location = 0) out vec4 outColor;
 
+// Unified PushConstants (Matches src/renderer.cpp + custom fields)
 layout(push_constant) uniform PushConstants {
-    mat4 mvp;
-    float pointSize;
-    float useLighting;   // 0.0 or 1.0
-    float useFixedColor; // 0.0 or 1.0
-    float useSlopeVis;   // 0.0 or 1.0 (v3.5.2)
-    float opacity;       // Alpha
-    vec3  fixedColor;    // Color Override
+    mat4 mvp;               // Offset 0
+    float pointSize;        // Offset 64
+    float useLighting;      // Offset 68
+    float useFixedColor;    // Offset 72
+    float opacity;          // Offset 76
+    vec3  fixedColor;       // Offset 80
+    float useSlopeVis;      // Offset 92 (Replaces padding)
+    vec3  cameraPos;        // Offset 96
+    float useDrainageVis;   // Offset 108 (New in v3.6.1)
 } pc;
 
 // Pseudo-random noise
@@ -72,6 +76,18 @@ void main() {
         // Natural Terrain Color + Noise
         float noise = hash(fragNormal.xy * 10.0 + gl_FragCoord.xy * 0.1); 
         color += (noise - 0.5) * 0.05; 
+    }
+    
+    // 2. Drainage / Flux Overlay (v3.6.1)
+    if (pc.useDrainageVis > 0.5) {
+        float flux = fragUV.x;
+        if (flux > 5.0) { // Threshold
+            float flow = log(flux) * 0.15;
+            flow = min(flow, 1.0);
+            vec3 waterColor = vec3(0.0, 0.2, 0.8); // Deep Blue
+            // Mix water on top of terrain (or slope analysis)
+            color = mix(color, waterColor, flow);
+        }
     }
 
     // 1. Lighting (Applied to Albedo)

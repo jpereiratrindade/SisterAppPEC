@@ -625,11 +625,14 @@ void Application::render(size_t frameIndex) {
         // v3.5.0 Render Path
         std::array<float, 16> mvpArray;
         std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
-        finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), showSlopeAnalysis_);
         
+        if (finiteRenderer_) {
+            finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), showSlopeAnalysis_, showDrainage_);
+        }
         // Also render axes/grid if needed? Maybe not for realistic view.
         // Sky dome could be useful here.
     } else if (voxelScene_) {
+        // Voxel Render (Minecraft Mode)
         voxelScene_->render(cmd, view, proj, camera_, voxelStats_, swapchain_->extent());
         visibleCount = voxelStats_.visibleChunks;
         totalChunks = voxelStats_.totalChunks;
@@ -647,11 +650,12 @@ void Application::render(size_t frameIndex) {
         animationEnabled_,
         showVegetation_,
         camera_,
-        terrain_.get(),
-        finiteMap_.get(), // v3.5.0
-        showSlopeAnalysis_, // v3.5.2
-        visibleCount,
-        totalChunks,
+        /* terrain = */ terrain_.get(),
+        /* finiteMap=*/ finiteMap_.get(),
+        /* showSlope */ showSlopeAnalysis_,
+        /* showDrainage */ showDrainage_,
+        /* visible */ visibleCount, 
+        /* total */ totalChunks,
         pendingTasks,
         pendingVeg,
         axesAnimator_,

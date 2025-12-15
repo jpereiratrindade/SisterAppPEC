@@ -15,6 +15,7 @@ void TerrainMap::resize(int width, int height) {
     heightMap_.assign(size, 0.0f);
     moistureMap_.assign(size, 0.0f);
     sedimentMap_.assign(size, 0.0f);
+    fluxMap_.assign(size, 0.0f); // v3.6.1
     biomeMap_.assign(size, 0);
 }
 
@@ -22,6 +23,7 @@ void TerrainMap::clear() {
     std::fill(heightMap_.begin(), heightMap_.end(), 0.0f);
     std::fill(moistureMap_.begin(), moistureMap_.end(), 0.0f);
     std::fill(sedimentMap_.begin(), sedimentMap_.end(), 0.0f);
+    std::fill(fluxMap_.begin(), fluxMap_.end(), 0.0f); // v3.6.1
     std::fill(biomeMap_.begin(), biomeMap_.end(), 0);
 }
 

@@ -1,0 +1,26 @@
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::buildMesh(const terrain::TerrainMap&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:23:24: warning: conversion to ‘std::vector<graphics::Vertex>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   23 |     vertices.reserve(w * h);
+      |                      ~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:24:39: warning: conversion to ‘std::vector<unsigned int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   24 |     indices.reserve((w - 1) * (h - 1) * 6);
+      |                     ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:70:49: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   70 |             float sed = map.sedimentMap()[z * w + x];
+      |                                           ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:79:46: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   79 |             float flux = map.fluxMap()[z * w + x];
+      |                                        ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::render(VkCommandBuffer, const std::array<float, 16>&, VkExtent2D, bool, bool)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:142:40: error: ‘class graphics::Material’ has no member named ‘pipelineLayout’; did you mean ‘VkPipelineLayout_T* graphics::Material::pipelineLayout_’? (accessible via ‘VkPipelineLayout_T* graphics::Material::layout() const’)
+  142 |     vkCmdPushConstants(cmd, material_->pipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &pc);
+      |                                        ^~~~~~~~~~~~~~
+      |                                        layout()
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:111:96: warning: unused parameter ‘viewport’ [-Wunused-parameter]
+  111 | void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis, bool showDrainageVis) {
+      |                                                                                     ~~~~~~~~~~~^~~~~~~~
+gmake[2]: *** [CMakeFiles/sisterapp.dir/build.make:555: CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

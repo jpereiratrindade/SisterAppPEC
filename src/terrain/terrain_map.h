@@ -39,6 +39,9 @@ public:
     std::vector<float>& sedimentMap() { return sedimentMap_; }
     const std::vector<float>& sedimentMap() const { return sedimentMap_; }
 
+    std::vector<float>& fluxMap() { return fluxMap_; }
+    const std::vector<float>& fluxMap() const { return fluxMap_; }
+
     std::vector<uint8_t>& biomeMap() { return biomeMap_; }
     const std::vector<uint8_t>& biomeMap() const { return biomeMap_; }
 
@@ -61,6 +64,7 @@ private:
     std::vector<float> heightMap_;
     std::vector<float> moistureMap_;
     std::vector<float> sedimentMap_; // Accumulated sediment
+    std::vector<float> fluxMap_;     // Accumulated water flow (v3.6.1)
     std::vector<uint8_t> biomeMap_;  // ID of the biome
 };
 

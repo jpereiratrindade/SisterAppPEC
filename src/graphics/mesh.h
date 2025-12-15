@@ -18,9 +18,10 @@ struct Vertex {
     float pos[3];    ///< Vertex position in model space
     float color[3];  ///< RGB vertex color (0.0 - 1.0)
     float normal[3]; ///< Vertex normal for lighting
+    float uv[2];     ///< Texture coordinates / Flux data (v3.6.1)
 
     static VkVertexInputBindingDescription getBindingDescription();
-    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions();
+    static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions(); // Updated count to 4
 };
 
 /**

@@ -1,0 +1,21 @@
+[  2%] Compilando shaders/basic.frag para SPIR-V
+[ 16%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/main.cpp.o
+[ 20%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::render(size_t)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:627:42: error: cannot convert ‘float [16]’ to ‘const std::array<float, 16>&’
+  627 |             finiteRenderer_->render(cmd, mvp, swapchain_->extent(), showSlopeAnalysis_, showDrainage_);
+      |                                          ^~~
+      |                                          |
+      |                                          float [16]
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.h:22,
+                 from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_renderer.h:26:67: note: initializing argument 2 of ‘void shape::TerrainRenderer::render(VkCommandBuffer, const std::array<float, 16>&, VkExtent2D, bool, bool)’
+   26 |     void render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, bool showSlopeVis = false, bool showDrainageVis = false);
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:648:37: error: invalid initialization of non-const reference of type ‘graphics::Camera&’ from an rvalue of type ‘std::unique_ptr<graphics::VoxelTerrain>::pointer’ {aka ‘graphics::VoxelTerrain*’}
+  648 |         /* terrain = */ terrain_.get(),
+      |                         ~~~~~~~~~~~~^~
+gmake[2]: *** [CMakeFiles/sisterapp.dir/build.make:205: CMakeFiles/sisterapp.dir/src/core/application.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2

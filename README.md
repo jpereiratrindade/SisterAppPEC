@@ -145,14 +145,6 @@ On modern hardware (e.g., RX 7900 XTX / Ryzen 9):
     -   [x] Optimized Chunk Scheduling (Frustum + Distance).
     -   [x] Robust Vegetation Toggling (Safe Resource Destruction).
 -   [x] **v3.4.0**: Slope Analysis, Persistence, Standardized Versioning.
--   [x] **v3.5.0**:
-    -   [x] Finite World Architecture (TerrainMap).
-    -   [x] Hydraulic Erosion Simulation.
-    -   [x] Smooth Terrain Rendering (Fog, Lighting).
-    -   [x] Dynamic Map Regeneration UI.
--   [x] **v3.6.0**:
-    -   [x] Advanced Slope Analysis (Gradient + 3D).
-    -   [x] Terrain Customization Presets.
     -   [ ] Advanced Texturing (Splatting).
 -   [ ] **v4.0.0**: VR Support.
 

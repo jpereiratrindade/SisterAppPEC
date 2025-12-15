@@ -432,6 +432,14 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
              ImGui::TextColored(ImVec4(1.0,0.5,0.0,1), "45-75%%: V.Steep");
              ImGui::TextColored(ImVec4(0.8,0.0,0.0,1), ">75%%: Extreme");
         }
+        
+        // v3.6.1 Drainage Visualization
+        ImGui::Checkbox("Show Drainage Model", &ctx.showDrainage);
+        if (ctx.showDrainage) {
+            ImGui::SameLine(); 
+            ImGui::TextColored(ImVec4(0.0, 0.5, 1.0, 1.0), "(Flux > 5)");
+        }
+
         ImGui::Separator();
         
         // 1. State Declarations

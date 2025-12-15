@@ -146,7 +146,6 @@ void TerrainGenerator::applyErosion(TerrainMap& map, int iterations) {
                             sediment += amount;
                             map.setHeight(nodeX, nodeY, currentH - amount); // erode
                         }
-                    } else {
                         // Moving uphill (depression), deposit everything
                         float amount = std::min(sediment, -diff);
                          amount = std::min(amount, 0.5f); // Clamp fill
@@ -154,6 +153,12 @@ void TerrainGenerator::applyErosion(TerrainMap& map, int iterations) {
                         map.setHeight(nodeX, nodeY, currentH + amount);
                         map.sedimentMap()[cellIndex] += amount;
                     }
+                    
+                    // v3.6.1: Accumulate Water Flux (Drainage)
+                    // Accumulate `water` amount passing through this cell.
+                    // To avoid accumulation explosion, we add a fraction or just 1.0 per droplet visit.
+                    // Logging visits is common. Let's start with raw accumulation.
+                    map.fluxMap()[cellIndex] += 1.0f; // Count visits or use `water` volume? Visits is often cleaner for "stream paths".
 
             speed = std::sqrt(speed * speed + diff * gravity);
             speed = std::min(speed, 10.0f); // Limit speed to prevent kinetic explosions
