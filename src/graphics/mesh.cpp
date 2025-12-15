@@ -31,38 +31,57 @@ std::array<VkVertexInputAttributeDescription, 3> Vertex::getAttributeDescription
     return attributeDescriptions;
 }
 
-Mesh::Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint16_t>& indices) {
-    indexCount_ = static_cast<uint32_t>(indices.size());
 
-    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+Mesh::Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint16_t>& indices)
+    : indexCount_(static_cast<uint32_t>(indices.size())), indexType_(VK_INDEX_TYPE_UINT16) {
     
-    // Perform staging logic or host visible upload
-    // For simplicity, we stick to HOST_VISIBLE | COHERENT for now as in the original code
-    // Optimization: Use Staging Buffer + DEVICE_LOCAL in future step
-    
+    // Vertex Buffer
+    VkDeviceSize vertexSize = sizeof(Vertex) * vertices.size();
     vertexBuffer_ = std::make_unique<resources::Buffer>(
-        context, 
-        bufferSize, 
+        context, vertexSize, 
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
     );
-    vertexBuffer_->upload(vertices.data(), bufferSize);
+    vertexBuffer_->upload(vertices.data(), vertexSize);
 
-    VkDeviceSize indexBufferSize = sizeof(indices[0]) * indices.size();
+    // Index Buffer (u16)
+    VkDeviceSize indexSize = sizeof(uint16_t) * indices.size();
     indexBuffer_ = std::make_unique<resources::Buffer>(
-        context,
-        indexBufferSize,
-        VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        context, indexSize, 
+        VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
     );
-    indexBuffer_->upload(indices.data(), indexBufferSize);
+    indexBuffer_->upload(indices.data(), indexSize);
+}
+
+Mesh::Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
+    : indexCount_(static_cast<uint32_t>(indices.size())), indexType_(VK_INDEX_TYPE_UINT32) {
+
+    // Vertex Buffer
+    VkDeviceSize vertexSize = sizeof(Vertex) * vertices.size();
+    vertexBuffer_ = std::make_unique<resources::Buffer>(
+        context, vertexSize, 
+        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+    );
+    vertexBuffer_->upload(vertices.data(), vertexSize);
+
+    // Index Buffer (u32)
+    VkDeviceSize indexSize = sizeof(uint32_t) * indices.size();
+    indexBuffer_ = std::make_unique<resources::Buffer>(
+        context, indexSize, 
+        VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+    );
+    indexBuffer_->upload(indices.data(), indexSize);
 }
 
 void Mesh::draw(VkCommandBuffer cmd) const {
-    VkBuffer buffers[] = { vertexBuffer_->handle() };
+    VkBuffer buffers[] = { vertexBuffer_->handle() }; // Fix access to handle()
     VkDeviceSize offsets[] = { 0 };
+    
     vkCmdBindVertexBuffers(cmd, 0, 1, buffers, offsets);
-    vkCmdBindIndexBuffer(cmd, indexBuffer_->handle(), 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(cmd, indexBuffer_->handle(), 0, indexType_);
     vkCmdDrawIndexed(cmd, indexCount_, 1, 0, 0, 0);
 }
 

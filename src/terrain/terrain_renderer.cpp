@@ -19,7 +19,7 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
     int h = map.getHeight();
     
     std::vector<graphics::Vertex> vertices;
-    std::vector<uint16_t> indices;
+    std::vector<uint32_t> indices;
     vertices.reserve(w * h);
     indices.reserve((w - 1) * (h - 1) * 6);
 
@@ -81,10 +81,10 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map) {
     // 2. Generate Indices (Triangle Strip or List)
     for (int z = 0; z < h - 1; ++z) {
         for (int x = 0; x < w - 1; ++x) {
-            uint16_t topLeft = static_cast<uint16_t>((z + 1) * w + x);
-            uint16_t topRight = static_cast<uint16_t>((z + 1) * w + (x + 1));
-            uint16_t bottomLeft = static_cast<uint16_t>(z * w + x);
-            uint16_t bottomRight = static_cast<uint16_t>(z * w + (x + 1));
+            uint32_t topLeft = static_cast<uint32_t>((z + 1) * w + x);
+            uint32_t topRight = static_cast<uint32_t>((z + 1) * w + (x + 1));
+            uint32_t bottomLeft = static_cast<uint32_t>(z * w + x);
+            uint32_t bottomRight = static_cast<uint32_t>(z * w + (x + 1));
 
             // Triangle 1
             indices.push_back(bottomLeft);

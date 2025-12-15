@@ -14,7 +14,7 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
 
     // Noise parameters (can be tuned or passed via config)
     // Scale: smaller number = larger features
-    float scale = 0.005f; 
+    float scale = 0.002f; // Smoother, larger hills
     
     #pragma omp parallel for collapse(2)
     for (int z = 0; z < h; ++z) {
@@ -28,8 +28,8 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
             float amp = 1.0f;
             float maxAmp = 0.0f;
             
-            // 6 Octaves
-            for(int i=0; i<6; ++i) {
+            // 4 Octaves (Less jitter)
+            for(int i=0; i<4; ++i) {
                 val += noise_.noise2D(nx * freq, nz * freq) * amp;
                 maxAmp += amp;
                 amp *= 0.5f;

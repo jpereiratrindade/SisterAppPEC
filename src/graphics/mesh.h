@@ -38,6 +38,7 @@ public:
      * @param indices Triangle indices (CCW winding)
      */
     Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint16_t>& indices);
+    Mesh(const core::GraphicsContext& context, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices); // u32 overload
     
     // Non-copyable/moveable for now simplicty
     Mesh(const Mesh&) = delete;
@@ -49,6 +50,7 @@ private:
     std::unique_ptr<resources::Buffer> vertexBuffer_;
     std::unique_ptr<resources::Buffer> indexBuffer_;
     uint32_t indexCount_ = 0;
+    VkIndexType indexType_ = VK_INDEX_TYPE_UINT16;
 };
 
 } // namespace graphics

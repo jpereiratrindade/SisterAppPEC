@@ -113,6 +113,7 @@ void Application::init() {
         finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
         
         terrain::TerrainConfig config;
+        config.maxHeight = 50.0f; // Debug: Flatten terrain to isolate spikes
         finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
         finiteGenerator_->applyErosion(*finiteMap_, 500000); 
         
@@ -122,7 +123,8 @@ void Application::init() {
         float cx = 1024.0f / 2.0f;
         float cz = 1024.0f / 2.0f;
         float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
-        camera_.teleportTo({cx, h + 150.0f, cz}); // Higher up
+        camera_.teleportTo({cx, h + 20.0f, cz}); // Low flight, immersive
+        // camera_.lookAt({cx, h, cz}); // Removed, user controls view
         
         std::cout << "[SisterApp v3.5.0] Finite World Ready!" << std::endl;
     } else {
