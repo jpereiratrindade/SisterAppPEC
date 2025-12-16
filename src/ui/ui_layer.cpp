@@ -46,6 +46,18 @@ void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
         minimap_->render(ctx.camera);
     }
 
+    // v3.8.3 Loading Overlay
+    if (ctx.isRegenerating) {
+        ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(300, 100));
+        if (ImGui::Begin("Loading", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings)) {
+            ImGui::Text("Generating Terrain...");
+            ImGui::Separator();
+            ImGui::TextWrapped("Please wait. Large maps (4096) can take several seconds to process 16 million cells.");
+        }
+        ImGui::End();
+    }
+
     endGuiFrame();
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
 }
@@ -704,10 +716,18 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
 
         ImGui::Separator();
         
+        if (ctx.isRegenerating) {
+            ImGui::BeginDisabled();
+        }
         if (ImGui::Button("Generate New Map", ImVec2(-1, 0))) {
             if (callbacks_.regenerateFiniteWorld) {
                 callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution, persistence, seedInput, waterLvl);
             }
+        }
+        if (ctx.isRegenerating) {
+            ImGui::EndDisabled();
+            ImGui::SameLine();
+            ImGui::Text("Generating...");
         }
 
         ImGui::Separator();

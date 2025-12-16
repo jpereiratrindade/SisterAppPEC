@@ -16,14 +16,27 @@ TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass 
 }
     // Material initialized.
 
+// 1. Refactored buildMesh to use helper
 void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale) {
+    MeshData data = generateMeshData(map, gridScale);
+    uploadMesh(data);
+}
+
+void TerrainRenderer::uploadMesh(const MeshData& data) {
+    // This MUST run on Main Thread (GPU Access)
+    mesh_ = std::make_unique<graphics::Mesh>(ctx_, data.vertices, data.indices);
+}
+
+TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::TerrainMap& map, float gridScale) {
     int w = map.getWidth();
     int h = map.getHeight();
     
-    std::vector<graphics::Vertex> vertices;
-    std::vector<uint32_t> indices;
-    vertices.reserve(w * h);
-    indices.reserve((w - 1) * (h - 1) * 6);
+    MeshData data;
+    data.vertices.reserve(w * h);
+    data.indices.reserve((w - 1) * (h - 1) * 6);
+
+    std::vector<graphics::Vertex>& vertices = data.vertices;
+    std::vector<uint32_t>& indices = data.indices;
 
     // 1. Generate Vertices
     for (int z = 0; z < h; ++z) {
@@ -107,12 +120,7 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale)
         }
     }
 
-    mesh_ = std::make_unique<graphics::Mesh>(ctx_, vertices, indices);
-    
-    // Debug Flux
-    float maxFlux = 0.0f;
-    for (const auto& v : vertices) maxFlux = std::max(maxFlux, v.uv[0]);
-    std::cout << "[TerrainRenderer] Mesh Built: " << vertices.size() << " verts. Max Flux: " << maxFlux << std::endl;
+    return data;
 }
 
 void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport, 

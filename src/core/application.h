@@ -20,8 +20,11 @@
 #include "../terrain/terrain_map.h"
 #include "../terrain/terrain_generator.h"
 #include "../terrain/terrain_renderer.h"
-#include <memory>
 #include <vector>
+#include <memory>
+#include <future>
+#include <atomic>
+#include <chrono>
 #include <string>
 
 namespace core {
@@ -204,6 +207,13 @@ namespace core {
     float sunElevation_ = 60.0f;
     float fogDensity_ = 0.0005f; // v3.8.0 Tweaked for larger view
     float lightIntensity_ = 1.0f; // v3.8.1
+    
+    // v3.8.3: Async Regeneration
+    std::future<void> regenFuture_;
+    std::atomic<bool> isRegenerating_{false};
+    std::unique_ptr<terrain::TerrainMap> backgroundMap_;
+    shape::TerrainRenderer::MeshData backgroundMeshData_;
+    terrain::TerrainConfig backgroundConfig_; // Store config for main thread use (Minimap)
     
     // v3.6.3 Deferred Update Flag
     bool meshUpdateRequested_ = false;

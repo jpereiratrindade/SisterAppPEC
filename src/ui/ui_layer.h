@@ -65,6 +65,8 @@ struct UiFrameContext {
     float& worldResolution;
     // v3.8.1 Light
     float& lightIntensity;
+    // v3.8.3 Async Status
+    bool isRegenerating;
 };
 
 struct Callbacks {

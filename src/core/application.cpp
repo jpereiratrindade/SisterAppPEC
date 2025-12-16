@@ -872,7 +872,8 @@ void Application::render(size_t frameIndex) {
         lastSurfaceValid_,
         lastSurfaceColor_,
         /* seeding & resolution */ currentSeed_, worldResolution_, // v3.7.8
-        /* light */ lightIntensity_ // v3.8.1
+        /* light */ lightIntensity_, // v3.8.1
+        /* async */ isRegenerating_ // v3.8.3
     };
 
     uiLayer_->render(uiCtx, cmd);
@@ -985,6 +986,10 @@ void Application::regenerateFiniteWorld(int size, float scale, float amplitude, 
     deferredRegenPersistence_ = persistence; // v3.7.1
     deferredRegenSeed_ = seed; // v3.7.8
     deferredRegenWaterLevel_ = waterLevel; // v3.8.0
+    if (isRegenerating_) {
+        std::cout << "[SisterApp] Regeneration ignored - already running." << std::endl;
+        return;
+    }
     regenRequested_ = true;
     std::cout << "[SisterApp] Regeneration requested for next frame (Seed: " << seed << ")..." << std::endl;
 }
@@ -1003,66 +1008,105 @@ void Application::performMeshUpdate() {
 }
 
 void Application::performRegeneration() {
-    if (!regenRequested_) return;
-    
-    std::cout << "[SisterApp] Performing Deferred Regeneration: " << deferredRegenSize_ << "x" << deferredRegenSize_ << std::endl;
-    
-    // SAFE: We are outside of any render pass here
-    vkDeviceWaitIdle(ctx_->device());
-    
-    // Destroy old resources first (Explicitly)
-    finiteRenderer_.reset(); 
-    finiteGenerator_.reset();
-    finiteMap_.reset();
-    
-    // Recreate
-    finiteMap_ = std::make_unique<terrain::TerrainMap>(deferredRegenSize_, deferredRegenSize_);
-    finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(deferredRegenSeed_);
-    
-    // Update Curent Seed Logic
-    currentSeed_ = deferredRegenSeed_;
-    
-    // Re-init Renderer
-    finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
+    // Phase 1: Start Async Task
+    if (regenRequested_ && !isRegenerating_) {
+        std::cout << "[SisterApp] Starting Async Regeneration: " << deferredRegenSize_ << "x" << deferredRegenSize_ << std::endl;
+        
+        // Capture parameters locally to avoid race conditions if variables change
+        int size = deferredRegenSize_;
+        int seed = deferredRegenSeed_;
+        float scale = deferredRegenScale_;
+        float amp = deferredRegenAmplitude_;
+        float res = deferredRegenResolution_;
+        float pers = deferredRegenPersistence_;
+        float water = deferredRegenWaterLevel_;
 
-    terrain::TerrainConfig config;
-    config.maxHeight = deferredRegenAmplitude_;
-    config.noiseScale = deferredRegenScale_;
-    config.resolution = deferredRegenResolution_; // v3.6.6 
-    config.persistence = deferredRegenPersistence_; // v3.7.1
-    config.seed = deferredRegenSeed_; // v3.7.8
-    config.waterLevel = deferredRegenWaterLevel_; // v3.8.0
-    config.octaves = 4; // Reset manually if needed, or expose later
+        regenRequested_ = false;
+        isRegenerating_ = true;
 
-    finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
-    // Erosion (Drainage Viz requires Flux > 5). 250k droplets for adequate flow.
-    // finiteGenerator_->applyErosion(*finiteMap_, 250000); 
+        regenFuture_ = std::async(std::launch::async, [=, this]() {
+            // 1. Create independent resources
+            auto map = std::make_unique<terrain::TerrainMap>(size, size);
+            auto gen = std::make_unique<terrain::TerrainGenerator>(seed);
 
-    // v3.6.3: Use D8 Drainage instead of Hydraulic Erosion (User Request)
-    // This provides clean, deterministic river networks without "spots".
-    finiteGenerator_->calculateDrainage(*finiteMap_);
-    
-    // v3.7.3: Semantic Soil Classification (Fix: Was missing in regen path)
-    finiteGenerator_->classifySoil(*finiteMap_, config);
+            // 2. Setup Config
+            terrain::TerrainConfig config;
+            config.width = size;
+            config.height = size;
+            config.maxHeight = amp;
+            config.noiseScale = scale;
+            config.resolution = res;
+            config.persistence = pers;
+            config.seed = seed;
+            config.waterLevel = water;
+            config.octaves = 4;
 
-    // v3.6.5: Apply Resolution to Mesh Build
-    worldResolution_ = deferredRegenResolution_;
-    
-    // v3.8.0: Update Minimap
-    if (uiLayer_) {
-        uiLayer_->onTerrainUpdated(*finiteMap_, config);
+            // 3. Generate High-Cost Data
+            gen->generateBaseTerrain(*map, config);
+            gen->calculateDrainage(*map);
+            gen->classifySoil(*map, config);
+
+            // 4. Prepare Mesh Data (CPU Heavy)
+            auto meshData = shape::TerrainRenderer::generateMeshData(*map, res);
+
+            // 5. Output to Background Members (Thread Safe? No, member access needs care.)
+            // Since main thread checks "future.valid/ready" and doesn't touch these until then, 
+            // we can just write them here. But wait, `this` capture.
+            // Better: Return a struct and using shared_ptr or move? 
+            // Easier: Write to members. Main thread is NOT reading them yet.
+            this->backgroundMap_ = std::move(map);
+            this->backgroundMeshData_ = std::move(meshData);
+            this->backgroundConfig_ = config;
+        });
+
+        return; // Return immediately to keep UI running
     }
-    
-    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
 
-    // Teleport
-    float cx = (static_cast<float>(deferredRegenSize_) / 2.0f) * worldResolution_;
-    float cz = (static_cast<float>(deferredRegenSize_) / 2.0f) * worldResolution_;
-    float h = finiteMap_->getHeight(finiteMap_->getWidth()/2, finiteMap_->getHeight()/2); // Height is absolute
-    camera_.teleportTo({cx, h + 20.0f, cz});
-    
-    regenRequested_ = false;
-    std::cout << "[SisterApp] Regeneration Complete." << std::endl;
+    // Phase 2: Check Completion
+    if (isRegenerating_) {
+        // Check if ready (non-blocking)
+        if (regenFuture_.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            regenFuture_.get(); // Retrieve result (rethrows exceptions)
+            
+            std::cout << "[SisterApp] Async Generation Finished. Uploading to GPU..." << std::endl;
+
+            // Safe to touch GPU now
+            vkDeviceWaitIdle(ctx_->device());
+
+            // Swap Maps
+            finiteMap_ = std::move(backgroundMap_);
+            currentSeed_ = backgroundConfig_.seed;
+            deferredRegenResolution_ = backgroundConfig_.resolution; // Sync back
+            worldResolution_ = backgroundConfig_.resolution;
+
+            // Recreate Renderer
+            finiteRenderer_.reset();
+            finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
+            
+            // Upload Mesh (Fast Transfer)
+            finiteRenderer_->uploadMesh(backgroundMeshData_);
+            
+            // Clean up heavy data
+            backgroundMeshData_.vertices.clear();
+            backgroundMeshData_.vertices.shrink_to_fit();
+            backgroundMeshData_.indices.clear();
+            backgroundMeshData_.indices.shrink_to_fit();
+
+            // Update Minimap
+            if (uiLayer_) {
+                uiLayer_->onTerrainUpdated(*finiteMap_, backgroundConfig_);
+            }
+
+            // Teleport
+            float cx = (static_cast<float>(finiteMap_->getWidth()) / 2.0f) * worldResolution_;
+            float cz = (static_cast<float>(finiteMap_->getHeight()) / 2.0f) * worldResolution_;
+            float h = finiteMap_->getHeight(finiteMap_->getWidth()/2, finiteMap_->getHeight()/2);
+            camera_.teleportTo({cx, h + 20.0f, cz});
+
+            isRegenerating_ = false;
+            std::cout << "[SisterApp] World Updated!" << std::endl;
+        }
+    }
 }
 
 } // namespace core

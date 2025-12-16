@@ -10,7 +10,8 @@
 -   **Camera & Controls**:
     -   **Zoom (FOV)**: Mouse Wheel now controls Field of View in Free Flight mode.
     -   **Water Level Slider**: Added parameter to Terrain Generator to control base water height (default 64m).
-    -   **Render Distance**:- **v3.8.2 (Current):** Expanded Map Size Options (up to 4096), Improved Map Generator UI (Dimensions Readout).
+    -   **Render Distance**:- **v3.8.3 (Current):** Implemented Async Regeneration (fixes "Not Responding" on large maps), Added Loading Overlay, Optimized Mesh Build.
+- **v3.8.2:** Expanded Map Size Options (up to 4096), Improved Map Generator UI (Dimensions Readout).
 - **v3.8.1:** Refined Horizon/Fog blending, Fixed Sky Sphere clipping, Implemented Top-Down View, Added Views Menu (incl. Probe & Debug), Disabled Preferences Persistence, Removed Animation Controls.
 - v3.8.0: Minimap, Camera Control, Render Distance.
 - v3.7.9: Landscape Ecology Patches (Metrics).
