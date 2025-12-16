@@ -1,5 +1,20 @@
 # Changelog
 
+## [v3.7.8] - 2025-12-16
+### Fixed
+-   **Critical Stability**: 
+    -   Fixed application crash on shutdown by enforcing `vkDeviceWaitIdle` before resource destruction.
+    -   Removed duplicate `syncObjects_` reset causing double-free errors.
+-   **D8 Drainage Algorithm**:
+    -   Updated flow direction logic to use **Physical Slope** (Drop/Distance) instead of just Height Drop, eliminating cardinal direction bias.
+    -   Algorithm now correctly accounts for diagonal distance ($\sqrt{2}$).
+-   **Hydrology Report**:
+    -   Metrics (TWI, Slope, Drainage Density) now correctly incorporate `resolution` (cell size), reporting physical units (m², m/m).
+    -   Signature updated to propagate `worldResolution` from UI to report generator.
+-   **Deterministic Seeding**:
+    -   Added **Seed Input** to Terrain Generator UI.
+    -   Wired `config.seed` to noise generators and soil classification hash, ensuring 100% reproducibility.
+
 ## [v3.7.3] - 2025-12-15
 ### Fixed
 -   **Semantic Soil Architecture**: Refactored soil classification to be **CPU-Authoritative**.

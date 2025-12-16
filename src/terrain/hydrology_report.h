@@ -62,10 +62,10 @@ class HydrologyReport {
 public:
     // streamThreshold: Accumulation value to consider a cell part of a "stream" for density calc.
     // Default 100 cells? Or maybe based on map size.
-    static HydrologyStats analyze(const TerrainMap& map, float streamThreshold = 100.0f);
+    static HydrologyStats analyze(const TerrainMap& map, float resolution, float streamThreshold = 100.0f);
     
     // Generates a formatted report and saves to filepath.
-    static bool generateToFile(const TerrainMap& map, const std::string& filepath);
+    static bool generateToFile(const TerrainMap& map, float resolution, const std::string& filepath);
 
 private:
     static float calculateSlope(const TerrainMap& map, int x, int y);

@@ -202,9 +202,11 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                 ImGui::EndMenu();
             }
             ImGui::Separator();
+            ImGui::Separator();
             if (ImGui::MenuItem("Generate Hydrology Report")) {
                 if (ctx.finiteMap) {
-                    bool success = terrain::HydrologyReport::generateToFile(*ctx.finiteMap, "hydrology_report.txt");
+                    // v3.7.8: Pass Resolution
+                    bool success = terrain::HydrologyReport::generateToFile(*ctx.finiteMap, ctx.worldResolution, "hydrology_report.txt");
                     if (success) {
                         std::cout << "[UI] Hydrology Report generated successfully to 'hydrology_report.txt'" << std::endl;
                     } else {
@@ -607,11 +609,24 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         ImGui::SliderFloat("Cell Size (Resolution)", &resolution, 0.1f, 2.0f, "%.1f m");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("World units per grid cell.\nLower = Higher Resolution (Smoother)\nHigher = Lower Resolution (Blocky)");
 
+        // v3.7.8 Seed Control
+        // Uses static for requested new seed, but initializes from ctx on first run if needed?
+        // Actually, we want to control the NEXT generation.
+        static int seedInput = 12345;
+        // Sync with ctx once?
+        static bool initialized = false;
+        if (!initialized) { seedInput = ctx.seed; initialized = true; }
+        
+        ImGui::InputInt("Seed", &seedInput);
+        if (ImGui::Button("Randomize")) {
+            seedInput = rand(); 
+        }
+
         ImGui::Separator();
         
         if (ImGui::Button("Generate New Map", ImVec2(-1, 0))) {
             if (callbacks_.regenerateFiniteWorld) {
-                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution, persistence);
+                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution, persistence, seedInput);
             }
         }
 

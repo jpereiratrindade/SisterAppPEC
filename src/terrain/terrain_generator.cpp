@@ -8,8 +8,18 @@ namespace terrain {
 TerrainGenerator::TerrainGenerator(int seed) : noise_(seed), seed_(seed) {
 }
 
+// 1. SEED FIX: Use config.seed
 void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig& config) {
-    std::cout << "[TerrainGenerator] Generating Base Terrain (" << map.getWidth() << "x" << map.getHeight() << ")..." << std::endl;
+    if (config.seed != 0) {
+        seed_ = config.seed;
+       // Seed the generator
+    // noise_.SetSeed(seed_); // FastNoiseLite has SetSeed, but math::PerlinNoise might not.
+    // Checking header: PerlinNoise(int) is constructor. No SetSeed.
+    // So we reconstruct it.
+    noise_ = math::PerlinNoise(seed_);
+    }
+
+    std::cout << "[TerrainGenerator] Generating Base Terrain (" << map.getWidth() << "x" << map.getHeight() << "), Seed: " << seed_ << "..." << std::endl;
     
     int w = map.getWidth();
     int h = map.getHeight();
@@ -52,8 +62,9 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
     }
 }
 
+// 2. D8 FIX: Use Slope (Drop/Distance)
 void TerrainGenerator::calculateDrainage(TerrainMap& map) {
-    std::cout << "[TerrainGenerator] Calculating Drainage (D8 Algorithm)..." << std::endl;
+    std::cout << "[TerrainGenerator] Calculating Drainage (D8 w/ Physical Slope)..." << std::endl;
     int w = map.getWidth();
     int h = map.getHeight();
     int size = w * h;
@@ -64,23 +75,26 @@ void TerrainGenerator::calculateDrainage(TerrainMap& map) {
     // 1. Calculate Downstream Indices (Steepest Descent)
     std::vector<int> downstream(size, -1);
     
-    // Sort cells by height (highest to lowest) to accumulate flow
-    // Storing indices
+    // Sort indices by height (high to low)
     std::vector<int> sortedIndices(size);
     for(int i=0; i<size; ++i) sortedIndices[i] = i;
     
-    // We need access to heightMap for sorting.
     const auto& heightMap = map.heightMap();
     std::sort(sortedIndices.begin(), sortedIndices.end(), [&](int a, int b){
         return heightMap[a] > heightMap[b];
     });
 
+    // We need resolution for correct physical slope, but if uniform X/Z, relative comparison holds if we just correct for diagonals.
+    // However, to be pedantically correct per request:
+    // Slope = (H_curr - H_neighbor) / (dist_cells * resolution)
+    // Resolution cancels out for comparison, but DISTANCE FACTOR (1 vs 1.414) is critical.
+    
     // 2. Determine Receiver for each cell
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             int idx = y * w + x;
             float currentH = heightMap[idx];
-            float maxDrop = 0.0f;
+            float maxSlope = 0.0f; // Track Slope, not Drop
             int receiver = -1;
 
             // Check 8 neighbors
@@ -93,9 +107,15 @@ void TerrainGenerator::calculateDrainage(TerrainMap& map) {
                     
                     if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
                         float drop = currentH - heightMap[ny * w + nx];
-                        if (drop > 0 && drop > maxDrop) {
-                             maxDrop = drop;
-                             receiver = ny * w + nx;
+                        if (drop > 0) {
+                            // Distance factor: 1.0 for cardinal, 1.414 for diagonal
+                            float distFactor = (dx == 0 || dy == 0) ? 1.0f : 1.41421356f;
+                            float slope = drop / distFactor; 
+                            
+                            if (slope > maxSlope) {
+                                 maxSlope = slope;
+                                 receiver = ny * w + nx;
+                            }
                         }
                     }
                 }
@@ -106,8 +126,7 @@ void TerrainGenerator::calculateDrainage(TerrainMap& map) {
         }
     }
 
-    // 3. Accumulate Flow (Cascade from high to low)
-    // Since we iterate from high to low, the upstream nodes are processed before downstream.
+    // 3. Accumulate Flow
     for (int idx : sortedIndices) {
         int receiver = map.flowDirMap()[idx];
         if (receiver != -1) {
@@ -117,9 +136,6 @@ void TerrainGenerator::calculateDrainage(TerrainMap& map) {
     
     std::cout << "[TerrainGenerator] Drainage Calculation Complete." << std::endl;
 }
-
-
-
 
 void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config) {
     int w = map.getWidth();
@@ -146,11 +162,15 @@ void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config
             // We use the noise_ member. It returns -1..1 usually (FastNoiseLite/Simplex).
             // But basic noise2D returns -1..1. We need 0..1.
             
-            float wx = static_cast<float>(x) * config.resolution;
-            float wz = static_cast<float>(z) * config.resolution;
-            
-            float rndVal = noise_.noise2D(wx * 0.1f, wz * 0.1f);
-            float rnd = (rndVal + 1.0f) * 0.5f; 
+            // Stochastic Factor: Robust Integer Hash (Artifact-Free)
+            // Removed Golden Ratio (caused lines/moiré).
+            // Using a simple PCG-style mix for high-quality white noise.
+            uint32_t h = static_cast<uint32_t>(seed_) + static_cast<uint32_t>(x) * 374761393 + static_cast<uint32_t>(z) * 668265263;
+            h = (h ^ (h >> 13)) * 1274126177;
+            float rnd = static_cast<float>(h ^ (h >> 16)) / 4294967296.0f;
+
+
+
             
             SoilType type = SoilType::None;
 

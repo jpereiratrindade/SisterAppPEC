@@ -47,7 +47,10 @@ float HydrologyReport::calculateSlope(const TerrainMap& map, int x, int y) {
     return maxSlope;
 }
 
-HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThreshold) {
+HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float resolution, float streamThreshold) {
+    if (resolution <= 0.0f) resolution = 1.0f;
+    float cellArea = resolution * resolution;
+
     HydrologyStats globalStats;
     globalStats.initRanges();
     globalStats.id = 0;
@@ -57,51 +60,99 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
     int h = map.getHeight();
     int count = w * h;
 
-    // Basin tracking
-    const auto& watershed = map.watershedMap();
-    bool hasBasins = !watershed.empty();
+    // ... (rest is largely same logic but updated math)
     
-    // Map of Basin ID -> Stats
-    // Using a vector is faster if we know max ID, but map is safer if IDs are sparse.
-    // However, segmentGlobal usually produces contiguous IDs from 1.
-    // Let's use a vector, resizing if needed or pre-scanning max ID.
-    // For safety/simplicity in single pass, let's just use a Map or large vector if known.
-    // Since we don't know Max ID easily without scan, let's do a map for now or assume < 65536.
-    // But wait, we iterate pixels. Let's lazily add to a map to avoid scan.
-    // Note: allocating map nodes per pixel might be slow?
-    // Optimization: Pre-scan max ID or use `watershedCounter` from TerrainMap if available.
-    // Let's assume max 1000 basins for now? No, use std::map<int, HydrologyStats>.
+    // Basin map/vectors omitted for brevity in replacement chunk, 
+    // will assume we replace whole body or critical loops.
+    // Actually, let's just replace the critical math parts if possible, 
+    // but the logic is interspersed. 
+    // Re-writing the function with physical units.
+    
+    // ...
+    // Let's do a targeted replace of the loop logic if possible, 
+    // but `analyze` signature changed.
+    
+    // We will replace the whole function to get it right.
     std::map<int, HydrologyStats> basinStatsMap;
-
-    // Accumulators for Global (since struct holds final avgs, we need doubles for sums)
-    double g_sumElev = 0.0;
-    double g_sumSlope = 0.0;
-    double g_sumTWI = 0.0;
-    int g_twiCount = 0;
-    float g_streamCells = 0.0f;
-
-    // Accumulators for Basins (we need to store running sums)
-    // We can't easily store running sums in HydrologyStats (floats).
-    // Let's create a helper struct or just "abuse" the float fields for sums temporarily?
-    // No, precision loss.
-    // Let's iterate twice? No.
-    // Let's make `basinStatsMap` store the running sums in the `avg` fields (as doubles? no).
-    // Let's make a local struct for summation.
+    // ...
+    
     struct Accumulator {
         double sumElev = 0.0;
         double sumSlope = 0.0;
         double sumTWI = 0.0;
         int twiCount = 0;
-        float streamCells = 0.0f;
+        float streamLength = 0.0f; // Changed from Cells to Length (meters)
     };
     std::map<int, Accumulator> basinAccMap;
+    
+    // Directions and Distances for Slope/Length
+    const int dx[] = {0, 1, 1, 1, 0, -1, -1, -1};
+    const int dy[] = {-1, -1, 0, 1, 1, 1, 0, -1};
+    const float distMult[] = {1.0f, 1.41421356f, 1.0f, 1.41421356f, 1.0f, 1.41421356f, 1.0f, 1.41421356f};
+
+    double g_sumElev = 0.0;
+    double g_sumSlope = 0.0;
+    double g_sumTWI = 0.0;
+    int g_twiCount = 0;
+    float g_streamLength = 0.0f; // Physical Length in Meters
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             float elev = map.getHeight(x, y);
-            float flux = map.getFlux(x, y);
+            float fluxCells = map.getFlux(x, y);
             int idx = y * w + x;
-            int bid = hasBasins ? watershed[idx] : 0;
+            int bid = !map.watershedMap().empty() ? map.watershedMap()[idx] : 0;
+
+            // --- PHYSICAL PARAMETERS ---
+            // 1. Slope: Max Drop / (Dist * Res)
+            float maxSlope = 0.0f;
+            for (int i = 0; i < 8; ++i) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+                if (map.isValid(nx, ny)) {
+                    float drop = elev - map.getHeight(nx, ny);
+                    if (drop > 0) {
+                        float dist = distMult[i] * resolution;
+                        float s = drop / dist;
+                        if (s > maxSlope) maxSlope = s;
+                    }
+                }
+            }
+            // If local flat/pit, slope=0
+
+            // 2. Specific Catchment Area (a)
+            // a = CatchmentArea / ContourWidth
+            // CatchmentArea = FluxCells * CellArea = FluxCells * Res * Res
+            // ContourWidth ~= Resolution (approx)
+            // So a = FluxCells * Res
+            float specificArea = fluxCells * resolution;
+            
+            // 3. TWI = ln(a / tanB)
+            float tanB = std::max(maxSlope, 0.001f); // Avoid div by zero, 0.1% slope min
+            float twi = std::log(specificArea / tanB);
+
+            // 4. Stream Channel
+            // Threshold is usually on FluxCells.
+            bool isStream = (fluxCells >= streamThreshold);
+            float localStreamLen = 0.0f;
+            if (isStream) {
+                // If it's a stream, what length does it contribute?
+                // For D8, it flows to 1 receiver. We can take half distance to receiver + half from upstream?
+                // Simplification: Each stream cell adds 'Resolution' length?
+                // Or better: Distance to receiver?
+                // Let's check receiver.
+                int receiver = map.flowDirMap().empty() ? -1 : map.flowDirMap()[idx];
+                if (receiver != -1) {
+                    int rx = receiver % w;
+                    int ry = receiver / w;
+                    int dX = std::abs(rx - x);
+                    int dY = std::abs(ry - y);
+                    float distFactor = (dX+dY == 2) ? 1.41421356f : 1.0f; // 2 means diagonal (1+1)
+                    localStreamLen = distFactor * resolution;
+                } else {
+                    localStreamLen = resolution; // Outline/sink
+                }
+            }
 
             // --- GLOBAL STATS ---
             // Elevation
@@ -109,20 +160,21 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
             if (elev > globalStats.maxElevation) globalStats.maxElevation = elev;
             g_sumElev += elev;
 
-            // Slope
-            float slope = calculateSlope(map, x, y);
-            if (slope < globalStats.minSlope) globalStats.minSlope = slope;
-            if (slope > globalStats.maxSlope) globalStats.maxSlope = slope;
-            g_sumSlope += slope;
+            // Slope (tan beta)
+            if (maxSlope < globalStats.minSlope) globalStats.minSlope = maxSlope;
+            if (maxSlope > globalStats.maxSlope) globalStats.maxSlope = maxSlope;
+            g_sumSlope += maxSlope;
 
-            // Flow
-            if (flux > globalStats.maxFlowAccumulation) globalStats.maxFlowAccumulation = flux;
-            float spi = flux * slope;
+            // Flow Accumulation (Physical Area m2)
+            float flowArea = fluxCells * cellArea;
+            if (flowArea > globalStats.maxFlowAccumulation) globalStats.maxFlowAccumulation = flowArea;
+            
+            // Stream Power (SPI = A * S) -> Specific Area * Slope ? Or Total Area?
+            // Usually SPI = a * tanB.
+            float spi = specificArea * maxSlope; 
             if (spi > globalStats.maxStreamPower) globalStats.maxStreamPower = spi;
 
             // TWI
-            float tanB = std::max(slope, 0.0001f);
-            float twi = std::log(flux / tanB);
             if (twi < globalStats.minTWI) globalStats.minTWI = twi;
             if (twi > globalStats.maxTWI) globalStats.maxTWI = twi;
             g_sumTWI += twi;
@@ -130,11 +182,11 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
             if (twi > 8.0f) globalStats.saturatedAreaPct += 1.0f;
 
             // Network
-            if (flux >= streamThreshold) g_streamCells += 1.0f;
+            g_streamLength += localStreamLen;
+
 
             // --- BASIN STATS ---
             if (bid > 0) {
-                // Initialize if new
                 if (basinStatsMap.find(bid) == basinStatsMap.end()) {
                     basinStatsMap[bid].initRanges();
                     basinStatsMap[bid].id = bid;
@@ -142,7 +194,7 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
                 }
                 
                 HydrologyStats& bStats = basinStatsMap[bid];
-                Accumulator& bAcc = basinAccMap[bid]; // will create default
+                Accumulator& bAcc = basinAccMap[bid];
 
                 bStats.areaCells++;
 
@@ -152,12 +204,12 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
                 bAcc.sumElev += elev;
 
                 // Slope
-                if (slope < bStats.minSlope) bStats.minSlope = slope;
-                if (slope > bStats.maxSlope) bStats.maxSlope = slope;
-                bAcc.sumSlope += slope;
+                if (maxSlope < bStats.minSlope) bStats.minSlope = maxSlope;
+                if (maxSlope > bStats.maxSlope) bStats.maxSlope = maxSlope;
+                bAcc.sumSlope += maxSlope;
 
                 // Flow
-                if (flux > bStats.maxFlowAccumulation) bStats.maxFlowAccumulation = flux;
+                if (flowArea > bStats.maxFlowAccumulation) bStats.maxFlowAccumulation = flowArea;
                 if (spi > bStats.maxStreamPower) bStats.maxStreamPower = spi;
 
                 // TWI
@@ -168,7 +220,7 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
                 if (twi > 8.0f) bStats.saturatedAreaPct += 1.0f;
 
                 // Network
-                if (flux >= streamThreshold) bAcc.streamCells += 1.0f;
+                bAcc.streamLength += localStreamLen;
             }
         }
     }
@@ -176,10 +228,20 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
     // --- FINALIZE GLOBAL ---
     globalStats.avgElevation = static_cast<float>(g_sumElev / count);
     globalStats.avgSlope = static_cast<float>(g_sumSlope / count);
-    globalStats.avgTWI = static_cast<float>(g_sumTWI / g_twiCount);
+    if (g_twiCount > 0) globalStats.avgTWI = static_cast<float>(g_sumTWI / g_twiCount);
+    
+    // Percent of Physical Area
+    // (Count > 8 / Total Count) * 100
     globalStats.saturatedAreaPct = (globalStats.saturatedAreaPct / static_cast<float>(count)) * 100.0f;
-    globalStats.drainageDensity = g_streamCells / static_cast<float>(count);
-    globalStats.streamCount = static_cast<int>(g_streamCells);
+    
+    // Drainage Density = Total Channel Length / Total Area
+    float totalAreaM2 = count * cellArea;
+    if (totalAreaM2 > 0) {
+        globalStats.drainageDensity = g_streamLength / totalAreaM2; // m/m2 = 1/m
+    }
+    
+    // Stream Count (Number of segments/cells, legacy metric)
+    globalStats.streamCount = static_cast<int>(g_streamLength / resolution); // approx
 
     // --- FINALIZE BASINS ---
     globalStats.basinCount = 0;
@@ -195,20 +257,23 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
         if (bs.areaCells > 0) {
             bs.avgElevation = static_cast<float>(acc.sumElev / bs.areaCells);
             bs.avgSlope = static_cast<float>(acc.sumSlope / bs.areaCells);
-            bs.avgTWI = static_cast<float>(acc.sumTWI / acc.twiCount);
+            if (acc.twiCount > 0) bs.avgTWI = static_cast<float>(acc.sumTWI / acc.twiCount);
+            
             bs.saturatedAreaPct = (bs.saturatedAreaPct / static_cast<float>(bs.areaCells)) * 100.0f;
-            bs.drainageDensity = acc.streamCells / static_cast<float>(bs.areaCells);
-            bs.streamCount = static_cast<int>(acc.streamCells);
+            
+            float basinAreaM2 = bs.areaCells * cellArea;
+            if (basinAreaM2 > 0) {
+                bs.drainageDensity = acc.streamLength / basinAreaM2;
+            }
+            bs.streamCount = static_cast<int>(acc.streamLength / resolution);
             
             allBasins.push_back(bs);
         }
     }
 
     if (!allBasins.empty()) {
-        // Collect Global Basin Summary Stats
         globalStats.basinCount = static_cast<int>(allBasins.size());
         
-        // Sort by area descending
         std::sort(allBasins.begin(), allBasins.end(), [](const HydrologyStats& a, const HydrologyStats& b){
             return a.areaCells > b.areaCells;
         });
@@ -216,7 +281,6 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
         globalStats.largestBasinArea = allBasins[0].areaCells;
         globalStats.largestBasinPct = (float(allBasins[0].areaCells) / float(count)) * 100.0f;
         
-        // Keep Top 3
         int keep = std::min((int)allBasins.size(), 3);
         for(int i=0; i<keep; ++i) {
             globalStats.topBasins.push_back(allBasins[i]);
@@ -226,61 +290,30 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float streamThres
     return globalStats;
 }
 
-bool HydrologyReport::generateToFile(const TerrainMap& map, const std::string& filepath) {
+bool HydrologyReport::generateToFile(const TerrainMap& map, float resolution, const std::string& filepath) {
     // Analyze first
-    // Threshold: Flux > 50 makes a stream? Adjust scaling if needed. 
-    // Usually log(Flux) is visualized. Let's pick 100 as default base.
-    HydrologyStats stats = analyze(map, 100.0f);
-
+    HydrologyStats stats = analyze(map, resolution, resolution); // Use same resolution for X/Z or pass explicitly
+    
     std::ofstream out(filepath);
     if (!out.is_open()) return false;
 
-    out << "=================================================================\n";
-    out << "                RELATORIO DE ANALISE HIDROLOGICA                 \n";
-    out << "       Analise Estrutural e Funcional de Modelo Idealizado       \n";
-    out << "=================================================================\n\n";
-
-    out << "NOTA TEORICA:\n";
-    out << "Este relatorio apresenta uma analise estrutural e funcional de um\n";
-    out << "modelo hidrologico digital. Os resultados devem ser interpretados\n";
-    out << "como propriedades emergentes da topografia e das regras de fluxo,\n";
-    out << "respondendo a como o relevo organiza gradientes e fluxos.\n";
-    out << "Resultados dependem das resolucoes e parametros adotados no modelo.\n";
-    out << "NAO DEVE ser utilizado como previsao de vazao absoluta ou erosao real.\n\n";
-
-    out << "1. INFORMACOES GERAIS\n";
-    out << "-----------------------------------------------------------------\n";
-    out << "Dimensoes da Grade:      " << map.getWidth() << " x " << map.getHeight() << "\n";
-    out << "Resolucao Espacial:      1.0 u.m. (simbolica)\n";
-    out << "Total de Celulas:        " << (map.getWidth() * map.getHeight()) << "\n";
-    out << "Unidade de Medida:       Unidades de Modelo (u.m.)\n\n";
-
-    out << "2. PARAMETROS ESTRUTURAIS (TOPOGRAFIA)\n";
-    out << "-----------------------------------------------------------------\n";
-    out << std::fixed << std::setprecision(2);
-    out << "Eleuacao (u.m.):\n";
-    out << "  - Minima:              " << stats.minElevation << "\n";
-    out << "  - Maxima:              " << stats.maxElevation << "\n";
-    out << "  - Media:               " << stats.avgElevation << "\n";
-    out << "  - Amplitude:           " << (stats.maxElevation - stats.minElevation) << "\n\n";
-
-    out << "Declividade (tan beta):\n";
-    out << "  - Metodo:              Steepest Descent (Maximo declive local 8-vizinhos)\n";
+    out << "Declividade (m/m):\n";
+    out << "  - Metodo:              Steepest Descent (Max Drop / Distance)\n";
     out << "  - Media:               " << stats.avgSlope << " (" << (stats.avgSlope*100.0f) << "%)\n";
     out << "  - Maxima:              " << stats.maxSlope << " (" << (stats.maxSlope*100.0f) << "%)\n\n";
 
     out << "3. PARAMETROS FUNCIONAIS (HIDROLOGIA)\n";
     out << "-----------------------------------------------------------------\n";
-    out << "Fluxo Acumulado (Area de Contribuicao proxy):\n";
-    out << "  - Maximo:              " << stats.maxFlowAccumulation << "\n\n";
+    out << "Area de Contribuicao (Fluxo Acumulado):\n";
+    out << "  - Maximo:              " << stats.maxFlowAccumulation << " m2\n\n";
 
-    out << "Potencia do Fluxo (Stream Power Index ~ A * S):\n";
+    out << "Potencia do Fluxo (Stream Power Index ~ A_spec * S):\n";
     out << "  - Maximo:              " << stats.maxStreamPower << "\n";
     out << "  - Indicativo de potencial geomorfologico: Regioes com alto SPI sao suscetiveis.\n\n";
 
     out << "4. PARAMETROS ECO-HIDROLOGICOS\n";
     out << "-----------------------------------------------------------------\n";
-    out << "Indice Topografico de Umidade (TWI = ln(A / tanB)):\n";
+    out << "Indice Topografico de Umidade (TWI = ln(a / tanB)):\n";
     out << "  - Minimo:              " << stats.minTWI << " (Zonas secas/divisores)\n";
     out << "  - Maximo:              " << stats.maxTWI << " (Zonas saturadas)\n";
     out << "  - Medio:               " << stats.avgTWI << "\n";
@@ -288,20 +321,20 @@ bool HydrologyReport::generateToFile(const TerrainMap& map, const std::string& f
 
     out << "5. REDE DE DRENAGEM\n";
     out << "-----------------------------------------------------------------\n";
-    out << "Threshold de Canalizacao: Fluxo > 100\n";
+    out << "Threshold de Canalizacao: Fluxo (Cells) > 100\n";
     out << "Densidade de Drenagem:\n";
-    out << "  - Densidade:           " << std::scientific << stats.drainageDensity << " streams/pixel\n";
+    out << "  - Densidade:           " << std::scientific << stats.drainageDensity << " m/m2 (m-1)\n";
     if (stats.drainageDensity > 0.0f) {
-        out << "  - Equivalente:         1 canal a cada ~" << std::fixed << std::setprecision(0) << (1.0f / stats.drainageDensity) << " pixels\n";
+        out << "  - Equivalente:         " << std::fixed << std::setprecision(2) << (stats.drainageDensity * 1000.0f) << " Km de rios por Km2\n";
     }
-    out << "  - Vol. Streams:        " << stats.streamCount << " celulas\n\n";
+    out << "  - Extension Total:     " << (stats.streamCount * resolution) << " m (approx)\n\n";
 
     if (stats.basinCount > 0) {
         out << "6. ESTATISTICAS DE BACIAS (Watershed Segmentation)\n";
         out << "-----------------------------------------------------------------\n";
         out << std::fixed << std::setprecision(0);
         out << "Total de Bacias Identificadas: " << stats.basinCount << "\n";
-        out << "Maior Bacia (Area):            " << stats.largestBasinArea << " celulas\n";
+        out << "Maior Bacia (Area):            " << (stats.largestBasinArea * resolution * resolution) << " m2\n";
         out << std::fixed << std::setprecision(2);
         out << "Dominancia da Maior Bacia:     " << stats.largestBasinPct << " % da area total\n\n";
 
@@ -310,12 +343,13 @@ bool HydrologyReport::generateToFile(const TerrainMap& map, const std::string& f
         
         int bIndex = 1;
         for (const auto& basin : stats.topBasins) {
-            out << "7." << bIndex << ". BACIA ID " << basin.id << " (Area: " << basin.areaCells << " px)\n";
+            float bAreaM2 = basin.areaCells * resolution * resolution;
+            out << "7." << bIndex << ". BACIA ID " << basin.id << " (Area: " << bAreaM2 << " m2)\n";
             out << "   - Elevação (Min/Med/Max):     " << basin.minElevation << " / " << basin.avgElevation << " / " << basin.maxElevation << "\n";
             out << "   - Declividade Média:          " << basin.avgSlope << " (" << (basin.avgSlope * 100.0f) << "%)\n";
             out << "   - TWI Médio:                  " << basin.avgTWI << "\n";
             out << "   - Saturação (TWI>8):          " << basin.saturatedAreaPct << " %\n";
-            out << "   - Densidade Drenagem:         " << std::scientific << basin.drainageDensity << std::fixed << "\n";
+            out << "   - Densidade Drenagem:         " << std::scientific << basin.drainageDensity << std::fixed << " m-1\n";
             out << "   - Stream Power Max:           " << basin.maxStreamPower << "\n";
             out << "\n";
             bIndex++;

@@ -134,14 +134,16 @@ void Application::init() {
     if (useFiniteWorld_) {
         std::cout << "[SisterApp v3.5.0] Initializing Finite World (1024x1024)..." << std::endl;
         finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
-        finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(12345);
+        // v3.7.8: Use Config Seed
+        finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(currentSeed_);
         
         // Pass the correct RenderPass!
         finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
         
         terrain::TerrainConfig config;
         config.maxHeight = 80.0f; // Gentle rolling hills
-        finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
+        config.seed = currentSeed_; // v3.7.8
+        finiteGenerator_->generateBaseTerrain(*finiteMap_, config); // Will re-seed
         
         // Re-enable erosion for Drainage Visualization
         finiteGenerator_->applyErosion(*finiteMap_, 250000);
@@ -159,7 +161,6 @@ void Application::init() {
         float cz = 1024.0f / 2.0f;
         float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
         camera_.teleportTo({cx, h + 20.0f, cz}); // Low flight, immersive
-        // camera_.lookAt({cx, h, cz}); // Removed, user controls view
         
         std::cout << "[SisterApp v3.5.0] Finite World Ready!" << std::endl;
     } else {
@@ -205,8 +206,9 @@ void Application::init() {
             }
         },
         // v3.6.5 Resolution
-        [this](int size, float scale, float amp, float res, float pers) { // regenerateFiniteWorld
-            this->regenerateFiniteWorld(size, scale, amp, res, pers);
+        // v3.6.5 Resolution + v3.7.8 Seed
+        [this](int size, float scale, float amp, float res, float pers, int seed) { // regenerateFiniteWorld
+            this->regenerateFiniteWorld(size, scale, amp, res, pers, seed);
         },
         [this]() { // updateMesh
             // Defer to next frame start
@@ -220,19 +222,19 @@ void Application::init() {
 }
 
 void Application::cleanup() {
+    // Wait for idle to ensure no commands are pending before destroying ANY resources
+    if (ctx_) {
+        vkDeviceWaitIdle(ctx_->device());
+    }
+
     // Terrain contains Vulkan buffers that must be destroyed while device is valid
     terrain_.reset();
     finiteRenderer_.reset();
     finiteGenerator_.reset();
     finiteMap_.reset();
     
-    // v3.3.0: Explicitly destroy sync objects
+    // v3.3.0: Explicitly destroy sync objects - DO NOT RESET TWICE
     syncObjects_.reset(); // Fences/Semaphores need device
-    
-    // Wait for idle to ensure no commands are pending before destroying pools
-    if (ctx_) {
-        vkDeviceWaitIdle(ctx_->device());
-    }
     
     shutdownImGuiVulkanIfNeeded();
     ImGui_ImplSDL2_Shutdown();
@@ -257,7 +259,7 @@ void Application::cleanup() {
     pointMaterial_.reset();
     lineMaterial_.reset();
     
-    syncObjects_.reset(); // Fences/Semaphores
+    // syncObjects_.reset(); // REMOVED DUPLICATE RESET
     
     // Free command buffers
     // Free command buffers
@@ -822,7 +824,8 @@ void Application::render(size_t frameIndex) {
         bookmarks_,
         lastSurfaceInfo_,
         lastSurfaceValid_,
-        lastSurfaceColor_
+        lastSurfaceColor_,
+        /* seeding & resolution */ currentSeed_, worldResolution_ // v3.7.8
     };
 
     uiLayer_->render(uiCtx, cmd);
@@ -925,15 +928,16 @@ void Application::deleteBookmark(size_t index) {
 }
 
 // V3.5.0: Map Regeneration
-void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence) {
+void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence, int seed) {
     // Defer to start of next frame to avoid destroying resources in use by current frame
     deferredRegenSize_ = size;
     deferredRegenScale_ = scale;
     deferredRegenAmplitude_ = amplitude;
     deferredRegenResolution_ = resolution; // v3.6.5
     deferredRegenPersistence_ = persistence; // v3.7.1
+    deferredRegenSeed_ = seed; // v3.7.8
     regenRequested_ = true;
-    std::cout << "[SisterApp] Regeneration requested for next frame..." << std::endl;
+    std::cout << "[SisterApp] Regeneration requested for next frame (Seed: " << seed << ")..." << std::endl;
 }
 
 void Application::performMeshUpdate() {
@@ -964,7 +968,10 @@ void Application::performRegeneration() {
     
     // Recreate
     finiteMap_ = std::make_unique<terrain::TerrainMap>(deferredRegenSize_, deferredRegenSize_);
-    finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(rand()); // vary seed? or fixed? let's keep fixed for now or rand()
+    finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(deferredRegenSeed_);
+    
+    // Update Curent Seed Logic
+    currentSeed_ = deferredRegenSeed_;
     
     // Re-init Renderer
     finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
@@ -974,6 +981,7 @@ void Application::performRegeneration() {
     config.noiseScale = deferredRegenScale_;
     config.resolution = deferredRegenResolution_; // v3.6.6 
     config.persistence = deferredRegenPersistence_; // v3.7.1
+    config.seed = deferredRegenSeed_; // v3.7.8
     config.octaves = 4; // Reset manually if needed, or expose later
 
     finiteGenerator_->generateBaseTerrain(*finiteMap_, config);

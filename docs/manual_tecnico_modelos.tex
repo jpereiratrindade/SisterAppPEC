@@ -101,11 +101,12 @@ O sistema permite o ajuste fino da topografia através de três variáveis princ
 A partir da versão v3.6.0, o sistema substituiu o modelo estocástico de erosão por partículas por um algoritmo determinístico de drenagem D8 (Steepest Descent).
 
 \subsection{Direção do Fluxo (Flow Direction)}
-Para cada célula do grid de terreno, o algoritmo determina a direção de escoamento para um dos 8 vizinhos com maior gradiente descendente.
+Para cada célula do grid de terreno, o algoritmo determina a direção de escoamento para um dos 8 vizinhos com maior \textbf{declividade} descendente (Steepest Slope).
 \[
-\text{Receiver} = \text{argmax}_{n \in \text{Neighbors}} (H_{\text{current}} - H_n)
+\text{Receiver} = \text{argmax}_{n \in \text{Neighbors}} \left( \frac{H_{\text{current}} - H_n}{\text{Distance}_n} \right)
 \]
-Se $H_{\text{current}} - H_n \leq 0$ para todos os vizinhos (mínimo local), a célula é um "sink" (sumidouro).
+Onde $\text{Distance}_n$ é a distância física até o vizinho (Resolution para cardeais, $\text{Resolution} \times \sqrt{2}$ para diagonais).
+Se o declive for $\leq 0$ para todos os vizinhos (mínimo local), a célula é um "sink" (sumidouro).
 
 \subsection{Acumulação de Fluxo (Flow Accumulation)}
 O fluxo é calculado iterativamente, ordenando as células por altura (decrescente). Cada célula transfere seu valor de fluxo acumulado para o seu vizinho receptor (Receiver), simulando a conservação de massa da água.

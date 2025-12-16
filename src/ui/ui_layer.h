@@ -58,13 +58,17 @@ struct UiFrameContext {
     std::string& lastSurfaceInfo;
     bool& lastSurfaceValid;
     float* lastSurfaceColor; // 3 floats
+    
+    // v3.7.8: Seeding & Resolution
+    int& seed;
+    float& worldResolution;
 };
 
 struct Callbacks {
     std::function<void(const std::string&)> saveBookmark;
     using LoadBookmarkCallback = std::function<void(size_t)>;
     using DeleteBookmarkCallback = std::function<void(size_t)>;
-    using RegenerateFiniteWorldCallback = std::function<void(int size, float scale, float amplitude, float resolution, float persistence)>; // v3.7.1
+    using RegenerateFiniteWorldCallback = std::function<void(int size, float scale, float amplitude, float resolution, float persistence, int seed)>; // v3.7.1
     using RequestMeshUpdateCallback = std::function<void()>;
     LoadBookmarkCallback loadBookmark;
     DeleteBookmarkCallback deleteBookmark;

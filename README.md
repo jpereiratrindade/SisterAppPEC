@@ -18,7 +18,8 @@
 - **Erosion Simulation**: Hydraulic erosion engine (beta).
 -   **Watershed Analysis**: Global segmentation and interactive basin delineation (v3.6.3).
 -   **Semantic Soil**: CPU-authoritative soil classification ensuring 100% Visual-PROBE consistency (v3.7.3).
--   **Eco-Reports**: Automated generation of hydrological stats (TWI, Drainage Density).
+-   **Deterministic Seeding**: Full control over map seeds for reproducible terrain analysis (v3.7.8).
+-   **Eco-Reports**: Automated generation of hydrological stats with physical units (m/m, m²) (v3.7.8).
 
 ---
 

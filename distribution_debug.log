@@ -1,0 +1,203 @@
+libdecor-gtk-WARNING: Failed to initialize GTK
+Failed to load plugin 'libdecor-gtk.so': failed to init
+Validation layers requested, but not available!
+Found Device: AMD Radeon RX 7900 XTX (RADV NAVI31) Score: 1000
+Found Device: AMD Ryzen 9 7950X 16-Core Processor (RADV RAPHAEL_MENDOCINO) Score: 100
+Found Device: llvmpipe (LLVM 21.1.5, 256 bits) Score: 0
+Selected GPU: AMD Radeon RX 7900 XTX (RADV NAVI31)
+VSync: OFF (Mailbox/Triple Buffer)
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/environment.vert.spv
+Loaded shader: shaders/environment.frag.spv
+Loaded shader: shaders/voxel.vert.spv
+Loaded shader: shaders/voxel.frag.spv
+[SisterApp v3.5.0] Initializing Finite World (1024x1024)...
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+[TerrainGenerator] Generating Base Terrain (1024x1024)...
+[TerrainGenerator] Calculating Drainage (D8 Algorithm)...
+[TerrainGenerator] Drainage Calculation Complete.
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[TerrainRenderer] Mesh Built: 1048576 verts. Max Flux: 117072
+[SisterApp v3.5.0] Finite World Ready!
+[Preferences] Loaded settings from prefs.json
+[Theme] Applied Dark theme
+VSync: OFF (Mailbox/Triple Buffer)
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/environment.vert.spv
+Loaded shader: shaders/environment.frag.spv
+Loaded shader: shaders/voxel.vert.spv
+Loaded shader: shaders/voxel.frag.spv
+VSync: OFF (Mailbox/Triple Buffer)
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+Loaded shader: shaders/environment.vert.spv
+Loaded shader: shaders/environment.frag.spv
+Loaded shader: shaders/voxel.vert.spv
+Loaded shader: shaders/voxel.frag.spv
+[SisterApp] Regeneration requested for next frame...
+[SisterApp] Performing Deferred Regeneration: 1024x1024
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+[TerrainGenerator] Generating Base Terrain (1024x1024)...
+[TerrainGenerator] Calculating Drainage (D8 Algorithm)...
+[TerrainGenerator] Drainage Calculation Complete.
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[TerrainRenderer] Mesh Built: 1048576 verts. Max Flux: 66517
+[SisterApp] Regeneration Complete.
+[SisterApp] Regeneration requested for next frame...
+[SisterApp] Performing Deferred Regeneration: 1024x1024
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+[TerrainGenerator] Generating Base Terrain (1024x1024)...
+[TerrainGenerator] Calculating Drainage (D8 Algorithm)...
+[TerrainGenerator] Drainage Calculation Complete.
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[TerrainRenderer] Mesh Built: 1048576 verts. Max Flux: 140037
+[SisterApp] Regeneration Complete.
+[SisterApp] Regeneration requested for next frame...
+[SisterApp] Performing Deferred Regeneration: 1024x1024
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+[TerrainGenerator] Generating Base Terrain (1024x1024)...
+[TerrainGenerator] Calculating Drainage (D8 Algorithm)...
+[TerrainGenerator] Drainage Calculation Complete.
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[TerrainRenderer] Mesh Built: 1048576 verts. Max Flux: 70682
+[SisterApp] Regeneration Complete.
+[SisterApp] Regeneration requested for next frame...
+[SisterApp] Performing Deferred Regeneration: 1024x1024
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+[TerrainGenerator] Generating Base Terrain (1024x1024)...
+[TerrainGenerator] Calculating Drainage (D8 Algorithm)...
+[TerrainGenerator] Drainage Calculation Complete.
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[TerrainRenderer] Mesh Built: 1048576 verts. Max Flux: 70596
+[SisterApp] Regeneration Complete.
+[SisterApp] Regeneration requested for next frame...
+[SisterApp] Performing Deferred Regeneration: 1024x1024
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+[TerrainGenerator] Generating Base Terrain (1024x1024)...
+[TerrainGenerator] Calculating Drainage (D8 Algorithm)...
+[TerrainGenerator] Drainage Calculation Complete.
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[TerrainRenderer] Mesh Built: 1048576 verts. Max Flux: 88375
+[SisterApp] Regeneration Complete.
+[SisterApp] Regeneration requested for next frame...
+[SisterApp] Performing Deferred Regeneration: 1024x1024
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+[TerrainGenerator] Generating Base Terrain (1024x1024)...
+[TerrainGenerator] Calculating Drainage (D8 Algorithm)...
+[TerrainGenerator] Drainage Calculation Complete.
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[TerrainRenderer] Mesh Built: 1048576 verts. Max Flux: 75808
+[SisterApp] Regeneration Complete.
+[SisterApp] Regeneration requested for next frame...
+[SisterApp] Performing Deferred Regeneration: 1024x1024
+Loaded shader: shaders/basic.vert.spv
+Loaded shader: shaders/basic.frag.spv
+[TerrainGenerator] Generating Base Terrain (1024x1024)...
+[TerrainGenerator] Calculating Drainage (D8 Algorithm)...
+[TerrainGenerator] Drainage Calculation Complete.
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[Debug] Rnd Stats: Min=0.75 Max=0.75 Avg=0.75
+[TerrainRenderer] Mesh Built: 1048576 verts. Max Flux: 136839
+[SisterApp] Regeneration Complete.
