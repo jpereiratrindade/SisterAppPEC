@@ -647,12 +647,31 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         }
 
         // 3. Manual Controls
-        ImGui::Text("Map Size:");
-        if (ImGui::RadioButton("512", selectedSize == 512)) selectedSize = 512;
-        ImGui::SameLine();
-        if (ImGui::RadioButton("1024", selectedSize == 1024)) selectedSize = 1024;
-        ImGui::SameLine();
-        if (ImGui::RadioButton("2048", selectedSize == 2048)) selectedSize = 2048;
+        ImGui::Text("Map Size (Grid Cells):");
+        // v3.8.2 Improved Selection
+        const char* sizeItems[] = { "512 x 512", "1024 x 1024", "2048 x 2048", "4096 x 4096" };
+        int currentSizeIdx = 1; 
+        if (selectedSize == 512) currentSizeIdx = 0;
+        else if (selectedSize == 1024) currentSizeIdx = 1;
+        else if (selectedSize == 2048) currentSizeIdx = 2;
+        else if (selectedSize == 4096) currentSizeIdx = 3;
+
+        if (ImGui::Combo("##mapSize", &currentSizeIdx, sizeItems, IM_ARRAYSIZE(sizeItems))) {
+            if (currentSizeIdx == 0) selectedSize = 512;
+            if (currentSizeIdx == 1) selectedSize = 1024;
+            if (currentSizeIdx == 2) selectedSize = 2048;
+            if (currentSizeIdx == 3) selectedSize = 4096;
+        }
+
+        // v3.6.5 Resolution Control (Moved up for context)
+        static float resolution = 1.0f;
+        ImGui::SliderFloat("Cell Size (Resolution)", &resolution, 0.1f, 4.0f, "%.1f m");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("World units per grid cell.\nLower = Higher Resolution (Smoother)\nHigher = Lower Resolution (Blocky)");
+
+        // Display Total Physical Area
+        float totalW = selectedSize * resolution;
+        ImGui::TextColored(ImVec4(0.7f, 0.9f, 1.0f, 1.0f), "World Dimensions: %.0f m x %.0f m", totalW, totalW);
+        ImGui::Separator();
 
         ImGui::SliderFloat("Feature Size (Base Freq)", &scale, 0.0001f, 0.01f, "%.4f");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls the size of mountains.\nLower = Larger features\nHigher = Smaller features");
@@ -668,10 +687,7 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         ImGui::SliderFloat("Water Level (Sea)", &waterLvl, 0.0f, 200.0f, "%.0f m");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Terrains below this level are shown as Water on Minimap.");
 
-        // v3.6.5 Resolution Control
-        static float resolution = 1.0f;
-        ImGui::SliderFloat("Cell Size (Resolution)", &resolution, 0.1f, 2.0f, "%.1f m");
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("World units per grid cell.\nLower = Higher Resolution (Smoother)\nHigher = Lower Resolution (Blocky)");
+        // Resolution moved up to Map Size section
 
         // v3.7.8 Seed Control
         // Uses static for requested new seed, but initializes from ctx on first run if needed?
