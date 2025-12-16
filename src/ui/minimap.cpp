@@ -156,8 +156,10 @@ void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfi
         float hU = map.getHeight(x, std::min(mapH-1, z+1));
         float slopeX = h - hL;
         float slopeZ = hU - h;
-        float light = 0.7f + 0.3f * (slopeX - slopeZ); // Pseudo directional light
-        light = std::min(1.0f, std::max(0.2f, light));
+        // v3.8.1: Boost contrast for Hills (was 0.3f)
+        // With 1024 resolution, slopes are small per pixel. Multiply by larger factor.
+        float light = 0.5f + 1.5f * (slopeX - slopeZ); 
+        light = std::clamp(light, 0.4f, 1.3f); // Allow brighter highlights, deeper shadows
 
         uint8_t r = 100, g = 100, b = 100;
         switch(type) {
@@ -171,15 +173,19 @@ void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfi
             default: break;
         }
         
-        // Water
+        // v3.8.1: Transparent Water on Minimap to show bathymetry/texture
         if (h < config.waterLevel) {
-            r=50; g=100; b=200;
-            light = 1.0f; // Flat water
+            // Blend with Blue (R=50, G=100, B=200)
+            // Factor depends on depth? Let's just do fixed tint for visibility.
+            r = (r + 50) / 2;
+            g = (g + 100) / 2;
+            b = (b + 200) / 2;
+            // Keep light calc for relief
         }
 
-        r = static_cast<uint8_t>(r * light);
-        g = static_cast<uint8_t>(g * light);
-        b = static_cast<uint8_t>(b * light);
+        r = static_cast<uint8_t>(std::min(255.0f, r * light));
+        g = static_cast<uint8_t>(std::min(255.0f, g * light));
+        b = static_cast<uint8_t>(std::min(255.0f, b * light));
         
         return (255 << 24) | (b << 16) | (g << 8) | r; // RGBA packed (ImGui uses Standard ordering, ensure Endianness?)
         // Actually typically ABGR or RGBA. Standard is R G B A in byte order.
@@ -200,7 +206,7 @@ void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfi
             // Image (0,0) top-left.
             // So Image Y=0 -> World Z = Max. Image Y=Max -> World Z = 0.
             int mapX = static_cast<int>(u * mapW);
-            int mapZ = static_cast<int>((1.0f - v) * mapH);
+            int mapZ = static_cast<int>(v * mapH); // v3.8.0 Fix: V=0 is North (Z=0). No inversion.
             
             mapX = std::max(0, std::min(mapW - 1, mapX));
             mapZ = std::max(0, std::min(mapH - 1, mapZ));
@@ -234,8 +240,9 @@ void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfi
     // v3.8.0: Identify Symbols (Peaks)
     symbols_.clear();
     // Simple Local Maxima (Kernel 3x3 or larger step)
-    int step = 20; // Don't check every pixel, find major peaks
-    float peakThresh = config.maxHeight * 0.6f; // Top 40% height
+    // Simple Local Maxima (Kernel 3x3 or larger step)
+    int step = 15; // v3.8.1: Finer step for Hills
+    float peakThresh = std::max(config.waterLevel + 2.0f, config.maxHeight * 0.35f); // v3.8.1: Lower threshold (35%) to catch Hills
     
     for (int z = step; z < h - step; z += step) {
         for (int x = step; x < w - step; x += step) {
@@ -250,7 +257,7 @@ void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfi
                 
                 if (isPeak) {
                     float globalU = static_cast<float>(x) / w;
-                    float globalV = 1.0f - (static_cast<float>(z) / h); // V is inverted Z
+                    float globalV = static_cast<float>(z) / h; // v3.8.0 Fix: V aligned with Z
                     
                     // Actually, texture gen uses: v = static_cast<float>(y) / h;
                     // pixel y=0 is Top of texture. 
@@ -312,8 +319,8 @@ void Minimap::render(graphics::Camera& camera) {
 
                  // Global UV to World Pos
                  float newX = globalU * worldWidth_;
-                 float newZ = (1.0f - globalV) * worldHeight_;
-                 
+                 float newZ = globalV * worldHeight_; // v3.8.0 Fix: V aligned with Z
+
                  // Update Camera
                  auto currentPos = camera.getPosition();
                  camera.teleportTo({newX, currentPos.y, newZ}); // v3.8.0 Fix
@@ -337,7 +344,7 @@ void Minimap::render(graphics::Camera& camera) {
         auto pos = camera.getPosition();
         float normX = pos.x / worldWidth_;
         float normZ = pos.z / worldHeight_;
-        float normV = 1.0f - normZ; // Inverted V for Top-Left origin
+        float normV = normZ; // v3.8.0 Fix: V aligned with Z. No inversion.
 
         // Normalize relative to current view
         float viewU = (normX - uv0.x) / (uv1.x - uv0.x);
@@ -350,6 +357,8 @@ void Minimap::render(graphics::Camera& camera) {
             ImDrawList* drawList = ImGui::GetWindowDrawList();
             
             // Render Symbols (Allegories)
+            // v3.8.1 Disabled: User found it cluttered or broken for Hills
+            /*
             for (const auto& sym : symbols_) {
                 float sU = (sym.u - uv0.x) / (uv1.x - uv0.x);
                 float sV = (sym.v - uv0.y) / (uv1.y - uv0.y);
@@ -368,6 +377,7 @@ void Minimap::render(graphics::Camera& camera) {
                     }
                 }
             }
+            */
 
             // Player Icon
             drawList->AddCircleFilled(ImVec2(screenX, screenY), 4.0f, IM_COL32(255, 50, 50, 255));

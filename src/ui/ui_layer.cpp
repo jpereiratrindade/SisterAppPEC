@@ -30,11 +30,21 @@ void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
 
     drawStats(ctx);
     drawMenuBar(ctx);
-    drawCamera(ctx);
     drawAnimation(ctx);
     drawBookmarks(ctx);
-    drawResetCamera(ctx);
-    drawFiniteTools(ctx);
+    if (showResetCamera_) drawResetCamera(ctx);
+    if (showMapGenerator_) drawFiniteTools(ctx);
+    // v3.8.1 Use showCamControls_ for Viewer Controls (drawCamera)
+    // Actually drawCamera IS Viewer Controls? Let's check logic. Yes, lines 305+.
+    // Wait, drawCamera takes ~100 lines.
+    // I need to guard it inside drawCamera or wrap it here.
+    // I'll wrap it here.
+    if (showCamControls_) drawCamera(ctx); 
+    else {
+        // Even if hidden, shortcuts should work?
+        // drawCamera does shortcuts too? No, Application handles shortcuts. drawCamera is purely UI.
+    }
+    drawCrosshair(ctx); // v3.8.1
     
     // v3.8.0 Minimap
     if (showMinimap_ && minimap_) {
@@ -90,6 +100,20 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                 ctx.running = false;
             }
             ImGui::EndMenu();
+            ImGui::EndMenu();
+        }
+        // v3.8.1: Views Menu
+        if (ImGui::BeginMenu("Views")) {
+             ImGui::MenuItem("Map Generator", nullptr, &showMapGenerator_);
+             ImGui::MenuItem("Minimap", nullptr, &showMinimap_);
+             ImGui::MenuItem("Camera Controls", nullptr, &showCamControls_);
+             ImGui::MenuItem("Reset Camera Button", nullptr, &showResetCamera_);
+             ImGui::Separator();
+             if (ImGui::MenuItem("Reset Camera Now", "R")) {
+                 ctx.camera.reset();
+                 if (callbacks_.requestTerrainReset) callbacks_.requestTerrainReset(1); // Optional: Reload chunks
+             }
+             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Tools")) {
             if (ImGui::MenuItem("Bookmarks", "F5-F8", showBookmarks_)) {
@@ -515,7 +539,8 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
     ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(250, 260), ImGuiCond_FirstUseEver);
 
-    if (ImGui::Begin("Map Generator (v3.5)", nullptr, ImGuiWindowFlags_NoCollapse)) {
+    // v3.8.1: Allow Collapse (Removed ImGuiWindowFlags_NoCollapse)
+    if (ImGui::Begin("Map Generator (v3.5)", nullptr, 0)) {
         ImGui::Checkbox("Show Slope Analysis", &ctx.showSlopeAnalysis);
         if (ctx.showSlopeAnalysis) {
              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
@@ -599,7 +624,8 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
              // Direct binding to Application State via Reference
              // Direct binding to Application State via Reference
              ImGui::SliderFloat("Sun Azimuth", &ctx.sunAzimuth, 0.0f, 360.0f, "%.0f deg");
-             ImGui::SliderFloat("Sun Elevation", &ctx.sunElevation, 0.0f, 90.0f, "%.0f deg");
+             ImGui::SliderFloat("Sun Elevation", &ctx.sunElevation, -90.0f, 90.0f, "%.0f deg");
+             ImGui::SliderFloat("Light Intensity", &ctx.lightIntensity, 0.0f, 2.0f, "%.2f"); // v3.8.1
              
              // Inverting logic for User: "Render Distance" instead of Fog Density
              // High density = Low distance. Low density = High distance.
@@ -694,6 +720,7 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
                 ctx.camera.setTarget({cx, 40.0f, cz});
                 ctx.camera.setCameraMode(graphics::CameraMode::Orbital);
                 ctx.camera.setDistance(ctx.finiteMap->getWidth() * 0.8f); // Fit view
+                ctx.camera.setFarClip(500.0f); // Restore default
             }
         }
         ImGui::SameLine();
@@ -707,10 +734,62 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
                 float h = ctx.finiteMap->getHeight(static_cast<int>(cx), static_cast<int>(cz));
                 ctx.camera.teleportTo({cx, h + 50.0f, cz});
                 ctx.camera.setCameraMode(graphics::CameraMode::FreeFlight);
+                ctx.camera.setFarClip(500.0f); // Restore default
+            }
+        }
+        ImGui::SameLine();
+        
+        // v3.8.1: Top View
+        if (ImGui::Button("Top View", ImVec2(100, 0))) {
+            if (minimap_) {
+                float w = minimap_->getWorldWidth();
+                float h = minimap_->getWorldHeight();
+                float cx = w / 2.0f;
+                float cz = h / 2.0f;
+                float alt = std::max(w, h); // Height to see full map (approx 90 deg FOV)
+                
+                ctx.camera.setCameraMode(graphics::CameraMode::FreeFlight);
+                ctx.camera.setFlying(true);
+                ctx.camera.teleportTo({cx, alt, cz});
+                ctx.camera.setPitch(-89.9f); // Look Straight Down
+                ctx.camera.setYaw(0.0f);   // North Up
+                
+                // Clear Fog to make sure terrain is visible from high altitude
+                ctx.fogDensity = 0.0f; 
+                ctx.camera.setFarClip(8000.0f); // Extend view for Top Down
             }
         }
     }
     ImGui::End();
+}
+
+void UiLayer::drawCrosshair(UiFrameContext& ctx) {
+    if (ctx.camera.getCameraMode() != graphics::CameraMode::FreeFlight) return;
+
+    // Draw Crosshair in center
+    ImDrawList* drawList = ImGui::GetBackgroundDrawList(); // Background (behind windows) or Foreground (top)? Foreground.
+    // Actually Foreground is better to ensure visibility.
+    drawList = ImGui::GetForegroundDrawList();
+
+    ImVec2 center = ImGui::GetIO().DisplaySize;
+    center.x *= 0.5f;
+    center.y *= 0.5f;
+
+    float size = 10.0f;
+    float thickness = 2.0f;
+    ImU32 color = IM_COL32(255, 255, 255, 128); // Semi-transparent white
+    ImU32 shadow = IM_COL32(0, 0, 0, 128);
+
+    // Shadow
+    drawList->AddLine(ImVec2(center.x - size, center.y + 1), ImVec2(center.x + size, center.y + 1), shadow, thickness);
+    drawList->AddLine(ImVec2(center.x + 1, center.y - size), ImVec2(center.x + 1, center.y + size), shadow, thickness);
+
+    // Main
+    drawList->AddLine(ImVec2(center.x - size, center.y), ImVec2(center.x + size, center.y), color, thickness);
+    drawList->AddLine(ImVec2(center.x, center.y - size), ImVec2(center.x, center.y + size), color, thickness);
+    
+    // Dot
+    drawList->AddCircleFilled(center, 2.0f, IM_COL32(255,0,0,180));
 }
 
 } // namespace ui

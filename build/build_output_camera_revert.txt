@@ -1,0 +1,4 @@
+[ 14%] Built target shaders_spirv
+[ 17%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o
+[ 19%] Linking CXX executable sisterapp
+[100%] Built target sisterapp

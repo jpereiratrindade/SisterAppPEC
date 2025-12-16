@@ -218,6 +218,8 @@ void main() {
     vec3 ambient = vec3(0.0);
     vec3 diffuse = vec3(0.0);
 
+    float lightMultiplier = pc.params.w; // v3.8.1 Light Intensity Control
+
     if (useLighting) {
         vec3 norm = normalize(fragNormal);
         // Use user-defined sun direction (Safe Normalize, but pre-normalized in CPU)
@@ -227,8 +229,8 @@ void main() {
         float diff = max(dot(norm, lightDir), 0.0);
        
         vec3 sunColor = vec3(1.0, 0.95, 0.8);
-        diffuse = diff * sunColor * 0.8;
-        
+        diffuse = diff * sunColor * 0.8 * lightMultiplier; // Scaled by user intensity
+         
         // Hemispheric Ambient (Sky Blue -> Ground Brown)
         float hemi = (norm.y * 0.5 + 0.5); 
         vec3 skyAmbient = vec3(0.53, 0.81, 0.92) * 0.6; // Improved ambient
@@ -254,7 +256,9 @@ void main() {
     float fogFactor = 1.0 - exp(-pow(fragViewDist * fogDensity, 1.2)); 
     fogFactor = clamp(fogFactor, 0.0, 1.0);
     
-    vec3 skyColor = vec3(0.53, 0.81, 0.92); // Matches Clear Color
+    // V3.8.1 Fix: Revert to Medium Blue (User Preference)
+    vec3 skyColor = vec3(0.53, 0.81, 0.92); 
+    // vec3 skyColor = vec3(0.75, 0.85, 1.0); // Matched Horizon (Disabled on user request)
     vec3 finalColor = mix(color, skyColor, fogFactor);
 
     // Final Clamp (Defensive)

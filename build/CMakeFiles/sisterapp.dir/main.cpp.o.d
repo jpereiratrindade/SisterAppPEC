@@ -358,6 +358,10 @@ CMakeFiles/sisterapp.dir/main.cpp.o: \
  /usr/include/c++/15/bits/charconv.h \
  /usr/include/c++/15/bits/basic_string.tcc \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/camera.h \
+ /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
+ /usr/include/c++/15/bits/algorithmfwd.h \
+ /usr/include/c++/15/bits/uniform_int_dist.h \
+ /usr/include/c++/15/pstl/glue_algorithm_defs.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/animation.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/ui_layer.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/../terrain/terrain_map.h \

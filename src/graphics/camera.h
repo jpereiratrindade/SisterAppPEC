@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <array>
 #include <cmath>
+#include <algorithm> // v3.8.0 Fix: for std::clamp
 #include "../math/math_types.h"
 
 namespace graphics {
@@ -63,6 +64,7 @@ public:
     // FOV helpers
     void setFovDegrees(float degrees);
     float getFovDegrees() const;
+    void setFarClip(float farZ) { farZ_ = farZ; dirtyProj_ = true; } // v3.8.1 Dynamic Draw Distance
     
     // Teleport (instant position change)
     void teleportTo(const math::Vec3& pos);
@@ -72,6 +74,8 @@ public:
     
     // v3.8.0 Minimap support
     float getYaw() const { return yaw_; }
+    void setYaw(float yaw) { yaw_ = yaw; dirtyView_ = true; }
+    void setPitch(float pitch) { pitch_ = std::clamp(pitch, -89.0f, 89.0f); dirtyView_ = true; }
 
     // Player physics (for voxel terrain)
     void applyGravity(float dt);

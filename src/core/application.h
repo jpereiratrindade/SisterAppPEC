@@ -98,7 +98,7 @@ namespace core {
     bool regenRequested_ = false;
     int deferredRegenSize_ = 1024;
     float deferredRegenScale_ = 0.002f;
-    float deferredRegenAmplitude_ = 100.0f; // v3.5.1
+    float deferredRegenAmplitude_ = 80.0f; // v3.5.1
     float deferredRegenResolution_ = 1.0f; // v3.6.5
     float deferredRegenPersistence_ = 0.5f; // v3.7.1
     int deferredRegenSeed_ = 12345; // v3.7.8
@@ -202,7 +202,8 @@ namespace core {
     // Visual Controls
     float sunAzimuth_ = 45.0f;
     float sunElevation_ = 60.0f;
-    float fogDensity_ = 0.0015f;
+    float fogDensity_ = 0.0005f; // v3.8.0 Tweaked for larger view
+    float lightIntensity_ = 1.0f; // v3.8.1
     
     // v3.6.3 Deferred Update Flag
     bool meshUpdateRequested_ = false;

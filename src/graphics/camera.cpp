@@ -164,6 +164,7 @@ void Camera::processKeyboard(const Uint8* keyState, float dt) {
     float rollSpeed = 60.0f; // degrees per second
 
     // WASD Movement
+    // Reverted to Standard 3D FPS Flight (User preference)
     if (keyState[SDL_SCANCODE_W]) {
         position_ = position_ + (forward_ * velocity);
         dirtyView_ = true;

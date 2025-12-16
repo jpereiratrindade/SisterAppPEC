@@ -120,7 +120,7 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
                              bool showWatershedVis, bool showBasinOutlines, bool showSoilVis,
                              bool soilHidroAllowed, bool soilBTextAllowed, bool soilArgilaAllowed, 
                              bool soilBemDesAllowed, bool soilRasoAllowed, bool soilRochaAllowed,
-                             float sunAzimuth, float sunElevation, float fogDensity) {
+                             float sunAzimuth, float sunElevation, float fogDensity, float lightIntensity) {
     if (!mesh_ || !material_) return;
     
     // Bind Pipeline and Descriptor Sets
@@ -154,7 +154,7 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
     pc.params[0] = 1.0f; // Opacity
     pc.params[1] = drainageIntensity;
     pc.params[2] = fogDensity;
-    pc.params[3] = 1.0f; // PointSize
+    pc.params[3] = lightIntensity; // v3.8.1 Light Intensity
 
     // Pack Flags
     int mask = 0;

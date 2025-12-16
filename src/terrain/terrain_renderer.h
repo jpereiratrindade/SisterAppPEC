@@ -30,7 +30,7 @@ public:
                 // Soil Whitelist
                 bool soilHidroAllowed, bool soilBTextAllowed, bool soilArgilaAllowed, 
                 bool soilBemDesAllowed, bool soilRasoAllowed, bool soilRochaAllowed,
-                float sunAzimuth, float sunElevation, float fogDensity);
+                float sunAzimuth, float sunElevation, float fogDensity, float lightIntensity);
 
 private:
     const core::GraphicsContext& ctx_;

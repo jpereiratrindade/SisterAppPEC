@@ -25,6 +25,10 @@ public:
     // Get the ImGui Texture ID (VkDescriptorSet)
     VkDescriptorSet getTextureID() const { return textureID_; }
 
+    // v3.8.1: Accessors for Top View
+    float getWorldWidth() const { return worldWidth_; }
+    float getWorldHeight() const { return worldHeight_; }
+
 private:
     const core::GraphicsContext& context_;
 

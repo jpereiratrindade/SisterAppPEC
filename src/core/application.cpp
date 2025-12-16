@@ -120,7 +120,7 @@ void Application::init() {
     // NEW: Sky Dome
     std::vector<graphics::Vertex> skyVerts;
     std::vector<uint16_t> skyIndices;
-    graphics::createSkyDome(skyVerts, skyIndices, 5000.0f, 32); // Huge dome to cover world
+    graphics::createSkyDome(skyVerts, skyIndices, 5000.0f, 32); // Huge dome to cover world (Must be < zFar)
     skyDomeMesh_ = std::make_unique<graphics::Mesh>(*ctx_, skyVerts, skyIndices);
     
     // NEW: Distance Markers
@@ -141,7 +141,7 @@ void Application::init() {
         finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
         
         terrain::TerrainConfig config;
-        config.maxHeight = 80.0f; // Gentle rolling hills
+        config.maxHeight = deferredRegenAmplitude_; // Gentle rolling hills
         config.seed = currentSeed_; // v3.7.8
         finiteGenerator_->generateBaseTerrain(*finiteMap_, config); // Will re-seed
         
@@ -154,13 +154,9 @@ void Application::init() {
         // v3.7.3: Semantic Soil Classification
         finiteGenerator_->classifySoil(*finiteMap_, config);
         
-     // v3.8.0 Fix: Scale Invariance is now handled inside generateBaseTerrain/classifySoil
-    // v3.8.0: Update Minimap
-    if (uiLayer_) {
-        // In Application::init, 'config' is already defined and populated above.
-        // We use the 'config' object that was just used for generateBaseTerrain and classifySoil.
-        uiLayer_->onTerrainUpdated(*finiteMap_, config); 
-    }
+    // v3.8.0 Fix: Scale Invariance is now handled inside generateBaseTerrain/classifySoil
+    // v3.8.0: Update Minimap - MOVED TO END OF INIT because uiLayer_ is not ready yet!
+    // if (uiLayer_) { ... }  <-- Removed from here
 
     // Update mesh for 3D View
     finiteRenderer_->buildMesh(*finiteMap_);
@@ -175,7 +171,10 @@ void Application::init() {
         float cx = 1024.0f / 2.0f;
         float cz = 1024.0f / 2.0f;
         float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
-        camera_.teleportTo({cx, h + 20.0f, cz}); // Low flight, immersive
+        camera_.teleportTo({cx, h + 60.0f, cz}); // Higher initial flight
+        camera_.setPitch(-20.0f); // Look down to see more terrain (Horizon higher)
+        camera_.setFovDegrees(60.0f); // Wider view
+
         
         std::cout << "[SisterApp v3.5.0] Finite World Ready!" << std::endl;
     } else {
@@ -198,10 +197,11 @@ void Application::init() {
     // Common setup continues below...
 
     // V3.4.0: Load preferences on startup
-    core::Preferences::instance().load();
-    if (terrain_) {
-        terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
-    }
+    // v3.8.1: Preferences Disabled
+    // core::Preferences::instance().load();
+    // if (terrain_) {
+    //    terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
+    // }
 
     ui::Callbacks uiCallbacks{
         [this](const std::string& name) { saveBookmark(name); },
@@ -209,16 +209,18 @@ void Application::init() {
         [this](size_t index) { deleteBookmark(index); },
         [this](int warmup) { requestTerrainReset(warmup); },
         [this]() { // savePreferences
-            if (terrain_) {
-                core::Preferences::instance().setSlopeConfig(terrain_->getSlopeConfig());
-            }
-            core::Preferences::instance().save();
+            // v3.8.1 Disabled
+            // if (terrain_) {
+            //     core::Preferences::instance().setSlopeConfig(terrain_->getSlopeConfig());
+            // }
+            // core::Preferences::instance().save();
         },
         [this]() { // loadPreferences
-            core::Preferences::instance().load();
-            if (terrain_) {
-                terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
-            }
+            // v3.8.1 Disabled
+            // core::Preferences::instance().load();
+            // if (terrain_) {
+            //     terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
+            // }
         },
         // v3.6.5 Resolution
         // v3.6.5 Resolution + v3.7.8 Seed + v3.8.0 Water Level
@@ -476,6 +478,8 @@ void Application::processEvents(double dt) {
             }
 
             // Interactive Delineation (Right Click)
+            // v3.8.1 Disabled by User Request (to avoid conflict with Camera Look)
+            /*
             if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT) {
                 if (useFiniteWorld_ && finiteMap_) {
                      float w = static_cast<float>(swapchain_->extent().width);
@@ -499,11 +503,15 @@ void Application::processEvents(double dt) {
                          showSlopeAnalysis_ = false; 
                          showDrainage_ = false;
 
-                         // Rebuild Mesh
-                         if (finiteRenderer_) finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
+                         // Trigger upload (Mesh update needed? No, texture update usually, but here vertex attr update. 
+                         // Vertex update is required because BasinID is in vertex attributes now)
+                         meshUpdateRequested_ = true;
                      }
                 }
             }
+            */
+
+
         }
         
         if (event.type == SDL_QUIT) {
@@ -747,11 +755,27 @@ void Application::render(size_t frameIndex) {
     mulMat4(proj, view, mvp); 
 
     // Sky Dome - Re-enabled for V3.5.0
+    // v3.8.1 Fix: Sky Dome logic must center on camera to appear infinite
     if (skyDomeMesh_) {
+        // Create Sky View Matrix (Remove Translation)
+        float skyView[16];
+        std::copy(view, view+16, skyView);
+        // Column-major translation is indices 12, 13, 14
+        skyView[12] = 0.0f;
+        skyView[13] = 0.0f;
+        skyView[14] = 0.0f;
+        
+        float skyMVP[16];
+        mulMat4(proj, skyView, skyMVP);
+
         graphics::RenderOptions opts;
         opts.pointSize = 1.0f;
         opts.useLighting = false; // Sky is self-illuminated (unlit)
-        renderer_.record(cmd, skyDomeMesh_.get(), environmentMaterial_.get(), swapchain_->extent(), mvp, opts);
+        // Disable Depth Write so Sky is always background
+        // Wait, renderer record doesn't expose depth write toggle easily here unless Material handles it?
+        // environmentMaterial should probably have depthWrite=false.
+        // For now, centering it prevents the "Sphere on horizon" issue significantly.
+        renderer_.record(cmd, skyDomeMesh_.get(), environmentMaterial_.get(), swapchain_->extent(), skyMVP, opts);
     }
 
     // V3.2.2.1-beta: Hide grid, axes, markers in Minecraft mode
@@ -806,7 +830,7 @@ void Application::render(size_t frameIndex) {
         /* drainage */ showDrainage_, drainageIntensity_,
         /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
         /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_, 
-        /* visual */ sunAzimuth_, sunElevation_, fogDensity_); // v3.7.3
+        /* visual */ sunAzimuth_, sunElevation_, fogDensity_, lightIntensity_); // v3.8.1
         }
     } else if (voxelScene_) {
         // Voxel Render (Minecraft Mode)
@@ -847,7 +871,8 @@ void Application::render(size_t frameIndex) {
         lastSurfaceInfo_,
         lastSurfaceValid_,
         lastSurfaceColor_,
-        /* seeding & resolution */ currentSeed_, worldResolution_ // v3.7.8
+        /* seeding & resolution */ currentSeed_, worldResolution_, // v3.7.8
+        /* light */ lightIntensity_ // v3.8.1
     };
 
     uiLayer_->render(uiCtx, cmd);

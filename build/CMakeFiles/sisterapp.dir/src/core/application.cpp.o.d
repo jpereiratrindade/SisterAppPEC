@@ -358,6 +358,10 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /usr/include/c++/15/bits/charconv.h \
  /usr/include/c++/15/bits/basic_string.tcc \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/camera.h \
+ /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
+ /usr/include/c++/15/bits/algorithmfwd.h \
+ /usr/include/c++/15/bits/uniform_int_dist.h \
+ /usr/include/c++/15/pstl/glue_algorithm_defs.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/animation.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/ui_layer.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/../terrain/terrain_map.h \
@@ -401,10 +405,6 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imconfig.h \
  /usr/include/assert.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/backends/imgui_impl_vulkan.h \
- /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
- /usr/include/c++/15/bits/algorithmfwd.h \
- /usr/include/c++/15/bits/uniform_int_dist.h \
- /usr/include/c++/15/pstl/glue_algorithm_defs.h \
  /usr/include/c++/15/cstring /usr/include/c++/15/iomanip \
  /usr/include/c++/15/locale \
  /usr/include/c++/15/bits/locale_facets_nonio.h \

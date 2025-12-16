@@ -63,6 +63,8 @@ struct UiFrameContext {
     // v3.7.8: Seeding & Resolution
     int& seed;
     float& worldResolution;
+    // v3.8.1 Light
+    float& lightIntensity;
 };
 
 struct Callbacks {
@@ -103,12 +105,18 @@ private:
     void drawBookmarks(UiFrameContext& ctx);
     void drawResetCamera(UiFrameContext& ctx);
     void drawFiniteTools(UiFrameContext& ctx); 
+    void drawCrosshair(UiFrameContext& ctx); // v3.8.1 
 
     Theme currentTheme_ = Theme::Dark;
     bool showStatsOverlay_ = true;
     bool showBookmarks_ = false;
     // v3.8.0
+    // v3.8.0
     bool showMinimap_ = true;
+    // v3.8.1: Views Toggles
+    bool showMapGenerator_ = true;
+    bool showCamControls_ = true;
+    bool showResetCamera_ = true;
     
     Callbacks callbacks_;
     std::unique_ptr<Minimap> minimap_;
