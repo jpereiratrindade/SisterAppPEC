@@ -66,7 +66,7 @@ Rolling (Ondulado) & $8.0\% - 20.0\%$ & Terreno ondulado, requer terraplanagem. 
 Steep Slope (Íngreme/Forte) & $20.0\% - 45.0\%$ & Encostas fortes, risco de erosão. \\ \hline
 Mountain (Montanha) & $> 45.0\%$ & Áreas inacessíveis ou de preservação. \\ \hline
 \end{tabular}
-\date{16 de Dezembro de 2025 - v3.8.1 (Final)}
+\date{16 de Dezembro de 2025 - v3.8.3 (Async Stable)}
 \end{table}
 
 \subsection{Persistência e Configuração}
@@ -162,6 +162,9 @@ Calculado como a razão entre células classificadas como "rio" (Fluxo > 100) e 
 
 \subsection{Estatísticas por Bacia (Basin-Level Metrics)}
 O sistema agora agrega métricas de elevação, declividade, TWI e densidade de drenagem individualmente para as 3 maiores bacias identificadas, permitindo uma análise comparativa da resposta hidrológica de diferentes sub-regiões do modelo.
+
+\subsection{Geração Assíncrona (v3.8.3)}
+A partir da versão 3.8.3, a geração de terrenos (especialmente em resoluções altas como $4096 \times 4096$) é executada de forma assíncrona em uma thread separada. Isso previne o congelamento da interface ("Not Responding") durante o processamento de milhões de células. Uma tela de carregamento informa o progresso ao usuário.
 
 \section{Resolução Espacial Variável (V3.6.5)}
 Para atender à necessidade de maior definição nos limites de bacias e redes de drenagem, foi introduzido o controle de \textbf{Cell Size (Resolução)}.
