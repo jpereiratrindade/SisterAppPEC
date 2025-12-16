@@ -97,8 +97,16 @@ void Camera::processEvent(const SDL_Event& event) {
             }
         }
     } else {
-        // FreeFlight mode: Mouse look when right button held
-        if (event.type == SDL_MOUSEBUTTONDOWN) {
+        // FreeFlight mode
+        if (event.type == SDL_MOUSEWHEEL) {
+             // Zoom (FOV)
+             float fov = getFovDegrees();
+             if (event.wheel.y > 0) fov -= 2.0f; // Zoom In
+             if (event.wheel.y < 0) fov += 2.0f; // Zoom Out
+             setFovDegrees(fov);
+        }
+        // Mouse look when right button held
+        else if (event.type == SDL_MOUSEBUTTONDOWN) {
             if (event.button.button == SDL_BUTTON_RIGHT) {
                 isDragging_ = true;
                 lastX_ = event.button.x;

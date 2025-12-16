@@ -113,15 +113,26 @@ void Minimap::createSampler() {
 }
 
 void Minimap::destroyResources() {
-    // ImGui_ImplVulkan_RemoveTexture(textureID_); // Not exposed in standard bindings usually, or managed by ImGui backend shutdown. 
-    // Actually, distinct AddTexture calls usually allocate NEW sets. We should rely on ImGui impl to clean up or just leak the descriptor if it's global? 
-    // Standard practice: If we destroy the ImageView, the descriptor becomes invalid.
+    VkDevice device = context_.device(); // This might crash if context is already dead? No, context is ref.
+    // However, if device handle inside context is invalid? 
+    // We assume context is alive.
     
-    VkDevice device = context_.device();
-    if (sampler_) vkDestroySampler(device, sampler_, nullptr);
-    if (imageView_) vkDestroyImageView(device, imageView_, nullptr);
-    if (image_) vkDestroyImage(device, image_, nullptr);
-    if (imageMemory_) vkFreeMemory(device, imageMemory_, nullptr);
+    if (sampler_) {
+        vkDestroySampler(device, sampler_, nullptr);
+        sampler_ = VK_NULL_HANDLE;
+    }
+    if (imageView_) {
+        vkDestroyImageView(device, imageView_, nullptr);
+        imageView_ = VK_NULL_HANDLE;
+    }
+    if (image_) {
+        vkDestroyImage(device, image_, nullptr);
+        image_ = VK_NULL_HANDLE;
+    }
+    if (imageMemory_) {
+        vkFreeMemory(device, imageMemory_, nullptr);
+        imageMemory_ = VK_NULL_HANDLE;
+    }
 }
 
 void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfig& config) {
@@ -156,6 +167,7 @@ void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfi
             case terrain::SoilType::Argila:        r=160; g=82;  b=45;  break; // Sienna
             case terrain::SoilType::BTextural:     r=205; g=133; b=63;  break; // Peru
             case terrain::SoilType::Rocha:         r=80;  g=80;  b=80;  break; // Dark Gray
+            case terrain::SoilType::None:          r=255; g=0;   b=255; break; // Magenta (Debug)
             default: break;
         }
         
@@ -214,11 +226,46 @@ void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfi
     transitionImageLayout(image_, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     
     // Store world dims for render
-    // Store world dims for render
     int w = map.getWidth();
     int h = map.getHeight();
     worldWidth_ = w * config.resolution;
     worldHeight_ = h * config.resolution;
+    
+    // v3.8.0: Identify Symbols (Peaks)
+    symbols_.clear();
+    // Simple Local Maxima (Kernel 3x3 or larger step)
+    int step = 20; // Don't check every pixel, find major peaks
+    float peakThresh = config.maxHeight * 0.6f; // Top 40% height
+    
+    for (int z = step; z < h - step; z += step) {
+        for (int x = step; x < w - step; x += step) {
+            float val = map.getHeight(x, z);
+            if (val > peakThresh) {
+                // Check neighbors
+                bool isPeak = true;
+                if (map.getHeight(x-step, z) >= val) isPeak = false;
+                if (map.getHeight(x+step, z) >= val) isPeak = false;
+                if (map.getHeight(x, z-step) >= val) isPeak = false;
+                if (map.getHeight(x, z+step) >= val) isPeak = false;
+                
+                if (isPeak) {
+                    float globalU = static_cast<float>(x) / w;
+                    float globalV = 1.0f - (static_cast<float>(z) / h); // V is inverted Z
+                    
+                    // Actually, texture gen uses: v = static_cast<float>(y) / h;
+                    // pixel y=0 is Top of texture. 
+                    // map z=0 is usually Top or Bottom depending on coord sys.
+                    // In texture gen: int mapZ = (1.0 - v) * mapH. So v=0 -> mapZ=mapH. v=1 -> mapZ=0.
+                    // So Top of Texture (v=0) is Z=Max. Bottom (v=1) is Z=0.
+                    // Wait, let's check generate loop: 
+                    // for (uint32_t y = 0; y < textureHeight_; ++y) ... mapZ = (1.0f - v) * mapH;
+                    // So Visual V matches 1.0 - Z_norm.
+                    
+                    symbols_.push_back({ globalU, globalV, 0 });
+                }
+            }
+        }
+    }
 }
 
 void Minimap::render(graphics::Camera& camera) {
@@ -301,7 +348,29 @@ void Minimap::render(graphics::Camera& camera) {
             float screenY = pMin.y + viewV * size.y;
             
             ImDrawList* drawList = ImGui::GetWindowDrawList();
-            drawList->AddCircleFilled(ImVec2(screenX, screenY), 4.0f, IM_COL32(255, 0, 0, 255));
+            
+            // Render Symbols (Allegories)
+            for (const auto& sym : symbols_) {
+                float sU = (sym.u - uv0.x) / (uv1.x - uv0.x);
+                float sV = (sym.v - uv0.y) / (uv1.y - uv0.y);
+                
+                if (sU >= 0 && sU <= 1 && sV >= 0 && sV <= 1) {
+                    float sx = pMin.x + sU * size.x;
+                    float sy = pMin.y + sV * size.y;
+                    
+                    if (sym.type == 0) { // Peak (Triangle)
+                        drawList->AddTriangleFilled(
+                            ImVec2(sx, sy - 4),
+                            ImVec2(sx - 3, sy + 2),
+                            ImVec2(sx + 3, sy + 2),
+                            IM_COL32(255, 255, 255, 200)
+                        );
+                    }
+                }
+            }
+
+            // Player Icon
+            drawList->AddCircleFilled(ImVec2(screenX, screenY), 4.0f, IM_COL32(255, 50, 50, 255));
             
             // Frustum Direction (Yaw)
             float yaw = camera.getYaw(); 

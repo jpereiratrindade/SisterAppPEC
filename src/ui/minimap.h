@@ -49,6 +49,13 @@ private:
     float centerX_ = 0.5f; 
     float centerY_ = 0.5f;
 
+    // v3.8.0 Symbols (Allegories)
+    struct Symbol {
+        float u, v;     // Normalized Position
+        int type;       // 0=Peak, 1=BasinCenter
+    };
+    std::vector<Symbol> symbols_;
+
     // Helpers
     void createResources();
     void destroyResources();

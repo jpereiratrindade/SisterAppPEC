@@ -221,9 +221,9 @@ void Application::init() {
             }
         },
         // v3.6.5 Resolution
-        // v3.6.5 Resolution + v3.7.8 Seed
-        [this](int size, float scale, float amp, float res, float pers, int seed) { // regenerateFiniteWorld
-            this->regenerateFiniteWorld(size, scale, amp, res, pers, seed);
+        // v3.6.5 Resolution + v3.7.8 Seed + v3.8.0 Water Level
+        [this](int size, float scale, float amp, float res, float pers, int seed, float waterLevel) { // regenerateFiniteWorld
+            this->regenerateFiniteWorld(size, scale, amp, res, pers, seed, waterLevel);
         },
         [this]() { // updateMesh
             // Defer to next frame start
@@ -239,6 +239,11 @@ void Application::init() {
 }
 
 void Application::cleanup() {
+    // Shutdown in reverse order
+    if (uiLayer_) {
+        uiLayer_.reset(); // Destroy UI and Minimap BEFORE shutting down Vulkan context
+    }
+
     // Wait for idle to ensure no commands are pending before destroying ANY resources
     if (ctx_) {
         vkDeviceWaitIdle(ctx_->device());
@@ -945,7 +950,8 @@ void Application::deleteBookmark(size_t index) {
 }
 
 // V3.5.0: Map Regeneration
-void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence, int seed) {
+// V3.5.0: Map Regeneration
+void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence, int seed, float waterLevel) {
     // Defer to start of next frame to avoid destroying resources in use by current frame
     deferredRegenSize_ = size;
     deferredRegenScale_ = scale;
@@ -953,6 +959,7 @@ void Application::regenerateFiniteWorld(int size, float scale, float amplitude, 
     deferredRegenResolution_ = resolution; // v3.6.5
     deferredRegenPersistence_ = persistence; // v3.7.1
     deferredRegenSeed_ = seed; // v3.7.8
+    deferredRegenWaterLevel_ = waterLevel; // v3.8.0
     regenRequested_ = true;
     std::cout << "[SisterApp] Regeneration requested for next frame (Seed: " << seed << ")..." << std::endl;
 }
@@ -999,6 +1006,7 @@ void Application::performRegeneration() {
     config.resolution = deferredRegenResolution_; // v3.6.6 
     config.persistence = deferredRegenPersistence_; // v3.7.1
     config.seed = deferredRegenSeed_; // v3.7.8
+    config.waterLevel = deferredRegenWaterLevel_; // v3.8.0
     config.octaves = 4; // Reset manually if needed, or expose later
 
     finiteGenerator_->generateBaseTerrain(*finiteMap_, config);
@@ -1014,6 +1022,12 @@ void Application::performRegeneration() {
 
     // v3.6.5: Apply Resolution to Mesh Build
     worldResolution_ = deferredRegenResolution_;
+    
+    // v3.8.0: Update Minimap
+    if (uiLayer_) {
+        uiLayer_->onTerrainUpdated(*finiteMap_, config);
+    }
+    
     finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
 
     // Teleport

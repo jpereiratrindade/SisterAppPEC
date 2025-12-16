@@ -2,8 +2,20 @@
 
 ## [v3.8.0] - 2025-12-17
 ### Added
--   **Interactive Minimap**: Integrated minimap with zoom, pan, and fast travel capabilities.
--   **Landscape Metrics Validation**: Added tools for validating LSI, CF, and RCC metrics.
+-   **Interactive Minimap**:
+    -   Real-time top-down navigation with "Fog of War" style rendering.
+    -   **Symbols Allegory**: Automatic detection and visualization of Mountain Peaks (Triangles).
+    -   **Controls**: Click-to-teleport, Zoom, and Pan support within the UI window.
+    -   **Water Level Viz**: Configurable sea-level visualization to identify submerged terrain.
+-   **Camera & Controls**:
+    -   **Zoom (FOV)**: Mouse Wheel now controls Field of View in Free Flight mode.
+    -   **Water Level Slider**: Added parameter to Terrain Generator to control base water height (default 64m).
+    -   **Render Distance**: Clarity update for Fog Density settings.
+-   **Landscape Metrics Validation**: Added tools for quantifying landscape patterns (LSI, CF, RCC).
+
+### Fixed
+-   **Stability**: Fixed critical `vkDestroySampler` crash on application shutdown by enforcing correct destruction order of UI resources.
+-   **Minimap Sync**: Resolved issue where minimap location/texture did not update after resizing the terrain (e.g., to 2048x2048).
 
 ## [v3.7.9] - 2025-12-16
 ### Added

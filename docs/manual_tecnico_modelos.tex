@@ -11,7 +11,7 @@
 
 \geometry{top=3cm, bottom=2cm, left=2.5cm, right=2.5cm}
 
-\title{\textbf{SisterApp Engine v3.7.3}\\Manual Técnico de Modelos Computacionais}
+\title{\textbf{SisterApp: Plataforma de Ecologia Computacional v3.8.0}\\Manual Técnico de Modelos Computacionais}
 \author{José Pedro Trindade}
 \date{\today}
 
@@ -22,7 +22,19 @@
 \newpage
 
 \section{Introdução}
-O \textbf{SisterApp Engine} integra sistemas avançados de análise topológica e persistência de dados. A versão 3.7.3 introduz um novo modelo focado na \textbf{Análise Semântica de Solos (Semantic Soil Analysis)}, garantindo consistência total entre visualização e dados físicos.
+O \textbf{SisterApp} evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão 3.8.0 consolida ferramentas de navegação, análise de paisagem e validação métrica.
+
+\section{Modelo de Análise de Declividade (Slope Analysis)}
+Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
+
+% ... (Keep existing Slope sections) - I will use a larger replacement chunk or multiple replacing logic but the user tool only allows contiguous.
+% I will skip modifying lines 27-171 in this call and focus on lines 14, 24, and 172.
+% Actually, I can't skip in the middle of a replacement chunk if I want to replace title AND minimap which are far apart.
+% Providing multiple replacement chunks.
+
+% Chunk 1: Title & Intro (Lines 14-25)
+% Chunk 2: Minimap Section (Lines 172-179)
+
 
 \section{Modelo de Análise de Declividade (Slope Analysis)}
 Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
@@ -169,13 +181,18 @@ O sistema ajusta automaticamente a visualização e a lógica de interação (ra
 O sistema inclui agora uma camada de pedologia probabilística baseada na declividade, conforme a tabela de relação Relevo-Solo definida pelo usuário.
 
 \subsection{Metodologia: Ruído Coerente e Métricas de Paisagem (v3.8.0).}
-\subsection{Minimap e Navegação}
-A versão 3.8.0 introduz um Minimapa interativo para facilitar a navegação em grandes terrenos.
+\subsection{Minimap e Navegação Interativa}
+A versão 3.8.0 introduz um Minimapa e controles de câmera aprimorados para facilitar a navegação e a compreensão espacial.
 \begin{itemize}
-    \item \textbf{Visualização}: Renderiza o mapa de solos e relevo (hillshade) em tempo real.
-    \item \textbf{Navegação}: Permite Zoom (Roda do Mouse) e Pan (Arrastar com botão do meio).
-    \item \textbf{Teletransporte}: Clique com botão esquerdo para mover a câmera instantaneamente.
-    \item \textbf{Métricas}: Integração direta com o relatório de métricas de paisagem para validação visual.
+    \item \textbf{Visualização Top-Down}: Renderiza o mapa de solos e relevo com neblina de guerra (Fog of War) simulada pela distância.
+    \item \textbf{Símbolos (Alegorias)}: Um algoritmo de detecção de picos identifica máximos locais na topografia e desenha pequenos triângulos brancos, fornecendo referências visuais "game-like" para orientação.
+    \item \textbf{Nível da Água (Water Level)}: Visualização configurável de zonas submersas (Azul), permitindo identificar depressões e lagos mesmo antes da simulação hidrológica.
+    \item \textbf{Controles}:
+    \begin{itemize}
+        \item \textbf{Zoom}: Roda do mouse ajusta o Campo de Visão (FOV) no modo voo livre.
+        \item \textbf{Minimap Zoom/Pan}: Roda do mouse e botão do meio dentro da janela do minimapa.
+        \item \textbf{Teleporte}: Clique com botão esquerdo no minimapa para viagem rápida.
+    \end{itemize}
 \end{itemize}
 Para reproduzir os padrões espaciais descritos pelos índices de Ecologia da Paisagem (LSI, CF, RCC), o sistema substituiu a distribuição aleatória simples por um algoritmo de \textbf{Competição de Padrões} baseado em ruído procedural (Perlin/Simplex).
 

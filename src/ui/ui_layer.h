@@ -69,7 +69,7 @@ struct Callbacks {
     std::function<void(const std::string&)> saveBookmark;
     using LoadBookmarkCallback = std::function<void(size_t)>;
     using DeleteBookmarkCallback = std::function<void(size_t)>;
-    using RegenerateFiniteWorldCallback = std::function<void(int size, float scale, float amplitude, float resolution, float persistence, int seed)>; // v3.7.1
+    using RegenerateFiniteWorldCallback = std::function<void(int size, float scale, float amplitude, float resolution, float persistence, int seed, float waterLevel)>; // v3.8.0
     using RequestMeshUpdateCallback = std::function<void()>;
     LoadBookmarkCallback loadBookmark;
     DeleteBookmarkCallback deleteBookmark;

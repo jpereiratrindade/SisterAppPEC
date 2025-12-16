@@ -13409,6 +13409,7 @@ sisterapp: /lib64/ld-linux-x86-64.so.2 \
   CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o \
   CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o \
   CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o \
+  CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o \
   CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o \
   CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o \
   CMakeFiles/sisterapp.dir/src/world.cpp.o
@@ -13677,6 +13678,8 @@ CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o:
 /usr/include/SDL2/SDL_guid.h:
 
 /usr/include/sys/types.h:
+
+CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o:
 
 /usr/include/c++/15/x86_64-redhat-linux/bits/cpu_defines.h:
 

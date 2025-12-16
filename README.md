@@ -1,6 +1,10 @@
-# SisterApp Engine v3.4.0 (Minecraft Mode) 🎮
+# SisterApp: Plataforma de Ecologia Computacional
 
-**SisterApp Engine** is now a high-performance Minecraft-style voxel world exploration tool! This version transforms the scientific visualization engine into an immersive first-person voxel environment with procedural terrain, greedy meshing, and optimized multithreaded loading.
+> **De Engine Gráfica para Laboratório Digital**: V3.8.0 transforma o projeto em uma plataforma científica para simulação de processos ecológicos, geração de padrões espaciais e validação métrica.
+
+SisterApp é uma **Plataforma de Ecologia Computacional** de alto desempenho (C++/Vulkan) focada em simular dinâmicas de paisagem (Hidrologia, Pedologia, Geomorfologia) e validar hipóteses ecológicas através de métricas espaciais rigorosas (LSI, CF, RCC).
+
+Desenvolvido por **José Pedro Trindade**.
 
 ![Version](https://img.shields.io/badge/version-3.6.3-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
@@ -8,20 +12,17 @@
 
 ---
 
-## 🎯 What's New (v3.5.0)
+## 🎯 What's New (v3.8.0)
 
-- **Finite World Mode**: Transition to high-fidelity terrain maps (up to 2048x2048) with realistic generation.
-- **Regenerator UI**: Real-time terrain creation with configurable size and smoothness.
-- **Drainage Analysis (D8)**: Deterministic flow accumulation visualization (Blue line networks).
-- **Visual Overhaul**: Distance Fog, Hemispheric Lighting, and Procedural Noise texturing.
-- **Performance**: Device Local memory for meshes ensures stability at 4 Million vertices.
-- **Erosion Simulation**: Hydraulic erosion engine (beta).
--   **Watershed Analysis**: Global segmentation and interactive basin delineation (v3.6.3).
--   **Semantic Soil**: CPU-authoritative soil classification ensuring 100% Visual-PROBE consistency (v3.7.3).
--   **Deterministic Seeding**: Full control over map seeds for reproducible terrain analysis (v3.7.8).
--   **Eco-Reports**: Automated generation of hydrological stats with physical units (m/m, m²) (v3.7.8).
--   **Interactive Minimap (v3.8.0)**: Real-time navigation aid with fast travel and zoom.
--   **Landscape Ecology Patches (v3.7.9)**: Soil distribution based on competitive LSI/CF/RCC metrics.and RCC descriptors (v3.7.9).
+-   **Computational Ecology Platform**: Complete rebranding from "Engine" to "Scientific Platform".
+-   **Interactive Minimap**: Real-time navigation aid with peak detection (symbols), zoom, and click-to-teleport.
+-   **Landscape Metrics**: Integration of LSI (Shape), CF (Complexity), and RCC (Circularity) for validation of soil patch distribution.
+-   **Water Level Control**: Adjustable sea-level for terrain generation, preventing "all-blue" maps.
+-   **Finite World Mode**: High-fidelity terrain maps (up to 2048x2048) with realistic generation (v3.5+).
+-   **Drainage Analysis (D8)**: Deterministic flow accumulation visualization (v3.6+).
+-   **Semantic Soil**: CPU-authoritative soil classification ensuring 100% Visual-PROBE consistency (v3.7+).
+-   **Deterministic Seeding**: Full control over map seeds for reproducible terrain analysis (v3.7+).
+-   **Eco-Reports**: Automated generation of hydrological and landscape stats (v3.7+).
 
 ---
 
@@ -76,7 +77,8 @@ cmake --build build
 - **Shift**: Run (3x speed boost)
 - **Alt**: Slow motion (0.3x speed)
 - **Z / X**: Roll left/right (Free Flight)
-- **[ / ]**: Adjust FOV (45–110°)
+- **Mouse Wheel**: Zoom (Adjust FOV)
+- **[ / ]**: Fine Tune FOV (45–110°)
 - **LMB**: Probe terrain info
 
 ### Camera
@@ -90,70 +92,45 @@ cmake --build build
 - **Ctrl+T**: Toggle Theme
 
 ### Application
-- **Tools → Performance**: Real-time control of Draw Distance, Budgets, Models, and Resilience parameters. Toggling **Vegetation** off changes Grass to Dirt for visual clarity.
+- **Tools → Map Generator**: Real-time control of Terrain Size, Water Level, Roughness, and Seed.
+- **Tools → Visuals**: Sun position, Render Distance (Fog), and Minimap toggle.
 
 ---
 
-### Slope Analysis (v3.4.0+)
-Replaces the previous Ecological Resilience model. This system classifies terrain based on its local inclination (Percentage):
+## 🌿 Scientific Models
+
+### 1. Slope Analysis (Geometric)
+Classifies terrain based on local inclination (Percentage):
 - **Flat (0-3%)**: Plains suitable for construction or agriculture.
 - **Gentle Slope (3-8%)**: Transitional areas.
 - **Rolling/Ondulado (8-20%)**: Moderate slopes requiring earthworks.
-- **Steep Slope (20-45%)**: Challenging terrain, high erosion risk.
-- **Mountain (>45%)**: Inaccessible or extreme terrain.
+- **Steep Slope (20-45%)**: Challenging terrain, erosion risk.
+- **Mountain (>45%)**: Inaccessible terrain.
 
-These thresholds are fully configurable via the user interface and persisted between sessions. (Trees, Grass) influenced by moisture and fertility simulations.
+### 2. Pedology (Landscape Ecology)
+Soil distribution is simulated using spatially coherent noise patterns inspired by Landscape Ecology principles (Farina, 2006):
+- **LSI (Landscape Shape Index)**: Controls patch edge complexity via Domain Warping.
+- **CF (Complexity Factor)**: Controls internal roughness via Fractal Octaves.
+- **RCC (Related Circumscribing Circle)**: Controls patch elongation via Anisotropy.
+- **Classes**: Hidromórfico, B Textural, Argila Expansiva, Bem Desenvolvido, Raso, Rocha.
 
-- **Social Resilience (`resSoc`)**:
-  - Simulates **human impact** and connectivity.
-  - Generates "Social Corridors" (paths/clearings) based on connectivity logic.
-  - High resilience = Improved infrastructure (flatter paths), organized settlements.
-
-### 2. Vegetation Model
-A biological simulation layer driven by:
-- **Moisture & Temperature**: Derived from Perlin noise and height.
-- **Fertility**: Dynamic factor affecting plant growth rates and density.
-- **Visual Feedback**:
-  - **Vegetation ON**: Lush green grass, forest canopies.
-  - **Vegetation OFF**: Terrain turns to Barren Dirt, trees are removed (simulating drought/collapse).
-
----
-
-## 🚀 Technical Features
-
-### Rendering
-- **Vulkan 1.3** pipeline.
-- **Prioritized Greedy Meshing** (Visible chunks mesh first).
-- **Transparent Water Pass**.
-- **Per-Face Ambient Occlusion**.
-- **Frustum Culling** for both rendering and generation/meshing queues.
-
-### Architecture
-- **Unified Context**: `core::GraphicsContext` manages Vulkan device state.
-- **Scene Isolation**: `VoxelScene` encapsulates game logic, cleaner `Application` loop.
-- **Multithreading**: Worker pool for background chunk generation vs Main thread rendering.
-
----
-
-## 📊 Performance
-
-On modern hardware (e.g., RX 7900 XTX / Ryzen 9):
-- **FPS**: 120+ (can be capped in Tools).
-- **Loading**: Instant response to camera turns due to prioritization.
-- **Draw Calls**: Minimized via Greedy Meshing and Culling.
+### 3. Hydrology (D8)
+Deterministic O(N) flow accumulation algorithm:
+- Calculates flow direction based on steepest descent.
+- Accumulates flux from ridge lines to valleys.
+- Visualizes drainage networks (Flux > Threshold).
+- Segments terrain into drainage basins (Watersheds).
 
 ---
 
 ## 🚀 Roadmap
 
--   [x] **v3.2.x**: Bookmarks, Stats, Themes, Initial Voxel Terrain.
--   [x] **v3.3.0**:
-    -   [x] Refactored Core Architecture (No bridges).
-    -   [x] Optimized Chunk Scheduling (Frustum + Distance).
-    -   [x] Robust Vegetation Toggling (Safe Resource Destruction).
--   [x] **v3.4.0**: Slope Analysis, Persistence, Standardized Versioning.
+-   [x] **v3.5.0**: Finite World & Slope Analysis.
+-   [x] **v3.6.0**: D8 Drainage & Watersheds.
+-   [x] **v3.7.0**: Semantic Soil & Landscape Metrics.
+-   [x] **v3.8.0**: Minimap, Rebranding, & Stability.
     -   [ ] Advanced Texturing (Splatting).
--   [ ] **v4.0.0**: VR Support.
+-   [ ] **v4.0.0**: VR Support & Agent Simulation.
 
 ---
 

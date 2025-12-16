@@ -597,9 +597,16 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         // --- Visual Settings (v3.7.3) ---
         if (ImGui::CollapsingHeader("Visual & Lighting Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
              // Direct binding to Application State via Reference
+             // Direct binding to Application State via Reference
              ImGui::SliderFloat("Sun Azimuth", &ctx.sunAzimuth, 0.0f, 360.0f, "%.0f deg");
              ImGui::SliderFloat("Sun Elevation", &ctx.sunElevation, 0.0f, 90.0f, "%.0f deg");
-             ImGui::SliderFloat("Fog Density", &ctx.fogDensity, 0.0f, 0.01f, "%.5f");
+             
+             // Inverting logic for User: "Render Distance" instead of Fog Density
+             // High density = Low distance. Low density = High distance.
+             float renderDist = (0.01f - ctx.fogDensity) * 10000.0f; // Approx mapping
+             if (ImGui::SliderFloat("Render Distance (Fog)", &ctx.fogDensity, 0.0f, 0.005f, "%.5f")) {
+                 // Direct update
+             }
         }
 
         ImGui::Separator();
@@ -639,6 +646,10 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         ImGui::SliderFloat("Height Amplitude", &amplitude, 50.0f, 500.0f, "%.0f m");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Max Height of terrain features.");
 
+        static float waterLvl = 64.0f;
+        ImGui::SliderFloat("Water Level (Sea)", &waterLvl, 0.0f, 200.0f, "%.0f m");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Terrains below this level are shown as Water on Minimap.");
+
         // v3.6.5 Resolution Control
         static float resolution = 1.0f;
         ImGui::SliderFloat("Cell Size (Resolution)", &resolution, 0.1f, 2.0f, "%.1f m");
@@ -661,7 +672,7 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         
         if (ImGui::Button("Generate New Map", ImVec2(-1, 0))) {
             if (callbacks_.regenerateFiniteWorld) {
-                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution, persistence, seedInput);
+                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution, persistence, seedInput, waterLvl);
             }
         }
 
