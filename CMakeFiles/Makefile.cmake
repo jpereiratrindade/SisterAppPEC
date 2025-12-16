@@ -7,8 +7,8 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "CMakeFiles/3.31.6/CMakeCXXCompiler.cmake"
-  "CMakeFiles/3.31.6/CMakeSystem.cmake"
+  "CMakeFiles/3.31.10/CMakeCXXCompiler.cmake"
+  "CMakeFiles/3.31.10/CMakeSystem.cmake"
   "CMakeLists.txt"
   "/usr/lib64/cmake/SDL2/SDL2Config.cmake"
   "/usr/lib64/cmake/SDL2/SDL2ConfigVersion.cmake"
@@ -90,6 +90,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake"
+  "/usr/share/cmake/Modules/Internal/CMakeInspectCXXLinker.cmake"
   "/usr/share/cmake/Modules/Internal/FeatureTesting.cmake"
   "/usr/share/cmake/Modules/Linker/GNU-CXX.cmake"
   "/usr/share/cmake/Modules/Linker/GNU.cmake"
@@ -115,14 +116,15 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
-  "CMakeFiles/3.31.6/CMakeSystem.cmake"
-  "CMakeFiles/3.31.6/CMakeCXXCompiler.cmake"
-  "CMakeFiles/3.31.6/CMakeCXXCompiler.cmake"
+  "CMakeFiles/3.31.10/CMakeSystem.cmake"
+  "CMakeFiles/3.31.10/CMakeCXXCompiler.cmake"
+  "CMakeFiles/3.31.10/CMakeCXXCompiler.cmake"
+  "CMakeFiles/3.31.10/CMakeCXXCompiler.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/hello.dir/DependInfo.cmake"
+  "CMakeFiles/sisterapp.dir/DependInfo.cmake"
   "CMakeFiles/shaders_spirv.dir/DependInfo.cmake"
   )

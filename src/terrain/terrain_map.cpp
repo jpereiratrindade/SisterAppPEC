@@ -19,6 +19,7 @@ void TerrainMap::resize(int width, int height) {
     biomeMap_.assign(size, 0);
     flowDirMap_.assign(size, -1);   // v3.6.3: -1 means no receiver (sink or undefined)
     watershedMap_.assign(size, 0);  // v3.6.3: 0 means no basin assigned
+    soilMap_.assign(size, static_cast<uint8_t>(SoilType::None)); // v3.7.3
 }
 
 void TerrainMap::clear() {
@@ -29,6 +30,7 @@ void TerrainMap::clear() {
     std::fill(biomeMap_.begin(), biomeMap_.end(), 0);
     std::fill(flowDirMap_.begin(), flowDirMap_.end(), -1);
     std::fill(watershedMap_.begin(), watershedMap_.end(), 0);
+    std::fill(soilMap_.begin(), soilMap_.end(), static_cast<uint8_t>(SoilType::None));
 }
 
 float TerrainMap::getHeight(int x, int z) const {
@@ -63,6 +65,17 @@ float TerrainMap::getMoisture(int x, int z) const {
 void TerrainMap::setMoisture(int x, int z, float m) {
     if (isValid(x, z)) {
         moistureMap_[z * width_ + x] = m;
+    }
+}
+
+SoilType TerrainMap::getSoil(int x, int z) const {
+    if (!isValid(x, z)) return SoilType::None;
+    return static_cast<SoilType>(soilMap_[z * width_ + x]);
+}
+
+void TerrainMap::setSoil(int x, int z, SoilType s) {
+    if (isValid(x, z)) {
+        soilMap_[z * width_ + x] = static_cast<uint8_t>(s);
     }
 }
 

@@ -11,7 +11,7 @@
 
 \geometry{top=3cm, bottom=2cm, left=2.5cm, right=2.5cm}
 
-\title{\textbf{SisterApp Engine v3.4.0}\\Manual Técnico de Modelos Computacionais}
+\title{\textbf{SisterApp Engine v3.7.3}\\Manual Técnico de Modelos Computacionais}
 \author{José Pedro Trindade}
 \date{\today}
 
@@ -22,7 +22,7 @@
 \newpage
 
 \section{Introdução}
-O \textbf{SisterApp Engine} integra sistemas avançados de análise topológica e persistência de dados. A versão 3.4.0 (com extensões v3.5) introduz um novo modelo focado na \textbf{Análise de Declividade (Slope Analysis)}, permitindo classificações precisas do terreno.
+O \textbf{SisterApp Engine} integra sistemas avançados de análise topológica e persistência de dados. A versão 3.7.3 introduz um novo modelo focado na \textbf{Análise Semântica de Solos (Semantic Soil Analysis)}, garantindo consistência total entre visualização e dados físicos.
 
 \section{Modelo de Análise de Declividade (Slope Analysis)}
 Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
@@ -164,11 +164,11 @@ O usuário pode ajustar o tamanho métrico de cada célula (pixel) da grade de s
 
 O sistema ajusta automaticamente a visualização e a lógica de interação (raycasting) para manter a coerência espacial independentemente da escala escolhida.
 
-\section{Módulo de Análise de Solos (V3.7.0)}
+\section{Módulo de Análise de Solos (V3.7.3)}
 O sistema inclui agora uma camada de pedologia probabilística baseada na declividade, conforme a tabela de relação Relevo-Solo definida pelo usuário.
 
 \subsection{Metodologia Estocástica}
-Como uma mesma classe de relevo pode apresentar múltiplos tipos de solo (ex: Plano pode ser Hidromórfico ou B Textural), o sistema utiliza um algoritmo de \textit{hashing espacial} para distribuir os subtipos. Isso garante que:
+Como uma mesma classe de relevo pode apresentar múltiplos tipos de solo (ex: Plano pode ser Hidromórfico ou B Textural), o sistema utiliza um algoritmo de \textit{Robust Integer Hashing} (White Noise Determinístico) para distribuir os subtipos. Isso substitui métodos anteriores baseados em Ruído Perlin que apresentavam viés estatístico.
 \begin{itemize}
     \item A distribuição respeita as proporções da tabela (ex: 33\% para cada tipo no relevo plano).
     \item O resultado é determinístico: uma mesma coordenada $(x,z)$ sempre terá o mesmo solo.

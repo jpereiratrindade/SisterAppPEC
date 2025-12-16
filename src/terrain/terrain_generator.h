@@ -10,6 +10,9 @@ public:
     
     // Main processing chain
     void generateBaseTerrain(TerrainMap& map, const TerrainConfig& config);
+    // v3.7.3: Semantic Soil Classification (CPU Authority)
+    void classifySoil(TerrainMap& map, const TerrainConfig& config);
+    
     // Replaced applyErosion with calculateDrainage (User Request)
     void calculateDrainage(TerrainMap& map);
     void applyErosion(TerrainMap& map, int iterations); // Kept for legacy/optional

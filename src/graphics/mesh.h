@@ -20,9 +20,10 @@ struct Vertex {
     float normal[3]; ///< Vertex normal for lighting
     float uv[2];     ///< Texture coordinates / Flux data (v3.6.1)
     float auxiliary; ///< v3.6.3: Generic data (e.g. Basin ID)
+    float soilId;    ///< v3.7.3: Semantic Soil ID
 
     static VkVertexInputBindingDescription getBindingDescription();
-    static std::array<VkVertexInputAttributeDescription, 5> getAttributeDescriptions(); // Updated count to 5
+    static std::array<VkVertexInputAttributeDescription, 6> getAttributeDescriptions(); // Updated count to 6
 };
 
 /**

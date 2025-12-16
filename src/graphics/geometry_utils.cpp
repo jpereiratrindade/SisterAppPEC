@@ -10,10 +10,10 @@ static void addQuad(std::vector<Vertex>& verts, std::vector<uint16_t>& indices,
              const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& p3, 
              const Vec3& color, const Vec3& normal) {
     uint16_t base = static_cast<uint16_t>(verts.size());
-    verts.push_back({{p0.x, p0.y, p0.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-    verts.push_back({{p1.x, p1.y, p1.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-    verts.push_back({{p2.x, p2.y, p2.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-    verts.push_back({{p3.x, p3.y, p3.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+    verts.push_back({{p0.x, p0.y, p0.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+    verts.push_back({{p1.x, p1.y, p1.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+    verts.push_back({{p2.x, p2.y, p2.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+    verts.push_back({{p3.x, p3.y, p3.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
     
     // Triangle 1
     indices.push_back(base); indices.push_back(base+1); indices.push_back(base+2);
@@ -26,9 +26,9 @@ static void addTri(std::vector<Vertex>& verts, std::vector<uint16_t>& indices,
             const Vec3& p0, const Vec3& p1, const Vec3& p2, 
             const Vec3& color, const Vec3& normal) {
     uint16_t base = static_cast<uint16_t>(verts.size());
-    verts.push_back({{p0.x, p0.y, p0.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-    verts.push_back({{p1.x, p1.y, p1.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-    verts.push_back({{p2.x, p2.y, p2.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+    verts.push_back({{p0.x, p0.y, p0.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+    verts.push_back({{p1.x, p1.y, p1.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+    verts.push_back({{p2.x, p2.y, p2.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
     
     indices.push_back(base); indices.push_back(base+1); indices.push_back(base+2);
 }
@@ -65,8 +65,8 @@ void createGrid(std::vector<Vertex>& vertices, std::vector<uint16_t>& indices, i
             zColor[0] = 0.3f; zColor[1] = 0.5f; zColor[2] = 1.0f;
         }
         
-        vertices.push_back({{ pos, 0.0f, -static_cast<float>(halfSize) }, {zColor[0], zColor[1], zColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-        vertices.push_back({{ pos, 0.0f, static_cast<float>(halfSize) },    {zColor[0], zColor[1], zColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+        vertices.push_back({{ pos, 0.0f, -static_cast<float>(halfSize) }, {zColor[0], zColor[1], zColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+        vertices.push_back({{ pos, 0.0f, static_cast<float>(halfSize) },    {zColor[0], zColor[1], zColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
         uint16_t base = static_cast<uint16_t>(vertices.size() - 2);
         indices.push_back(base);
         indices.push_back(base + 1);
@@ -78,8 +78,8 @@ void createGrid(std::vector<Vertex>& vertices, std::vector<uint16_t>& indices, i
             xColor[0] = 1.0f; xColor[1] = 0.3f; xColor[2] = 0.3f;
         }
         
-        vertices.push_back({{-static_cast<float>(halfSize), 0.0f, pos }, {xColor[0], xColor[1], xColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-        vertices.push_back({{ static_cast<float>(halfSize), 0.0f, pos },    {xColor[0], xColor[1], xColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+        vertices.push_back({{-static_cast<float>(halfSize), 0.0f, pos }, {xColor[0], xColor[1], xColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+        vertices.push_back({{ static_cast<float>(halfSize), 0.0f, pos },    {xColor[0], xColor[1], xColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
         base = static_cast<uint16_t>(vertices.size() - 2);
         indices.push_back(base);
         indices.push_back(base + 1);
@@ -94,18 +94,18 @@ void createAxes(std::vector<Vertex>& vertices, std::vector<uint16_t>& indices) {
     Vec3 dummyNormal = {0.0f, 1.0f, 0.0f};
 
     // X Axis (Red)
-    vertices.push_back({{0.0f, 0.001f, 0.0f}, {1.0f, 0.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}}); 
-    vertices.push_back({{len, 0.001f, 0.0f}, {1.0f, 0.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+    vertices.push_back({{0.0f, 0.001f, 0.0f}, {1.0f, 0.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}, 0.0f, 0.0f}); 
+    vertices.push_back({{len, 0.001f, 0.0f}, {1.0f, 0.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
     indices.push_back(0); indices.push_back(1);
     
     // Y Axis (Green)
-    vertices.push_back({{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
-    vertices.push_back({{0.0f, len, 0.0f}, {0.0f, 1.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+    vertices.push_back({{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+    vertices.push_back({{0.0f, len, 0.0f}, {0.0f, 1.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
     indices.push_back(2); indices.push_back(3);
 
     // Z Axis (Blue)
-    vertices.push_back({{0.0f, 0.001f, 0.0f}, {0.0f, 0.0f, 1.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
-    vertices.push_back({{0.0f, 0.001f, len}, {0.0f, 0.0f, 1.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+    vertices.push_back({{0.0f, 0.001f, 0.0f}, {0.0f, 0.0f, 1.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+    vertices.push_back({{0.0f, 0.001f, len}, {0.0f, 0.0f, 1.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
     indices.push_back(4); indices.push_back(5);
 }
 
@@ -148,7 +148,7 @@ void createSkyDome(std::vector<Vertex>& vertices, std::vector<uint16_t>& indices
             
             Vec3 normal = {0, 1, 0}; // Dummy normal
             
-            vertices.push_back({{x, y, z}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+            vertices.push_back({{x, y, z}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
         }
     }
     
@@ -199,8 +199,8 @@ void createDistanceMarkers(std::vector<Vertex>& vertices, std::vector<uint16_t>&
             Vec3 normal{0, 1, 0};
             
             // Simple vertical line
-            vertices.push_back({{fx, 0.0f, fz}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-            vertices.push_back({{fx, height, fz}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+            vertices.push_back({{fx, 0.0f, fz}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
+            vertices.push_back({{fx, height, fz}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}, 0.0f, 0.0f});
             
             uint16_t base = static_cast<uint16_t>(vertices.size() - 2);
             indices.push_back(base);

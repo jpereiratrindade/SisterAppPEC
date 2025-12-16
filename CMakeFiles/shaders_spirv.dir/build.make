@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan
+CMAKE_SOURCE_DIR = /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan
+CMAKE_BINARY_DIR = /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330
 
 # Utility rule file for shaders_spirv.
 
@@ -69,21 +69,45 @@ include CMakeFiles/shaders_spirv.dir/progress.make
 CMakeFiles/shaders_spirv: shaders/basic.vert.spv
 CMakeFiles/shaders_spirv: shaders/basic.frag.spv
 CMakeFiles/shaders_spirv: shaders/red.frag.spv
+CMakeFiles/shaders_spirv: shaders/environment.vert.spv
+CMakeFiles/shaders_spirv: shaders/environment.frag.spv
+CMakeFiles/shaders_spirv: shaders/voxel.vert.spv
+CMakeFiles/shaders_spirv: shaders/voxel.frag.spv
 
 shaders/basic.frag.spv: shaders/basic.frag
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Compilando shaders/basic.frag para SPIR-V"
-	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders
-	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders/basic.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders/basic.frag
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Compilando shaders/basic.frag para SPIR-V"
+	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
+	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag
 
 shaders/basic.vert.spv: shaders/basic.vert
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Compilando shaders/basic.vert para SPIR-V"
-	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders
-	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders/basic.vert.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders/basic.vert
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Compilando shaders/basic.vert para SPIR-V"
+	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
+	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.vert.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.vert
+
+shaders/environment.frag.spv: shaders/environment.frag
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Compilando shaders/environment.frag para SPIR-V"
+	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
+	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.frag
+
+shaders/environment.vert.spv: shaders/environment.vert
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Compilando shaders/environment.vert para SPIR-V"
+	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
+	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.vert.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.vert
 
 shaders/red.frag.spv: shaders/red.frag
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Compilando shaders/red.frag para SPIR-V"
-	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders
-	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders/red.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/shaders/red.frag
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Compilando shaders/red.frag para SPIR-V"
+	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
+	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag
+
+shaders/voxel.frag.spv: shaders/voxel.frag
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Compilando shaders/voxel.frag para SPIR-V"
+	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
+	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag
+
+shaders/voxel.vert.spv: shaders/voxel.vert
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Compilando shaders/voxel.vert para SPIR-V"
+	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
+	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert
 
 CMakeFiles/shaders_spirv.dir/codegen:
 .PHONY : CMakeFiles/shaders_spirv.dir/codegen
@@ -91,7 +115,11 @@ CMakeFiles/shaders_spirv.dir/codegen:
 shaders_spirv: CMakeFiles/shaders_spirv
 shaders_spirv: shaders/basic.frag.spv
 shaders_spirv: shaders/basic.vert.spv
+shaders_spirv: shaders/environment.frag.spv
+shaders_spirv: shaders/environment.vert.spv
 shaders_spirv: shaders/red.frag.spv
+shaders_spirv: shaders/voxel.frag.spv
+shaders_spirv: shaders/voxel.vert.spv
 shaders_spirv: CMakeFiles/shaders_spirv.dir/build.make
 .PHONY : shaders_spirv
 
@@ -104,6 +132,6 @@ CMakeFiles/shaders_spirv.dir/clean:
 .PHONY : CMakeFiles/shaders_spirv.dir/clean
 
 CMakeFiles/shaders_spirv.dir/depend:
-	cd /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/CMakeFiles/shaders_spirv.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles/shaders_spirv.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/shaders_spirv.dir/depend
 

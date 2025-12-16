@@ -2,9 +2,10 @@
 
 ## [v3.7.3] - 2025-12-15
 ### Fixed
--   **Soil Classification**: Fixed discrepancy between visual rendering (GPU) and probe logic (CPU).
-    -   **Renderer**: Corrected normal calculation in `TerrainRenderer` to account for `gridScale`. Flat terrain now correctly renders as flat (Purple/Argila) instead of steep (Green/Raso).
-    -   **Probe**: Improved noise sampling precision to use exact raycast hit position, ensuring 1:1 match with visual stochastic noise.
+-   **Semantic Soil Architecture**: Refactored soil classification to be **CPU-Authoritative**.
+    -   **Consistency**: Visual rendering and Probe Logic now share the exact same `SoilType` data source (`TerrainMap::soilMap`), guaranteeing 100% consistency.
+    -   **Renderer**: Soil ID is now calculated once during generation and passed to the GPU via a custom Vertex Attribute (`soilId`), removing complex procedural logic from the fragment shader.
+    -   **Probe**: Probe tool now reads directly from the semantic map instead of attempting to replicate shader math.
 
 ## [v3.6.3] - 2025-12-15
 ### Added

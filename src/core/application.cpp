@@ -149,6 +149,9 @@ void Application::init() {
         // v3.6.3: Ensure Drainage is calculated on startup
         finiteGenerator_->calculateDrainage(*finiteMap_);
         
+        // v3.7.3: Semantic Soil Classification
+        finiteGenerator_->classifySoil(*finiteMap_, config);
+        
         finiteRenderer_->buildMesh(*finiteMap_);
         
         camera_.setCameraMode(graphics::CameraMode::FreeFlight);
@@ -380,129 +383,50 @@ void Application::processEvents(double dt) {
                          
                          float slopePct = std::sqrt(dz_dx*dz_dx + dz_dz*dz_dz) * 100.0f;
                          
-                         // Stochastic Soil Selection (Match Shader Value Noise v3.7.2)
-                         auto noiseHash = [](float x, float z) -> float {
-                             float p = x * 12.9898f + z * 78.233f;
-                             float r = std::sin(p) * 43758.5453f;
-                             return r - std::floor(r);
-                         };
-                         
-                         // Use exact hit position for noise to match Shader's fragment world pos
-                         float wx = hitPos.x * 0.1f;
-                         float wz = hitPos.z * 0.1f;
-                         
-                         float ix = std::floor(wx);
-                         float iz = std::floor(wz);
-                         float fx = wx - ix;
-                         float fz = wz - iz;
-                         
-                         // Smoothstep
-                         float ux = fx * fx * (3.0f - 2.0f * fx);
-                         float uz = fz * fz * (3.0f - 2.0f * fz);
-                         
-                         float a = noiseHash(ix, iz);
-                         float b = noiseHash(ix + 1.0f, iz);
-                         float c = noiseHash(ix, iz + 1.0f);
-                         float d = noiseHash(ix + 1.0f, iz + 1.0f);
-                         
-                         float l1 = a * (1.0f - ux) + b * ux;
-                         float l2 = c * (1.0f - ux) + d * ux;
-                         float rnd = l1 * (1.0f - uz) + l2 * uz;
-
+                         // v3.7.3: Semantic Probe (CPU Authority)
+                         auto soilId = finiteMap_->getSoil(hitX, hitZ);
                          std::string soilType;
-                         // Color Definitions (Sync with Shader)
-                         float cHidro[3]  = {0.0f, 0.3f, 0.3f};
-                         float cBText[3]  = {0.7f, 0.35f, 0.05f};
-                         float cArgila[3] = {0.4f, 0.0f, 0.5f};
-                         float cBemDes[3] = {0.5f, 0.15f, 0.1f};
-                         float cRaso[3]   = {0.7f, 0.7f, 0.2f};
-                         float cRocha[3]  = {0.2f, 0.2f, 0.2f};
+                         std::memset(lastSurfaceColor_, 0, 12);
+                         
+                         // Match SoilType enum
+                         // Hidro=1, BText=2, Argila=3, BemDes=4, Raso=5, Rocha=6
+                         
+                         // Helper for Color Copy
+                         auto setColor = [&](float r, float g, float b) {
+                             float c[3] = {r, g, b};
+                             std::memcpy(lastSurfaceColor_, c, 12);
+                         };
 
-                          if (slopePct < 3.0f) {
-                              int count = 0;
-                              if (soilHidroAllowed_) count++;
-                              if (soilBTextAllowed_) count++;
-                              if (soilArgilaAllowed_) count++;
-                              
-                              if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
-                              else {
-                                  float seg = 1.0f / (float)count;
-                                  int idx = (int)(rnd / seg);
-                                  if (idx >= count) idx = count - 1;
-                                  
-                                  int current = 0;
-                                  if (soilHidroAllowed_) { 
-                                      if (current == idx) { soilType = "Hidromorfico"; std::memcpy(lastSurfaceColor_, cHidro, 12); } 
-                                      current++; 
-                                  }
-                                  if (soilBTextAllowed_) { 
-                                      if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } 
-                                      current++; 
-                                  }
-                                  if (soilArgilaAllowed_) { 
-                                      if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); } 
-                                      current++; 
-                                  }
-                              }
-                          }
-                          else if (slopePct < 8.0f) {
-                              int count = 0;
-                              if (soilBTextAllowed_) count++;
-                              if (soilBemDesAllowed_) count++;
-                              if (soilArgilaAllowed_) count++;
-                              
-                              if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
-                              else {
-                                  float seg = 1.0f / (float)count;
-                                  int idx = (int)(rnd / seg);
-                                  if (idx >= count) idx = count - 1;
-                                  
-                                  int current = 0;
-                                  if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
-                                  if (soilBemDesAllowed_) { if (current == idx) { soilType = "Solo bem desenvolvido"; std::memcpy(lastSurfaceColor_, cBemDes, 12); } current++; }
-                                  if (soilArgilaAllowed_) { if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); } current++; }
-                              }
-                          }
-                          else if (slopePct < 20.0f) {
-                              int count = 0;
-                              if (soilBTextAllowed_) count++;
-                              if (soilArgilaAllowed_) count++;
-                              
-                              if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
-                              else {
-                                  float seg = 1.0f / (float)count;
-                                  int idx = (int)(rnd / seg);
-                                  if (idx >= count) idx = count - 1;
-                                  
-                                  int current = 0;
-                                  if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
-                                  if (soilArgilaAllowed_) { if (current == idx) { soilType = "Presenca de argila expansiva"; std::memcpy(lastSurfaceColor_, cArgila, 12); } current++; }
-                              }
-                          }
-                          else if (slopePct < 45.0f) {
-                              int count = 0;
-                              if (soilBTextAllowed_) count++;
-                              if (soilRasoAllowed_) count++;
-                              
-                              if (count == 0) { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
-                              else {
-                                  float seg = 1.0f / (float)count;
-                                  int idx = (int)(rnd / seg);
-                                  if (idx >= count) idx = count - 1;
-                                  
-                                  int current = 0;
-                                  if (soilBTextAllowed_) { if (current == idx) { soilType = "Horizonte B textural"; std::memcpy(lastSurfaceColor_, cBText, 12); } current++; }
-                                  if (soilRasoAllowed_) { if (current == idx) { soilType = "Solo Raso"; std::memcpy(lastSurfaceColor_, cRaso, 12); } current++; }
-                              }
-                          }
-                          else if (slopePct < 75.0f) {
-                              if (soilRasoAllowed_) { soilType = "Solo Raso"; std::memcpy(lastSurfaceColor_, cRaso, 12); }
-                              else { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
-                          }
-                          else {
-                              if (soilRochaAllowed_) { soilType = "Afloramento rochoso"; std::memcpy(lastSurfaceColor_, cRocha, 12); }
-                              else { soilType = "Nenhum (Desativado)"; std::memset(lastSurfaceColor_, 0, 12); }
-                          }
+                         switch (soilId) {
+                             case terrain::SoilType::Hidromorfico:
+                                 soilType = "Hidromorfico";
+                                 setColor(0.0f, 0.3f, 0.3f);
+                                 break;
+                             case terrain::SoilType::BTextural:
+                                 soilType = "Horizonte B textural";
+                                 setColor(0.7f, 0.35f, 0.05f);
+                                 break;
+                             case terrain::SoilType::Argila:
+                                 soilType = "Presenca de argila expansiva";
+                                 setColor(0.4f, 0.0f, 0.5f);
+                                 break;
+                             case terrain::SoilType::BemDes:
+                                 soilType = "Solo bem desenvolvido";
+                                 setColor(0.5f, 0.15f, 0.1f);
+                                 break;
+                             case terrain::SoilType::Raso:
+                                 soilType = "Solo Raso";
+                                 setColor(0.7f, 0.7f, 0.2f);
+                                 break;
+                             case terrain::SoilType::Rocha:
+                                 soilType = "Afloramento rochoso";
+                                 setColor(0.2f, 0.2f, 0.2f);
+                                 break;
+                             default:
+                                 soilType = "Indefinido";
+                                 setColor(0.1f, 0.1f, 0.1f);
+                                 break;
+                         }
                          
                          // v3.7.1: Expanded Probe Data
                          float elevation = finiteMap_->getHeight(hitX, hitZ);
@@ -1059,6 +983,9 @@ void Application::performRegeneration() {
     // v3.6.3: Use D8 Drainage instead of Hydraulic Erosion (User Request)
     // This provides clean, deterministic river networks without "spots".
     finiteGenerator_->calculateDrainage(*finiteMap_);
+    
+    // v3.7.3: Semantic Soil Classification (Fix: Was missing in regen path)
+    finiteGenerator_->classifySoil(*finiteMap_, config);
 
     // v3.6.5: Apply Resolution to Mesh Build
     worldResolution_ = deferredRegenResolution_;

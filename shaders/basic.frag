@@ -7,6 +7,7 @@ layout(location = 3) in vec2 fragUV; // v3.6.1 Flux (x), Sediment (y)
 layout(location = 4) flat in float fragAux; // v3.6.3 Basin ID
 layout(location = 5) in float fragAuxSmooth; // v3.6.4 Smooth ID
 layout(location = 6) in vec3 fragWorldPos;   // v3.6.4 World Pos
+layout(location = 7) flat in float fragSoilId; // v3.7.3
 
 layout(location = 0) out vec4 outColor;
 
@@ -41,6 +42,21 @@ float noise(vec2 p) {
     return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
+// Soil Color Lookup (v3.7.3 Semantic)
+vec3 getSoilColor(int id) {
+    // Match SoilType enum
+    // 0=None, 1=Hidro, 2=BText, 3=Argila, 4=BemDes, 5=Raso, 6=Rocha
+    switch(id) {
+        case 1: return vec3(0.0, 0.3, 0.3); // Hidromorfico
+        case 2: return vec3(0.7, 0.35, 0.05); // BTextural
+        case 3: return vec3(0.4, 0.0, 0.5); // Argila Expansiva
+        case 4: return vec3(0.5, 0.15, 0.1); // Bem Desenvolvido
+        case 5: return vec3(0.7, 0.7, 0.2); // Solo Raso
+        case 6: return vec3(0.2, 0.2, 0.2); // Rocha
+        default: return vec3(0.1); // Error/None
+    }
+}
+
 void main() {
     vec3 color = fragColor;
     bool isNatural = true;
@@ -67,23 +83,8 @@ void main() {
     } 
     else if (useSoilVis) {
         isNatural = false;
-        // --- Soil Visualization (v3.7.0) based on Stochastic Table ---
-        vec3 N = normalize(fragNormal);
-        float dotUp = clamp(N.y, 0.0, 1.0);
-        float angle = acos(dotUp);
-        float slopePercent = tan(angle) * 100.0;
         
-        // Colors for Specific Soil Types (Sync with UI):
-        vec3 cHidro    = vec3(0.0, 0.3, 0.3); 
-        vec3 cBText    = vec3(0.7, 0.35, 0.05); 
-        vec3 cArgila   = vec3(0.4, 0.0, 0.5); 
-        vec3 cBemDes   = vec3(0.5, 0.15, 0.1); 
-        vec3 cRaso     = vec3(0.7, 0.7, 0.2); 
-        vec3 cRocha    = vec3(0.2, 0.2, 0.2); 
-
-        // Stochastic Factor: Coherent Value Noise for Patches (v3.7.2)
-        // Scale 0.1 gives ~10m patches
-        float rnd = noise(fragWorldPos.xz * 0.1);
+        int soilType = int(round(fragSoilId));
         
         // Soil Whitelist Flags
         bool allowHidro   = hasFlag(256u);
@@ -93,92 +94,19 @@ void main() {
         bool allowRaso    = hasFlag(4096u);
         bool allowRocha   = hasFlag(8192u);
 
-        // Helper: Weighted Selection from 3 possibilities a, b, c
-        // returns 0, 1, or 2 index based on allowed flags and rnd
+        // Check if allowed
+        bool visible = false;
+        if (soilType == 1 && allowHidro) visible = true;
+        else if (soilType == 2 && allowBText) visible = true;
+        else if (soilType == 3 && allowArgila) visible = true;
+        else if (soilType == 4 && allowBemDes) visible = true;
+        else if (soilType == 5 && allowRaso) visible = true;
+        else if (soilType == 6 && allowRocha) visible = true;
         
-        if (slopePercent < 3.0) {
-            // Plano (0-3%): Options: Hidro, BText, Argila
-            // Count valid
-            int count = 0;
-            if (allowHidro) count++;
-            if (allowBText) count++;
-            if (allowArgila) count++;
-            
-            if (count == 0) color = vec3(0.1); // Error/None
-            else {
-                float seg = 1.0 / float(count);
-                int idx = int(rnd / seg); 
-                if (idx >= count) idx = count - 1; // Safety
-                
-                // Iterate to find the N-th active one
-                int current = 0;
-                if (allowHidro) { if (current == idx) color = cHidro; current++; }
-                if (allowBText) { if (current == idx) color = cBText; current++; }
-                if (allowArgila) { if (current == idx) color = cArgila; current++; }
-            }
-        } 
-        else if (slopePercent < 8.0) {
-            // Suave (3-8%): BText, BemDes, Argila
-            int count = 0;
-            if (allowBText) count++;
-            if (allowBemDes) count++;
-            if (allowArgila) count++;
-            
-            if (count == 0) color = vec3(0.1);
-            else {
-                float seg = 1.0 / float(count);
-                int idx = int(rnd / seg); 
-                if (idx >= count) idx = count - 1;
-                
-                int current = 0;
-                if (allowBText) { if (current == idx) color = cBText; current++; }
-                if (allowBemDes) { if (current == idx) color = cBemDes; current++; }
-                if (allowArgila) { if (current == idx) color = cArgila; current++; }
-            }
-        } 
-        else if (slopePercent < 20.0) {
-            // Ondulado (8-20%): BText, Argila
-            int count = 0;
-            if (allowBText) count++;
-            if (allowArgila) count++;
-            
-            if (count == 0) color = vec3(0.1);
-            else {
-                float seg = 1.0 / float(count);
-                int idx = int(rnd / seg); 
-                if (idx >= count) idx = count - 1;
-                
-                int current = 0;
-                if (allowBText) { if (current == idx) color = cBText; current++; }
-                if (allowArgila) { if (current == idx) color = cArgila; current++; }
-            }
-        } 
-        else if (slopePercent < 45.0) {
-            // Forte (20-45%): BText, Raso
-            int count = 0;
-            if (allowBText) count++;
-            if (allowRaso) count++;
-            
-            if (count == 0) color = vec3(0.1);
-            else {
-                float seg = 1.0 / float(count);
-                int idx = int(rnd / seg); 
-                if (idx >= count) idx = count - 1;
-                
-                int current = 0;
-                if (allowBText) { if (current == idx) color = cBText; current++; }
-                if (allowRaso) { if (current == idx) color = cRaso; current++; }
-            }
-        } 
-        else if (slopePercent < 75.0) {
-            // Escarpado (45-75%): Raso
-            if (allowRaso) color = cRaso;
-            else color = vec3(0.1);
-        } 
-        else {
-            // Extremely Steep: Rocha
-            if (allowRocha) color = cRocha;
-            else color = vec3(0.1);
+        if (visible) {
+            color = getSoilColor(soilType);
+        } else {
+             color = vec3(0.1); // Gray/Hidden
         }
     }
     else if (useSlopeVis) {

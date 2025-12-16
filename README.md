@@ -16,8 +16,9 @@
 - **Visual Overhaul**: Distance Fog, Hemispheric Lighting, and Procedural Noise texturing.
 - **Performance**: Device Local memory for meshes ensures stability at 4 Million vertices.
 - **Erosion Simulation**: Hydraulic erosion engine (beta).
-- **Watershed Analysis**: Global segmentation and interactive basin delineation (v3.6.3).
-- **Eco-Reports**: Automated generation of hydrological stats (TWI, Drainage Density).
+-   **Watershed Analysis**: Global segmentation and interactive basin delineation (v3.6.3).
+-   **Semantic Soil**: CPU-authoritative soil classification ensuring 100% Visual-PROBE consistency (v3.7.3).
+-   **Eco-Reports**: Automated generation of hydrological stats (TWI, Drainage Density).
 
 ---
 

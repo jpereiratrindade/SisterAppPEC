@@ -1,0 +1,391 @@
+[ 15%] Built target shaders_spirv
+[ 17%] Building CXX object CMakeFiles/sisterapp.dir/src/renderer.cpp.o
+[ 24%] Building CXX object CMakeFiles/sisterapp.dir/src/init_sdl.cpp.o
+[ 24%] Building CXX object CMakeFiles/sisterapp.dir/src/shader_loader.cpp.o
+[ 24%] Building CXX object CMakeFiles/sisterapp.dir/main.cpp.o
+[ 26%] Building CXX object CMakeFiles/sisterapp.dir/src/imgui_backend.cpp.o
+[ 28%] Building CXX object CMakeFiles/sisterapp.dir/src/world.cpp.o
+[ 31%] Building CXX object CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o
+[ 33%] Building CXX object CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o
+[ 35%] Building CXX object CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o
+[ 37%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+[ 40%] Building CXX object CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o
+[ 42%] Building CXX object CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o
+[ 44%] Building CXX object CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::processEvents(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:433:91: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  433 |                          float flux = finiteMap_->fluxMap()[hitZ * finiteMap_->getWidth() + hitX];
+      |                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:434:97: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  434 |                          int basinID = finiteMap_->watershedMap()[hitZ * finiteMap_->getWidth() + hitX];
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+[ 46%] Building CXX object CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o
+[ 48%] Building CXX object CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o
+[ 51%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o
+[ 53%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o
+[ 55%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o
+[ 57%] Building CXX object CMakeFiles/sisterapp.dir/src/math/noise.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp: In function ‘void graphics::addQuad(std::vector<Vertex>&, std::vector<short unsigned int>&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:13:20: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   13 |     verts.push_back({{p0.x, p0.y, p0.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:13:20: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:14:20: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   14 |     verts.push_back({{p1.x, p1.y, p1.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:14:20: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:15:20: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   15 |     verts.push_back({{p2.x, p2.y, p2.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:15:20: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:16:20: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   16 |     verts.push_back({{p3.x, p3.y, p3.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:16:20: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp: In function ‘void graphics::addTri(std::vector<Vertex>&, std::vector<short unsigned int>&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:29:20: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   29 |     verts.push_back({{p0.x, p0.y, p0.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:29:20: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:30:20: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   30 |     verts.push_back({{p1.x, p1.y, p1.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:30:20: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:31:20: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   31 |     verts.push_back({{p2.x, p2.y, p2.z}, {color.x, color.y, color.z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:31:20: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp: In function ‘void graphics::createGrid(std::vector<Vertex>&, std::vector<short unsigned int>&, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:68:27: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   68 |         vertices.push_back({{ pos, 0.0f, -static_cast<float>(halfSize) }, {zColor[0], zColor[1], zColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |         ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:68:27: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:69:27: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   69 |         vertices.push_back({{ pos, 0.0f, static_cast<float>(halfSize) },    {zColor[0], zColor[1], zColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |         ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:69:27: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:81:27: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   81 |         vertices.push_back({{-static_cast<float>(halfSize), 0.0f, pos }, {xColor[0], xColor[1], xColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |         ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:81:27: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:82:27: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   82 |         vertices.push_back({{ static_cast<float>(halfSize), 0.0f, pos },    {xColor[0], xColor[1], xColor[2]}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |         ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:82:27: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp: In function ‘void graphics::createAxes(std::vector<Vertex>&, std::vector<short unsigned int>&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:97:23: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   97 |     vertices.push_back({{0.0f, 0.001f, 0.0f}, {1.0f, 0.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:97:23: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:98:23: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+   98 |     vertices.push_back({{len, 0.001f, 0.0f}, {1.0f, 0.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:98:23: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:102:23: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+  102 |     vertices.push_back({{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:102:23: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:103:23: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+  103 |     vertices.push_back({{0.0f, len, 0.0f}, {0.0f, 1.0f, 0.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:103:23: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:107:23: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+  107 |     vertices.push_back({{0.0f, 0.001f, 0.0f}, {0.0f, 0.0f, 1.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:107:23: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:108:23: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+  108 |     vertices.push_back({{0.0f, 0.001f, len}, {0.0f, 0.0f, 1.0f}, {dummyNormal.x, dummyNormal.y, dummyNormal.z}, {0.0f, 0.0f}});
+      |     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:108:23: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp: In function ‘void graphics::createSkyDome(std::vector<Vertex>&, std::vector<short unsigned int>&, float, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:151:31: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+  151 |             vertices.push_back({{x, y, z}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |             ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:151:31: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp: In function ‘void graphics::createDistanceMarkers(std::vector<Vertex>&, std::vector<short unsigned int>&, int, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:202:31: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+  202 |             vertices.push_back({{fx, 0.0f, fz}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |             ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:202:31: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:203:31: warning: missing initializer for member ‘graphics::Vertex::auxiliary’ [-Wmissing-field-initializers]
+  203 |             vertices.push_back({{fx, height, fz}, {r, g, b}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+      |             ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:203:31: warning: missing initializer for member ‘graphics::Vertex::soilId’ [-Wmissing-field-initializers]
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:25:13: warning: ‘void graphics::addTri(std::vector<Vertex>&, std::vector<short unsigned int>&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&)’ defined but not used [-Wunused-function]
+   25 | static void addTri(std::vector<Vertex>& verts, std::vector<uint16_t>& indices,
+      |             ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp:9:13: warning: ‘void graphics::addQuad(std::vector<Vertex>&, std::vector<short unsigned int>&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&, const math::Vec3&)’ defined but not used [-Wunused-function]
+    9 | static void addQuad(std::vector<Vertex>& verts, std::vector<uint16_t>& indices,
+      |             ^~~~~~~
+[ 60%] Building CXX object CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o
+[ 62%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o
+[ 64%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o
+[ 66%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::pruneFarChunks(int, int, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:289:135: warning: conversion to ‘std::vector<VkFence_T*>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  289 |     VkFence currentFence = (frameFences_ && frameIndex >= 0 && frameIndex < static_cast<int>(frameFences_->size())) ? (*frameFences_)[frameIndex] : VK_NULL_HANDLE;
+      |                                                                                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::update(float, float, const math::Frustum&, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:614:135: warning: conversion to ‘std::vector<VkFence_T*>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  614 |     VkFence currentFence = (frameFences_ && frameIndex >= 0 && frameIndex < static_cast<int>(frameFences_->size())) ? (*frameFences_)[frameIndex] : VK_NULL_HANDLE;
+      |                                                                                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:654:48: warning: conversion to ‘std::vector<graphics::VoxelTerrain::update(float, float, const math::Frustum&, int)::ChunkCandidate>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  654 |     candidates.reserve((viewDistance_ * 2 + 1) * (viewDistance_ * 2 + 1));
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+[ 68%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o
+[ 71%] Building CXX object CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o
+[ 73%] Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o
+[ 75%] Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o
+[ 77%] Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o
+[ 80%] Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawMenuBar(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:144:26: warning: unused variable ‘requestReset’ [-Wunused-variable]
+  144 |                     bool requestReset = false;
+      |                          ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawFiniteTools(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:484:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  484 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:484:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘4.0000000000000002e-1’ to ‘4.00000006e-1f’ [-Wfloat-conversion]
+  484 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:484:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  484 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:485:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  485 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:485:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  485 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:485:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  485 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:486:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  486 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:486:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  486 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:486:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  486 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:487:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  487 |              ImGui::TextColored(ImVec4(0.8,0.8,0.0,1), "20-45%%: Steep");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:487:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  487 |              ImGui::TextColored(ImVec4(0.8,0.8,0.0,1), "20-45%%: Steep");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:489:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  489 |              ImGui::TextColored(ImVec4(0.8,0.0,0.0,1), ">75%%: Extreme");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:630:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  630 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:631:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  631 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:635:63: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  635 |                 ctx.camera.setDistance(ctx.finiteMap->getWidth() * 0.8f); // Fit view
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:643:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  643 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:644:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  644 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:571:21: warning: unused variable ‘terrainTypes’ [-Wunused-variable]
+  571 |         const char* terrainTypes[] = { "Hills", "Mountains", "Plains", "Valleys" };
+      |                     ^~~~~~~~~~~~
+[ 82%] Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o
+[ 84%] Building CXX object CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o
+[ 86%] Building CXX object CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o
+[ 88%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o
+[ 91%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘float terrain::TerrainMap::getHeight(int, int) const’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:38:34: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   38 |     return heightMap_[z * width_ + x];
+      |                       ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘void terrain::TerrainMap::setHeight(int, int, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:43:31: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   43 |         heightMap_[y * width_ + x] = h;
+      |                    ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘float terrain::TerrainMap::getFlux(int, int) const’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:49:36: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   49 |         return fluxMap_[y * width_ + x];
+      |                         ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘void terrain::TerrainMap::setFlux(int, int, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:56:29: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   56 |         fluxMap_[y * width_ + x] = f;
+      |                  ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘float terrain::TerrainMap::getMoisture(int, int) const’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:62:36: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   62 |     return moistureMap_[z * width_ + x];
+      |                         ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘void terrain::TerrainMap::setMoisture(int, int, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:67:33: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   67 |         moistureMap_[z * width_ + x] = m;
+      |                      ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘terrain::SoilType terrain::TerrainMap::getSoil(int, int) const’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:73:54: warning: conversion to ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   73 |     return static_cast<SoilType>(soilMap_[z * width_ + x]);
+      |                                           ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp: In member function ‘void terrain::TerrainMap::setSoil(int, int, terrain::SoilType)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp:78:29: warning: conversion to ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   78 |         soilMap_[z * width_ + x] = static_cast<uint8_t>(s);
+      |                  ~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:20: warning: ignoring ‘#pragma omp parallel’ [-Wunknown-pragmas]
+   20 |     #pragma omp parallel for collapse(2)
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:136: warning: ignoring ‘#pragma omp parallel’ [-Wunknown-pragmas]
+  136 |     #pragma omp parallel for collapse(2)
+[ 93%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In constructor ‘terrain::TerrainGenerator::TerrainGenerator(int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:8:55: warning: conversion to ‘unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    8 | TerrainGenerator::TerrainGenerator(int seed) : noise_(seed), seed_(seed) {
+      |                                                       ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In member function ‘void terrain::TerrainGenerator::calculateDrainage(terrain::TerrainMap&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:65:33: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   65 |     std::vector<int> downstream(size, -1);
+      |                                 ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:69:36: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |     std::vector<int> sortedIndices(size);
+      |                                    ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:70:45: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   70 |     for(int i=0; i<size; ++i) sortedIndices[i] = i;
+      |                                             ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In lambda function:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:75:26: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |         return heightMap[a] > heightMap[b];
+      |                          ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:75:41: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |         return heightMap[a] > heightMap[b];
+      |                                         ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: In member function ‘void terrain::TerrainGenerator::calculateDrainage(terrain::TerrainMap&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:82:40: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   82 |             float currentH = heightMap[idx];
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:95:66: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   95 |                         float drop = currentH - heightMap[ny * w + nx];
+      |                                                           ~~~~~~~^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:103:24: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  103 |             downstream[idx] = receiver;
+      |                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:105:30: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  105 |             map.flowDirMap()[idx] = receiver;
+      |                              ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:112:41: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  112 |         int receiver = map.flowDirMap()[idx];
+      |                                         ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:114:27: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  114 |             map.fluxMap()[receiver] += map.fluxMap()[idx];
+      |                           ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:114:54: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  114 |             map.fluxMap()[receiver] += map.fluxMap()[idx];
+      |                                                      ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:121:10: error: ‘cout’ in namespace ‘std’ does not name a type
+  121 |     std::cout << "[TerrainGenerator] Drainage Calculation Complete." << std::endl;
+      |          ^~~~
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:3:
+/usr/include/c++/15/iostream:65:18: note: ‘std::cout’ declared here
+   65 |   extern ostream cout;          ///< Linked to standard output
+      |                  ^~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:124:6: error: ‘TerrainGenerator’ has not been declared
+  124 | void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config) {
+      |      ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:124:6: error: variable or field ‘classifySoil’ declared void
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:124:37: error: ‘TerrainMap’ was not declared in this scope; did you mean ‘terrain::TerrainMap’?
+  124 | void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config) {
+      |                                     ^~~~~~~~~~
+      |                                     terrain::TerrainMap
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.h:1,
+                 from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.h:32:7: note: ‘terrain::TerrainMap’ declared here
+   32 | class TerrainMap {
+      |       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:124:49: error: ‘map’ was not declared in this scope
+  124 | void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config) {
+      |                                                 ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:124:54: error: expected primary-expression before ‘const’
+  124 | void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config) {
+      |                                                      ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:214:6: error: ‘TerrainGenerator’ has not been declared
+  214 | void TerrainGenerator::applyErosion(TerrainMap& map, int /*iterations*/) {
+      |      ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:214:6: error: variable or field ‘applyErosion’ declared void
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:214:37: error: ‘TerrainMap’ was not declared in this scope; did you mean ‘terrain::TerrainMap’?
+  214 | void TerrainGenerator::applyErosion(TerrainMap& map, int /*iterations*/) {
+      |                                     ^~~~~~~~~~
+      |                                     terrain::TerrainMap
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.h:32:7: note: ‘terrain::TerrainMap’ declared here
+   32 | class TerrainMap {
+      |       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:214:49: error: ‘map’ was not declared in this scope
+  214 | void TerrainGenerator::applyErosion(TerrainMap& map, int /*iterations*/) {
+      |                                                 ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:214:54: error: expected primary-expression before ‘int’
+  214 | void TerrainGenerator::applyErosion(TerrainMap& map, int /*iterations*/) {
+      |                                                      ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:221:6: error: ‘TerrainGenerator’ has not been declared
+  221 | void TerrainGenerator::generateRivers(TerrainMap& map) {
+      |      ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:221:6: error: variable or field ‘generateRivers’ declared void
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:221:39: error: ‘TerrainMap’ was not declared in this scope; did you mean ‘terrain::TerrainMap’?
+  221 | void TerrainGenerator::generateRivers(TerrainMap& map) {
+      |                                       ^~~~~~~~~~
+      |                                       terrain::TerrainMap
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.h:32:7: note: ‘terrain::TerrainMap’ declared here
+   32 | class TerrainMap {
+      |       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:221:51: error: ‘map’ was not declared in this scope
+  221 | void TerrainGenerator::generateRivers(TerrainMap& map) {
+      |                                                   ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp:225:1: error: expected declaration before ‘}’ token
+  225 | } // namespace terrain
+      | ^
+make[2]: *** [CMakeFiles/sisterapp.dir/build.make:541: CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o] Error 1
+make[2]: ** Esperando que outros processos terminem.
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::buildMesh(const terrain::TerrainMap&, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:25:24: warning: conversion to ‘std::vector<graphics::Vertex>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   25 |     vertices.reserve(w * h);
+      |                      ~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:26:39: warning: conversion to ‘std::vector<unsigned int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   26 |     indices.reserve((w - 1) * (h - 1) * 6);
+      |                     ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:73:46: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   73 |             float flux = map.fluxMap()[z * w + x];
+      |                                        ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:78:49: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   78 |             float sed = map.sedimentMap()[z * w + x];
+      |                                           ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:83:71: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   83 |             v.auxiliary = static_cast<float>(map.watershedMap()[z * w + x]);
+      |                                                                 ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:86:63: warning: conversion to ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   86 |             v.soilId = static_cast<float>(map.soilMap()[z * w + x]);
+      |                                                         ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:100:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  100 |             indices.push_back(topLeft);
+      |                               ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:101:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  101 |             indices.push_back(bottomLeft);
+      |                               ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:102:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |             indices.push_back(topRight);
+      |                               ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:104:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  104 |             indices.push_back(topRight);
+      |                               ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:105:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  105 |             indices.push_back(bottomLeft);
+      |                               ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:106:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  106 |             indices.push_back(bottomRight);
+      |                               ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::render(VkCommandBuffer, const std::array<float, 16>&, VkExtent2D, bool, bool, float, bool, bool, bool, bool, bool, bool, bool, bool, bool, float, float, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:118:96: warning: unused parameter ‘viewport’ [-Wunused-parameter]
+  118 | void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport,
+      |                                                                                     ~~~~~~~~~~~^~~~~~~~
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2

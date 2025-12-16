@@ -2,7 +2,11 @@ file(REMOVE_RECURSE
   "CMakeFiles/shaders_spirv"
   "shaders/basic.frag.spv"
   "shaders/basic.vert.spv"
+  "shaders/environment.frag.spv"
+  "shaders/environment.vert.spv"
   "shaders/red.frag.spv"
+  "shaders/voxel.frag.spv"
+  "shaders/voxel.vert.spv"
 )
 
 # Per-language clean rules from dependency scanning.

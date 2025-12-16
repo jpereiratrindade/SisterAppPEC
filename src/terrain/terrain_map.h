@@ -5,6 +5,16 @@
 
 namespace terrain {
 
+enum class SoilType : uint8_t {
+    None = 0,
+    Hidromorfico,
+    BTextural,
+    Argila,
+    BemDes,
+    Raso,
+    Rocha
+};
+
 struct TerrainConfig {
     int width = 1024;
     int height = 1024;
@@ -67,6 +77,12 @@ public:
     std::vector<int>& watershedMap() { return watershedMap_; }
     const std::vector<int>& watershedMap() const { return watershedMap_; }
 
+    // v3.7.3: Semantic Soil Map
+    std::vector<uint8_t>& soilMap() { return soilMap_; }
+    const std::vector<uint8_t>& soilMap() const { return soilMap_; }
+    SoilType getSoil(int x, int y) const;
+    void setSoil(int x, int y, SoilType s);
+
     // Helpers
     // (x,z variants removed to avoid ambiguity with x,y)
     
@@ -88,6 +104,7 @@ private:
     // v3.6.3
     std::vector<int> flowDirMap_;    // Index of receiver cell (-1 if sink)
     std::vector<int> watershedMap_;  // ID of the drainage basin
+    std::vector<uint8_t> soilMap_;   // v3.7.3: Semantic Soil ID
 };
 
 } // namespace terrain

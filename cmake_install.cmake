@@ -1,4 +1,4 @@
-# Install script for directory: /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan
+# Install script for directory: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,7 +45,7 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/install_local_manifest.txt"
+  file(WRITE "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -61,6 +61,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

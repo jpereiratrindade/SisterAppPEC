@@ -4,6 +4,7 @@ layout(location = 1) in vec3 inColor;
 layout(location = 2) in vec3 inNormal;
 layout(location = 3) in vec2 inUV; // v3.6.1
 layout(location = 4) in float inAux; // v3.6.3
+layout(location = 5) in float inSoilId; // v3.7.3
 
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec3 fragNormal;
@@ -12,6 +13,7 @@ layout(location = 3) out vec2 fragUV; // Pass to frag
 layout(location = 4) flat out float fragAux; // v3.6.3: Flat interpolation for Basin IDPass to frag
 layout(location = 5) out float fragAuxSmooth; // v3.6.4: Smooth for outlines
 layout(location = 6) out vec3 fragWorldPos;   // v3.6.4: For grid-based outlines
+layout(location = 7) flat out float fragSoilId; // v3.7.3: Semantic Soil ID
 
 layout(push_constant) uniform PushConstants {
     mat4 mvp;
@@ -27,6 +29,7 @@ void main() {
     fragAux = inAux;
     fragAuxSmooth = inAux; // Pass as smooth
     fragWorldPos = inPosition; // Pass local/world pos (since Model matrix is usually identity here)
+    fragSoilId = inSoilId; // Pass through
     
     // Pass View Depth (z-distance) roughly or just distance from camera
     // Since MVP is combined, we don't have View Space easily without separating matrices.

@@ -82,6 +82,9 @@ void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale)
             // Store Basin ID in auxiliary
             v.auxiliary = static_cast<float>(map.watershedMap()[z * w + x]);
             
+            // v3.7.3 Semantic Soil ID
+            v.soilId = static_cast<float>(map.soilMap()[z * w + x]);
+            
             vertices.push_back(v);
         }
     }

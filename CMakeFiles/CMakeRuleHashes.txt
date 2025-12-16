@@ -1,5 +1,9 @@
 # Hashes of file build rules.
-59d2d3dafe0e834c34ab112d79c40b66 CMakeFiles/shaders_spirv
-cdd65a1bf7cd1d1804baca5199e1b91a shaders/basic.frag.spv
-4b68c1936c575e68e7dfd43eb21a4fc3 shaders/basic.vert.spv
-7916af6837c384f7bec3e1e048959281 shaders/red.frag.spv
+4dfd32eec818a046e0e3fd0e65ae9e37 CMakeFiles/shaders_spirv
+c51450cfc10979cd6cc08effe91f77cd shaders/basic.frag.spv
+1de0137e28a234da3b49110163da92fa shaders/basic.vert.spv
+5da99966b950feed9b45becc005b076c shaders/environment.frag.spv
+8044cd3abc66769c719176691fb9cafe shaders/environment.vert.spv
+30d3d792d318a61591813ee2e4010f92 shaders/red.frag.spv
+bed2700124410d0b168cdeed7c0bcb18 shaders/voxel.frag.spv
+fb710e9569742ac733cb012d7d639ea4 shaders/voxel.vert.spv

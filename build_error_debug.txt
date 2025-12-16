@@ -1,0 +1,9 @@
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /run/media/jpereiratrindade/labeco10T/dev/cpp/vulkan
+[  2%] Compilando shaders/basic.vert para SPIR-V
+[  5%] Compilando shaders/basic.frag para SPIR-V
+[  8%] Built target shaders_spirv
+make[2]: *** Sem regra para processar o alvo 'src/vulkan_context.cpp', necessário por 'CMakeFiles/hello.dir/src/vulkan_context.cpp.o' .  Pare.
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/hello.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2
