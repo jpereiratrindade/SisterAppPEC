@@ -137,7 +137,12 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: \
  /usr/include/c++/15/bits/atomic_lockfree_defines.h \
  /usr/include/c++/15/backward/auto_ptr.h \
  /usr/include/c++/15/pstl/glue_memory_defs.h \
- /usr/include/c++/15/pstl/execution_defs.h /usr/include/c++/15/cmath \
+ /usr/include/c++/15/pstl/execution_defs.h /usr/include/c++/15/algorithm \
+ /usr/include/c++/15/bits/stl_algo.h \
+ /usr/include/c++/15/bits/algorithmfwd.h \
+ /usr/include/c++/15/bits/stl_heap.h \
+ /usr/include/c++/15/bits/uniform_int_dist.h \
+ /usr/include/c++/15/pstl/glue_algorithm_defs.h /usr/include/c++/15/cmath \
  /usr/include/math.h /usr/include/bits/math-vector.h \
  /usr/include/bits/libm-simd-decl-stubs.h \
  /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \
@@ -174,9 +179,9 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: \
  /usr/include/c++/15/bits/locale_facets.tcc \
  /usr/include/c++/15/bits/basic_ios.tcc \
  /usr/include/c++/15/bits/ostream.tcc /usr/include/c++/15/istream \
- /usr/include/c++/15/bits/istream.tcc /usr/include/c++/15/algorithm \
- /usr/include/c++/15/bits/stl_algo.h \
- /usr/include/c++/15/bits/algorithmfwd.h \
- /usr/include/c++/15/bits/stl_heap.h \
- /usr/include/c++/15/bits/uniform_int_dist.h \
- /usr/include/c++/15/pstl/glue_algorithm_defs.h
+ /usr/include/c++/15/bits/istream.tcc /usr/include/c++/15/map \
+ /usr/include/c++/15/bits/stl_tree.h \
+ /usr/include/c++/15/bits/node_handle.h \
+ /usr/include/c++/15/bits/stl_map.h \
+ /usr/include/c++/15/bits/stl_multimap.h \
+ /usr/include/c++/15/bits/erase_if.h

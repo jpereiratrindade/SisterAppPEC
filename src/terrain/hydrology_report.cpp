@@ -292,7 +292,7 @@ HydrologyStats HydrologyReport::analyze(const TerrainMap& map, float resolution,
 
 bool HydrologyReport::generateToFile(const TerrainMap& map, float resolution, const std::string& filepath) {
     // Analyze first
-    HydrologyStats stats = analyze(map, resolution, resolution); // Use same resolution for X/Z or pass explicitly
+    HydrologyStats stats = analyze(map, resolution, 100.0f); // default threshold of 100 cells for stream initiation
     
     std::ofstream out(filepath);
     if (!out.is_open()) return false;

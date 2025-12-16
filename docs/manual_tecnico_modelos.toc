@@ -7,17 +7,24 @@
 \contentsline {section}{\numberline {3}Modelo de Vegetação (Suspenso)}{3}{section.3}%
 \contentsline {section}{\numberline {4}Geração de Topologia (Terrain Models)}{3}{section.4}%
 \contentsline {section}{\numberline {5}Configuração do Usuário}{3}{section.5}%
-\contentsline {section}{\numberline {6}Modelo de Drenagem (D8 Flow)}{3}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Direção do Fluxo (Flow Direction)}{3}{subsection.6.1}%
+\contentsline {subsection}{\numberline {5.1}Variáveis de Controle Espacial}{3}{subsection.5.1}%
+\contentsline {section}{\numberline {6}Modelo de Drenagem (D8 Flow)}{4}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Direção do Fluxo (Flow Direction)}{4}{subsection.6.1}%
 \contentsline {subsection}{\numberline {6.2}Acumulação de Fluxo (Flow Accumulation)}{4}{subsection.6.2}%
 \contentsline {subsection}{\numberline {6.3}Visualização}{4}{subsection.6.3}%
 \contentsline {section}{\numberline {7}Análise de Bacias Hidrográficas (Watershed Analysis)}{4}{section.7}%
 \contentsline {subsection}{\numberline {7.1}Segmentação Global}{4}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}2. Delineação Interativa}{4}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}3. Visualização de Contornos}{4}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.2}2. Delineação Interativa}{5}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}3. Visualização de Contornos}{5}{subsection.7.3}%
 \contentsline {section}{\numberline {8}Métricas Eco-Hidrológicas}{5}{section.8}%
 \contentsline {subsection}{\numberline {8.1}Índice Topográfico de Umidade (TWI)}{5}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}Densidade de Drenagem ($D_d$)}{5}{subsection.8.2}%
 \contentsline {subsection}{\numberline {8.3}Estatísticas por Bacia (Basin-Level Metrics)}{5}{subsection.8.3}%
 \contentsline {section}{\numberline {9}Resolução Espacial Variável (V3.6.5)}{5}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Definição de Escala}{5}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.1}Definição de Escala}{6}{subsection.9.1}%
+\contentsline {section}{\numberline {10}Módulo de Análise de Solos (V3.7.3)}{6}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Metodologia: Ruído Coerente e Métricas de Paisagem}{6}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Classes e Cores}{6}{subsection.10.2}%
+\contentsline {paragraph}{Índice de Forma da Paisagem (LSI)}{7}{section*.3}%
+\contentsline {paragraph}{Complexidade da Forma (CF)}{7}{section*.4}%
+\contentsline {paragraph}{Coeficiente de Circularidade Relativa (RCC)}{7}{section*.5}%

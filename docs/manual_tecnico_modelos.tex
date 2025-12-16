@@ -168,13 +168,17 @@ O sistema ajusta automaticamente a visualização e a lógica de interação (ra
 \section{Módulo de Análise de Solos (V3.7.3)}
 O sistema inclui agora uma camada de pedologia probabilística baseada na declividade, conforme a tabela de relação Relevo-Solo definida pelo usuário.
 
-\subsection{Metodologia Estocástica}
-Como uma mesma classe de relevo pode apresentar múltiplos tipos de solo (ex: Plano pode ser Hidromórfico ou B Textural), o sistema utiliza um algoritmo de \textit{Robust Integer Hashing} (White Noise Determinístico) para distribuir os subtipos. Isso substitui métodos anteriores baseados em Ruído Perlin que apresentavam viés estatístico.
+\subsection{Metodologia: Ruído Coerente e Métricas de Paisagem}
+Para reproduzir os padrões espaciais descritos pelos índices de Ecologia da Paisagem (LSI, CF, RCC), o sistema substituiu a distribuição aleatória simples por um algoritmo de \textbf{Competição de Padrões} baseado em ruído procedural (Perlin/Simplex).
+
+Cada tipo de solo possui um "perfil de ruído" configurado para mimetizar suas métricas (Ver Tabela \ref{tab:manchas_solo_farina}):
 \begin{itemize}
-    \item A distribuição respeita as proporções da tabela (ex: 33\% para cada tipo no relevo plano).
-    \item O resultado é determinístico: uma mesma coordenada $(x,z)$ sempre terá o mesmo solo.
-    \item A visualização (mapa de cores) e a ferramenta de sonda (Probe) estão perfeitamente sincronizadas.
+    \item \textbf{Domain Warping (Distorção):} Simula o LSI. Solos com alto LSI sofrem forte distorção de coordenadas, criando bordas complexas.
+    \item \textbf{Frequência e Rugosidade:} Simulam o CF. Solos com alto CF utilizam mais oitavas de ruído fractal.
+    \item \textbf{Anisotropia (Estiramento):} Simula o RCC. Solos com baixo RCC são esticados em um eixo para criar formas alongadas.
 \end{itemize}
+
+O solo final em cada pixel é determinado por uma competição onde o tipo com maior "força" de padrão local vence (dentre os candidatos válidos para a declividade).
 
 \subsection{Classes e Cores}
 \begin{itemize}
@@ -185,5 +189,78 @@ Como uma mesma classe de relevo pode apresentar múltiplos tipos de solo (ex: Pl
     \item \textbf{Montanhoso (45-75\%):} Solo Raso (Amarelo).
     \item \textbf{Escarpado ($>75\%$):} Afloramento Rochoso (Cinza).
 \end{itemize}
+
+
+\begin{table}[htbp]
+	\centering
+	\caption{Descritores de estrutura espacial das manchas de solo segundo métricas da Ecologia da Paisagem (Farina)}
+	\label{tab:manchas_solo_farina}
+	\begin{tabular}{lccc}
+		\hline
+		\textbf{Tipo de Solo} & 
+		\textbf{LSI} & 
+		\textbf{CF} & 
+		\textbf{RCC} \\
+		\hline
+		Solo Raso & 
+		5434.91 & 
+		2.49 & 
+		0.66 \\
+		
+		Bem Desenvolvido & 
+		2508.07 & 
+		2.36 & 
+		0.68 \\
+		
+		Hidromórfico & 
+		3272.30 & 
+		2.27 & 
+		0.65 \\
+		
+		Argila Expansiva & 
+		1827.24 & 
+		2.84 & 
+		0.64 \\
+		
+		B--Textural & 
+		2766.09 & 
+		3.36 & 
+		0.66 \\
+		\hline
+	\end{tabular}
+	\begin{flushleft}
+		\footnotesize
+		\textbf{Nota:} 
+		LSI = Índice de Forma da Paisagem (\textit{Landscape Shape Index}), indicador da complexidade geométrica média das manchas; 
+		CF = Complexidade da Forma, expressando irregularidade e alongamento das manchas; 
+		RCC = Coeficiente de Circularidade Relativa, variando de 0 (formas alongadas ou irregulares) a 1 (formas altamente compactas).
+	\end{flushleft}
+\end{table}
+
+\subsection*{Descritores de forma das manchas}
+
+A estrutura espacial das manchas de solo foi caracterizada por descritores clássicos da Ecologia da Paisagem, conforme proposto por Farina (1998, 2006), os quais permitem avaliar a complexidade geométrica, a irregularidade das bordas e o grau de compactação das manchas na paisagem. Foram utilizados o Índice de Forma da Paisagem (LSI), a Complexidade da Forma (CF) e o Coeficiente de Circularidade Relativa (RCC), descritos a seguir.
+
+\paragraph{Índice de Forma da Paisagem (LSI)}
+O LSI expressa a complexidade geométrica das manchas a partir da relação entre perímetro e área, sendo definido por:
+\[
+LSI = \frac{P}{2\sqrt{\pi A}}
+\]
+em que $P$ corresponde ao perímetro da mancha e $A$ à sua área. Valores de LSI próximos de 1 indicam manchas com formas simples e compactas, enquanto valores mais elevados refletem maior irregularidade e desenvolvimento de bordas.
+
+\paragraph{Complexidade da Forma (CF)}
+A Complexidade da Forma representa o grau de irregularidade geométrica das manchas, considerando o aumento relativo do perímetro em relação à área:
+\[
+CF = \frac{P}{A}
+\]
+em que $P$ é o perímetro e $A$ a área da mancha. Valores mais elevados de CF indicam formas mais alongadas, recortadas ou dendríticas.
+
+\paragraph{Coeficiente de Circularidade Relativa (RCC)}
+O Coeficiente de Circularidade Relativa avalia o quão próxima a forma da mancha está de um círculo perfeito, sendo calculado por:
+\[
+RCC = \frac{4\pi A}{P^{2}}
+\]
+em que $A$ corresponde à área da mancha e $P$ ao seu perímetro. O RCC varia entre 0 e 1, sendo valores próximos de 1 indicativos de manchas altamente compactas e valores menores associados a formas alongadas ou fragmentadas.
+
 
 \end{document}

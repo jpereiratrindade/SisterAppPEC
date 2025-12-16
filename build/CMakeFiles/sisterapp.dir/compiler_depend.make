@@ -10505,6 +10505,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: /run/media/jpereir
   /usr/include/c++/15/bits/cpp_type_traits.h \
   /usr/include/c++/15/bits/cxxabi_forced.h \
   /usr/include/c++/15/bits/cxxabi_init_exception.h \
+  /usr/include/c++/15/bits/erase_if.h \
   /usr/include/c++/15/bits/exception.h \
   /usr/include/c++/15/bits/exception_defines.h \
   /usr/include/c++/15/bits/exception_ptr.h \
@@ -10524,6 +10525,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: /run/media/jpereir
   /usr/include/c++/15/bits/move.h \
   /usr/include/c++/15/bits/nested_exception.h \
   /usr/include/c++/15/bits/new_allocator.h \
+  /usr/include/c++/15/bits/node_handle.h \
   /usr/include/c++/15/bits/ostream.h \
   /usr/include/c++/15/bits/ostream.tcc \
   /usr/include/c++/15/bits/ostream_insert.h \
@@ -10547,9 +10549,12 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: /run/media/jpereir
   /usr/include/c++/15/bits/stl_iterator.h \
   /usr/include/c++/15/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/15/bits/stl_iterator_base_types.h \
+  /usr/include/c++/15/bits/stl_map.h \
+  /usr/include/c++/15/bits/stl_multimap.h \
   /usr/include/c++/15/bits/stl_pair.h \
   /usr/include/c++/15/bits/stl_raw_storage_iter.h \
   /usr/include/c++/15/bits/stl_tempbuf.h \
+  /usr/include/c++/15/bits/stl_tree.h \
   /usr/include/c++/15/bits/stl_uninitialized.h \
   /usr/include/c++/15/bits/stl_vector.h \
   /usr/include/c++/15/bits/streambuf.tcc \
@@ -10590,6 +10595,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: /run/media/jpereir
   /usr/include/c++/15/iostream \
   /usr/include/c++/15/istream \
   /usr/include/c++/15/limits \
+  /usr/include/c++/15/map \
   /usr/include/c++/15/memory \
   /usr/include/c++/15/new \
   /usr/include/c++/15/ostream \

@@ -1,5 +1,13 @@
 # Changelog
 
+## [v3.7.9] - 2025-12-16
+### Added
+-   **Landscape Ecology Soil Patches**: Implemented spatially coherent soil distribution based on Farina's descriptors.
+    -   **LSI (Shape Index)**: Mapped to Domain Warping to simulate edge complexity.
+    -   **CF (Complexity)**: Mapped to Fractal Roughness (Octaves).
+    -   **RCC (Circularity)**: Mapped to Noise Anisotropy (Stretching).
+-   **Documentation**: Updated Technical Manual with new soil methodology.
+
 ## [v3.7.8] - 2025-12-16
 ### Fixed
 -   **Critical Stability**: 
