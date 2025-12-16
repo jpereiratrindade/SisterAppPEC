@@ -168,7 +168,15 @@ O sistema ajusta automaticamente a visualização e a lógica de interação (ra
 \section{Módulo de Análise de Solos (V3.7.3)}
 O sistema inclui agora uma camada de pedologia probabilística baseada na declividade, conforme a tabela de relação Relevo-Solo definida pelo usuário.
 
-\subsection{Metodologia: Ruído Coerente e Métricas de Paisagem}
+\subsection{Metodologia: Ruído Coerente e Métricas de Paisagem (v3.8.0).}
+\subsection{Minimap e Navegação}
+A versão 3.8.0 introduz um Minimapa interativo para facilitar a navegação em grandes terrenos.
+\begin{itemize}
+    \item \textbf{Visualização}: Renderiza o mapa de solos e relevo (hillshade) em tempo real.
+    \item \textbf{Navegação}: Permite Zoom (Roda do Mouse) e Pan (Arrastar com botão do meio).
+    \item \textbf{Teletransporte}: Clique com botão esquerdo para mover a câmera instantaneamente.
+    \item \textbf{Métricas}: Integração direta com o relatório de métricas de paisagem para validação visual.
+\end{itemize}
 Para reproduzir os padrões espaciais descritos pelos índices de Ecologia da Paisagem (LSI, CF, RCC), o sistema substituiu a distribuição aleatória simples por um algoritmo de \textbf{Competição de Padrões} baseado em ruído procedural (Perlin/Simplex).
 
 Cada tipo de solo possui um "perfil de ruído" configurado para mimetizar suas métricas (Ver Tabela \ref{tab:manchas_solo_farina}):

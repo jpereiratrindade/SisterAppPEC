@@ -5,7 +5,9 @@
 #include "imgui.h"
 
 #include "../terrain/hydrology_report.h"
+#include "../terrain/landscape_metrics.h"
 #include "../terrain/watershed.h"
+#include <fstream>
 
 #include <array>
 #include <iostream>
@@ -13,8 +15,14 @@
 
 namespace ui {
 
-UiLayer::UiLayer(Callbacks callbacks)
-    : callbacks_(std::move(callbacks)) {}
+UiLayer::UiLayer(const core::GraphicsContext& context, Callbacks callbacks)
+    : callbacks_(std::move(callbacks)) {
+    minimap_ = std::make_unique<Minimap>(context);
+}
+
+void UiLayer::onTerrainUpdated(const terrain::TerrainMap& map, const terrain::TerrainConfig& config) {
+    if (minimap_) minimap_->update(map, config);
+}
 
 void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
     beginGuiFrame();
@@ -27,6 +35,11 @@ void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
     drawBookmarks(ctx);
     drawResetCamera(ctx);
     drawFiniteTools(ctx);
+    
+    // v3.8.0 Minimap
+    if (showMinimap_ && minimap_) {
+        minimap_->render(ctx.camera);
+    }
 
     endGuiFrame();
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
@@ -214,6 +227,28 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                     }
                 } else {
                      std::cerr << "[UI] No Finite Map available for report." << std::endl;
+                }
+            }
+
+            if (ImGui::MenuItem("Generate Landscape Report (LSI/CF/RCC)")) {
+                if (ctx.finiteMap) {
+                    auto globalMetrics = terrain::LandscapeMetricCalculator::analyzeGlobal(*ctx.finiteMap, ctx.worldResolution);
+                    auto basinMetrics = terrain::LandscapeMetricCalculator::analyzeByBasin(*ctx.finiteMap, ctx.worldResolution);
+
+                    std::ofstream outFile("landscape_report.txt");
+                    if (outFile.is_open()) {
+                        outFile << terrain::LandscapeMetricCalculator::formatReport(globalMetrics, "GLOBAL LANDSCAPE METRICS");
+                        outFile << "\n========================================\n\n";
+                        for(const auto& pair : basinMetrics) {
+                            int bid = pair.first;
+                            const auto& m = pair.second;
+                            outFile << terrain::LandscapeMetricCalculator::formatReport(m, "BASIN " + std::to_string(bid) + " METRICS");
+                        }
+                        outFile.close();
+                        std::cout << "[UI] Landscape Report generated to 'landscape_report.txt'" << std::endl;
+                    } else {
+                        std::cerr << "[UI] Failed to open 'landscape_report.txt'" << std::endl;
+                    }
                 }
             }
             ImGui::Separator();

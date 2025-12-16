@@ -862,6 +862,30 @@ src/terrain/hydrology_report.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.s
 .PHONY : src/terrain/hydrology_report.cpp.s
 
+src/terrain/landscape_metrics.o: src/terrain/landscape_metrics.cpp.o
+.PHONY : src/terrain/landscape_metrics.o
+
+# target to build an object file
+src/terrain/landscape_metrics.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o
+.PHONY : src/terrain/landscape_metrics.cpp.o
+
+src/terrain/landscape_metrics.i: src/terrain/landscape_metrics.cpp.i
+.PHONY : src/terrain/landscape_metrics.i
+
+# target to preprocess a source file
+src/terrain/landscape_metrics.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.i
+.PHONY : src/terrain/landscape_metrics.cpp.i
+
+src/terrain/landscape_metrics.s: src/terrain/landscape_metrics.cpp.s
+.PHONY : src/terrain/landscape_metrics.s
+
+# target to generate assembly for a file
+src/terrain/landscape_metrics.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.s
+.PHONY : src/terrain/landscape_metrics.cpp.s
+
 src/terrain/terrain_generator.o: src/terrain/terrain_generator.cpp.o
 .PHONY : src/terrain/terrain_generator.o
 
@@ -957,6 +981,30 @@ src/terrain/watershed.s: src/terrain/watershed.cpp.s
 src/terrain/watershed.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.s
 .PHONY : src/terrain/watershed.cpp.s
+
+src/ui/minimap.o: src/ui/minimap.cpp.o
+.PHONY : src/ui/minimap.o
+
+# target to build an object file
+src/ui/minimap.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o
+.PHONY : src/ui/minimap.cpp.o
+
+src/ui/minimap.i: src/ui/minimap.cpp.i
+.PHONY : src/ui/minimap.i
+
+# target to preprocess a source file
+src/ui/minimap.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.i
+.PHONY : src/ui/minimap.cpp.i
+
+src/ui/minimap.s: src/ui/minimap.cpp.s
+.PHONY : src/ui/minimap.s
+
+# target to generate assembly for a file
+src/ui/minimap.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.s
+.PHONY : src/ui/minimap.cpp.s
 
 src/ui/ui_layer.o: src/ui/ui_layer.cpp.o
 .PHONY : src/ui/ui_layer.o
@@ -1130,6 +1178,9 @@ help:
 	@echo "... src/terrain/hydrology_report.o"
 	@echo "... src/terrain/hydrology_report.i"
 	@echo "... src/terrain/hydrology_report.s"
+	@echo "... src/terrain/landscape_metrics.o"
+	@echo "... src/terrain/landscape_metrics.i"
+	@echo "... src/terrain/landscape_metrics.s"
 	@echo "... src/terrain/terrain_generator.o"
 	@echo "... src/terrain/terrain_generator.i"
 	@echo "... src/terrain/terrain_generator.s"
@@ -1142,6 +1193,9 @@ help:
 	@echo "... src/terrain/watershed.o"
 	@echo "... src/terrain/watershed.i"
 	@echo "... src/terrain/watershed.s"
+	@echo "... src/ui/minimap.o"
+	@echo "... src/ui/minimap.i"
+	@echo "... src/ui/minimap.s"
 	@echo "... src/ui/ui_layer.o"
 	@echo "... src/ui/ui_layer.i"
 	@echo "... src/ui/ui_layer.s"

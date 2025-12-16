@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <vulkan/vulkan.h>
+#include "minimap.h" // v3.8.0
 
 namespace ui {
 
@@ -79,12 +80,20 @@ struct Callbacks {
     RequestMeshUpdateCallback updateMesh; // v3.6.3
 };
 
+// ... (Moved include to top)
+
 class UiLayer {
 public:
-    explicit UiLayer(Callbacks callbacks);
+    explicit UiLayer(const core::GraphicsContext& context, Callbacks callbacks);
 
     void render(UiFrameContext& ctx, VkCommandBuffer cmd);
     void applyTheme(Theme theme);
+    
+    // v3.8.0: Minimap Trigger
+    void onTerrainUpdated(const terrain::TerrainMap& map, const terrain::TerrainConfig& config);
+
+    // v3.8.0: Toggle
+    bool& showMinimap() { return showMinimap_; }
 
 private:
     void drawStats(UiFrameContext& ctx);
@@ -93,12 +102,16 @@ private:
     void drawAnimation(UiFrameContext& ctx);
     void drawBookmarks(UiFrameContext& ctx);
     void drawResetCamera(UiFrameContext& ctx);
-    void drawFiniteTools(UiFrameContext& ctx); // v3.5.0
+    void drawFiniteTools(UiFrameContext& ctx); 
 
     Theme currentTheme_ = Theme::Dark;
     bool showStatsOverlay_ = true;
     bool showBookmarks_ = false;
+    // v3.8.0
+    bool showMinimap_ = true;
+    
     Callbacks callbacks_;
+    std::unique_ptr<Minimap> minimap_;
 };
 
 } // namespace ui

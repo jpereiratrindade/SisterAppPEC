@@ -188,6 +188,11 @@ void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config
             
             float localSlope = std::sqrt(dz_dx*dz_dx + dz_dz*dz_dz) * 100.0f;
 
+            // Physical Coordinates for Scale Invariance
+            // This ensures patterns have the same physical size in meters regardless of grid resolution
+            float worldX = x * config.resolution;
+            float worldZ = z * config.resolution;
+
             // Candidate Soils based on Slope Class (Catena)
             std::vector<SoilType> candidates;
 
@@ -210,16 +215,16 @@ void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config
             float maxStrength = -1e9f;
 
             for (auto type : candidates) {
-                // Inline call or use lambda? Lambda capture might be tricky with OMP if not careful.
-                // Just calling direct helper.
                 const auto& cfg = soilConfigs.at(type);
-                float strength = calculateSoilPattern(static_cast<float>(x), static_cast<float>(z), {cfg.frequency, cfg.warping, cfg.roughness, cfg.stretchY});
+                // PASS WORLD COORDINATES HERE
+                float strength = calculateSoilPattern(worldX, worldZ, {cfg.frequency, cfg.warping, cfg.roughness, cfg.stretchY});
                 
                 if (strength > maxStrength) {
                     maxStrength = strength;
                     bestSoil = type;
                 }
             }
+
             map.setSoil(x, z, bestSoil);
         }
     }

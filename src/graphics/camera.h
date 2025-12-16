@@ -69,6 +69,9 @@ public:
 
     math::Vec3 getPosition() const;
     math::Vec3 getRayDirection(float screenX, float screenY, float screenW, float screenH);
+    
+    // v3.8.0 Minimap support
+    float getYaw() const { return yaw_; }
 
     // Player physics (for voxel terrain)
     void applyGravity(float dt);

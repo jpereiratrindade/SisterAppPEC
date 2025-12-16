@@ -154,7 +154,22 @@ void Application::init() {
         // v3.7.3: Semantic Soil Classification
         finiteGenerator_->classifySoil(*finiteMap_, config);
         
-        finiteRenderer_->buildMesh(*finiteMap_);
+     // v3.8.0 Fix: Scale Invariance is now handled inside generateBaseTerrain/classifySoil
+    // v3.8.0: Update Minimap
+    if (uiLayer_) {
+        // In Application::init, 'config' is already defined and populated above.
+        // We use the 'config' object that was just used for generateBaseTerrain and classifySoil.
+        uiLayer_->onTerrainUpdated(*finiteMap_, config); 
+    }
+
+    // Update mesh for 3D View
+    finiteRenderer_->buildMesh(*finiteMap_);
+
+    // Upload to GPU (New Voxel Renderer - if applicable)
+    // renderer_.uploadTerrain(*finiteMap_); 
+    // Wait, if finiteRenderer_ is doing the job, we don't need renderer_.uploadTerrain.
+    // The previous code ONLY had finiteRenderer_->buildMesh. 
+    // I should revert to THAT.
         
         camera_.setCameraMode(graphics::CameraMode::FreeFlight);
         float cx = 1024.0f / 2.0f;
@@ -215,7 +230,9 @@ void Application::init() {
             meshUpdateRequested_ = true;
         }
     };
-    uiLayer_ = std::make_unique<ui::UiLayer>(uiCallbacks);
+    // UI Layer
+    // UI Layer
+    uiLayer_ = std::make_unique<ui::UiLayer>(*ctx_, uiCallbacks);
     uiLayer_->applyTheme(ui::Theme::Dark);
 
     camera_.setAspect(static_cast<float>(swapchain_->extent().width) / static_cast<float>(swapchain_->extent().height));

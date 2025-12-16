@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.8.0] - 2025-12-17
+### Added
+-   **Interactive Minimap**: Integrated minimap with zoom, pan, and fast travel capabilities.
+-   **Landscape Metrics Validation**: Added tools for validating LSI, CF, and RCC metrics.
+
 ## [v3.7.9] - 2025-12-16
 ### Added
 -   **Landscape Ecology Soil Patches**: Implemented spatially coherent soil distribution based on Farina's descriptors.

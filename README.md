@@ -20,7 +20,8 @@
 -   **Semantic Soil**: CPU-authoritative soil classification ensuring 100% Visual-PROBE consistency (v3.7.3).
 -   **Deterministic Seeding**: Full control over map seeds for reproducible terrain analysis (v3.7.8).
 -   **Eco-Reports**: Automated generation of hydrological stats with physical units (m/m, m²) (v3.7.8).
--   **Landscape Ecology Patches**: Soil distribution patterns based on LSI, CF, and RCC descriptors (v3.7.9).
+-   **Interactive Minimap (v3.8.0)**: Real-time navigation aid with fast travel and zoom.
+-   **Landscape Ecology Patches (v3.7.9)**: Soil distribution based on competitive LSI/CF/RCC metrics.and RCC descriptors (v3.7.9).
 
 ---
 
