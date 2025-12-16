@@ -10,7 +10,7 @@
 -   **Camera & Controls**:
     -   **Zoom (FOV)**: Mouse Wheel now controls Field of View in Free Flight mode.
     -   **Water Level Slider**: Added parameter to Terrain Generator to control base water height (default 64m).
-    -   **Render Distance**:- **v3.8.1 (Current):** Refined Horizon/Fog blending, Fixed Sky Sphere clipping ("random figures"), Implemented Top-Down View, Added Views Menu, Disabled Preferences Persistence, Removed Animation Controls.
+    -   **Render Distance**:- **v3.8.1 (Current):** Refined Horizon/Fog blending, Fixed Sky Sphere clipping, Implemented Top-Down View, Added Views Menu (incl. Probe & Debug), Disabled Preferences Persistence, Removed Animation Controls.
 - v3.8.0: Minimap, Camera Control, Render Distance.
 - v3.7.9: Landscape Ecology Patches (Metrics).
 -   **Landscape Metrics Validation**: Added tools for quantifying landscape patterns (LSI, CF, RCC).

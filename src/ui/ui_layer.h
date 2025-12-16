@@ -117,6 +117,7 @@ private:
     bool showMapGenerator_ = true;
     bool showCamControls_ = true;
     bool showResetCamera_ = true;
+    bool showDebugInfo_ = false; // Default off
     
     Callbacks callbacks_;
     std::unique_ptr<Minimap> minimap_;

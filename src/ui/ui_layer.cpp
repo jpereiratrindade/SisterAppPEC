@@ -26,7 +26,7 @@ void UiLayer::onTerrainUpdated(const terrain::TerrainMap& map, const terrain::Te
 
 void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
     beginGuiFrame();
-    drawDebugGui(0.0f, 0);
+    if (showDebugInfo_) drawDebugGui(0.0f, 0);
 
     drawStats(ctx);
     drawMenuBar(ctx);
@@ -35,14 +35,9 @@ void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
     if (showResetCamera_) drawResetCamera(ctx);
     if (showMapGenerator_) drawFiniteTools(ctx);
     // v3.8.1 Use showCamControls_ for Viewer Controls (drawCamera)
-    // Actually drawCamera IS Viewer Controls? Let's check logic. Yes, lines 305+.
-    // Wait, drawCamera takes ~100 lines.
-    // I need to guard it inside drawCamera or wrap it here.
-    // I'll wrap it here.
     if (showCamControls_) drawCamera(ctx); 
     else {
         // Even if hidden, shortcuts should work?
-        // drawCamera does shortcuts too? No, Application handles shortcuts. drawCamera is purely UI.
     }
     drawCrosshair(ctx); // v3.8.1
     
@@ -77,11 +72,6 @@ void UiLayer::drawStats(UiFrameContext& ctx) {
         if (ctx.lastSurfaceValid) {
             ImGui::Separator();
             ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Probe Results:");
-            // Assuming lastSurfaceInfo contains multiple lines or formatted text. 
-            // Currently it is constructed as a stream in Application.cpp but not stored?
-            // Wait, Application.cpp prints to std::cout. It doesn't seem to populate lastSurfaceInfo_?
-            // I need to fix that in Application.cpp too if it's empty.
-            // But let's assume I fix it.
             
             // Color Display
             float* c = ctx.lastSurfaceColor;
@@ -100,15 +90,17 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                 ctx.running = false;
             }
             ImGui::EndMenu();
-            ImGui::EndMenu();
+            // Removed extra ImGui::EndMenu() here
         }
         // v3.8.1: Views Menu
         if (ImGui::BeginMenu("Views")) {
              ImGui::MenuItem("Map Generator", nullptr, &showMapGenerator_);
              ImGui::MenuItem("Minimap", nullptr, &showMinimap_);
              ImGui::MenuItem("Camera Controls", nullptr, &showCamControls_);
-             ImGui::MenuItem("Reset Camera Button", nullptr, &showResetCamera_);
+             ImGui::MenuItem("Probe & Stats", nullptr, &showStatsOverlay_);
+             ImGui::MenuItem("Debug Info", nullptr, &showDebugInfo_);
              ImGui::Separator();
+             ImGui::MenuItem("Reset Camera Button", nullptr, &showResetCamera_);
              if (ImGui::MenuItem("Reset Camera Now", "R")) {
                  ctx.camera.reset();
                  if (callbacks_.requestTerrainReset) callbacks_.requestTerrainReset(1); // Optional: Reload chunks
