@@ -30,7 +30,7 @@ void UiLayer::render(UiFrameContext& ctx, VkCommandBuffer cmd) {
 
     drawStats(ctx);
     drawMenuBar(ctx);
-    drawAnimation(ctx);
+    // drawAnimation(ctx); // Removed on User Request
     drawBookmarks(ctx);
     if (showResetCamera_) drawResetCamera(ctx);
     if (showMapGenerator_) drawFiniteTools(ctx);
