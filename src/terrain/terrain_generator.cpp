@@ -32,31 +32,62 @@ void TerrainGenerator::generateBaseTerrain(TerrainMap& map, const TerrainConfig&
     #pragma omp parallel for collapse(2)
     for (int z = 0; z < h; ++z) {
         for (int x = 0; x < w; ++x) {
-            // FBM
             // v3.6.6: Use Physical Coordinates (x * resolution) for Noise Sampling
-            // This ensures terrain shape/roughness depends on physical distance (meters), not grid index.
             float nx = (static_cast<float>(x) * config.resolution) * scale;
             float nz = (static_cast<float>(z) * config.resolution) * scale;
             
             float val = 0.0f;
-            float freq = 1.0f;
-            float amp = 1.0f;
-            float maxAmp = 0.0f;
-            
-            for(int i=0; i<config.octaves; ++i) {
-                val += noise_.noise2D(nx * freq, nz * freq) * amp;
-                maxAmp += amp;
-                amp *= config.persistence; // v3.7.1
-                freq *= 2.0f;
+
+            if (config.model == TerrainConfig::FiniteTerrainModel::ExperimentalBlend) {
+                // Experimental Blend Logic
+                // Low Freq (Base)
+                float low = noise_.octaveNoise(nx * 0.5f, nz * 0.5f, 3, 0.5f);
+                
+                // Mid Freq (Rolling)
+                float mid = noise_.octaveNoise(nx * 2.0f, nz * 2.0f, 3, 0.5f);
+                
+                // High Freq (Micro)
+                float high = noise_.octaveNoise(nx * 8.0f, nz * 8.0f, 2, 0.6f);
+                
+                // Weighted Sum
+                val = low * config.blendConfig.lowFreqWeight + mid * config.blendConfig.midFreqWeight + high * config.blendConfig.highFreqWeight;
+                
+                // Normalize by total weight to keep range roughly [-1, 1]
+                float totalWeight = config.blendConfig.lowFreqWeight + config.blendConfig.midFreqWeight + config.blendConfig.highFreqWeight;
+                if (totalWeight > 0.001f) {
+                    val /= totalWeight;
+                }
+                
+                // Map -1..1 to 0..1
+                val = (val + 1.0f) * 0.5f;
+                val = std::clamp(val, 0.0f, 1.0f);
+                
+                // Exponent
+                if (config.blendConfig.exponent != 1.0f) {
+                    val = std::pow(val, config.blendConfig.exponent);
+                }
+                
+            } else {
+                // Existing Logic
+                float freq = 1.0f;
+                float amp = 1.0f;
+                float maxAmp = 0.0f;
+                
+                for(int i=0; i<config.octaves; ++i) {
+                    val += noise_.noise2D(nx * freq, nz * freq) * amp;
+                    maxAmp += amp;
+                    amp *= config.persistence; // v3.7.1
+                    freq *= 2.0f;
+                }
+                
+                val /= maxAmp; 
+                
+                // Map -1..1 to 0..1
+                val = (val + 1.0f) * 0.5f;
+                
+                // Apply curve
+                val = std::pow(val, 2.0f); 
             }
-            
-            val /= maxAmp; 
-            
-            // Map -1..1 to 0..1
-            val = (val + 1.0f) * 0.5f;
-            
-            // Apply curve
-            val = std::pow(val, 2.0f); 
             
             // Set Height
             map.setHeight(x, z, val * config.maxHeight);

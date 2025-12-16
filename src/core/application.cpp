@@ -141,8 +141,14 @@ void Application::init() {
         finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
         
         terrain::TerrainConfig config;
-        config.maxHeight = deferredRegenAmplitude_; // Gentle rolling hills
+        config.maxHeight = 80.0f; // Gentle rolling hills
         config.seed = currentSeed_; // v3.7.8
+        
+        // Match default deferred config
+        deferredConfig_.width = 1024;
+        deferredConfig_.height = 1024;
+        deferredConfig_.maxHeight = 80.0f;
+        deferredConfig_.seed = currentSeed_;
         finiteGenerator_->generateBaseTerrain(*finiteMap_, config); // Will re-seed
         
         // Re-enable erosion for Drainage Visualization
@@ -224,8 +230,8 @@ void Application::init() {
         },
         // v3.6.5 Resolution
         // v3.6.5 Resolution + v3.7.8 Seed + v3.8.0 Water Level
-        [this](int size, float scale, float amp, float res, float pers, int seed, float waterLevel) { // regenerateFiniteWorld
-            this->regenerateFiniteWorld(size, scale, amp, res, pers, seed, waterLevel);
+        [this](const terrain::TerrainConfig& config) { // regenerateFiniteWorld
+            this->regenerateFiniteWorld(config);
         },
         [this]() { // updateMesh
             // Defer to next frame start
@@ -977,21 +983,15 @@ void Application::deleteBookmark(size_t index) {
 
 // V3.5.0: Map Regeneration
 // V3.5.0: Map Regeneration
-void Application::regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence, int seed, float waterLevel) {
-    // Defer to start of next frame to avoid destroying resources in use by current frame
-    deferredRegenSize_ = size;
-    deferredRegenScale_ = scale;
-    deferredRegenAmplitude_ = amplitude;
-    deferredRegenResolution_ = resolution; // v3.6.5
-    deferredRegenPersistence_ = persistence; // v3.7.1
-    deferredRegenSeed_ = seed; // v3.7.8
-    deferredRegenWaterLevel_ = waterLevel; // v3.8.0
+void Application::regenerateFiniteWorld(const terrain::TerrainConfig& config) {
     if (isRegenerating_) {
-        std::cout << "[SisterApp] Regeneration ignored - already running." << std::endl;
+        std::cout << "[SisterApp] Regeneration already in progress, request ignored." << std::endl;
         return;
     }
+    
+    deferredConfig_ = config;
     regenRequested_ = true;
-    std::cout << "[SisterApp] Regeneration requested for next frame (Seed: " << seed << ")..." << std::endl;
+    std::cout << "[SisterApp] Finite generation requested via struct (Deferred): " << config.width << "x" << config.height << std::endl;
 }
 
 void Application::performMeshUpdate() {
@@ -1010,36 +1010,24 @@ void Application::performMeshUpdate() {
 void Application::performRegeneration() {
     // Phase 1: Start Async Task
     if (regenRequested_ && !isRegenerating_) {
-        std::cout << "[SisterApp] Starting Async Regeneration: " << deferredRegenSize_ << "x" << deferredRegenSize_ << std::endl;
+        std::cout << "[SisterApp] Starting Async Regeneration: " << deferredConfig_.width << "x" << deferredConfig_.height << std::endl;
         
         // Capture parameters locally to avoid race conditions if variables change
-        int size = deferredRegenSize_;
-        int seed = deferredRegenSeed_;
-        float scale = deferredRegenScale_;
-        float amp = deferredRegenAmplitude_;
-        float res = deferredRegenResolution_;
-        float pers = deferredRegenPersistence_;
-        float water = deferredRegenWaterLevel_;
+        // We can just copy the config struct now!
+        terrain::TerrainConfig config = deferredConfig_;
 
         regenRequested_ = false;
         isRegenerating_ = true;
 
         regenFuture_ = std::async(std::launch::async, [=, this]() {
             // 1. Create independent resources
-            auto map = std::make_unique<terrain::TerrainMap>(size, size);
-            auto gen = std::make_unique<terrain::TerrainGenerator>(seed);
+            auto map = std::make_unique<terrain::TerrainMap>(config.width, config.height);
+            auto gen = std::make_unique<terrain::TerrainGenerator>(config.seed);
 
-            // 2. Setup Config
-            terrain::TerrainConfig config;
-            config.width = size;
-            config.height = size;
-            config.maxHeight = amp;
-            config.noiseScale = scale;
-            config.resolution = res;
-            config.persistence = pers;
-            config.seed = seed;
-            config.waterLevel = water;
-            config.octaves = 4;
+            // 2. Setup Config (Already copied)
+            // Explicitly ensure internal consistency if needed (e.g. width/height)
+            // Config is passed entirely.
+
 
             // 3. Generate High-Cost Data
             gen->generateBaseTerrain(*map, config);
@@ -1047,7 +1035,7 @@ void Application::performRegeneration() {
             gen->classifySoil(*map, config);
 
             // 4. Prepare Mesh Data (CPU Heavy)
-            auto meshData = shape::TerrainRenderer::generateMeshData(*map, res);
+            auto meshData = shape::TerrainRenderer::generateMeshData(*map, config.resolution);
 
             // 5. Output to Background Members (Thread Safe? No, member access needs care.)
             // Since main thread checks "future.valid/ready" and doesn't touch these until then, 
@@ -1076,7 +1064,7 @@ void Application::performRegeneration() {
             // Swap Maps
             finiteMap_ = std::move(backgroundMap_);
             currentSeed_ = backgroundConfig_.seed;
-            deferredRegenResolution_ = backgroundConfig_.resolution; // Sync back
+            // deferredRegenResolution_ = backgroundConfig_.resolution; // deleted
             worldResolution_ = backgroundConfig_.resolution;
 
             // Recreate Renderer

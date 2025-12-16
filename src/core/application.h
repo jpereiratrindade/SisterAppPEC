@@ -88,7 +88,7 @@ namespace core {
         void loadBookmark(size_t index);
         void deleteBookmark(size_t index);
         void requestTerrainReset(int warmupRadius = 1);
-    void regenerateFiniteWorld(int size, float scale, float amplitude, float resolution, float persistence, int seed, float waterLevel); // v3.8.0
+    void regenerateFiniteWorld(const terrain::TerrainConfig& config); // v3.8.3 Struct-based
     void performRegeneration(); // v3.5.0 internal
 
 
@@ -99,13 +99,7 @@ namespace core {
 // ...
     // Deferred Actions (v3.5.0 fix)
     bool regenRequested_ = false;
-    int deferredRegenSize_ = 1024;
-    float deferredRegenScale_ = 0.002f;
-    float deferredRegenAmplitude_ = 80.0f; // v3.5.1
-    float deferredRegenResolution_ = 1.0f; // v3.6.5
-    float deferredRegenPersistence_ = 0.5f; // v3.7.1
-    int deferredRegenSeed_ = 12345; // v3.7.8
-    float deferredRegenWaterLevel_ = 64.0f; // v3.8.0
+    terrain::TerrainConfig deferredConfig_; // v3.8.3 Consolidating deferred state
     
     float worldResolution_ = 1.0f; // v3.6.5 Current active resolution
     int currentSeed_ = 12345;      // v3.7.8 Current active seed

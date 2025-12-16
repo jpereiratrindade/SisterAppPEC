@@ -11,7 +11,7 @@
 
 \geometry{top=3cm, bottom=2cm, left=2.5cm, right=2.5cm}
 
-\title{\textbf{SisterApp: Plataforma de Ecologia Computacional v3.8.0}\\Manual Técnico de Modelos Computacionais}
+\title{\textbf{SisterApp: Plataforma de Ecologia Computacional v3.8.3}\\Manual Técnico de Modelos Computacionais}
 \author{José Pedro Trindade}
 \date{\today}
 
@@ -69,15 +69,25 @@ Mountain (Montanha) & $> 45.0\%$ & Áreas inacessíveis ou de preservação. \\ 
 \date{16 de Dezembro de 2025 - v3.8.3 (Async Stable)}
 \end{table}
 
-\subsection{Persistência e Configuração}
-Diferente dos modelos anteriores, todas as configurações de declividade são \textbf{persistentes}. O sistema serializa os limiares definidos pelo usuário em um arquivo JSON (`prefs.json`), garantindo que os critérios de análise sejam mantidos entre sessões.
+
 
 \section{Modelo de Vegetação (Suspenso)}
 Na versão 3.4.0, a geração de vegetação foi temporariamente suspensa para permitir foco total na validação das camadas de análise topológica. O sistema de tipos de solo (Grass, Dirt, Stone) permanece ativo para feedback visual.
 
 \section{Geração de Topologia (Terrain Models)}
-É fundamental distinguir o \textbf{Gerador de Topologia} do \textbf{Analisador de Declividade}. O sistema mantém três perfis de geração baseados em ruído Perlin, que definem a geometria física do mundo:
+É fundamental distinguir o \textbf{Gerador de Topologia} do \textbf{Analisador de Declividade}. O sistema mantém três perfis de geração baseados em ruído Perlin, que definem a geometria física do mundo.
 
+\subsection{Modelo Experimental Blend (v3.8.3)}
+Portado do motor Voxel para o Finite World, este modelo introduz a composição ponderada de frequências de ruído, permitindo controle fino sobre a morfologia do terreno.
+\[ H(x,z) = \text{Norm} \left( \sum_{i \in \{L, M, H\}} W_i \cdot Noise(x \cdot f_i, z \cdot f_i) \right)^{\gamma} \]
+Onde:
+\begin{itemize}
+    \item $W_L, W_M, W_H$ são os pesos para frequências Baixa, Média e Alta.
+    \item $\gamma$ é o expoente de nitidez (Sharpness).
+    \item \textbf{Normalização:} Para evitar o achatamento (clipping) observado em versões anteriores, a soma ponderada é normalizada pelo total dos pesos ($\sum W_i$) antes de ser mapeada para a altura final.
+\end{itemize}
+
+\subsection{Perfis Padrão (Legacy)}
 \begin{itemize}
     \item \textbf{Rippled Flat:} Baixa frequência base, gera predominantemente classes \textit{Flat} e \textit{Gentle}.
     \item \textbf{Smooth Hills:} Frequência média, introduz áreas \textit{Rolling}.
@@ -92,7 +102,7 @@ Interface atualizada no menu \textit{Tools}:
 \begin{description}
     \item[Slope Sliders:] Ajuste dos limites percentuais para cada classe.
     \item[Probe Tool:] Ferramenta de diagnóstico (clique esquerdo) mostra $S_{\%}$ exato.
-    \item[Persistence:] Botões para salvar/carregar preferências manualmente.
+
 \end{description}
 
 \subsection{Variáveis de Controle Espacial}

@@ -27,6 +27,23 @@ struct TerrainConfig {
     float persistence = 0.5f;  // v3.7.1: Controls roughness/jaggedness
     int octaves = 4;           // v3.5.0: New parameter for detail
     int seed = 12345;
+    
+    // v3.8.3: Experimental Blend Config
+    // v3.8.3: Terrain Models (Refactored)
+    enum class FiniteTerrainModel {
+        Default,            // Standard perlin noise
+        ExperimentalBlend   // Weighted frequency blend
+    };
+
+    struct BlendConfig {
+        float lowFreqWeight = 1.0f;
+        float midFreqWeight = 0.5f;
+        float highFreqWeight = 0.25f;
+        float exponent = 1.0f;
+    };
+
+    FiniteTerrainModel model = FiniteTerrainModel::Default;
+    BlendConfig blendConfig;
 };
 
 class TerrainMap {

@@ -1,5 +1,19 @@
 # Changelog
 
+## [v3.8.3] - 2025-12-16
+### Added
+-   **Experimental Blend Terrain (Finite World)**: Ported the multi-frequency blending model from Voxel mode to Finite World generator.
+    -   **Controls**: Sliders for Low, Mid, and High frequency weights, plus Exponent for peak sharpness.
+    -   **UI Integration**: New "Use Experimental Blend" checkbox in Map Generator.
+
+### Changed
+-   **Architecture Refactor**:
+    -   Refactored `TerrainConfig` to use nested `BlendConfig` struct and explicit `FiniteTerrainModel` enum.
+    -   Separated algorithmic model selection from parameter values.
+
+### Fixed
+-   **Terrain Artifacts**: Fixed "flattened tops" (clipping) in blend mode by normalizing noise values against the total weight sum.
+
 ## [v3.8.0] - 2025-12-17
 ### Added
 -   **Interactive Minimap**:

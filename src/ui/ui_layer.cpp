@@ -160,7 +160,7 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                     if (ImGui::SliderInt("Meshes/Frame Budget", &meshBudget, 1, 6)) {
                         ctx.terrain->setMeshBudgetPerFrame(meshBudget);
                     }
-                    constexpr std::array<const char*, 4> kTerrainModelOptions = {
+                    constexpr std::array<const char*, 5> kTerrainModelOptions = {
                         "Plano com ondulações",
                         "Suave ondulado",
                         "Ondulado",
@@ -173,6 +173,8 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                             callbacks_.requestTerrainReset(1);
                         }
                     }
+
+
                     bool veg = ctx.terrain->vegetationEnabled();
                     if (ImGui::Checkbox("Show Vegetation", &veg)) {
                         ctx.terrain->setVegetationEnabled(veg);
@@ -639,6 +641,14 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
              }
         }
 
+        if (ImGui::CollapsingHeader("Visual & Lighting Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+             ImGui::SliderFloat("Sun Azimuth", &ctx.sunAzimuth, 0.0f, 360.0f, "%.0f deg");
+             ImGui::SliderFloat("Sun Elevation", &ctx.sunElevation, -90.0f, 90.0f, "%.0f deg");
+             ImGui::SliderFloat("Light Intensity", &ctx.lightIntensity, 0.0f, 2.0f, "%.2f"); // v3.8.1
+             float renderDist = (0.01f - ctx.fogDensity) * 10000.0f; 
+             if (ImGui::SliderFloat("Render Distance (Fog)", &ctx.fogDensity, 0.0f, 0.005f, "%.5f")) { }
+        }
+
         ImGui::Separator();
         ImGui::Text("Terrain Generator Options");
         
@@ -649,16 +659,36 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         static float scale = 0.002f;
         static float amplitude = 80.0f;
         static int preset = 1; // 0=Plains, 1=Hills, 2=Mountains, 3=Alpine
+        static float persistence = 0.5f; // v3.7.1
+        static float waterLvl = 64.0f;
+        static int seedInput = 12345;
+        static bool useBlend = false; // v3.8.3: Experimental Blend
+        static float blendLow = 1.0f;
+        static float blendMid = 0.5f;
+        static float blendHigh = 0.25f;
+        static float blendExp = 1.0f;
 
         // 2. Terrain Type Preset
         if (ImGui::Combo("Terrain Type", &preset, "Plains\0Hills\0Mountains\0Alpine\0\0")) {
-            if (preset == 0) { scale = 0.001f; amplitude = 40.0f; }      // Plains
-            if (preset == 1) { scale = 0.002f; amplitude = 80.0f; }      // Hills
-            if (preset == 2) { scale = 0.003f; amplitude = 180.0f; }     // Mountains
-            if (preset == 3) { scale = 0.004f; amplitude = 250.0f; }     // Alpine
+            if (preset == 0) { scale = 0.001f; amplitude = 40.0f; persistence = 0.4f; waterLvl = 30.0f; }      // Plains
+            if (preset == 1) { scale = 0.002f; amplitude = 80.0f; persistence = 0.5f; waterLvl = 64.0f; }      // Hills
+            if (preset == 2) { scale = 0.003f; amplitude = 180.0f; persistence = 0.6f; waterLvl = 80.0f; }     // Mountains
+            if (preset == 3) { scale = 0.004f; amplitude = 250.0f; persistence = 0.7f; waterLvl = 100.0f; }     // Alpine
         }
 
         // 3. Manual Controls
+        ImGui::SliderFloat("Feature Size (Base Freq)", &scale, 0.0001f, 0.01f, "%.4f");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls the size of mountains.\nLower = Larger features\nHigher = Smaller features");
+
+        ImGui::SliderFloat("Roughness (Persistence)", &persistence, 0.2f, 0.8f, "%.2f");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls jaggy-ness/detail.\nLower = Smooth hills\nHigher = Rocky/Noisy");
+
+        ImGui::SliderFloat("Height Amplitude", &amplitude, 50.0f, 500.0f, "%.0f m");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Max Height of terrain features.");
+
+        ImGui::SliderFloat("Water Level (Sea)", &waterLvl, 0.0f, 200.0f, "%.0f m");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Terrains below this level are shown as Water on Minimap.");
+
         ImGui::Text("Map Size (Grid Cells):");
         // v3.8.2 Improved Selection
         const char* sizeItems[] = { "512 x 512", "1024 x 1024", "2048 x 2048", "4096 x 4096" };
@@ -684,44 +714,61 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         float totalW = selectedSize * resolution;
         ImGui::TextColored(ImVec4(0.7f, 0.9f, 1.0f, 1.0f), "World Dimensions: %.0f m x %.0f m", totalW, totalW);
         ImGui::Separator();
-
-        ImGui::SliderFloat("Feature Size (Base Freq)", &scale, 0.0001f, 0.01f, "%.4f");
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls the size of mountains.\nLower = Larger features\nHigher = Smaller features");
-
-        static float persistence = 0.5f; // v3.7.1
-        ImGui::SliderFloat("Roughness (Persistence)", &persistence, 0.2f, 0.8f, "%.2f");
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls jaggy-ness/detail.\nLower = Smooth hills\nHigher = Rocky/Noisy");
-
-        ImGui::SliderFloat("Height Amplitude", &amplitude, 50.0f, 500.0f, "%.0f m");
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Max Height of terrain features.");
-
-        static float waterLvl = 64.0f;
-        ImGui::SliderFloat("Water Level (Sea)", &waterLvl, 0.0f, 200.0f, "%.0f m");
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Terrains below this level are shown as Water on Minimap.");
-
-        // Resolution moved up to Map Size section
-
-        // v3.7.8 Seed Control
-        // Uses static for requested new seed, but initializes from ctx on first run if needed?
-        // Actually, we want to control the NEXT generation.
-        static int seedInput = 12345;
-        // Sync with ctx once?
+        
+        // v3.8.3: Experimental Blend
+        ImGui::Checkbox("Use Experimental Blend (v3.8.3)", &useBlend);
+        if (useBlend) {
+            ImGui::Indent();
+            ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Blend Config:");
+            ImGui::SliderFloat("Low Freq (Base)", &blendLow, 0.0f, 2.0f);
+            ImGui::SliderFloat("Mid Freq (Rolling)", &blendMid, 0.0f, 2.0f);
+            ImGui::SliderFloat("High Freq (Micro)", &blendHigh, 0.0f, 1.0f);
+            ImGui::SliderFloat("Exponent (Sharpness)", &blendExp, 0.1f, 4.0f);
+            if (ImGui::Button("Reset Defaults")) {
+                blendLow = 1.0f; blendMid = 0.5f; blendHigh = 0.25f; blendExp = 1.0f;
+            }
+            ImGui::Unindent();
+        }
+        
         static bool initialized = false;
         if (!initialized) { seedInput = ctx.seed; initialized = true; }
         
         ImGui::InputInt("Seed", &seedInput);
+        ImGui::SameLine();
         if (ImGui::Button("Randomize")) {
             seedInput = rand(); 
         }
 
         ImGui::Separator();
         
-        if (ctx.isRegenerating) {
-            ImGui::BeginDisabled();
-        }
-        if (ImGui::Button("Generate New Map", ImVec2(-1, 0))) {
+        // Disable during regen
+        if (ctx.isRegenerating) ImGui::BeginDisabled();
+
+        if (ImGui::Button("Generate Map (Ctrl+G)", ImVec2(-1, 40)) || (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_G, false))) {
             if (callbacks_.regenerateFiniteWorld) {
-                callbacks_.regenerateFiniteWorld(selectedSize, scale, amplitude, resolution, persistence, seedInput, waterLvl);
+                // v3.8.3: Construct Config
+                terrain::TerrainConfig config;
+                config.width = selectedSize;
+                config.height = selectedSize;
+                config.noiseScale = scale;
+                config.maxHeight = amplitude;
+                config.resolution = resolution;
+                config.persistence = persistence;
+                config.seed = seedInput;
+                config.waterLevel = waterLvl;
+                
+                // Blend Config
+                if (useBlend) {
+                    config.model = terrain::TerrainConfig::FiniteTerrainModel::ExperimentalBlend;
+                    config.blendConfig.lowFreqWeight = blendLow;
+                    config.blendConfig.midFreqWeight = blendMid;
+                    config.blendConfig.highFreqWeight = blendHigh;
+                    config.blendConfig.exponent = blendExp;
+                } else {
+                    config.model = terrain::TerrainConfig::FiniteTerrainModel::Default;
+                }
+
+                callbacks_.regenerateFiniteWorld(config);
             }
         }
         if (ctx.isRegenerating) {
@@ -730,7 +777,7 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
             ImGui::Text("Generating...");
         }
 
-        ImGui::Separator();
+
         ImGui::Text("Viewer Controls:");
 
         // Speed Control

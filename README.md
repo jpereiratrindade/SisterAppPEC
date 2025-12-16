@@ -12,7 +12,7 @@ Desenvolvido por **José Pedro Trindade**.
 
 ---
 
-## 🎯 What's New (v3.8.0)
+## 🎯 What's New (v3.8.3)
 
 -   **Computational Ecology Platform**: Complete rebranding from "Engine" to "Scientific Platform".
 -   **Interactive Minimap**: Real-time navigation aid with peak detection (symbols), zoom, and click-to-teleport.
@@ -22,6 +22,7 @@ Desenvolvido por **José Pedro Trindade**.
 -   **Drainage Analysis (D8)**: Deterministic flow accumulation visualization (v3.6+).
 -   **Semantic Soil**: CPU-authoritative soil classification ensuring 100% Visual-PROBE consistency (v3.7+).
 -   **Deterministic Seeding**: Full control over map seeds for reproducible terrain analysis (v3.7+).
+-   **Experimental Blend (Finite)**: Multi-frequency terrain blending ported to Finite World generator (v3.8.3).
 -   **Eco-Reports**: Automated generation of hydrological and landscape stats (v3.7+).
 
 ---
