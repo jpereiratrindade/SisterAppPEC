@@ -146,7 +146,6 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                     ctx.fpsCapTarget = cap;
                 }
                 ImGui::EndDisabled();
-                ImGui::EndDisabled();
                 // Voxel Terrain Settings Removed
                 ImGui::EndMenu();
                 ImGui::EndMenu();

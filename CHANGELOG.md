@@ -11,6 +11,9 @@
 -   **Documentation**: Updated Technical Manual and README to reflect the platform's scientific focus.
 -   **Camera**: Refactored collision logic to be independent of voxel structures.
 
+### Fixed
+-   **Stability**: Fixed crash in ImGui (`Assertion failed: g.DisabledStackSize > 0`) caused by an extra `ImGui::EndDisabled` call in the Menu Bar.
+
 ## [v3.8.3] - 2025-12-16
 ### Added
 -   **Experimental Blend Terrain (Finite World)**: Ported the multi-frequency blending model from Voxel mode to Finite World generator.
