@@ -34,8 +34,37 @@
 \section{Introdução}
 O \textbf{SisterApp} evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão 3.8.0 consolida ferramentas de navegação, análise de paisagem e validação métrica. A versão 3.8.4 remove definitivamente o suporte a Voxel para focar em terrenos de alta fidelidade (Finite World).
 
-// ... (skipping unchanged sections) ...
+\section{Modelo de Análise de Declividade (Slope Analysis)}
+Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
 
+\subsection{Cálculo de Inclinação (Percentual)}
+A declividade é calculada como a razão entre a diferença de altura (rise) e a distância horizontal (run), expressa em porcentagem. Para um ponto no terreno, a inclinação $S_{\%}$ é dada por:
+
+\[
+S_{\%} = \frac{\sqrt{(\Delta x)^2 + (\Delta z)^2}}{\text{run}} \times 100
+\]
+Onde:
+\begin{itemize}
+    \item $\Delta x$ e $\Delta z$ são os gradientes de altura nas direções X e Z.
+    \item A distância base (\textit{run}) é definida pela resolução do voxel (2 unidades).
+\end{itemize}
+
+Isto permite uma correlação direta com normas técnicas de engenharia civil.
+
+\subsection{Classificação Topológica (5 Classes)}
+O terreno é segmentado em classes configuráveis pelo usuário. Os limiares (thresholds) padrão são:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Intervalo ($S_{\%}$)} & \textbf{Descrição} \\ \hline
+Flat (Plano) & $0\% - 3.0\%$ & Áreas adequadas para infraestrutura. \\ \hline
+Gentle Slope (Suave) & $3.0\% - 8.0\%$ & Áreas de transição suave. \\ \hline
+Rolling (Ondulado) & $8.0\% - 20.0\%$ & Terreno ondulado, requer terraplanagem. \\ \hline
+Steep Slope (Íngreme/Forte) & $20.0\% - 45.0\%$ & Encostas fortes, risco de erosão. \\ \hline
+Mountain (Montanha) & $> 45.0\%$ & Áreas inacessíveis ou de preservação. \\ \hline
+\end{tabular}
 \date{17 de Dezembro de 2025 - v3.8.4 (Finite World)}
 \end{table}
 

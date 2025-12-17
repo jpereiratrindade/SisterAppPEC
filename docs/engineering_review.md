@@ -1,3 +1,6 @@
+# [LEGACY REPORT] Engineering Review – Voxel Terrain (v3.3.0)
+> **NOTE:** This document refers to the legacy Voxel Terrain system which was removed in v3.8.4. It is preserved for historical engineering reference regarding Vulkan synchronization strategies.
+
 # Engineering Review – Voxel Terrain / Render Loop
 
 ## Problemas identificados
