@@ -2,17 +2,21 @@
 #include "../graphics/geometry_utils.h"
 #include <iostream>
 #include <cstring>
+#include <algorithm> // v3.9.0 for std::clamp
 #include <cmath>
 
 namespace shape {
 
-TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass renderPass) : ctx_(ctx) {
+TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass renderPass, VkCommandPool commandPool) : ctx_(ctx), commandPool_(commandPool) {
     // Reuse existing basic shader for v1 (Vertex Color)
     auto vs = std::make_shared<graphics::Shader>(ctx_, "shaders/basic.vert.spv");
-    auto fs = std::make_shared<graphics::Shader>(ctx_, "shaders/basic.frag.spv");
+    auto fs = std::make_shared<graphics::Shader>(ctx_, "shaders/terrain.frag.spv");
     
+    // v3.9.0: Create Vegetation Layout FIRST so Material knows it
+    createVegetationResources(1, 1); // Dummy size, will resize in updateVegetation or assumes fixed
+
     // Create Material with VALID RenderPass!
-    material_ = std::make_unique<graphics::Material>(ctx_, renderPass, VkExtent2D{1280,720}, vs, fs, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL, true, true); 
+    material_ = std::make_unique<graphics::Material>(ctx_, renderPass, VkExtent2D{1280,720}, vs, fs, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL, true, true, vegDescLayout_); 
 }
     // Material initialized.
 
@@ -128,11 +132,16 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
                              bool showWatershedVis, bool showBasinOutlines, bool showSoilVis,
                              bool soilHidroAllowed, bool soilBTextAllowed, bool soilArgilaAllowed, 
                              bool soilBemDesAllowed, bool soilRasoAllowed, bool soilRochaAllowed,
-                             float sunAzimuth, float sunElevation, float fogDensity, float lightIntensity) {
+                             float sunAzimuth, float sunElevation, float fogDensity, float lightIntensity, float uvScale, int vegetationMode) {
     if (!mesh_ || !material_) return;
     
     // Bind Pipeline and Descriptor Sets
     material_->bind(cmd);
+    
+    // Bind Vegetation Descriptor Set (Set 0) if available
+    if (vegDescSet_ != VK_NULL_HANDLE) {
+        vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, material_->layout(), 0, 1, &vegDescSet_, 0, nullptr);
+    }
 
     // Define PC struct matching shader
     // Unified PushConstants Layout (Aligned)
@@ -155,7 +164,7 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
     pc.sunDir[0] = std::cos(radEl) * std::sin(radAz);
     pc.sunDir[1] = std::sin(radEl);
     pc.sunDir[2] = std::cos(radEl) * std::cos(radAz);
-    pc.sunDir[3] = 0.0f;
+    pc.sunDir[3] = uvScale; // v3.9.0 Vegetation UV Scale (1.0 / worldSize)
 
     pc.fixedColor[0] = 1.0f; pc.fixedColor[1] = 1.0f; pc.fixedColor[2] = 1.0f; pc.fixedColor[3] = 1.0f;
     
@@ -186,12 +195,305 @@ void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& m
     if (soilRasoAllowed)   mask |= 4096;
     if (soilRochaAllowed)  mask |= 8192;
     
+    // v3.9.0 Vegetation Mode (Bits 16-19)
+    if (vegetationMode > 0) {
+        mask |= ((vegetationMode & 0xF) << 16);
+    }
+    
     pc.flags = static_cast<uint32_t>(mask);
 
     vkCmdPushConstants(cmd, material_->layout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(pc), &pc);
 
     // Draw using Mesh API
     mesh_->draw(cmd);
+}
+
+// v3.9.0 Vegetation Implementation
+void TerrainRenderer::createVegetationResources(int width, int height) {
+    auto device = ctx_.device();
+    vegWidth_ = width;
+    vegHeight_ = height;
+    
+
+    // 1. Create Descriptor Layout
+    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+    samplerLayoutBinding.binding = 0;
+    samplerLayoutBinding.descriptorCount = 1;
+    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.pImmutableSamplers = nullptr;
+    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &samplerLayoutBinding;
+
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &vegDescLayout_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
+
+    // 2. Create Descriptor Pool
+    VkDescriptorPoolSize poolSize{};
+    poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSize.descriptorCount = 1;
+
+    VkDescriptorPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = &poolSize;
+    poolInfo.maxSets = 1;
+
+    if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &vegDescPool_) != VK_SUCCESS) {
+         throw std::runtime_error("failed to create descriptor pool!");
+    }
+
+    // 3. Allocate Descriptor Set
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = vegDescPool_;
+    allocInfo.descriptorSetCount = 1;
+    allocInfo.pSetLayouts = &vegDescLayout_;
+
+    if (vkAllocateDescriptorSets(device, &allocInfo, &vegDescSet_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate descriptor sets!");
+    }
+
+    // 4. Create Image
+    VkImageCreateInfo imageInfo{};
+    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageInfo.extent.width = static_cast<uint32_t>(width);
+    imageInfo.extent.height = static_cast<uint32_t>(height);
+    imageInfo.extent.depth = 1;
+    imageInfo.mipLevels = 1;
+    imageInfo.arrayLayers = 1;
+    imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+    imageInfo.flags = 0;
+
+    if (vkCreateImage(device, &imageInfo, nullptr, &vegImage_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create vegetation image!");
+    }
+
+    VkMemoryRequirements memRequirements;
+    vkGetImageMemoryRequirements(device, vegImage_, &memRequirements);
+
+    VkMemoryAllocateInfo allocImgInfo{};
+    allocImgInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocImgInfo.allocationSize = memRequirements.size;
+    allocImgInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    if (vkAllocateMemory(device, &allocImgInfo, nullptr, &vegMemory_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate vegetation image memory!");
+    }
+
+    vkBindImageMemory(device, vegImage_, vegMemory_, 0);
+
+    // 5. Create View
+    VkImageViewCreateInfo viewInfo{};
+    viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    viewInfo.image = vegImage_;
+    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    viewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    viewInfo.subresourceRange.baseMipLevel = 0;
+    viewInfo.subresourceRange.levelCount = 1;
+    viewInfo.subresourceRange.baseArrayLayer = 0;
+    viewInfo.subresourceRange.layerCount = 1;
+
+    if (vkCreateImageView(device, &viewInfo, nullptr, &vegView_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create texture image view!");
+    }
+
+    // 6. Create Sampler
+    VkSamplerCreateInfo samplerInfo{};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samplerInfo.anisotropyEnable = VK_FALSE;
+    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+    samplerInfo.compareEnable = VK_FALSE;
+    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+    if (vkCreateSampler(device, &samplerInfo, nullptr, &vegSampler_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create texture sampler!");
+    }
+
+    // 7. Update Descriptor Set
+    VkDescriptorImageInfo descImageInfo{};
+    descImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    descImageInfo.imageView = vegView_;
+    descImageInfo.sampler = vegSampler_;
+
+    VkWriteDescriptorSet descriptorWrite{};
+    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite.dstSet = vegDescSet_;
+    descriptorWrite.dstBinding = 0;
+    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptorWrite.descriptorCount = 1;
+    descriptorWrite.pImageInfo = &descImageInfo;
+
+    vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
+}
+
+void TerrainRenderer::updateVegetation(const vegetation::VegetationGrid& grid) {
+    if (!grid.isValid()) return;
+
+    // Check if resize is needed
+    if (vegImage_ == VK_NULL_HANDLE || vegWidth_ != grid.width || vegHeight_ != grid.height) {
+        // Recreate resources
+        if (vegImage_ != VK_NULL_HANDLE) {
+            destroyVegetationResources();
+        }
+        createVegetationResources(grid.width, grid.height);
+    }
+
+    VkDeviceSize imageSize = grid.width * grid.height * 4;
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+    void* data;
+    vkMapMemory(ctx_.device(), stagingBufferMemory, 0, imageSize, 0, &data);
+    
+    // Convert SoA to AoS (R8G8B8A8)
+    uint8_t* pixels = static_cast<uint8_t*>(data);
+    size_t count = grid.getSize();
+    for (size_t i = 0; i < count; ++i) {
+        // Clamp and Scale to 0-255
+        pixels[i * 4 + 0] = static_cast<uint8_t>(std::clamp(grid.ei_coverage[i], 0.0f, 1.0f) * 255.0f);
+        pixels[i * 4 + 1] = static_cast<uint8_t>(std::clamp(grid.es_coverage[i], 0.0f, 1.0f) * 255.0f);
+        pixels[i * 4 + 2] = static_cast<uint8_t>(std::clamp(grid.ei_vigor[i], 0.0f, 1.0f) * 255.0f);
+        pixels[i * 4 + 3] = static_cast<uint8_t>(std::clamp(grid.es_vigor[i], 0.0f, 1.0f) * 255.0f);
+    }
+    
+    vkUnmapMemory(ctx_.device(), stagingBufferMemory);
+
+    // Copy Buffer to Image (Naive: using ctx_.graphicsQueue directly or existing command pool? 
+    // We should use a single time command buffer.)
+    // Assuming context provides access to Pool/Queue.
+    // If not, we iterate. Let's create a temporary command buffer.
+    
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool_;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(ctx_.device(), &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    
+    // Transition Undefined -> Transfer Dst
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED; // Or general if we update repeatedly. 
+    // Actually, if we update every frame, oldLayout should be SHADER_READ_ONLY_OPTIMAL except first time.
+    // For simplicity, let's use UNDEFINED and drop previous content (we overwrite all).
+    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = vegImage_;
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = 1;
+    barrier.srcAccessMask = 0;
+    barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+    vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+    region.imageOffset = {0, 0, 0};
+    region.imageExtent = { (uint32_t)grid.width, (uint32_t)grid.height, 1 };
+
+    vkCmdCopyBufferToImage(commandBuffer, stagingBuffer, vegImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+    // Transition Transfer Dst -> Shader Read Only
+    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+    vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(ctx_.graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(ctx_.graphicsQueue()); // Wait for upload
+
+    vkFreeCommandBuffers(ctx_.device(), commandPool_, 1, &commandBuffer);
+    vkDestroyBuffer(ctx_.device(), stagingBuffer, nullptr);
+    vkFreeMemory(ctx_.device(), stagingBufferMemory, nullptr);
+}
+
+void TerrainRenderer::destroyVegetationResources() {
+    VkDevice device = ctx_.device();
+    if (vegSampler_) vkDestroySampler(device, vegSampler_, nullptr);
+    if (vegView_) vkDestroyImageView(device, vegView_, nullptr);
+    if (vegImage_) vkDestroyImage(device, vegImage_, nullptr);
+    if (vegMemory_) vkFreeMemory(device, vegMemory_, nullptr);
+    if (vegDescPool_) vkDestroyDescriptorPool(device, vegDescPool_, nullptr);
+    if (vegDescLayout_) vkDestroyDescriptorSetLayout(device, vegDescLayout_, nullptr);
+}
+
+uint32_t TerrainRenderer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(ctx_.physicalDevice(), &memProperties);
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+    throw std::runtime_error("failed to find suitable memory type!");
+}
+
+void TerrainRenderer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+    VkBufferCreateInfo bufferInfo{};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = size;
+    bufferInfo.usage = usage;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    if (vkCreateBuffer(ctx_.device(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS) throw std::runtime_error("failed to create buffer!");
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(ctx_.device(), buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+    if (vkAllocateMemory(ctx_.device(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) throw std::runtime_error("failed to allocate buffer memory!");
+    vkBindBufferMemory(ctx_.device(), buffer, bufferMemory, 0);
 }
 
 } // namespace shape

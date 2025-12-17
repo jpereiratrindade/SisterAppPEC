@@ -1,0 +1,19 @@
+[ 11%] Built target shaders_spirv
+[ 13%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::processEvents(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:416:91: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  416 |                          float flux = finiteMap_->fluxMap()[hitZ * finiteMap_->getWidth() + hitX];
+      |                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:417:97: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  417 |                          int basinID = finiteMap_->watershedMap()[hitZ * finiteMap_->getWidth() + hitX];
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::update(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:576:12: warning: unused variable ‘nowMs’ [-Wunused-variable]
+  576 |     Uint32 nowMs = SDL_GetTicks();
+      |            ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::performRegeneration()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:935:59: warning: explicit by-copy capture of ‘this’ with by-copy capture default only available with ‘-std=c++20’ or ‘-std=gnu++20’ [-Wc++20-extensions]
+  935 |         regenFuture_ = std::async(std::launch::async, [=, this]() {
+      |                                                           ^~~~
+[ 16%] Linking CXX executable sisterapp
+[100%] Built target sisterapp

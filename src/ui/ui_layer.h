@@ -4,6 +4,7 @@
 #include "../graphics/camera.h"
 // VoxelTerrain removed
 #include "../terrain/terrain_map.h" // v3.5.0
+#include "../vegetation/vegetation_types.h" // v3.9.0
 #include "../graphics/animation.h"
 #include "../math/math_types.h"
 #include "bookmark.h"
@@ -64,6 +65,10 @@ struct UiFrameContext {
     float& lightIntensity;
     // v3.8.3 Async Status
     bool isRegenerating;
+    
+    // v3.9.0 Vegetation
+    int& vegetationMode;
+    vegetation::DisturbanceRegime& disturbanceParams;
 };
 
 struct Callbacks {
@@ -77,6 +82,7 @@ struct Callbacks {
     std::function<void(int)> requestTerrainReset;
     std::function<void()> savePreferences; // v3.4.0
     std::function<void()> loadPreferences; // v3.4.0
+    std::function<void()> resetVegetation; // v3.9.1: Refresh button
     RegenerateFiniteWorldCallback regenerateFiniteWorld; // v3.5.1
     RequestMeshUpdateCallback updateMesh; // v3.6.3
 };

@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <memory>
+#include "../vegetation/vegetation_types.h"
 
 namespace terrain {
 
@@ -107,6 +109,10 @@ public:
         return x >= 0 && x < width_ && y >= 0 && y < height_;
     }
 
+    // v3.9.0: Vegetation Grid
+    vegetation::VegetationGrid* getVegetation() { return vegGrid_.get(); }
+    const vegetation::VegetationGrid* getVegetation() const { return vegGrid_.get(); }
+
 private:
     int width_;
     int height_;
@@ -122,6 +128,9 @@ private:
     std::vector<int> flowDirMap_;    // Index of receiver cell (-1 if sink)
     std::vector<int> watershedMap_;  // ID of the drainage basin
     std::vector<uint8_t> soilMap_;   // v3.7.3: Semantic Soil ID
+
+    // v3.9.0
+    std::unique_ptr<vegetation::VegetationGrid> vegGrid_;
 };
 
 } // namespace terrain

@@ -20,6 +20,8 @@ layout(push_constant) uniform PushConstants {
     layout(offset = 112) uint flags;     // 4 bytes (Bitmask)
 } pc;
 
+// layout(binding = 0) uniform sampler2D vegetationMap; // Removed for generic basic.frag
+
 // Flags Decode Helper
 bool hasFlag(uint bit) {
     return (pc.flags & bit) != 0;
@@ -174,45 +176,21 @@ void main() {
 
     // 4. Watershed Visualization
     if (useWatershedVis) {
+        // ... (Existing Watershed Logic) ...
         int bid = int(round(fragAux));
         if (bid > 0) {
-            // Generate distinctive color for each basin
             float r = hash(vec2(float(bid), 12.34));
             float g = hash(vec2(float(bid), 56.78));
             float b = hash(vec2(float(bid), 90.12));
-            vec3 basinColor = vec3(r, g, b);
-            // Ensure some brightness
-            if (length(basinColor) < 0.5) basinColor += 0.5;
-            color = mix(color, basinColor, 0.6); // Tint
-            
-            // Outline (v3.6.4)
-            if (useBasinOutlines) {
-                // Check if we are in a transition zone (interpolated ID varies)
-                float delta = fwidth(fragAuxSmooth);
-                if (delta > 0.0001) { // Lower threshold to catch shallow angles
-                    // We are in a triangle connecting different IDs.
-                    // To narrow the line, we only draw near the grid cell edge (integer + 0.5)
-                    // Calculate distance to nearest 0.5 coordinate offset
-                    vec2 gridDist = abs(fract(fragWorldPos.xz) - 0.5);
-                    // Use gradients to get screen-space/pixel-width aa
-                    vec2 width = fwidth(fragWorldPos.xz);
-                    // Standard AA grid line logic - Softer falloff (Safe smoothstep)
-                    // We want 1.0 at dist=0, and 0.0 at dist=width*2.5
-                    vec2 gridAA = 1.0 - smoothstep(vec2(0.0), width * 2.5, gridDist);
-                    float lineStr = max(gridAA.x, gridAA.y);
-                    
-                    if (lineStr > 0.0) {
-                        // Apply Dark Line (Softer)
-                         color = mix(color, vec3(0.0), lineStr * 0.5);
-                    }
-                }
-            }
-        } else {
-             // Gray out outside areas
-             float lum = dot(color, vec3(0.299, 0.587, 0.114));
-             color = vec3(lum) * 0.5;
+            color = mix(color, vec3(r,g,b), 0.6);
         }
     }
+
+    // 5. Vegetation Visualization (Removed in basic.frag, moved to terrain.frag)
+    /*
+    uint vegMode = (pc.flags >> 16) & 0xFu; 
+    ...
+    */
 
     // 1. Lighting (Applied to Albedo)
     vec3 ambient = vec3(0.0);

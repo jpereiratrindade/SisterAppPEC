@@ -148,7 +148,6 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                 ImGui::EndDisabled();
                 // Voxel Terrain Settings Removed
                 ImGui::EndMenu();
-                ImGui::EndMenu();
             }
             ImGui::Separator();
             ImGui::Separator();
@@ -605,6 +604,39 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         // Display Total Physical Area
         float totalW = selectedSize * resolution;
         ImGui::TextColored(ImVec4(0.7f, 0.9f, 1.0f, 1.0f), "World Dimensions: %.0f m x %.0f m", totalW, totalW);
+        ImGui::Separator();
+
+        // v3.9.0: Vegetation Model
+        if (ImGui::CollapsingHeader("Vegetation Model (Grassland)", ImGuiTreeNodeFlags_DefaultOpen)) {
+            // Mode Selection
+            const char* vegModes[] = { "OFF", "Realistic (Blend)", "Heatmap: EI (Grass)", "Heatmap: ES (Shrub)", "Heatmap: Vigor" };
+            ImGui::Combo("Visualization", &ctx.vegetationMode, vegModes, IM_ARRAYSIZE(vegModes));
+
+            if (ctx.vegetationMode > 0) {
+                ImGui::Indent();
+                ImGui::TextDisabled("Disturbance Regime (Fire/Grazing)");
+                ImGui::SliderFloat("Fire Freq (Prob)", &ctx.disturbanceParams.fireFrequency, 0.0f, 0.1f, "%.4f");
+                ImGui::SliderFloat("Grazing Intensity", &ctx.disturbanceParams.grazingIntensity, 0.0f, 1.0f);
+                ImGui::SliderFloat("Avg Recovery Time", &ctx.disturbanceParams.averageRecoveryTime, 1.0f, 120.0f, "%.0f s");
+                
+                if (ImGui::Button("Trigger Fire Now")) {
+                    // Logic to trigger fire manually? 
+                    // Needs callback or flag in DisturbParams to signal "ManualPulse"
+                    // For now, just params.
+                }
+                
+                ImGui::SameLine();
+                
+                // v3.9.1: Refresh Button
+                if (ImGui::Button("Reset Vegetation (Refresh)")) {
+                    if (callbacks_.resetVegetation) {
+                        callbacks_.resetVegetation();
+                    }
+                }
+                
+                ImGui::Unindent();
+            }
+        }
         ImGui::Separator();
         
         // v3.8.3: Experimental Blend

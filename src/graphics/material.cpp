@@ -9,9 +9,10 @@ namespace graphics {
 Material::Material(const core::GraphicsContext& context, VkRenderPass renderPass, VkExtent2D extent, 
                    std::shared_ptr<Shader> vertShader, std::shared_ptr<Shader> fragShader,
                    VkPrimitiveTopology topology, VkPolygonMode polygonMode,
-                   bool enableBlend, bool depthWrite)
+                   bool enableBlend, bool depthWrite,
+                   VkDescriptorSetLayout descriptorLayout)
     : device_(context.device()), vertShader_(vertShader), fragShader_(fragShader) {
-    createPipeline(renderPass, extent, topology, polygonMode, enableBlend, depthWrite);
+    createPipeline(renderPass, extent, topology, polygonMode, enableBlend, depthWrite, descriptorLayout);
 }
 
 Material::~Material() {
@@ -47,8 +48,28 @@ void Material::bind(VkCommandBuffer cmd) const {
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_);
 }
 
-void Material::createPipeline(VkRenderPass renderPass, VkExtent2D extent, VkPrimitiveTopology topology, VkPolygonMode polygonMode, bool enableBlend, bool depthWrite) {
-    // 1. Shader Stages
+void Material::createPipeline(VkRenderPass renderPass, VkExtent2D extent, VkPrimitiveTopology topology, VkPolygonMode polygonMode, bool enableBlend, bool depthWrite, VkDescriptorSetLayout descriptorLayout) {
+    // ... (previous logic same until PipelineLayout) ...
+
+    // 9. Pipeline Layout (Push Consts + DescriptorSet)
+    VkPushConstantRange range{};
+    range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    range.offset = 0;
+    range.size = 144; 
+
+    VkPipelineLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    layoutInfo.pushConstantRangeCount = 1;
+    layoutInfo.pPushConstantRanges = &range;
+    
+    // Support for 1 descriptor set layout
+    if (descriptorLayout != VK_NULL_HANDLE) {
+        layoutInfo.setLayoutCount = 1;
+        layoutInfo.pSetLayouts = &descriptorLayout;
+    } else {
+        layoutInfo.setLayoutCount = 0;
+        layoutInfo.pSetLayouts = nullptr;
+    }
     VkPipelineShaderStageCreateInfo vertStage{};
     vertStage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertStage.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -160,16 +181,6 @@ void Material::createPipeline(VkRenderPass renderPass, VkExtent2D extent, VkPrim
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
 
-    // 9. Pipeline Layout (Push Consts)
-    VkPushConstantRange range{};
-    range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    range.offset = 0;
-    range.size = 144; // Increased for Visualization Flags (was 128) 
-
-    VkPipelineLayoutCreateInfo layoutInfo{};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    layoutInfo.pushConstantRangeCount = 1;
-    layoutInfo.pPushConstantRanges = &range;
 
     if (vkCreatePipelineLayout(device_, &layoutInfo, nullptr, &pipelineLayout_) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");

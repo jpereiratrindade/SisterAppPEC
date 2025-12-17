@@ -6,12 +6,13 @@
 #include "../graphics/mesh.h"
 #include <memory>
 #include <vector>
+#include "../vegetation/vegetation_types.h"
 
 namespace shape {
 
 class TerrainRenderer {
 public:
-    TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass renderPass);
+    TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass renderPass, VkCommandPool commandPool);
     ~TerrainRenderer() = default;
 
     struct MeshData {
@@ -38,13 +39,38 @@ public:
                 // Soil Whitelist
                 bool soilHidroAllowed, bool soilBTextAllowed, bool soilArgilaAllowed, 
                 bool soilBemDesAllowed, bool soilRasoAllowed, bool soilRochaAllowed,
-                float sunAzimuth, float sunElevation, float fogDensity, float lightIntensity);
+                float sunAzimuth, float sunElevation, float fogDensity, float lightIntensity,
+                float uvScale, int vegetationMode);
+
+    // v3.9.0 Vegetation Support
+    void createVegetationResources(int width, int height);
+    void updateVegetation(const vegetation::VegetationGrid& grid);
+    void destroyVegetationResources();
 
 private:
     const core::GraphicsContext& ctx_;
+    VkCommandPool commandPool_; // v3.9.0: Needed for texture uploads
     std::unique_ptr<graphics::Mesh> mesh_;
     std::unique_ptr<graphics::Material> material_;
-    // No change to material
+    
+    // Vegetation Texture Resources
+    VkImage vegImage_ = VK_NULL_HANDLE;
+    VkDeviceMemory vegMemory_ = VK_NULL_HANDLE;
+    VkImageView vegView_ = VK_NULL_HANDLE;
+    VkSampler vegSampler_ = VK_NULL_HANDLE;
+    
+    // Vegetation Descriptors
+    VkDescriptorSetLayout vegDescLayout_ = VK_NULL_HANDLE;
+    VkDescriptorPool vegDescPool_ = VK_NULL_HANDLE;
+    VkDescriptorSet vegDescSet_ = VK_NULL_HANDLE;
+    
+    // v3.9.0: Track dimensions for resizing
+    int vegWidth_ = 0;
+    int vegHeight_ = 0;
+
+    // Helpers
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 };
 
 } // namespace shape

@@ -1,0 +1,57 @@
+[ 13%] Built target shaders_spirv
+[ 15%] Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In static member function ‘static shape::TerrainRenderer::MeshData shape::TerrainRenderer::generateMeshData(const terrain::TerrainMap&, float)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:39:29: warning: conversion to ‘std::vector<graphics::Vertex>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   39 |     data.vertices.reserve(w * h);
+      |                           ~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:40:44: warning: conversion to ‘std::vector<unsigned int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   40 |     data.indices.reserve((w - 1) * (h - 1) * 6);
+      |                          ~~~~~~~~~~~~~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:90:46: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   90 |             float flux = map.fluxMap()[z * w + x];
+      |                                        ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:95:49: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   95 |             float sed = map.sedimentMap()[z * w + x];
+      |                                           ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:100:71: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  100 |             v.auxiliary = static_cast<float>(map.watershedMap()[z * w + x]);
+      |                                                                 ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:103:63: warning: conversion to ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  103 |             v.soilId = static_cast<float>(map.soilMap()[z * w + x]);
+      |                                                         ~~~~~~^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:117:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  117 |             indices.push_back(topLeft);
+      |                               ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:118:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  118 |             indices.push_back(bottomLeft);
+      |                               ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:119:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  119 |             indices.push_back(topRight);
+      |                               ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:121:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  121 |             indices.push_back(topRight);
+      |                               ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:122:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  122 |             indices.push_back(bottomLeft);
+      |                               ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:123:31: warning: conversion to ‘std::vector<unsigned int>::value_type’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  123 |             indices.push_back(bottomRight);
+      |                               ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::render(VkCommandBuffer, const std::array<float, 16>&, VkExtent2D, bool, bool, float, bool, bool, bool, bool, bool, bool, bool, bool, bool, float, float, float, float, float, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:130:96: warning: unused parameter ‘viewport’ [-Wunused-parameter]
+  130 | void TerrainRenderer::render(VkCommandBuffer cmd, const std::array<float, 16>& mvp, VkExtent2D viewport,
+      |                                                                                     ~~~~~~~~~~~^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::createVegetationResources(int, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:264:23: error: redeclaration of ‘VkImageCreateInfo imageInfo’
+  264 |     VkImageCreateInfo imageInfo{};
+      |                       ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:218:23: note: ‘VkImageCreateInfo imageInfo’ previously declared here
+  218 |     VkImageCreateInfo imageInfo{};
+      |                       ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp: In member function ‘void shape::TerrainRenderer::updateVegetation(const vegetation::VegetationGrid&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp:363:55: warning: conversion to ‘VkDeviceSize’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  363 |     VkDeviceSize imageSize = grid.width * grid.height * 4;
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+make[2]: *** [CMakeFiles/sisterapp.dir/build.make:541: CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2

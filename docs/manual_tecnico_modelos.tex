@@ -70,8 +70,45 @@ Mountain (Montanha) & $> 45.0\%$ & Áreas inacessíveis ou de preservação. \\ 
 
 
 
-\section{Modelo de Vegetação}
-O sistema de vegetação está atualmente em reestruturação para se adaptar ao novo modelo de terreno Finite World. O foco atual (v3.8.4) é a validação das camadas de análise topológica e pedológica.
+\section{Modelo de Vegetação Campestre (Grassland Model)}
+O SisterApp v3.9.1 introduz um modelo de dinâmica de vegetação campestre baseado em princípios de ecologia espacial e regimes de distúrbio (Fogo e Pastejo).
+
+\subsection{Estrutura de Dois Estratos (DDD)}
+A vegetação é modelada como dois estratos competitivos em cada célula do grid ($1m^2$):
+\begin{itemize}
+    \item \textbf{Estrato Inferior (EI):} Gramíneas e herbáceas. Alta taxa de crescimento, alta resiliência ao pastejo, inflamável.
+    \item \textbf{Estrato Superior (ES):} Arbustos e subarbustos. Crescimento lento, suprime o estrato inferior por sombreamento, sensível ao fogo.
+\end{itemize}
+
+O estado de cada célula é definido por um vetor de 4 componentes:
+\[ V_{cell} = \{ Coverage_{EI}, Coverage_{ES}, Vigor_{EI}, Vigor_{ES} \} \]
+
+\subsection{Dinâmica de Distúrbios}
+O modelo implementa dois agentes principais de perturbação:
+
+\subsubsection{Fogo (Fire)}
+Ocorrência estocástica baseada em probabilidade $P_{fire}$ e biomassa disponível.
+\begin{itemize}
+    \item \textbf{Efeito:} Remoção total de cobertura ($Coverage \to 0$) em ambos os estratos.
+    \item \textbf{Recuperação:} O sistema inicia um contador de "Recovery Time". A recolonização ocorre via nucleação a partir de vizinhos ou banco de sementes (simulado por ruído de base).
+\end{itemize}
+
+\subsubsection{Pastejo (Grazing)}
+Pressão constante e seletiva sobre o estrato inferior (Gramíneas).
+\begin{itemize}
+    \item \textbf{Efeito:} Redução linear da cobertura do EI proporcional à intensidade ($I_{grazing}$).
+    \item \textbf{Consequência:} A redução do EI libera espaço e recursos, podendo facilitar a invasão arbustiva (emcasting encroachment) em escalas temporais longas (não simulado em tempo real nesta versão).
+\end{itemize}
+
+\subsection{Heterogeneidade Espacial (Spatial Noise)}
+Para evitar a monotonia visual e simular a variabilidade edáfica não mapeada, a inicialização e a capacidade de suporte local ($K$) são moduladas por funções de ruído procedural (Perlin Noise). Isso gera manchas naturais de alta e baixa densidade, independentemente dos distúrbios.
+
+\subsection{Visualização em Tempo Real}
+O shader de terreno foi atualizado para combinar a coloração do solo (Pedologia) com a camada de vegetação.
+\begin{itemize}
+    \item \textbf{Realistic Mode:} Mistura texturas de solo e vegetação baseada na cobertura. O Vigor modula a cor entre Verde (Saudável) e Amarelo/Marrom (Senescente).
+    \item \textbf{Heatmaps:} Modos de diagnóstico para visualizar cobertura bruta de EI/ES e níveis de estresse fisiológico (Vigor).
+\end{itemize}
 
 \section{Geração de Topologia (Terrain Models)}
 É fundamental distinguir o \textbf{Gerador de Topologia} do \textbf{Analisador de Declividade}. O sistema mantém três perfis de geração baseados em ruído Perlin, que definem a geometria física do mundo.

@@ -20,6 +20,10 @@ void TerrainMap::resize(int width, int height) {
     flowDirMap_.assign(size, -1);   // v3.6.3: -1 means no receiver (sink or undefined)
     watershedMap_.assign(size, 0);  // v3.6.3: 0 means no basin assigned
     soilMap_.assign(size, static_cast<uint8_t>(SoilType::None)); // v3.7.3
+
+    // v3.9.0: Vegetation
+    if (!vegGrid_) vegGrid_ = std::make_unique<vegetation::VegetationGrid>();
+    vegGrid_->resize(width, height);
 }
 
 void TerrainMap::clear() {

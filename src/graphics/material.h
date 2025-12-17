@@ -34,7 +34,8 @@ public:
              VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
              VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL,
              bool enableBlend = false,
-             bool depthWrite = true);
+             bool depthWrite = true,
+             VkDescriptorSetLayout descriptorLayout = VK_NULL_HANDLE);
     ~Material();
 
     // No copy
@@ -50,7 +51,7 @@ public:
     VkPipeline pipeline() const { return pipeline_; }
 
 private:
-    void createPipeline(VkRenderPass renderPass, VkExtent2D extent, VkPrimitiveTopology topology, VkPolygonMode polygonMode, bool enableBlend, bool depthWrite);
+    void createPipeline(VkRenderPass renderPass, VkExtent2D extent, VkPrimitiveTopology topology, VkPolygonMode polygonMode, bool enableBlend, bool depthWrite, VkDescriptorSetLayout descriptorLayout);
 
     VkDevice device_;
     std::shared_ptr<Shader> vertShader_;

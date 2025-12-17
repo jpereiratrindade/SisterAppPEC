@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.frag.spv"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.vert.spv"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag.spv"
+  "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/terrain.frag.spv"
   "CMakeFiles/shaders_spirv"
 )
 

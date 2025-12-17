@@ -1,4 +1,5 @@
-# SisterApp: Plataforma de Ecologia Computacional
+# SisterApp Engine v3.9.1
+Plataforma de Ecologia Computacional
 
 > **De Engine Gráfica para Laboratório Digital**: V3.8.0 transforma o projeto em uma plataforma científica para simulação de processos ecológicos, geração de padrões espaciais e validação métrica.
 

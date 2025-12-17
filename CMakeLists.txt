@@ -78,6 +78,7 @@ set(SHADER_SRC
     shaders/red.frag
     shaders/environment.vert
     shaders/environment.frag
+    shaders/terrain.frag
 )
 if (GLSLC)
     set(SPIRV_BINARIES "")
@@ -107,4 +108,4 @@ elseif (MSVC)
     target_compile_options(sisterapp PRIVATE /W4 /permissive-)
 endif()
 
-target_sources(sisterapp PRIVATE src/terrain/terrain_map.cpp src/terrain/terrain_generator.cpp src/terrain/terrain_renderer.cpp src/terrain/hydrology_report.cpp src/terrain/watershed.cpp src/terrain/landscape_metrics.cpp)
+target_sources(sisterapp PRIVATE src/terrain/terrain_map.cpp src/terrain/terrain_generator.cpp src/terrain/terrain_renderer.cpp src/terrain/hydrology_report.cpp src/terrain/watershed.cpp src/terrain/landscape_metrics.cpp src/vegetation/vegetation_system.cpp)

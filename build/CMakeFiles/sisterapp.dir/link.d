@@ -39,6 +39,7 @@ sisterapp: \
   CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o \
   CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o \
   CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o \
+  CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o \
   /usr/lib64/libSDL2-2.0.so.0.3200.56 \
   /lib64/libvulkan.so \
   /usr/lib/gcc/x86_64-redhat-linux/15/libstdc++.so \
@@ -148,6 +149,8 @@ CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o:
 CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o:
 
 CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o:
+
+CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o:
 
 /usr/lib64/libSDL2-2.0.so.0.3200.56:
 

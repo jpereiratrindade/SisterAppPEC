@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.11.13)  17 DEC 2025 11:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.11.13)  17 DEC 2025 11:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -579,91 +579,49 @@ Package hyperref Info: Link coloring ON on input line 28.
 
 \c@lstlisting=\count327
 
-(./manual_tecnico_modelos.toc [1
-
-{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
-al/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}])
+(./manual_tecnico_modelos.toc)
 \tf@toc=\write4
 \openout4 = `manual_tecnico_modelos.toc'.
 
- [2]
-! Too many }'s.
-\@endfloatbox ...pagefalse \outer@nobreak \egroup 
-                                                  \color@endbox 
-l.40 \end{table}
-                
-You've closed more groups than you opened.
-Such booboos are generally harmless, so keep going.
+ [1
 
-! Extra \endgroup.
-\color@endgroup ->\endgraf \@endpefalse \endgroup 
-                                                  
-l.40 \end{table}
-                
-Things are pretty mixed up, but I think the worst is over.
+{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
+al/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
+Overfull \hbox (20.85492pt too wide) in paragraph at lines 59--69
+ [][] 
+ []
 
-! Too many }'s.
-\color@endbox ->\color@endgroup \egroup 
-                                        
-l.40 \end{table}
-                
-You've closed more groups than you opened.
-Such booboos are generally harmless, so keep going.
-
-
-! LaTeX Error: \begin{document} ended by \end{table}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.40 \end{table}
-                
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-! Extra \endgroup.
-\end  ...end#1\endcsname \@checkend {#1}\endgroup 
-                                                  \UseHook {env/#1/after}\if...
-l.40 \end{table}
-                
-Things are pretty mixed up, but I think the worst is over.
-
-[3{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
-}] [4] [5]
+[2{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+}] [3] [4]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 139.
+(hyperref)                removing `math shift' on input line 168.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 139.
+(hyperref)                removing `subscript' on input line 168.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 139.
+(hyperref)                removing `math shift' on input line 168.
 
-[6]
-Overfull \hbox (8.93399pt too wide) in paragraph at lines 165--165
+[5]
+Overfull \hbox (16.8521pt too wide) in paragraph at lines 194--194
 []\T1/cmr/bx/n/14.4 Metodologia: Ru-ído Co-e-rente e Mé-tri-cas de Pai-sa-gem (
 v3.8.0). 
  []
 
-
-Overfull \hbox (5.74736pt too wide) in paragraph at lines 192--193
+[6]
+Overfull \hbox (5.74736pt too wide) in paragraph at lines 221--222
 []\T1/cmr/bx/n/12 Plano (0-3%): \T1/cmr/m/n/12 Hi-dro-mór-fico (Teal), B Tex-tu
 -ral (La-ranja), Ar-gila Ex-pan-siva (Roxo). 
  []
 
-[7] [8] [9] (./manual_tecnico_modelos.aux)
+[7] [8] (./manual_tecnico_modelos.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-10-24>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 
 Package rerunfilecheck Warning: File `manual_tecnico_modelos.out' has changed.
@@ -671,51 +629,43 @@ Package rerunfilecheck Warning: File `manual_tecnico_modelos.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `manual_tecnico_modelos.out':
-(rerunfilecheck)             Before: C11109362A0A0C97ADB0E7C9C7B59DF3;6839
-(rerunfilecheck)             After:  427D1F9C8EACC14DD757F786731C884E;5565.
+(rerunfilecheck)             Before: 427D1F9C8EACC14DD757F786731C884E;5565
+(rerunfilecheck)             After:  9BB5CE2AEBA86755F984539F36E0E23E;6402.
  ) 
 Here is how much of TeX's memory you used:
- 12854 strings out of 467538
- 197584 string characters out of 5419551
- 645263 words of memory out of 5000000
- 41554 multiletter control sequences out of 15000+600000
+ 12850 strings out of 467538
+ 197535 string characters out of 5419551
+ 645258 words of memory out of 5000000
+ 41550 multiletter control sequences out of 15000+600000
  643762 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,8n,79p,487b,595s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,487b,618s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-pdfTeX warning (dest): name{subsection.11.3} has been referenced but does not e
-xist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{subsection.11.2} has been referenced but does not e
-xist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{subsection.11.1} has been referenced but does not e
-xist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{section.11} has been referenced but does not exist,
- replaced by a fixed one
-
-
-pdfTeX warning (dest): name{subsection.10.1} has been referenced but does not e
-xist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{section.10} has been referenced but does not exist,
- replaced by a fixed one
-
-
-pdfTeX warning (dest): name{subsection.9.4} has been referenced but does not ex
+pdfTeX warning (dest): name{subsection.9.3} has been referenced but does not ex
 ist, replaced by a fixed one
 
 
-pdfTeX warning (dest): name{subsection.8.3} has been referenced but does not ex
+pdfTeX warning (dest): name{subsection.9.2} has been referenced but does not ex
 ist, replaced by a fixed one
 
 
-pdfTeX warning (dest): name{subsection.8.2} has been referenced but does not ex
+pdfTeX warning (dest): name{subsection.7.4} has been referenced but does not ex
+ist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.5.3} has been referenced but does not ex
+ist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.5.2} has been referenced but does not ex
+ist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.3.2} has been referenced but does not ex
+ist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.3.1} has been referenced but does not ex
 ist, replaced by a fixed one
 
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><
@@ -739,10 +689,10 @@ dist/fonts/type1/public/cm-super/sfrm2074.pfb></usr/local/texlive/2025/texmf-di
 st/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/texmf-dist
 /fonts/type1/public/cm-super/sfti1200.pfb></usr/local/texlive/2025/texmf-dist/f
 onts/type1/public/cm-super/sftt1200.pfb>
-Output written on manual_tecnico_modelos.pdf (9 pages, 361819 bytes).
+Output written on manual_tecnico_modelos.pdf (8 pages, 364186 bytes).
 PDF statistics:
- 340 PDF objects out of 1000 (max. 8388607)
- 283 compressed objects within 3 object streams
+ 321 PDF objects out of 1000 (max. 8388607)
+ 265 compressed objects within 3 object streams
  57 named destinations out of 1000 (max. 500000)
- 241 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 209 words of extra memory for PDF output out of 10000 (max. 10000000)
 

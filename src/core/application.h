@@ -20,6 +20,7 @@
 #include "../terrain/terrain_map.h"
 #include "../terrain/terrain_generator.h"
 #include "../terrain/terrain_renderer.h"
+#include "../vegetation/vegetation_types.h"
 #include <vector>
 #include <memory>
 #include <future>
@@ -201,6 +202,10 @@ namespace core {
         std::string lastSurfaceInfo_;
         bool lastSurfaceValid_ = false;
         float lastSurfaceColor_[3] = {0.0f, 0.0f, 0.0f};
+
+        // v3.9.0 Vegetation State
+        int vegetationMode_ = 1; // Default to Realistic (1)
+        vegetation::DisturbanceRegime disturbanceParams_; // Default constructor has sensible defaults?
     };
 
 } // namespace core

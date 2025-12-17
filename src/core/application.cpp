@@ -1,5 +1,6 @@
 #include "application.h"
 #include "../graphics/geometry_utils.h"
+#include "../vegetation/vegetation_system.h" // v3.9.0
 #include "../terrain/watershed.h" // v3.6.3
 #include "../imgui_backend.h"
 #include "../math/math_types.h"
@@ -126,8 +127,11 @@ void Application::init() {
     // v3.7.8: Use Config Seed
     finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(currentSeed_);
     
+    // v3.9.0 Helper: Initialize Vegetation State
+    vegetation::VegetationSystem::initialize(*finiteMap_->getVegetation(), currentSeed_);
+    
     // Pass the correct RenderPass!
-    finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
+    finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass(), commandPool_->handle());
     
     terrain::TerrainConfig config;
     config.maxHeight = 80.0f; // Gentle rolling hills
@@ -580,6 +584,30 @@ void Application::update(double dt) {
 
     camera_.update(static_cast<float>(dt));
     
+    // v3.9.0 Vegetation Simulation
+    if (finiteMap_ && finiteMap_->getVegetation() && vegetationMode_ > 0) {
+        auto* veg = finiteMap_->getVegetation();
+        
+        // 1. Update (Recovery/Growth)
+        vegetation::VegetationSystem::update(*veg, static_cast<float>(dt));
+
+        // 2. Disturbance (Fire)
+        if (disturbanceParams_.fireFrequency > 0.0f) {
+            float prob = disturbanceParams_.fireFrequency * static_cast<float>(dt);
+            // Simple random check
+            if ((float)rand() / RAND_MAX < prob) {
+                disturbanceParams_.type = vegetation::DisturbanceType::Fire;
+                vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
+                std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
+            }
+        }
+        
+        // 3. Upload to GPU
+        if (finiteRenderer_) {
+            finiteRenderer_->updateVegetation(*veg);
+        }
+    }
+
     // Update animations
     if (animationEnabled_) {
         gridAnimator_.update(static_cast<float>(dt));
@@ -750,8 +778,15 @@ void Application::render(size_t frameIndex) {
         renderer_.record(cmd, axesMesh_.get(), lineMaterial_.get(), swapchain_->extent(), axesMVP, opts);
     }
     
+    // v3.9.0 Vegetation
+    float uvScale = 0.0f;
+    if (finiteMap_) {
+        // mapWidth * gridScale
+        float worldWidth = static_cast<float>(finiteMap_->getWidth()) * worldResolution_;
+        if (worldWidth > 0.001f) uvScale = 1.0f / worldWidth;
+    }
+
     // Render Finite World if active
-    // Render Finite World
     if (finiteRenderer_) {
          std::array<float, 16> mvpArray;
          std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
@@ -761,7 +796,8 @@ void Application::render(size_t frameIndex) {
     /* drainage */ showDrainage_, drainageIntensity_,
     /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
     /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_, 
-    /* visual */ sunAzimuth_, sunElevation_, fogDensity_, lightIntensity_); // v3.8.1
+    /* visual */ sunAzimuth_, sunElevation_, fogDensity_, lightIntensity_,
+    /* vegetation */ uvScale, vegetationMode_); // v3.9.0
     }
 
     ui::UiFrameContext uiCtx{
@@ -793,7 +829,11 @@ void Application::render(size_t frameIndex) {
         lastSurfaceColor_,
         /* seeding & resolution */ currentSeed_, worldResolution_, // v3.7.8
         /* light */ lightIntensity_, // v3.8.1
-        /* async */ isRegenerating_ // v3.8.3
+        /* async */ isRegenerating_, // v3.8.3
+        
+        // v3.9.0 Vegetation
+        vegetationMode_,
+        disturbanceParams_
     };
 
     uiLayer_->render(uiCtx, cmd);
@@ -947,6 +987,11 @@ void Application::performRegeneration() {
             gen->calculateDrainage(*map);
             gen->classifySoil(*map, config);
 
+            // v3.9.0: Initialize Vegetation (Async)
+            if (map->getVegetation()) {
+                vegetation::VegetationSystem::initialize(*map->getVegetation(), config.seed);
+            }
+
             // 4. Prepare Mesh Data (CPU Heavy)
             auto meshData = shape::TerrainRenderer::generateMeshData(*map, config.resolution);
 
@@ -982,7 +1027,7 @@ void Application::performRegeneration() {
 
             // Recreate Renderer
             finiteRenderer_.reset();
-            finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
+            finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass(), commandPool_->handle());
             
             // Upload Mesh (Fast Transfer)
             finiteRenderer_->uploadMesh(backgroundMeshData_);
