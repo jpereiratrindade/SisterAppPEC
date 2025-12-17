@@ -7,13 +7,13 @@
 #include "command_pool.h"
 #include "sync_objects.h"
 #include "../renderer.h"
-#include "../voxel_scene.h"
+// VoxelScene Removed
 #include "../graphics/camera.h"
 #include "../graphics/material.h"
 #include "../graphics/mesh.h"
 #include "../graphics/animation.h"
 #include "../math/frustum.h"
-#include "../graphics/voxel_terrain.h"
+// Voxel Headers Removed
 #include "../ui/ui_layer.h"
 #include "../ui/bookmark.h"
 #include "input_manager.h"
@@ -88,21 +88,19 @@ namespace core {
         void loadBookmark(size_t index);
         void deleteBookmark(size_t index);
         void requestTerrainReset(int warmupRadius = 1);
-    void regenerateFiniteWorld(const terrain::TerrainConfig& config); // v3.8.3 Struct-based
-    void performRegeneration(); // v3.5.0 internal
+        void regenerateFiniteWorld(const terrain::TerrainConfig& config); // v3.8.3 Struct-based
+        void performRegeneration(); // v3.5.0 internal
 
 
     private:    // --- Core Systems ---
         SDLContext sdl_;
         std::unique_ptr<GraphicsContext> ctx_; // Wrapper for Vulkan Instance/Device
-// ...
-// ...
-    // Deferred Actions (v3.5.0 fix)
-    bool regenRequested_ = false;
-    terrain::TerrainConfig deferredConfig_; // v3.8.3 Consolidating deferred state
-    
-    float worldResolution_ = 1.0f; // v3.6.5 Current active resolution
-    int currentSeed_ = 12345;      // v3.7.8 Current active seed
+        // Deferred Actions (v3.5.0 fix)
+        bool regenRequested_ = false;
+        terrain::TerrainConfig deferredConfig_; // v3.8.3 Consolidating deferred state
+        
+        float worldResolution_ = 1.0f; // v3.6.5 Current active resolution
+        int currentSeed_ = 12345;      // v3.7.8 Current active seed
         std::unique_ptr<Swapchain> swapchain_;
         std::unique_ptr<CommandPool> commandPool_;
         std::unique_ptr<SyncObjects> syncObjects_;
@@ -110,10 +108,6 @@ namespace core {
         // Direct Management of Per-Frame Resources
         std::vector<VkCommandBuffer> commandBuffers_;
         VkDescriptorPool descriptorPool_ = VK_NULL_HANDLE;
-
-        // Sync Object Handles (Copied from SyncObjects for fast access, or just use SyncObjects directly)
-        // Kept simplier: use wrappers directly or mirror as vector<VkSemaphore> if needed.
-        // Let's use the SyncObjects wrapper methods in the loop instead of caching vectors of handles manually.
 
         // --- Core Engine Components ---
         graphics::Renderer renderer_;
@@ -126,7 +120,6 @@ namespace core {
         std::unique_ptr<graphics::Material> solidMaterial_;
         std::unique_ptr<graphics::Material> wireframeMaterial_;
         std::unique_ptr<graphics::Material> environmentMaterial_;  // NEW: Enhanced shaders
-        std::unique_ptr<graphics::Material> voxelMaterial_;  // v3.2.2.1-beta: Voxel terrain
         std::unique_ptr<graphics::Material> waterMaterial_;  // Transparent water
 
         // Meshes
@@ -135,15 +128,6 @@ namespace core {
         std::unique_ptr<graphics::Mesh> skyDomeMesh_;
         std::unique_ptr<graphics::Mesh> distanceMarkersMesh_;
         
-        // --- Voxel Terrain (v3.2.2.1-beta) ---
-        std::unique_ptr<graphics::VoxelTerrain> terrain_;
-        std::unique_ptr<VoxelScene> voxelScene_;
-        VoxelSceneStats voxelStats_{};
-        bool showVegetation_ = true;
-        std::string lastSurfaceInfo_;
-    bool lastSurfaceValid_ = false;
-    float lastSurfaceColor_[3] = {0.0f, 0.0f, 0.0f}; // Probe Color
-
         // --- State ---
         bool running_ = true;
         size_t currentFrame_ = 0;
@@ -151,67 +135,72 @@ namespace core {
 
         // --- UI & Logic State ---
 
-    // --- Animation ---
-    graphics::Animator gridAnimator_;     // Animates the grid
-    graphics::Animator axesAnimator_;     // Animates the axes
-    bool animationEnabled_ = false;       // Toggles animation on/off
-    
-    // --- Bookmarks (v3.2.2) ---
-    std::vector<ui::Bookmark> bookmarks_;
-    std::unique_ptr<ui::UiLayer> uiLayer_;
-    
-    // Safety & Stability (v3.3.0)
-    std::vector<VkFence> imagesInFlight_;
-    bool wireframeSupported_ = false;
+        // --- Animation ---
+        graphics::Animator gridAnimator_;     // Animates the grid
+        graphics::Animator axesAnimator_;     // Animates the axes
+        bool animationEnabled_ = false;       // Toggles animation on/off
+        
+        // --- Bookmarks (v3.2.2) ---
+        std::vector<ui::Bookmark> bookmarks_;
+        std::unique_ptr<ui::UiLayer> uiLayer_;
+        
+        // Safety & Stability (v3.3.0)
+        std::vector<VkFence> imagesInFlight_;
+        bool wireframeSupported_ = false;
 
-    // --- Finite Terrain System (v3.5.0) ---
-    std::unique_ptr<terrain::TerrainMap> finiteMap_;
-    std::unique_ptr<terrain::TerrainGenerator> finiteGenerator_;
-    std::unique_ptr<shape::TerrainRenderer> finiteRenderer_;
-    bool useFiniteWorld_ = true; // Toggle for v3.5.0 logic
+        // --- Finite Terrain System (v3.5.0) ---
+        // This is now the ONLY terrain system
+        std::unique_ptr<terrain::TerrainMap> finiteMap_;
+        std::unique_ptr<terrain::TerrainGenerator> finiteGenerator_;
+        std::unique_ptr<shape::TerrainRenderer> finiteRenderer_;
 
-    // Performance Settings
-    bool vsyncEnabled_ = false;  // Default: Off (High FPS)
-    bool limitIdleFps_ = true;   // Default: On (Save Power)
-    bool fpsCapEnabled_ = true;
-    float fpsCapTarget_ = 120.0f;
-    // Cap adicional quando VSync está OFF para evitar runaway de frames
-    float vsyncOffFpsCap_ = 240.0f;
-    InputManager inputManager_;
+        // Performance Settings
+        bool vsyncEnabled_ = false;  // Default: Off (High FPS)
+        bool limitIdleFps_ = true;   // Default: On (Save Power)
+        bool fpsCapEnabled_ = true;
+        float fpsCapTarget_ = 120.0f;
+        // Cap adicional quando VSync está OFF para evitar runaway de frames
+        float vsyncOffFpsCap_ = 240.0f;
+        InputManager inputManager_;
 
-    // Visualization State
-    bool showSlopeAnalysis_ = false; // v3.4.0
-    bool showDrainage_ = false;      // v3.6.1
-    float drainageIntensity_ = 0.5f; // v3.6.1
-    bool showErosion_ = false;       // v3.6.2
-    bool showWatershedVis_ = false;  // v3.6.3
-    bool showBasinOutlines_ = false; // v3.6.4
-    bool showSoilVis_ = false;       // v3.7.0
-    
-    //    // Soil Whitelist
-    bool soilHidroAllowed_ = true;
-    bool soilBTextAllowed_ = true;
-    bool soilArgilaAllowed_ = true;
-    bool soilBemDesAllowed_ = true;
-    bool soilRasoAllowed_ = true;
-    bool soilRochaAllowed_ = true;
+        // Visualization State
+        bool showSlopeAnalysis_ = false; // v3.4.0
+        bool showDrainage_ = false;      // v3.6.1
+        float drainageIntensity_ = 0.5f; // v3.6.1
+        bool showErosion_ = false;       // v3.6.2
+        bool showWatershedVis_ = false;  // v3.6.3
+        bool showBasinOutlines_ = false; // v3.6.4
+        bool showSoilVis_ = false;       // v3.7.0
+        
+        //    // Soil Whitelist
+        bool soilHidroAllowed_ = true;
+        bool soilBTextAllowed_ = true;
+        bool soilArgilaAllowed_ = true;
+        bool soilBemDesAllowed_ = true;
+        bool soilRasoAllowed_ = true;
+        bool soilRochaAllowed_ = true;
 
-    // Visual Controls
-    float sunAzimuth_ = 45.0f;
-    float sunElevation_ = 60.0f;
-    float fogDensity_ = 0.0005f; // v3.8.0 Tweaked for larger view
-    float lightIntensity_ = 1.0f; // v3.8.1
-    
-    // v3.8.3: Async Regeneration
-    std::future<void> regenFuture_;
-    std::atomic<bool> isRegenerating_{false};
-    std::unique_ptr<terrain::TerrainMap> backgroundMap_;
-    shape::TerrainRenderer::MeshData backgroundMeshData_;
-    terrain::TerrainConfig backgroundConfig_; // Store config for main thread use (Minimap)
-    
-    // v3.6.3 Deferred Update Flag
-    bool meshUpdateRequested_ = false;
-    void performMeshUpdate();
+        // Visual Controls
+        float sunAzimuth_ = 45.0f;
+        float sunElevation_ = 60.0f;
+        float fogDensity_ = 0.0005f; // v3.8.0 Tweaked for larger view
+        float lightIntensity_ = 1.0f; // v3.8.1
+        
+        // v3.8.3: Async Regeneration
+        std::future<void> regenFuture_;
+        std::atomic<bool> isRegenerating_{false};
+        std::unique_ptr<terrain::TerrainMap> backgroundMap_;
+        shape::TerrainRenderer::MeshData backgroundMeshData_;
+        terrain::TerrainConfig backgroundConfig_; // Store config for main thread use (Minimap)
+        
+        // v3.6.3 Deferred Update Flag
+        bool meshUpdateRequested_ = false;
+        void performMeshUpdate();
+
+        // Probe State (Restored)
+        std::string lastSurfaceInfo_;
+        bool lastSurfaceValid_ = false;
+        float lastSurfaceColor_[3] = {0.0f, 0.0f, 0.0f};
     };
 
 } // namespace core

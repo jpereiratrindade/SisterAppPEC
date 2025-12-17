@@ -1,4 +1,4 @@
-# SisterApp Engine v3.7.3 - Domain-Driven Design (DDD)
+# SisterApp Platform v3.8.3 - Domain-Driven Design (DDD)
 
 ## 1. Overview
 A partir da versão v3.5.0, a engine suporta **dois modos de operação distintos**:

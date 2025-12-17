@@ -5,6 +5,7 @@
 namespace math {
 
 struct Vec3 { float x,y,z; };
+struct Ray { Vec3 origin; Vec3 direction; };
 
 inline Vec3 operator-(const Vec3& a, const Vec3& b) { return {a.x-b.x, a.y-b.y, a.z-b.z}; }
 inline Vec3 operator+(const Vec3& a, const Vec3& b) { return {a.x+b.x, a.y+b.y, a.z+b.z}; }

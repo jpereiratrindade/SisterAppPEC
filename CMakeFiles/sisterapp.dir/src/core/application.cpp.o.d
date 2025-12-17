@@ -358,6 +358,10 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /usr/include/c++/15/bits/charconv.h \
  /usr/include/c++/15/bits/basic_string.tcc \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/camera.h \
+ /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
+ /usr/include/c++/15/bits/algorithmfwd.h \
+ /usr/include/c++/15/bits/uniform_int_dist.h \
+ /usr/include/c++/15/pstl/glue_algorithm_defs.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/animation.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/ui_layer.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/../terrain/terrain_map.h \
@@ -368,9 +372,12 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /usr/include/c++/15/bits/hashtable.h \
  /usr/include/c++/15/bits/hashtable_policy.h \
  /usr/include/c++/15/bits/enable_special_members.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/minimap.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/input_manager.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_generator.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/terrain_renderer.h \
+ /usr/include/c++/15/future /usr/include/c++/15/system_error \
+ /usr/include/c++/15/stdexcept /usr/include/c++/15/bits/atomic_futex.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/geometry_utils.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/watershed.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../imgui_backend.h \
@@ -379,7 +386,6 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /usr/include/c++/15/ios /usr/include/c++/15/bits/ios_base.h \
  /usr/include/c++/15/bits/locale_classes.h \
  /usr/include/c++/15/bits/locale_classes.tcc \
- /usr/include/c++/15/system_error /usr/include/c++/15/stdexcept \
  /usr/include/c++/15/streambuf /usr/include/c++/15/bits/streambuf.tcc \
  /usr/include/c++/15/bits/basic_ios.h \
  /usr/include/c++/15/bits/locale_facets.h /usr/include/c++/15/cwctype \
@@ -400,10 +406,6 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imconfig.h \
  /usr/include/assert.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/backends/imgui_impl_vulkan.h \
- /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
- /usr/include/c++/15/bits/algorithmfwd.h \
- /usr/include/c++/15/bits/uniform_int_dist.h \
- /usr/include/c++/15/pstl/glue_algorithm_defs.h \
  /usr/include/c++/15/cstring /usr/include/c++/15/iomanip \
  /usr/include/c++/15/locale \
  /usr/include/c++/15/bits/locale_facets_nonio.h \

@@ -5,8 +5,6 @@ file(REMOVE_RECURSE
   "shaders/environment.frag.spv"
   "shaders/environment.vert.spv"
   "shaders/red.frag.spv"
-  "shaders/voxel.frag.spv"
-  "shaders/voxel.vert.spv"
 )
 
 # Per-language clean rules from dependency scanning.

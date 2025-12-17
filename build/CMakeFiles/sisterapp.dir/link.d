@@ -8,7 +8,6 @@ sisterapp: \
   CMakeFiles/sisterapp.dir/src/shader_loader.cpp.o \
   CMakeFiles/sisterapp.dir/src/imgui_backend.cpp.o \
   CMakeFiles/sisterapp.dir/src/world.cpp.o \
-  CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o \
   CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o \
   CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o \
   CMakeFiles/sisterapp.dir/src/core/application.cpp.o \
@@ -19,7 +18,6 @@ sisterapp: \
   CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o \
   CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o \
   CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o \
-  CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o \
   CMakeFiles/sisterapp.dir/src/math/noise.cpp.o \
   CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o \
   CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o \
@@ -89,8 +87,6 @@ CMakeFiles/sisterapp.dir/src/imgui_backend.cpp.o:
 
 CMakeFiles/sisterapp.dir/src/world.cpp.o:
 
-CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o:
-
 CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o:
 
 CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o:
@@ -110,8 +106,6 @@ CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o:
 CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o:
 
 CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o:
-
-CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o:
 
 CMakeFiles/sisterapp.dir/src/math/noise.cpp.o:
 

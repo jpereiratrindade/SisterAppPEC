@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.11.13)  16 DEC 2025 11:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.11.13)  17 DEC 2025 10:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -484,6 +484,8 @@ Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
 )
+Package hyperref Info: Option `colorlinks' set `true' on input line 22.
+
 (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count320
@@ -494,24 +496,24 @@ Package babel Info: 'portuguese' activates 'portuges' shorthands.
 )
 \openout1 = `manual_tecnico_modelos.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 18.
-LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -569,7 +571,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 18.
+Package hyperref Info: Link coloring ON on input line 28.
 
 (./manual_tecnico_modelos.out) (./manual_tecnico_modelos.out)
 \@outlinefile=\write3
@@ -577,61 +579,61 @@ Package hyperref Info: Link coloring OFF on input line 18.
 
 \c@lstlisting=\count327
 
-(./manual_tecnico_modelos.toc)
+(./manual_tecnico_modelos.toc [1
+
+{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
+al/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}])
 \tf@toc=\write4
 \openout4 = `manual_tecnico_modelos.toc'.
 
- [1
-
-{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
-al/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
-Overfull \hbox (20.85492pt too wide) in paragraph at lines 49--58
+ [2]
+Overfull \hbox (20.85492pt too wide) in paragraph at lines 70--80
  [][] 
  []
 
-[2{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
-}] [3] [4]
+[3{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+}] [4] [5]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 148.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 148.
+(hyperref)                removing `math shift' on input line 179.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 148.
+(hyperref)                removing `subscript' on input line 179.
 
-[5]
-Overfull \hbox (5.74736pt too wide) in paragraph at lines 185--186
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 179.
+
+[6]
+Overfull \hbox (16.8521pt too wide) in paragraph at lines 205--205
+[]\T1/cmr/bx/n/14.4 Metodologia: Ru-ído Co-e-rente e Mé-tri-cas de Pai-sa-gem (
+v3.8.0). 
+ []
+
+[7]
+Overfull \hbox (5.74736pt too wide) in paragraph at lines 232--233
 []\T1/cmr/bx/n/12 Plano (0-3%): \T1/cmr/m/n/12 Hi-dro-mór-fico (Teal), B Tex-tu
 -ral (La-ranja), Ar-gila Ex-pan-siva (Roxo). 
  []
 
-[6] [7] (./manual_tecnico_modelos.aux)
+[8] [9] (./manual_tecnico_modelos.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-10-24>
  ***********
+Package rerunfilecheck Info: File `manual_tecnico_modelos.out' has not changed.
 
-
-Package rerunfilecheck Warning: File `manual_tecnico_modelos.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `manual_tecnico_modelos.out':
-(rerunfilecheck)             Before: EC18B76A4C1C2E047A8C4B2D22395AA8;5651
-(rerunfilecheck)             After:  1128948C95EDBE34C57E1B168BCFC122;5804.
+(rerunfilecheck)             Checksum: C11109362A0A0C97ADB0E7C9C7B59DF3;6839.
  ) 
 Here is how much of TeX's memory you used:
- 12835 strings out of 467538
- 197306 string characters out of 5419551
- 645250 words of memory out of 5000000
- 41545 multiletter control sequences out of 15000+600000
+ 12849 strings out of 467538
+ 197514 string characters out of 5419551
+ 645263 words of memory out of 5000000
+ 41554 multiletter control sequences out of 15000+600000
  643762 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,487b,557s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,487b,595s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><
@@ -653,10 +655,10 @@ f-dist/fonts/type1/public/cm-super/sfrm2074.pfb></usr/local/texlive/2025/texmf-
 dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/texmf-di
 st/fonts/type1/public/cm-super/sfti1200.pfb></usr/local/texlive/2025/texmf-dist
 /fonts/type1/public/cm-super/sftt1200.pfb>
-Output written on manual_tecnico_modelos.pdf (7 pages, 354287 bytes).
+Output written on manual_tecnico_modelos.pdf (9 pages, 365180 bytes).
 PDF statistics:
- 306 PDF objects out of 1000 (max. 8388607)
- 251 compressed objects within 3 object streams
- 47 named destinations out of 1000 (max. 500000)
- 209 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 334 PDF objects out of 1000 (max. 8388607)
+ 277 compressed objects within 3 object streams
+ 52 named destinations out of 1000 (max. 500000)
+ 241 words of extra memory for PDF output out of 10000 (max. 10000000)
 

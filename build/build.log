@@ -1,0 +1,84 @@
+[ 11%] Built target shaders_spirv
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o
+[ 18%] Building CXX object CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/camera.cpp:2:10: fatal error: voxel_terrain.h: Arquivo ou diretório inexistente
+    2 | #include "voxel_terrain.h"
+      |          ^~~~~~~~~~~~~~~~~
+compilation terminated.
+make[2]: *** [CMakeFiles/sisterapp.dir/build.make:331: CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o] Error 1
+make[2]: ** Esperando que outros processos terminem.
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:25:71: error: ‘Ray’ in namespace ‘math’ does not name a type
+   25 | bool raycastFiniteTerrain(const terrain::TerrainMap& map, const math::Ray& ray, float maxDist, float gridScale, int& outX, int& outZ, math::Vec3& outHitPos) {
+      |                                                                       ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In function ‘bool core::raycastFiniteTerrain(const terrain::TerrainMap&, const int&, float, float, int&, int&, math::Vec3&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:30:28: error: request for member ‘origin’ in ‘ray’, which is of non-class type ‘const int’
+   30 |         math::Vec3 p = ray.origin + ray.direction * t;
+      |                            ^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:30:41: error: request for member ‘direction’ in ‘ray’, which is of non-class type ‘const int’
+   30 |         math::Vec3 p = ray.origin + ray.direction * t;
+      |                                         ^~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::processEvents(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:353:28: error: ‘Ray’ is not a member of ‘math’
+  353 |                      math::Ray ray{camera_.getPosition(), rayDir};
+      |                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:357:60: error: ‘ray’ was not declared in this scope
+  357 |                      if (raycastFiniteTerrain(*finiteMap_, ray, 1000.0f * worldResolution_, worldResolution_, hitX, hitZ, hitPos)) {
+      |                                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:372:38: error: ‘lastSurfaceColor_’ was not declared in this scope; did you mean ‘SDL_SetSurfaceColorMod’?
+  372 |                          std::memset(lastSurfaceColor_, 0, 12);
+      |                                      ^~~~~~~~~~~~~~~~~
+      |                                      SDL_SetSurfaceColorMod
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:416:91: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  416 |                          float flux = finiteMap_->fluxMap()[hitZ * finiteMap_->getWidth() + hitX];
+      |                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:417:97: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  417 |                          int basinID = finiteMap_->watershedMap()[hitZ * finiteMap_->getWidth() + hitX];
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:427:26: error: ‘lastSurfaceInfo_’ was not declared in this scope
+  427 |                          lastSurfaceInfo_ = ss.str();
+      |                          ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:428:26: error: ‘lastSurfaceValid_’ was not declared in this scope
+  428 |                          lastSurfaceValid_ = true;
+      |                          ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::update(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:576:12: warning: unused variable ‘nowMs’ [-Wunused-variable]
+  576 |     Uint32 nowMs = SDL_GetTicks();
+      |            ^~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::render(size_t)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:760:39: error: ‘mvpArray’ was not declared in this scope
+  760 |          finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(),
+      |                                       ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:792:9: error: ‘lastSurfaceInfo_’ was not declared in this scope
+  792 |         lastSurfaceInfo_,
+      |         ^~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:793:9: error: ‘lastSurfaceValid_’ was not declared in this scope
+  793 |         lastSurfaceValid_,
+      |         ^~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:794:9: error: ‘lastSurfaceColor_’ was not declared in this scope; did you mean ‘SDL_SetSurfaceColorMod’?
+  794 |         lastSurfaceColor_,
+      |         ^~~~~~~~~~~~~~~~~
+      |         SDL_SetSurfaceColorMod
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:675:9: warning: unused variable ‘visibleCount’ [-Wunused-variable]
+  675 |     int visibleCount = 0;
+      |         ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:676:9: warning: unused variable ‘totalChunks’ [-Wunused-variable]
+  676 |     int totalChunks = 0;
+      |         ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:677:9: warning: unused variable ‘pendingTasks’ [-Wunused-variable]
+  677 |     int pendingTasks = 0;
+      |         ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:678:9: warning: unused variable ‘pendingVeg’ [-Wunused-variable]
+  678 |     int pendingVeg = 0;
+      |         ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::requestTerrainReset(int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:845:9: error: ‘voxelScene_’ was not declared in this scope
+  845 |     if (voxelScene_) {
+      |         ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::performRegeneration()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:937:59: warning: explicit by-copy capture of ‘this’ with by-copy capture default only available with ‘-std=c++20’ or ‘-std=gnu++20’ [-Wc++20-extensions]
+  937 |         regenFuture_ = std::async(std::launch::async, [=, this]() {
+      |                                                           ^~~~
+make[2]: *** [CMakeFiles/sisterapp.dir/build.make:191: CMakeFiles/sisterapp.dir/src/core/application.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2

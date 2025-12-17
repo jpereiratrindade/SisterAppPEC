@@ -8,9 +8,6 @@
 
 namespace graphics {
 
-// Forward declaration
-class VoxelTerrain;
-
 enum class CameraMode {
     Orbital,     // Orbit around a target (existing mode)
     FreeFlight   // Free movement like FPS game
@@ -77,9 +74,9 @@ public:
     void setYaw(float yaw) { yaw_ = yaw; dirtyView_ = true; }
     void setPitch(float pitch) { pitch_ = std::clamp(pitch, -89.0f, 89.0f); dirtyView_ = true; }
 
-    // Player physics (for voxel terrain)
+    // Player physics (for free flight / voxel terrain legacy)
     void applyGravity(float dt);
-    void checkTerrainCollision(VoxelTerrain& terrain);
+    // checkTerrainCollision removed
     void jump();
     bool isOnGround() const { return onGround_; }
 

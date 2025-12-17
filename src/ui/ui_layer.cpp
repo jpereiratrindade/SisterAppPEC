@@ -78,8 +78,8 @@ void UiLayer::drawStats(UiFrameContext& ctx) {
         auto pos = ctx.camera.getPosition();
         ImGui::Text("Pos: (%.1f, %.1f, %.1f)", pos.x, pos.y, pos.z);
         ImGui::Separator();
-        ImGui::Text("Chunks: %d visible / %d total", ctx.visibleChunks, ctx.totalChunks);
-        ImGui::Text("Pending Tasks: %d (veg: %d)", ctx.pendingTasks, ctx.pendingVeg);
+        ImGui::Text("Pos: (%.1f, %.1f, %.1f)", pos.x, pos.y, pos.z);
+        // Stats removed
         
         if (ctx.lastSurfaceValid) {
             ImGui::Separator();
@@ -146,102 +146,9 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
                     ctx.fpsCapTarget = cap;
                 }
                 ImGui::EndDisabled();
-                if (ctx.terrain) {
-                    ImGui::Separator();
-                    int viewDist = ctx.terrain->viewDistance();
-                    if (ImGui::SliderInt("Chunk View Distance", &viewDist, 4, 16)) {
-                        ctx.terrain->setViewDistance(viewDist);
-                    }
-                    int chunkBudget = ctx.terrain->chunkBudgetPerFrame();
-                    if (ImGui::SliderInt("Chunks/Frame Budget", &chunkBudget, 1, 24)) {
-                        ctx.terrain->setChunkBudgetPerFrame(chunkBudget);
-                    }
-                    int meshBudget = ctx.terrain->meshBudgetPerFrame();
-                    if (ImGui::SliderInt("Meshes/Frame Budget", &meshBudget, 1, 6)) {
-                        ctx.terrain->setMeshBudgetPerFrame(meshBudget);
-                    }
-                    constexpr std::array<const char*, 5> kTerrainModelOptions = {
-                        "Plano com ondulações",
-                        "Suave ondulado",
-                        "Ondulado",
-                        "Montanhoso (Steep)"
-                    };
-                    int terrainModel = static_cast<int>(ctx.terrain->terrainModel());
-                    if (ImGui::Combo("Modelo de Terreno", &terrainModel, kTerrainModelOptions.data(), static_cast<int>(kTerrainModelOptions.size()))) {
-                        ctx.terrain->setTerrainModel(static_cast<graphics::TerrainModel>(terrainModel));
-                        if (callbacks_.requestTerrainReset) {
-                            callbacks_.requestTerrainReset(1);
-                        }
-                    }
-
-
-                    bool veg = ctx.terrain->vegetationEnabled();
-                    if (ImGui::Checkbox("Show Vegetation", &veg)) {
-                        ctx.terrain->setVegetationEnabled(veg);
-                        ctx.showVegetation = veg;
-                    }
-                    float vegDensity = ctx.terrain->vegetationDensity();
-                    if (ImGui::SliderFloat("Vegetation Density", &vegDensity, 0.0f, 2.0f, "%.2f")) {
-                        ctx.terrain->setVegetationDensity(vegDensity);
-                    }
-                    bool requestReset = false;
-                    // V3.4.0: Resilience UI removed. Replaced with Slope Analysis Tools.
-                    ImGui::Separator();
-                    ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Slope Analysis (v3.4)");
-                    
-                    graphics::SlopeConfig currentSlope = ctx.terrain->getSlopeConfig();
-                    bool slopeChanged = false;
-                    
-                    // Flat Range: 0 to FlatMax
-                    if (ImGui::SliderFloat("Flat Limit (%)", &currentSlope.flatMaxPct, 0.0f, 20.0f, "%.1f %%")) {
-                        if (currentSlope.flatMaxPct > currentSlope.gentleMaxPct) currentSlope.gentleMaxPct = currentSlope.flatMaxPct;
-                        slopeChanged = true;
-                    }
-                    
-                    // Gentle Range: FlatMax to GentleMax
-                    if (ImGui::SliderFloat("Gentle Limit (%)", &currentSlope.gentleMaxPct, currentSlope.flatMaxPct, 60.0f, "%.1f %%")) {
-                         if (currentSlope.gentleMaxPct > currentSlope.onduladoMaxPct) currentSlope.onduladoMaxPct = currentSlope.gentleMaxPct;
-                         if (currentSlope.gentleMaxPct < currentSlope.flatMaxPct) currentSlope.flatMaxPct = currentSlope.gentleMaxPct;
-                         slopeChanged = true;
-                    }
-
-                    // Rolling/Ondulado Range: GentleMax to OnduladoMax
-                    if (ImGui::SliderFloat("Rolling Limit (%)", &currentSlope.onduladoMaxPct, currentSlope.gentleMaxPct, 80.0f, "%.1f %%")) {
-                        if (currentSlope.onduladoMaxPct > currentSlope.steepMaxPct) currentSlope.steepMaxPct = currentSlope.onduladoMaxPct;
-                        if (currentSlope.onduladoMaxPct < currentSlope.gentleMaxPct) currentSlope.gentleMaxPct = currentSlope.onduladoMaxPct;
-                        slopeChanged = true;
-                    }
-
-                    // Steep Range: OnduladoMax to SteepMax
-                    if (ImGui::SliderFloat("Steep Limit (%)", &currentSlope.steepMaxPct, currentSlope.onduladoMaxPct, 100.0f, "%.1f %%")) {
-                        if (currentSlope.steepMaxPct < currentSlope.onduladoMaxPct) currentSlope.onduladoMaxPct = currentSlope.steepMaxPct;
-                        slopeChanged = true;
-                    }
-                    
-                    ImGui::TextDisabled("Mountain: > %.1f %%", currentSlope.steepMaxPct);
-
-                    if (slopeChanged) {
-                        ctx.terrain->setSlopeConfig(currentSlope);
-                    }
-                    
-                    // Persistence
-                    ImGui::Separator();
-                    if (ImGui::Button("Save Slope Prefs")) {
-                        // We need access to Preferences instance. Since it's a singleton, we can include the header.
-                        // Assuming valid include.
-                         if (callbacks_.savePreferences) callbacks_.savePreferences();
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Load Slope Prefs")) {
-                         if (callbacks_.loadPreferences) callbacks_.loadPreferences();
-                    }
-
-                    if (ImGui::Button("Regenerate Terrain")) {
-                        if (callbacks_.requestTerrainReset) {
-                            callbacks_.requestTerrainReset(1);
-                        }
-                    }
-                }
+                ImGui::EndDisabled();
+                // Voxel Terrain Settings Removed
+                ImGui::EndMenu();
                 ImGui::EndMenu();
             }
             ImGui::Separator();
@@ -359,24 +266,10 @@ void UiLayer::drawCamera(UiFrameContext& ctx) {
             ctx.camera.addRoll(rollDeg);
         }
 
-        if (ctx.terrain) {
-            bool veg = ctx.terrain->vegetationEnabled();
-            if (ImGui::Checkbox("Show Vegetation", &veg)) {
-                ctx.terrain->setVegetationEnabled(veg);
-                ctx.showVegetation = veg;
-            }
-            float vegDensity = ctx.terrain->vegetationDensity();
-            if (ImGui::SliderFloat("Vegetation Density", &vegDensity, 0.0f, 2.0f, "%.2f")) {
-                ctx.terrain->setVegetationDensity(vegDensity);
-            }
-            if (ctx.lastSurfaceValid) {
-        // Reuse string or update it if we did the probe logic here (it's done in App)
-        // Actually, Application.cpp likely formats this string. Let's check App.
-        ImGui::Text("Surface: %s", ctx.lastSurfaceInfo.c_str());
-    } else {
-        ImGui::Text("Surface: -");
-    }
-            ImGui::TextDisabled("Click (LMB) to probe surface type");
+        if (ctx.lastSurfaceValid) {
+            ImGui::Text("Surface: %s", ctx.lastSurfaceInfo.c_str());
+        } else {
+            ImGui::Text("Surface: -");
         }
     }
 
@@ -540,7 +433,7 @@ void UiLayer::applyTheme(Theme theme) {
 }
 
 void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
-    if (ctx.terrain) return; // Only for Finite World mode
+    // Always draw for Finite World
 
     ImGui::SetNextWindowPos(ImVec2(10, 200), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(250, 260), ImGuiCond_FirstUseEver);

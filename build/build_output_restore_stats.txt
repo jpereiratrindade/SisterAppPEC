@@ -1,0 +1,66 @@
+[ 14%] Built target shaders_spirv
+[ 17%] Building CXX object CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawMenuBar(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:173:26: warning: unused variable ‘requestReset’ [-Wunused-variable]
+  173 |                     bool requestReset = false;
+      |                          ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawFiniteTools(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:538:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  538 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:538:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘4.0000000000000002e-1’ to ‘4.00000006e-1f’ [-Wfloat-conversion]
+  538 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:538:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  538 |              ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:539:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  539 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:539:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  539 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:539:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  539 |              ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:540:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  540 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:540:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  540 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:540:48: warning: conversion from ‘double’ to ‘float’ changes value from ‘2.0000000000000001e-1’ to ‘2.00000003e-1f’ [-Wfloat-conversion]
+  540 |              ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
+      |                                                ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:541:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  541 |              ImGui::TextColored(ImVec4(0.8,0.8,0.0,1), "20-45%%: Steep");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:541:44: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  541 |              ImGui::TextColored(ImVec4(0.8,0.8,0.0,1), "20-45%%: Steep");
+      |                                            ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:543:40: warning: conversion from ‘double’ to ‘float’ changes value from ‘8.0000000000000004e-1’ to ‘8.00000012e-1f’ [-Wfloat-conversion]
+  543 |              ImGui::TextColored(ImVec4(0.8,0.0,0.0,1), ">75%%: Extreme");
+      |                                        ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:624:20: warning: unused variable ‘renderDist’ [-Wunused-variable]
+  624 |              float renderDist = (0.01f - ctx.fogDensity) * 10000.0f; // Approx mapping
+      |                    ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:709:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  709 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:710:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  710 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:714:63: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  714 |                 ctx.camera.setDistance(ctx.finiteMap->getWidth() * 0.8f); // Fit view
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:723:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  723 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:724:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  724 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp:633:21: warning: unused variable ‘terrainTypes’ [-Wunused-variable]
+  633 |         const char* terrainTypes[] = { "Hills", "Mountains", "Plains", "Valleys" };
+      |                     ^~~~~~~~~~~~
+[ 19%] Linking CXX executable sisterapp
+[100%] Built target sisterapp

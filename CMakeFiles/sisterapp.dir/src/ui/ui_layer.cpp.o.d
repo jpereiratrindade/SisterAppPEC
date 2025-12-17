@@ -232,7 +232,16 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_locale.h \
  /usr/include/SDL2/SDL_misc.h /usr/include/c++/15/array \
  /usr/include/c++/15/compare /usr/include/c++/15/initializer_list \
- /usr/include/c++/15/bits/range_access.h \
+ /usr/include/c++/15/bits/range_access.h /usr/include/c++/15/algorithm \
+ /usr/include/c++/15/bits/stl_algo.h \
+ /usr/include/c++/15/bits/algorithmfwd.h \
+ /usr/include/c++/15/bits/stl_heap.h \
+ /usr/include/c++/15/bits/uniform_int_dist.h \
+ /usr/include/c++/15/bits/stl_tempbuf.h /usr/include/c++/15/new \
+ /usr/include/c++/15/bits/exception.h \
+ /usr/include/c++/15/bits/stl_construct.h \
+ /usr/include/c++/15/pstl/glue_algorithm_defs.h \
+ /usr/include/c++/15/pstl/execution_defs.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../graphics/../math/math_types.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../graphics/voxel_terrain.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../graphics/../core/graphics_context.h \
@@ -257,10 +266,8 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /usr/include/SDL2/SDL_vulkan.h /usr/include/c++/15/vector \
  /usr/include/c++/15/bits/allocator.h \
  /usr/include/c++/15/x86_64-redhat-linux/bits/c++allocator.h \
- /usr/include/c++/15/bits/new_allocator.h /usr/include/c++/15/new \
- /usr/include/c++/15/bits/exception.h \
+ /usr/include/c++/15/bits/new_allocator.h \
  /usr/include/c++/15/bits/memoryfwd.h \
- /usr/include/c++/15/bits/stl_construct.h \
  /usr/include/c++/15/bits/stl_uninitialized.h \
  /usr/include/c++/15/ext/alloc_traits.h \
  /usr/include/c++/15/bits/alloc_traits.h \
@@ -275,7 +282,7 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /usr/include/c++/15/bits/memory_resource.h /usr/include/c++/15/cstddef \
  /usr/include/c++/15/bits/uses_allocator.h \
  /usr/include/c++/15/bits/uses_allocator_args.h /usr/include/c++/15/tuple \
- /usr/include/c++/15/memory /usr/include/c++/15/bits/stl_tempbuf.h \
+ /usr/include/c++/15/memory \
  /usr/include/c++/15/bits/stl_raw_storage_iter.h \
  /usr/include/c++/15/bits/align.h /usr/include/c++/15/bits/unique_ptr.h \
  /usr/include/c++/15/bits/shared_ptr.h /usr/include/c++/15/iosfwd \
@@ -308,7 +315,6 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /usr/include/c++/15/bits/atomic_lockfree_defines.h \
  /usr/include/c++/15/backward/auto_ptr.h \
  /usr/include/c++/15/pstl/glue_memory_defs.h \
- /usr/include/c++/15/pstl/execution_defs.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../graphics/mesh.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../graphics/../resources/buffer.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../graphics/../math/frustum.h \
@@ -321,9 +327,8 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /usr/include/c++/15/bits/erase_if.h /usr/include/c++/15/atomic \
  /usr/include/c++/15/cstdint /usr/include/c++/15/queue \
  /usr/include/c++/15/deque /usr/include/c++/15/bits/stl_deque.h \
- /usr/include/c++/15/bits/deque.tcc /usr/include/c++/15/bits/stl_heap.h \
- /usr/include/c++/15/bits/stl_queue.h /usr/include/c++/15/set \
- /usr/include/c++/15/bits/stl_set.h \
+ /usr/include/c++/15/bits/deque.tcc /usr/include/c++/15/bits/stl_queue.h \
+ /usr/include/c++/15/set /usr/include/c++/15/bits/stl_set.h \
  /usr/include/c++/15/bits/stl_multiset.h /usr/include/c++/15/thread \
  /usr/include/c++/15/bits/std_thread.h \
  /usr/include/c++/15/bits/this_thread_sleep.h \
@@ -358,6 +363,7 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /usr/include/c++/15/bits/hashtable.h \
  /usr/include/c++/15/bits/hashtable_policy.h \
  /usr/include/c++/15/bits/enable_special_members.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/minimap.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../imgui_backend.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../init_sdl.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/backends/imgui_impl_vulkan.h \
@@ -365,10 +371,10 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imconfig.h \
  /usr/include/assert.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../terrain/hydrology_report.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../terrain/landscape_metrics.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../terrain/watershed.h \
- /usr/include/c++/15/iostream /usr/include/c++/15/ostream \
- /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/ios \
- /usr/include/c++/15/bits/ios_base.h \
+ /usr/include/c++/15/fstream /usr/include/c++/15/istream \
+ /usr/include/c++/15/ios /usr/include/c++/15/bits/ios_base.h \
  /usr/include/c++/15/bits/locale_classes.h \
  /usr/include/c++/15/bits/locale_classes.tcc \
  /usr/include/c++/15/system_error /usr/include/c++/15/stdexcept \
@@ -380,7 +386,10 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /usr/include/c++/15/bits/streambuf_iterator.h \
  /usr/include/c++/15/x86_64-redhat-linux/bits/ctype_inline.h \
  /usr/include/c++/15/bits/locale_facets.tcc \
- /usr/include/c++/15/bits/basic_ios.tcc \
- /usr/include/c++/15/bits/ostream.tcc /usr/include/c++/15/istream \
- /usr/include/c++/15/bits/istream.tcc /usr/include/c++/15/utility \
- /usr/include/c++/15/bits/stl_relops.h
+ /usr/include/c++/15/bits/basic_ios.tcc /usr/include/c++/15/ostream \
+ /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/bits/ostream.tcc \
+ /usr/include/c++/15/bits/istream.tcc /usr/include/c++/15/bits/codecvt.h \
+ /usr/include/c++/15/x86_64-redhat-linux/bits/basic_file.h \
+ /usr/include/c++/15/x86_64-redhat-linux/bits/c++io.h \
+ /usr/include/c++/15/bits/fstream.tcc /usr/include/c++/15/iostream \
+ /usr/include/c++/15/utility /usr/include/c++/15/bits/stl_relops.h

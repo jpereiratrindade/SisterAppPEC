@@ -29,7 +29,6 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/material.cpp" "CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o.d"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/mesh.cpp" "CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o.d"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/shader.cpp" "CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o.d"
-  "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp" "CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o.d"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/imgui_backend.cpp" "CMakeFiles/sisterapp.dir/src/imgui_backend.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/imgui_backend.cpp.o.d"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/init_sdl.cpp" "CMakeFiles/sisterapp.dir/src/init_sdl.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/init_sdl.cpp.o.d"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/math/frustum.cpp" "CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o.d"
@@ -45,7 +44,6 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/watershed.cpp" "CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o.d"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/minimap.cpp" "CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o.d"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp" "CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o.d"
-  "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/voxel_scene.cpp" "CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o.d"
   "/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/world.cpp" "CMakeFiles/sisterapp.dir/src/world.cpp.o" "gcc" "CMakeFiles/sisterapp.dir/src/world.cpp.o.d"
   "" "sisterapp" "gcc" "CMakeFiles/sisterapp.dir/link.d"
   )

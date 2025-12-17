@@ -1,5 +1,16 @@
 # Changelog
 
+## [v3.8.4] - 2025-12-17
+### Removed
+-   **Voxel Terrain System**: Permanently removed the legacy Voxel engine to focus exclusively on the high-fidelity Finite World implementation.
+    -   Deleted `src/graphics/voxel_terrain.*` and `src/voxel_scene.*`.
+    -   Removed Voxel shaders and related build configurations.
+-   **Legacy Code**: Cleaned up `Application` and `Camera` classes, removing unused variables and methods.
+
+### Changed
+-   **Documentation**: Updated Technical Manual and README to reflect the platform's scientific focus.
+-   **Camera**: Refactored collision logic to be independent of voxel structures.
+
 ## [v3.8.3] - 2025-12-16
 ### Added
 -   **Experimental Blend Terrain (Finite World)**: Ported the multi-frequency blending model from Voxel mode to Finite World generator.

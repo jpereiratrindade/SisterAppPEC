@@ -6,13 +6,13 @@ SisterApp é uma **Plataforma de Ecologia Computacional** de alto desempenho (C+
 
 Desenvolvido por **José Pedro Trindade**.
 
-![Version](https://img.shields.io/badge/version-3.6.3-orange.svg)
+![Version](https://img.shields.io/badge/version-3.8.4-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
 ![Status](https://img.shields.io/badge/Status-Stable-green.svg)
 
 ---
 
-## 🎯 What's New (v3.8.3)
+## 🎯 What's New (v3.8.4)
 
 -   **Computational Ecology Platform**: Complete rebranding from "Engine" to "Scientific Platform".
 -   **Interactive Minimap**: Real-time navigation aid with peak detection (symbols), zoom, and click-to-teleport.

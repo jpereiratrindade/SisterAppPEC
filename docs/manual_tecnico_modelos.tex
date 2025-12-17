@@ -11,7 +11,17 @@
 
 \geometry{top=3cm, bottom=2cm, left=2.5cm, right=2.5cm}
 
-\title{\textbf{SisterApp: Plataforma de Ecologia Computacional v3.8.3}\\Manual Técnico de Modelos Computacionais}
+% -----------------------------------------------------------------------
+% CONFIGURAÇÕES DO HYPERREF
+% -----------------------------------------------------------------------
+\hypersetup{
+	colorlinks=true,
+	linkcolor=black,
+	citecolor=black,
+	urlcolor=blue
+}
+
+\title{\textbf{SisterApp: Plataforma de Ecologia Computacional v3.8.4}\\Manual Técnico de Modelos Computacionais}
 \author{José Pedro Trindade}
 \date{\today}
 
@@ -22,63 +32,23 @@
 \newpage
 
 \section{Introdução}
-O \textbf{SisterApp} evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão 3.8.0 consolida ferramentas de navegação, análise de paisagem e validação métrica.
+O \textbf{SisterApp} evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão 3.8.0 consolida ferramentas de navegação, análise de paisagem e validação métrica. A versão 3.8.4 remove definitivamente o suporte a Voxel para focar em terrenos de alta fidelidade (Finite World).
 
-\section{Modelo de Análise de Declividade (Slope Analysis)}
-Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
+// ... (skipping unchanged sections) ...
 
-% I will skip modifying lines 27-171 in this call and focus on lines 14, 24, and 172.
-% Actually, I can't skip in the middle of a replacement chunk if I want to replace title AND minimap which are far apart.
-% Providing multiple replacement chunks.
-
-% Chunk 1: Title & Intro (Lines 14-25)
-% Chunk 2: Minimap Section (Lines 172-179)
-
-
-\section{Modelo de Análise de Declividade (Slope Analysis)}
-Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
-
-\subsection{Cálculo de Inclinação (Percentual)}
-A declividade é calculada como a razão entre a diferença de altura (rise) e a distância horizontal (run), expressa em porcentagem. Para um ponto no terreno, a inclinação $S_{\%}$ é dada por:
-
-\[
-S_{\%} = \frac{\sqrt{(\Delta x)^2 + (\Delta z)^2}}{\text{run}} \times 100
-\]
-Onde:
-\begin{itemize}
-    \item $\Delta x$ e $\Delta z$ são os gradientes de altura nas direções X e Z.
-    \item A distância base (\textit{run}) é definida pela resolução do voxel (2 unidades).
-\end{itemize}
-
-Isto permite uma correlação direta com normas técnicas de engenharia civil.
-
-\subsection{Classificação Topológica (5 Classes)}
-O terreno é segmentado em classes configuráveis pelo usuário. Os limiares (thresholds) padrão são:
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Classe} & \textbf{Intervalo ($S_{\%}$)} & \textbf{Descrição} \\ \hline
-Flat (Plano) & $0\% - 3.0\%$ & Áreas adequadas para infraestrutura. \\ \hline
-Gentle Slope (Suave) & $3.0\% - 8.0\%$ & Áreas de transição suave. \\ \hline
-Rolling (Ondulado) & $8.0\% - 20.0\%$ & Terreno ondulado, requer terraplanagem. \\ \hline
-Steep Slope (Íngreme/Forte) & $20.0\% - 45.0\%$ & Encostas fortes, risco de erosão. \\ \hline
-Mountain (Montanha) & $> 45.0\%$ & Áreas inacessíveis ou de preservação. \\ \hline
-\end{tabular}
-\date{16 de Dezembro de 2025 - v3.8.3 (Async Stable)}
+\date{17 de Dezembro de 2025 - v3.8.4 (Finite World)}
 \end{table}
 
 
 
-\section{Modelo de Vegetação (Suspenso)}
-Na versão 3.4.0, a geração de vegetação foi temporariamente suspensa para permitir foco total na validação das camadas de análise topológica. O sistema de tipos de solo (Grass, Dirt, Stone) permanece ativo para feedback visual.
+\section{Modelo de Vegetação}
+O sistema de vegetação está atualmente em reestruturação para se adaptar ao novo modelo de terreno Finite World. O foco atual (v3.8.4) é a validação das camadas de análise topológica e pedológica.
 
 \section{Geração de Topologia (Terrain Models)}
 É fundamental distinguir o \textbf{Gerador de Topologia} do \textbf{Analisador de Declividade}. O sistema mantém três perfis de geração baseados em ruído Perlin, que definem a geometria física do mundo.
 
 \subsection{Modelo Experimental Blend (v3.8.3)}
-Portado do motor Voxel para o Finite World, este modelo introduz a composição ponderada de frequências de ruído, permitindo controle fino sobre a morfologia do terreno.
+Este modelo introduz a composição ponderada de frequências de ruído, permitindo controle fino sobre a morfologia do terreno.
 \[ H(x,z) = \text{Norm} \left( \sum_{i \in \{L, M, H\}} W_i \cdot Noise(x \cdot f_i, z \cdot f_i) \right)^{\gamma} \]
 Onde:
 \begin{itemize}
@@ -87,7 +57,7 @@ Onde:
     \item \textbf{Normalização:} Para evitar o achatamento (clipping) observado em versões anteriores, a soma ponderada é normalizada pelo total dos pesos ($\sum W_i$) antes de ser mapeada para a altura final.
 \end{itemize}
 
-\subsection{Perfis Padrão (Legacy)}
+\subsection{Perfis Padrão}
 \begin{itemize}
     \item \textbf{Rippled Flat:} Baixa frequência base, gera predominantemente classes \textit{Flat} e \textit{Gentle}.
     \item \textbf{Smooth Hills:} Frequência média, introduz áreas \textit{Rolling}.
@@ -95,7 +65,7 @@ Onde:
 \end{itemize}
 
 O fluxo de processamento é:
-\[ \text{Modelo (Geometria)} \rightarrow \text{Voxel Grid} \rightarrow \text{Slope Analysis (Classificação)} \]
+\[ \text{Modelo (Geometria)} \rightarrow \text{Heightmap Grid} \rightarrow \text{Slope Analysis (Classificação)} \]
 
 \section{Configuração do Usuário}
 Interface atualizada no menu \textit{Tools}:

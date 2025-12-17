@@ -156,24 +156,10 @@ CMakeFiles/sisterapp.dir/src/world.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/world.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/world.cpp -o CMakeFiles/sisterapp.dir/src/world.cpp.s
 
-CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o: CMakeFiles/sisterapp.dir/flags.make
-CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o: src/voxel_scene.cpp
-CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o -MF CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o.d -o CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/voxel_scene.cpp
-
-CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/voxel_scene.cpp > CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.i
-
-CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/voxel_scene.cpp -o CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.s
-
 CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o: src/core/graphics_context.cpp
 CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o -MF CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o.d -o CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/graphics_context.cpp
 
 CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.i: cmake_force
@@ -187,7 +173,7 @@ CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o: src/core/input_manager.cpp
 CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o -MF CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o.d -o CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/input_manager.cpp
 
 CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.i: cmake_force
@@ -201,7 +187,7 @@ CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/core/application.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/core/application.cpp.o: src/core/application.cpp
 CMakeFiles/sisterapp.dir/src/core/application.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/core/application.cpp.o -MF CMakeFiles/sisterapp.dir/src/core/application.cpp.o.d -o CMakeFiles/sisterapp.dir/src/core/application.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp
 
 CMakeFiles/sisterapp.dir/src/core/application.cpp.i: cmake_force
@@ -215,7 +201,7 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o: src/core/preferences.cpp
 CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o -MF CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o.d -o CMakeFiles/sisterapp.dir/src/core/preferences.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/preferences.cpp
 
 CMakeFiles/sisterapp.dir/src/core/preferences.cpp.i: cmake_force
@@ -229,7 +215,7 @@ CMakeFiles/sisterapp.dir/src/core/preferences.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o: src/core/swapchain.cpp
 CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o -MF CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o.d -o CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/swapchain.cpp
 
 CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.i: cmake_force
@@ -243,7 +229,7 @@ CMakeFiles/sisterapp.dir/src/core/swapchain.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o: src/core/command_pool.cpp
 CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o -MF CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o.d -o CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/command_pool.cpp
 
 CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.i: cmake_force
@@ -257,7 +243,7 @@ CMakeFiles/sisterapp.dir/src/core/command_pool.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o: src/core/sync_objects.cpp
 CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o -MF CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o.d -o CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/sync_objects.cpp
 
 CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.i: cmake_force
@@ -271,7 +257,7 @@ CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o: src/resources/buffer.cpp
 CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o -MF CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o.d -o CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/resources/buffer.cpp
 
 CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.i: cmake_force
@@ -285,7 +271,7 @@ CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o: src/graphics/mesh.cpp
 CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o -MF CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o.d -o CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/mesh.cpp
 
 CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.i: cmake_force
@@ -299,7 +285,7 @@ CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o: src/graphics/geometry_utils.cpp
 CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o -MF CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o.d -o CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp
 
 CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.i: cmake_force
@@ -310,24 +296,10 @@ CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/geometry_utils.cpp -o CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.s
 
-CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o: CMakeFiles/sisterapp.dir/flags.make
-CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o: src/graphics/voxel_terrain.cpp
-CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o -MF CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o.d -o CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp
-
-CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp > CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.i
-
-CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp -o CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.s
-
 CMakeFiles/sisterapp.dir/src/math/noise.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/math/noise.cpp.o: src/math/noise.cpp
 CMakeFiles/sisterapp.dir/src/math/noise.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/sisterapp.dir/src/math/noise.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/sisterapp.dir/src/math/noise.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/math/noise.cpp.o -MF CMakeFiles/sisterapp.dir/src/math/noise.cpp.o.d -o CMakeFiles/sisterapp.dir/src/math/noise.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/math/noise.cpp
 
 CMakeFiles/sisterapp.dir/src/math/noise.cpp.i: cmake_force
@@ -341,7 +313,7 @@ CMakeFiles/sisterapp.dir/src/math/noise.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o: src/math/frustum.cpp
 CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o -MF CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o.d -o CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/math/frustum.cpp
 
 CMakeFiles/sisterapp.dir/src/math/frustum.cpp.i: cmake_force
@@ -355,7 +327,7 @@ CMakeFiles/sisterapp.dir/src/math/frustum.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o: src/graphics/camera.cpp
 CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o -MF CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o.d -o CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/camera.cpp
 
 CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.i: cmake_force
@@ -369,7 +341,7 @@ CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o: src/graphics/shader.cpp
 CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o -MF CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o.d -o CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/shader.cpp
 
 CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.i: cmake_force
@@ -383,7 +355,7 @@ CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o: src/graphics/material.cpp
 CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o -MF CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o.d -o CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/material.cpp
 
 CMakeFiles/sisterapp.dir/src/graphics/material.cpp.i: cmake_force
@@ -397,7 +369,7 @@ CMakeFiles/sisterapp.dir/src/graphics/material.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o: src/graphics/animation.cpp
 CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o -MF CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o.d -o CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/animation.cpp
 
 CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.i: cmake_force
@@ -411,7 +383,7 @@ CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: src/ui/ui_layer.cpp
 CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o -MF CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o.d -o CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp
 
 CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.i: cmake_force
@@ -422,10 +394,24 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/ui_layer.cpp -o CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.s
 
+CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o: CMakeFiles/sisterapp.dir/flags.make
+CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o: src/ui/minimap.cpp
+CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o -MF CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o.d -o CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/minimap.cpp
+
+CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/minimap.cpp > CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.i
+
+CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/minimap.cpp -o CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.s
+
 CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o: imgui/imgui.cpp
 CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wno-conversion -Wno-sign-conversion -MD -MT CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o -MF CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o.d -o CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imgui.cpp
 
 CMakeFiles/sisterapp.dir/imgui/imgui.cpp.i: cmake_force
@@ -439,7 +425,7 @@ CMakeFiles/sisterapp.dir/imgui/imgui.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o: imgui/imgui_demo.cpp
 CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wno-conversion -Wno-sign-conversion -MD -MT CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o -MF CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o.d -o CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imgui_demo.cpp
 
 CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.i: cmake_force
@@ -453,7 +439,7 @@ CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o: imgui/imgui_draw.cpp
 CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wno-conversion -Wno-sign-conversion -MD -MT CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o -MF CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o.d -o CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imgui_draw.cpp
 
 CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.i: cmake_force
@@ -467,7 +453,7 @@ CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o: imgui/imgui_tables.cpp
 CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wno-conversion -Wno-sign-conversion -MD -MT CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o -MF CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o.d -o CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imgui_tables.cpp
 
 CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.i: cmake_force
@@ -481,7 +467,7 @@ CMakeFiles/sisterapp.dir/imgui/imgui_tables.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o: imgui/imgui_widgets.cpp
 CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wno-conversion -Wno-sign-conversion -MD -MT CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o -MF CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o.d -o CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/imgui_widgets.cpp
 
 CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.i: cmake_force
@@ -495,7 +481,7 @@ CMakeFiles/sisterapp.dir/imgui/imgui_widgets.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o: imgui/backends/imgui_impl_sdl2.cpp
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wno-conversion -Wno-sign-conversion -MD -MT CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o -MF CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o.d -o CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/backends/imgui_impl_sdl2.cpp
 
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.i: cmake_force
@@ -509,7 +495,7 @@ CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o: imgui/backends/imgui_impl_vulkan.cpp
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Wno-conversion -Wno-sign-conversion -MD -MT CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o -MF CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o.d -o CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/backends/imgui_impl_vulkan.cpp
 
 CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.i: cmake_force
@@ -523,7 +509,7 @@ CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o: src/terrain/terrain_map.cpp
 CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o -MF CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o.d -o CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_map.cpp
 
 CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.i: cmake_force
@@ -537,7 +523,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_map.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: src/terrain/terrain_generator.cpp
 CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o -MF CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o.d -o CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_generator.cpp
 
 CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.i: cmake_force
@@ -551,7 +537,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o: src/terrain/terrain_renderer.cpp
 CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o -MF CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o.d -o CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/terrain_renderer.cpp
 
 CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.i: cmake_force
@@ -565,7 +551,7 @@ CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o: src/terrain/hydrology_report.cpp
 CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o -MF CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o.d -o CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/hydrology_report.cpp
 
 CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.i: cmake_force
@@ -579,7 +565,7 @@ CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.s: cmake_force
 CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o: CMakeFiles/sisterapp.dir/flags.make
 CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o: src/terrain/watershed.cpp
 CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o -MF CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o.d -o CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/watershed.cpp
 
 CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.i: cmake_force
@@ -590,6 +576,20 @@ CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/watershed.cpp -o CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.s
 
+CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o: CMakeFiles/sisterapp.dir/flags.make
+CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o: src/terrain/landscape_metrics.cpp
+CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o -MF CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o.d -o CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/landscape_metrics.cpp
+
+CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/landscape_metrics.cpp > CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.i
+
+CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/terrain/landscape_metrics.cpp -o CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.s
+
 # Object files for target sisterapp
 sisterapp_OBJECTS = \
 "CMakeFiles/sisterapp.dir/main.cpp.o" \
@@ -598,7 +598,6 @@ sisterapp_OBJECTS = \
 "CMakeFiles/sisterapp.dir/src/shader_loader.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/imgui_backend.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/world.cpp.o" \
-"CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/core/application.cpp.o" \
@@ -609,7 +608,6 @@ sisterapp_OBJECTS = \
 "CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o" \
-"CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/math/noise.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o" \
@@ -617,6 +615,7 @@ sisterapp_OBJECTS = \
 "CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o" \
+"CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o" \
 "CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o" \
 "CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o" \
 "CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o" \
@@ -628,7 +627,8 @@ sisterapp_OBJECTS = \
 "CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o" \
-"CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o"
+"CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o" \
+"CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o"
 
 # External object files for target sisterapp
 sisterapp_EXTERNAL_OBJECTS =
@@ -639,7 +639,6 @@ sisterapp: CMakeFiles/sisterapp.dir/src/renderer.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/shader_loader.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/imgui_backend.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/world.cpp.o
-sisterapp: CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/core/graphics_context.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/core/input_manager.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/core/application.cpp.o
@@ -650,7 +649,6 @@ sisterapp: CMakeFiles/sisterapp.dir/src/core/sync_objects.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/resources/buffer.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/graphics/mesh.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/graphics/geometry_utils.cpp.o
-sisterapp: CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/math/noise.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/math/frustum.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/graphics/camera.cpp.o
@@ -658,6 +656,7 @@ sisterapp: CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/graphics/material.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/graphics/animation.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o
+sisterapp: CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/imgui/imgui_demo.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/imgui/imgui_draw.cpp.o
@@ -670,6 +669,7 @@ sisterapp: CMakeFiles/sisterapp.dir/src/terrain/terrain_generator.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/terrain/terrain_renderer.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o
+sisterapp: CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/build.make
 sisterapp: CMakeFiles/sisterapp.dir/compiler_depend.ts
 sisterapp: /usr/lib64/libSDL2-2.0.so.0.3200.56

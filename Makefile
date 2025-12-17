@@ -646,30 +646,6 @@ src/graphics/shader.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/graphics/shader.cpp.s
 .PHONY : src/graphics/shader.cpp.s
 
-src/graphics/voxel_terrain.o: src/graphics/voxel_terrain.cpp.o
-.PHONY : src/graphics/voxel_terrain.o
-
-# target to build an object file
-src/graphics/voxel_terrain.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o
-.PHONY : src/graphics/voxel_terrain.cpp.o
-
-src/graphics/voxel_terrain.i: src/graphics/voxel_terrain.cpp.i
-.PHONY : src/graphics/voxel_terrain.i
-
-# target to preprocess a source file
-src/graphics/voxel_terrain.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.i
-.PHONY : src/graphics/voxel_terrain.cpp.i
-
-src/graphics/voxel_terrain.s: src/graphics/voxel_terrain.cpp.s
-.PHONY : src/graphics/voxel_terrain.s
-
-# target to generate assembly for a file
-src/graphics/voxel_terrain.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.s
-.PHONY : src/graphics/voxel_terrain.cpp.s
-
 src/imgui_backend.o: src/imgui_backend.cpp.o
 .PHONY : src/imgui_backend.o
 
@@ -862,6 +838,30 @@ src/terrain/hydrology_report.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.s
 .PHONY : src/terrain/hydrology_report.cpp.s
 
+src/terrain/landscape_metrics.o: src/terrain/landscape_metrics.cpp.o
+.PHONY : src/terrain/landscape_metrics.o
+
+# target to build an object file
+src/terrain/landscape_metrics.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o
+.PHONY : src/terrain/landscape_metrics.cpp.o
+
+src/terrain/landscape_metrics.i: src/terrain/landscape_metrics.cpp.i
+.PHONY : src/terrain/landscape_metrics.i
+
+# target to preprocess a source file
+src/terrain/landscape_metrics.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.i
+.PHONY : src/terrain/landscape_metrics.cpp.i
+
+src/terrain/landscape_metrics.s: src/terrain/landscape_metrics.cpp.s
+.PHONY : src/terrain/landscape_metrics.s
+
+# target to generate assembly for a file
+src/terrain/landscape_metrics.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.s
+.PHONY : src/terrain/landscape_metrics.cpp.s
+
 src/terrain/terrain_generator.o: src/terrain/terrain_generator.cpp.o
 .PHONY : src/terrain/terrain_generator.o
 
@@ -958,6 +958,30 @@ src/terrain/watershed.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.s
 .PHONY : src/terrain/watershed.cpp.s
 
+src/ui/minimap.o: src/ui/minimap.cpp.o
+.PHONY : src/ui/minimap.o
+
+# target to build an object file
+src/ui/minimap.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o
+.PHONY : src/ui/minimap.cpp.o
+
+src/ui/minimap.i: src/ui/minimap.cpp.i
+.PHONY : src/ui/minimap.i
+
+# target to preprocess a source file
+src/ui/minimap.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.i
+.PHONY : src/ui/minimap.cpp.i
+
+src/ui/minimap.s: src/ui/minimap.cpp.s
+.PHONY : src/ui/minimap.s
+
+# target to generate assembly for a file
+src/ui/minimap.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.s
+.PHONY : src/ui/minimap.cpp.s
+
 src/ui/ui_layer.o: src/ui/ui_layer.cpp.o
 .PHONY : src/ui/ui_layer.o
 
@@ -981,30 +1005,6 @@ src/ui/ui_layer.s: src/ui/ui_layer.cpp.s
 src/ui/ui_layer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.s
 .PHONY : src/ui/ui_layer.cpp.s
-
-src/voxel_scene.o: src/voxel_scene.cpp.o
-.PHONY : src/voxel_scene.o
-
-# target to build an object file
-src/voxel_scene.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.o
-.PHONY : src/voxel_scene.cpp.o
-
-src/voxel_scene.i: src/voxel_scene.cpp.i
-.PHONY : src/voxel_scene.i
-
-# target to preprocess a source file
-src/voxel_scene.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.i
-.PHONY : src/voxel_scene.cpp.i
-
-src/voxel_scene.s: src/voxel_scene.cpp.s
-.PHONY : src/voxel_scene.s
-
-# target to generate assembly for a file
-src/voxel_scene.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/voxel_scene.cpp.s
-.PHONY : src/voxel_scene.cpp.s
 
 src/world.o: src/world.cpp.o
 .PHONY : src/world.o
@@ -1103,9 +1103,6 @@ help:
 	@echo "... src/graphics/shader.o"
 	@echo "... src/graphics/shader.i"
 	@echo "... src/graphics/shader.s"
-	@echo "... src/graphics/voxel_terrain.o"
-	@echo "... src/graphics/voxel_terrain.i"
-	@echo "... src/graphics/voxel_terrain.s"
 	@echo "... src/imgui_backend.o"
 	@echo "... src/imgui_backend.i"
 	@echo "... src/imgui_backend.s"
@@ -1130,6 +1127,9 @@ help:
 	@echo "... src/terrain/hydrology_report.o"
 	@echo "... src/terrain/hydrology_report.i"
 	@echo "... src/terrain/hydrology_report.s"
+	@echo "... src/terrain/landscape_metrics.o"
+	@echo "... src/terrain/landscape_metrics.i"
+	@echo "... src/terrain/landscape_metrics.s"
 	@echo "... src/terrain/terrain_generator.o"
 	@echo "... src/terrain/terrain_generator.i"
 	@echo "... src/terrain/terrain_generator.s"
@@ -1142,12 +1142,12 @@ help:
 	@echo "... src/terrain/watershed.o"
 	@echo "... src/terrain/watershed.i"
 	@echo "... src/terrain/watershed.s"
+	@echo "... src/ui/minimap.o"
+	@echo "... src/ui/minimap.i"
+	@echo "... src/ui/minimap.s"
 	@echo "... src/ui/ui_layer.o"
 	@echo "... src/ui/ui_layer.i"
 	@echo "... src/ui/ui_layer.s"
-	@echo "... src/voxel_scene.o"
-	@echo "... src/voxel_scene.i"
-	@echo "... src/voxel_scene.s"
 	@echo "... src/world.o"
 	@echo "... src/world.i"
 	@echo "... src/world.s"

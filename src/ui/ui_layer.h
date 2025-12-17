@@ -2,7 +2,7 @@
 
 #include "../graphics/camera.h"
 #include "../graphics/camera.h"
-#include "../graphics/voxel_terrain.h"
+// VoxelTerrain removed
 #include "../terrain/terrain_map.h" // v3.5.0
 #include "../graphics/animation.h"
 #include "../math/math_types.h"
@@ -26,9 +26,9 @@ struct UiFrameContext {
     bool& fpsCapEnabled;
     float& fpsCapTarget;
     bool& animationEnabled;
-    bool& showVegetation;
+    // showVegetation removed
     graphics::Camera& camera;
-    graphics::VoxelTerrain* terrain;
+    // VoxelTerrain pointer removed
     terrain::TerrainMap* finiteMap; // v3.5.0
     bool& showSlopeAnalysis; // v3.5.2
     bool& showDrainage;      // v3.6.1
@@ -50,10 +50,7 @@ struct UiFrameContext {
     float& sunAzimuth;
     float& sunElevation;
     float& fogDensity;
-    int visibleChunks = 0;
-    int totalChunks = 0;
-    int pendingTasks = 0;
-    int pendingVeg = 0;
+    // Voxel Stats Removed
     graphics::Animator& axesAnimator;
     std::vector<Bookmark>& bookmarks;
     std::string& lastSurfaceInfo;

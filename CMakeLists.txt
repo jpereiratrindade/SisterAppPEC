@@ -29,7 +29,6 @@ add_executable(sisterapp
     src/shader_loader.cpp
     src/imgui_backend.cpp
     src/world.cpp
-    src/voxel_scene.cpp
     src/core/graphics_context.cpp
     src/core/input_manager.cpp
     src/core/input_manager.cpp
@@ -41,7 +40,6 @@ add_executable(sisterapp
     src/resources/buffer.cpp
     src/graphics/mesh.cpp
     src/graphics/geometry_utils.cpp
-    src/graphics/voxel_terrain.cpp
     src/math/noise.cpp
     src/math/frustum.cpp
     src/graphics/camera.cpp
@@ -80,8 +78,6 @@ set(SHADER_SRC
     shaders/red.frag
     shaders/environment.vert
     shaders/environment.frag
-    shaders/voxel.vert
-    shaders/voxel.frag
 )
 if (GLSLC)
     set(SPIRV_BINARIES "")

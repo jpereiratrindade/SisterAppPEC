@@ -1,5 +1,4 @@
 #include "camera.h"
-#include "voxel_terrain.h"
 #include <algorithm>
 #include <iostream>
 #include <cmath>
@@ -413,81 +412,7 @@ void Camera::applyGravity(float dt) {
     dirtyView_ = true;
 }
 
-void Camera::checkTerrainCollision(VoxelTerrain& terrain) {
-    if (mode_ != CameraMode::FreeFlight) return;
-    if (flying_) return; // Noclip when flying
-
-    // Player collision box (simple AABB around camera position)
-    float feetY = position_.y - playerHeight_;
-    float headY = position_.y;
-
-    // Check ground collision
-    onGround_ = false;
-    
-    // Sample blocks around player feet
-    int checkX = static_cast<int>(std::floor(position_.x));
-    int checkZ = static_cast<int>(std::floor(position_.z));
-    int checkY = static_cast<int>(std::floor(feetY));
-
-    // Check blocks in a small radius for ground contact
-    for (int dx = -1; dx <= 1; dx++) {
-        for (int dz = -1; dz <= 1; dz++) {
-            Block* block = terrain.getBlock(checkX + dx, checkY, checkZ + dz);
-            if (block && block->isSolid()) {
-                // Block at feet level - check if we're overlapping
-                float blockTop = static_cast<float>(checkY) + 1.0f;
-                if (feetY < blockTop && feetY > blockTop - 0.1f) {
-                    // Landing on top of block
-                    position_.y = blockTop + playerHeight_;
-                    velocity_.y = 0.0f;
-                    onGround_ = true;
-                    dirtyView_ = true;
-                }
-            }
-        }
-    }
-
-    // Head collision (bumping ceiling)
-    int headCheckY = static_cast<int>(std::floor(headY));
-    for (int dx = -1; dx <= 1; dx++) {
-        for (int dz = -1; dz <= 1; dz++) {
-            Block* block = terrain.getBlock(checkX + dx, headCheckY + 1, checkZ + dz);
-            if (block && block->isSolid()) {
-                if (velocity_.y > 0) {
-                    velocity_.y = 0.0f;
-                }
-            }
-        }
-    }
-
-    // Horizontal collision (walls)
-    // Sample ahead in movement direction
-    math::Vec3 futurePos = position_ + (velocity_ * 0.1f);
-    int futureX = static_cast<int>(std::floor(futurePos.x));
-    int futureZ = static_cast<int>(std::floor(futurePos.z));
-    
-    for (int dy = 0; dy < 2; dy++) {  // Check at feet and chest height
-        float dyOffset = static_cast<float>(dy) * 0.9f;
-        int yCheck = static_cast<int>(std::floor(position_.y - playerHeight_ + dyOffset));
-        Block* block = terrain.getBlock(futureX, yCheck, futureZ);
-        if (block && block->isSolid()) {
-            // Blocked - prevent horizontal movement
-            position_.x -= velocity_.x * 0.1f;
-            position_.z -= velocity_.z * 0.1f;
-            velocity_.x *= 0.5f;  // Dampen
-            velocity_.z *= 0.5f;
-            dirtyView_ = true;
-        }
-    }
-
-    // Prevent falling through world
-    if (position_.y < 0) {
-        position_.y = playerHeight_;
-        velocity_.y = 0.0f;
-        onGround_ = true;
-        dirtyView_ = true;
-    }
-}
+// checkTerrainCollision removed (Voxel system deleted)
 
 void Camera::jump() {
     if (mode_ != CameraMode::FreeFlight) return;

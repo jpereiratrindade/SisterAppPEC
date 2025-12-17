@@ -4,7 +4,7 @@
 #include <map>
 #include <fstream>
 #include <iostream>
-#include "../graphics/voxel_terrain.h"
+#include "../terrain/slope_config.h"
 
 namespace core {
 

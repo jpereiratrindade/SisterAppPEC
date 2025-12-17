@@ -95,17 +95,7 @@ void Application::init() {
                                                                      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL);
     }
     
-    // Voxel material for terrain (v3.2.2.1-beta)
-    {
-        auto vs = std::make_shared<graphics::Shader>(*ctx_, "shaders/voxel.vert.spv");
-        auto fs = std::make_shared<graphics::Shader>(*ctx_, "shaders/voxel.frag.spv");
-        voxelMaterial_ = std::make_unique<graphics::Material>(*ctx_, swapchain_->renderPass(), swapchain_->extent(), vs, fs,
-                                                               VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL);
-        // Correctly initialize water material with blending enabled and depth write disabled
-        waterMaterial_ = std::make_unique<graphics::Material>(*ctx_, swapchain_->renderPass(), swapchain_->extent(), vs, fs,
-                                                              VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL,
-                                                              /*enableBlend*/true, /*depthWrite*/false);
-    }
+    // Voxel Material Removed
 
     std::vector<graphics::Vertex> gridVerts;
     std::vector<uint16_t> gridIndices;
@@ -130,84 +120,54 @@ void Application::init() {
     distanceMarkersMesh_ = std::make_unique<graphics::Mesh>(*ctx_, markersVerts, markersIndices);
     
     // --- V3.5.0: Finite World Initialization ---
-    // Toggle via member var or preference. For now, hardcoded true.
-    if (useFiniteWorld_) {
-        std::cout << "[SisterApp v3.5.0] Initializing Finite World (1024x1024)..." << std::endl;
-        finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
-        // v3.7.8: Use Config Seed
-        finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(currentSeed_);
-        
-        // Pass the correct RenderPass!
-        finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
-        
-        terrain::TerrainConfig config;
-        config.maxHeight = 80.0f; // Gentle rolling hills
-        config.seed = currentSeed_; // v3.7.8
-        
-        // Match default deferred config
-        deferredConfig_.width = 1024;
-        deferredConfig_.height = 1024;
-        deferredConfig_.maxHeight = 80.0f;
-        deferredConfig_.seed = currentSeed_;
-        finiteGenerator_->generateBaseTerrain(*finiteMap_, config); // Will re-seed
-        
-        // Re-enable erosion for Drainage Visualization
-        finiteGenerator_->applyErosion(*finiteMap_, 250000);
-        
-        // v3.6.3: Ensure Drainage is calculated on startup
-        finiteGenerator_->calculateDrainage(*finiteMap_);
-        
-        // v3.7.3: Semantic Soil Classification
-        finiteGenerator_->classifySoil(*finiteMap_, config);
-        
-    // v3.8.0 Fix: Scale Invariance is now handled inside generateBaseTerrain/classifySoil
-    // v3.8.0: Update Minimap - MOVED TO END OF INIT because uiLayer_ is not ready yet!
-    // if (uiLayer_) { ... }  <-- Removed from here
-
+    // Defaulting to Finite World
+    std::cout << "[SisterApp v3.5.0] Initializing Finite World (1024x1024)..." << std::endl;
+    finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
+    // v3.7.8: Use Config Seed
+    finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(currentSeed_);
+    
+    // Pass the correct RenderPass!
+    finiteRenderer_ = std::make_unique<shape::TerrainRenderer>(*ctx_, swapchain_->renderPass());
+    
+    terrain::TerrainConfig config;
+    config.maxHeight = 80.0f; // Gentle rolling hills
+    config.seed = currentSeed_; // v3.7.8
+    
+    // Match default deferred config
+    deferredConfig_.width = 1024;
+    deferredConfig_.height = 1024;
+    deferredConfig_.maxHeight = 80.0f;
+    deferredConfig_.seed = currentSeed_;
+    finiteGenerator_->generateBaseTerrain(*finiteMap_, config); // Will re-seed
+    
+    // Re-enable erosion for Drainage Visualization
+    finiteGenerator_->applyErosion(*finiteMap_, 250000);
+    
+    // v3.6.3: Ensure Drainage is calculated on startup
+    finiteGenerator_->calculateDrainage(*finiteMap_);
+    
+    // v3.7.3: Semantic Soil Classification
+    finiteGenerator_->classifySoil(*finiteMap_, config);
+    
     // Update mesh for 3D View
     finiteRenderer_->buildMesh(*finiteMap_);
 
-    // Upload to GPU (New Voxel Renderer - if applicable)
-    // renderer_.uploadTerrain(*finiteMap_); 
-    // Wait, if finiteRenderer_ is doing the job, we don't need renderer_.uploadTerrain.
-    // The previous code ONLY had finiteRenderer_->buildMesh. 
-    // I should revert to THAT.
-        
-        camera_.setCameraMode(graphics::CameraMode::FreeFlight);
-        float cx = 1024.0f / 2.0f;
-        float cz = 1024.0f / 2.0f;
-        float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
-        camera_.teleportTo({cx, h + 60.0f, cz}); // Higher initial flight
-        camera_.setPitch(-20.0f); // Look down to see more terrain (Horizon higher)
-        camera_.setFovDegrees(60.0f); // Wider view
+    camera_.setCameraMode(graphics::CameraMode::FreeFlight);
+    float cx = 1024.0f / 2.0f;
+    float cz = 1024.0f / 2.0f;
+    float h = finiteMap_->getHeight(static_cast<int>(cx), static_cast<int>(cz));
+    camera_.teleportTo({cx, h + 60.0f, cz}); // Higher initial flight
+    camera_.setPitch(-20.0f); // Look down to see more terrain (Horizon higher)
+    camera_.setFovDegrees(60.0f); // Wider view
 
-        
-        std::cout << "[SisterApp v3.5.0] Finite World Ready!" << std::endl;
-    } else {
-        // V3.2.2.5-beta: Initialize voxel terrain
-        terrain_ = std::make_unique<graphics::VoxelTerrain>(*ctx_, 12345);
-        terrain_->setFrameFences(&syncObjects_->inFlightFences());
-        showVegetation_ = true;
-        voxelScene_ = std::make_unique<VoxelScene>(terrain_.get(), voxelMaterial_.get(), waterMaterial_.get());
-        voxelScene_->setRenderer(&renderer_);
-        voxelStats_ = {};
-
-        // Start in Free Flight mode for voxel world exploration
-        camera_.setCameraMode(graphics::CameraMode::FreeFlight);
-        // Spawn above terrain height at origin so scene is immediately visible
-        int h = terrain_->getTerrainHeight(0, 0);
-        camera_.teleportTo({0.0f, static_cast<float>(h) + 8.0f, 0.0f});
-        std::cout << "[" << APP_NAME << " " << APP_VERSION_TAG << "] Voxel Terrain Initialized - Minecraft Mode!" << std::endl;
-    }
-    // End of Finite/Voxel Branch
-    // Common setup continues below...
+    
+    std::cout << "[SisterApp v3.5.0] Finite World Ready!" << std::endl;
 
     // V3.4.0: Load preferences on startup
     // v3.8.1: Preferences Disabled
     // core::Preferences::instance().load();
-    // if (terrain_) {
-    //    terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
-    // }
+    // core::Preferences::instance().load();
+    // if (finiteMap_) { ... }
 
     ui::Callbacks uiCallbacks{
         [this](const std::string& name) { saveBookmark(name); },
@@ -258,7 +218,7 @@ void Application::cleanup() {
     }
 
     // Terrain contains Vulkan buffers that must be destroyed while device is valid
-    terrain_.reset();
+    // terrain_ removed
     finiteRenderer_.reset();
     finiteGenerator_.reset();
     finiteMap_.reset();
@@ -281,8 +241,8 @@ void Application::cleanup() {
     axesMesh_.reset();
     
     // Materials must be destroyed before device (includes pipelines)
-    voxelMaterial_.reset();        // v3.2.2.1-beta  
-    waterMaterial_.reset();        // transparent water
+    // voxelMaterial_ removed
+    // waterMaterial_ removed
     environmentMaterial_.reset();  // NEW: Environment shaders
     wireframeMaterial_.reset();
     solidMaterial_.reset();
@@ -384,20 +344,11 @@ void Application::processEvents(double dt) {
         if (!imguiWantsMouse || !isMouseEvent) {
             camera_.processEvent(event);
             
-            // Terrain probe on Left Click (Free Flight)
             if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                if (voxelScene_ && !useFiniteWorld_ && camera_.getCameraMode() == graphics::CameraMode::FreeFlight) {
-                    float w = static_cast<float>(swapchain_->extent().width);
-                    float h = static_cast<float>(swapchain_->extent().height);
-                    math::Vec3 rayDir = camera_.getRayDirection(static_cast<float>(event.button.x), static_cast<float>(event.button.y), w, h);
-                    math::Ray ray{camera_.getPosition(), rayDir};
-                    if (voxelScene_->probeSurface(ray, 600.0f, lastSurfaceInfo_, lastSurfaceValid_)) {
-                        std::cout << "[Probe] " << lastSurfaceInfo_ << std::endl;
-                    }
-                }
-                else if (useFiniteWorld_ && finiteMap_) { // v3.7.0 Probe
+                if (finiteMap_) { // v3.7.0 Probe
                      float w = static_cast<float>(swapchain_->extent().width);
                      float h = static_cast<float>(swapchain_->extent().height);
+// ... Rest of Finite Probe Logic ...
                      math::Vec3 rayDir = camera_.getRayDirection(static_cast<float>(event.button.x), static_cast<float>(event.button.y), w, h);
                      math::Ray ray{camera_.getPosition(), rayDir};
                      
@@ -620,17 +571,6 @@ void Application::rebuildMaterials() {
     auto envFs = std::make_shared<graphics::Shader>(*ctx_, "shaders/environment.frag.spv");
     environmentMaterial_ = std::make_unique<graphics::Material>(*ctx_, swapchain_->renderPass(), swapchain_->extent(), envVs, envFs,
                                                                  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL);
-    auto voxVs = std::make_shared<graphics::Shader>(*ctx_, "shaders/voxel.vert.spv");
-    auto voxFs = std::make_shared<graphics::Shader>(*ctx_, "shaders/voxel.frag.spv");
-    voxelMaterial_ = std::make_unique<graphics::Material>(*ctx_, swapchain_->renderPass(), swapchain_->extent(), voxVs, voxFs,
-                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL);
-    // Water: blending enabled, depth write disabled to avoid overwriting solids
-    waterMaterial_ = std::make_unique<graphics::Material>(*ctx_, swapchain_->renderPass(), swapchain_->extent(), voxVs, voxFs,
-                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL,
-                                                           /*enableBlend*/true, /*depthWrite*/false);
-    if (voxelScene_) {
-        voxelScene_->setMaterials(voxelMaterial_.get(), waterMaterial_.get());
-    }
 }
 void Application::update(double dt) {
     Uint32 nowMs = SDL_GetTicks();
@@ -638,12 +578,7 @@ void Application::update(double dt) {
     const Uint8* keyState = SDL_GetKeyboardState(nullptr);
     camera_.processKeyboard(keyState, static_cast<float>(dt));
 
-    if (voxelScene_) {
-        voxelScene_->applyPendingReset(nowMs, 300);
-        voxelScene_->update(dt, camera_, static_cast<int>(currentFrame_));
-    } else {
-        camera_.update(static_cast<float>(dt));
-    }
+    camera_.update(static_cast<float>(dt));
     
     // Update animations
     if (animationEnabled_) {
@@ -668,9 +603,6 @@ void Application::recreateSwapchain() {
 
     swapchain_->recreate(sdl_.window, vsyncEnabled_);
     syncObjects_ = std::make_unique<SyncObjects>(*ctx_, static_cast<uint32_t>(swapchain_->images().size()));
-    if (terrain_) {
-        terrain_->setFrameFences(&syncObjects_->inFlightFences());
-    }
 
     // Reset imagesInFlight to prevent using stale fences
     imagesInFlight_.clear();
@@ -740,10 +672,6 @@ void Application::render(size_t frameIndex) {
     vkCmdBeginRenderPass(cmd, &rpBegin, VK_SUBPASS_CONTENTS_INLINE);
 
     // --- Scene Rendering ---
-    int visibleCount = 0;
-    int totalChunks = 0;
-    int pendingTasks = 0;
-    int pendingVeg = 0;
     const float* view = camera_.viewMatrix();
     const float* proj = camera_.projectionMatrix();
     
@@ -785,66 +713,55 @@ void Application::render(size_t frameIndex) {
     }
 
     // V3.2.2.1-beta: Hide grid, axes, markers in Minecraft mode
-    if (!terrain_) {
-        // Grid
-        {
-            graphics::RenderOptions opts;
-            opts.pointSize = 1.0f;
-            renderer_.record(cmd, gridMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
+    // Grid
+    {
+        graphics::RenderOptions opts;
+        opts.pointSize = 1.0f;
+        renderer_.record(cmd, gridMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
+    }
+    
+    // Distance Markers
+    if (distanceMarkersMesh_) {
+        graphics::RenderOptions opts;
+        opts.pointSize = 1.0f;
+        renderer_.record(cmd, distanceMarkersMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
+    }
+    
+    // Axes (with optional animation)
+    {
+        float axesMVP[16];
+        
+        if (animationEnabled_) {
+            // Get animated transform
+            float modelMat[16];
+            axesAnimator_.transform().toMatrix(modelMat);
+            
+            // Multiply: projection * view * model
+            float vm[16];
+            mulMat4(view, modelMat, vm);
+            mulMat4(proj, vm, axesMVP);
+        } else {
+            // No animation, use regular MVP
+            std::copy(mvp, mvp + 16, axesMVP);
         }
         
-        // Distance Markers
-        if (distanceMarkersMesh_) {
-            graphics::RenderOptions opts;
-            opts.pointSize = 1.0f;
-            renderer_.record(cmd, distanceMarkersMesh_.get(), lineMaterial_.get(), swapchain_->extent(), mvp, opts);
-        }
-        
-        // Axes (with optional animation)
-        {
-            float axesMVP[16];
-            
-            if (animationEnabled_) {
-                // Get animated transform
-                float modelMat[16];
-                axesAnimator_.transform().toMatrix(modelMat);
-                
-                // Multiply: projection * view * model
-                float vm[16];
-                mulMat4(view, modelMat, vm);
-                mulMat4(proj, vm, axesMVP);
-            } else {
-                // No animation, use regular MVP
-                std::copy(mvp, mvp + 16, axesMVP);
-            }
-            
-            graphics::RenderOptions opts;
-            opts.pointSize = 1.0f;
-            renderer_.record(cmd, axesMesh_.get(), lineMaterial_.get(), swapchain_->extent(), axesMVP, opts);
-        }
+        graphics::RenderOptions opts;
+        opts.pointSize = 1.0f;
+        renderer_.record(cmd, axesMesh_.get(), lineMaterial_.get(), swapchain_->extent(), axesMVP, opts);
     }
     
     // Render Finite World if active
-    if (useFiniteWorld_) {
-        // v3.5.0 Render Path
-        std::array<float, 16> mvpArray;
-        std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
-        
-        if (finiteRenderer_) {
-             finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), 
-              /* slope */ showSlopeAnalysis_,
-        /* drainage */ showDrainage_, drainageIntensity_,
-        /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
-        /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_, 
-        /* visual */ sunAzimuth_, sunElevation_, fogDensity_, lightIntensity_); // v3.8.1
-        }
-    } else if (voxelScene_) {
-        // Voxel Render (Minecraft Mode)
-        voxelScene_->render(cmd, view, proj, camera_, voxelStats_, swapchain_->extent());
-        visibleCount = voxelStats_.visibleChunks;
-        totalChunks = voxelStats_.totalChunks;
-        pendingTasks = voxelStats_.pendingTasks;
-        pendingVeg = voxelStats_.pendingVeg;
+    // Render Finite World
+    if (finiteRenderer_) {
+         std::array<float, 16> mvpArray;
+         std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
+
+         finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), 
+          /* slope */ showSlopeAnalysis_,
+    /* drainage */ showDrainage_, drainageIntensity_,
+    /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
+    /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_, 
+    /* visual */ sunAzimuth_, sunElevation_, fogDensity_, lightIntensity_); // v3.8.1
     }
 
     ui::UiFrameContext uiCtx{
@@ -855,9 +772,9 @@ void Application::render(size_t frameIndex) {
         fpsCapEnabled_,
         fpsCapTarget_,
         animationEnabled_,
-        showVegetation_,
+        // showVegetation removed
         camera_,
-        /* terrain = */ terrain_.get(),
+        // terrain_ removed
         /* finiteMap=*/ finiteMap_.get(),
         /* showSlope */ showSlopeAnalysis_,
         /* showDrainage */ showDrainage_,
@@ -868,10 +785,7 @@ void Application::render(size_t frameIndex) {
         /* showSoilVis */ showSoilVis_,
         /* soilWhitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_,
         /* visual state */ sunAzimuth_, sunElevation_, fogDensity_, // v3.7.3
-        /* visible */ visibleCount,  
-        /* total */ totalChunks,
-        pendingTasks,
-        pendingVeg,
+        // Voxel stats removed
         axesAnimator_,
         bookmarks_,
         lastSurfaceInfo_,
@@ -927,9 +841,8 @@ std::unique_ptr<graphics::Material> Application::createMaterial(VkRenderPass ren
 
 
 void Application::requestTerrainReset(int warmupRadius) {
-    if (voxelScene_) {
-        voxelScene_->requestReset(warmupRadius);
-    }
+    // Voxel reset removed. Finite World does not use this warmth reset mechanism currently.
+    (void)warmupRadius; 
 }
 
 // --- Bookmark System (v3.2.2) ---

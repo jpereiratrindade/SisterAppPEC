@@ -71,8 +71,6 @@ CMakeFiles/shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAp
 CMakeFiles/shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag.spv
 CMakeFiles/shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.vert.spv
 CMakeFiles/shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.frag.spv
-CMakeFiles/shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert.spv
-CMakeFiles/shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag.spv
 
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag.spv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/basic.frag
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Compilando shaders/basic.frag para SPIR-V"
@@ -99,16 +97,6 @@ CMakeFiles/shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAp
 	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/shaders
 	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag
 
-/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag.spv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Compilando shaders/voxel.frag para SPIR-V"
-	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/shaders
-	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag
-
-/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert.spv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Compilando shaders/voxel.vert para SPIR-V"
-	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/shaders
-	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert
-
 CMakeFiles/shaders_spirv.dir/codegen:
 .PHONY : CMakeFiles/shaders_spirv.dir/codegen
 
@@ -118,8 +106,6 @@ shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_bas
 shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.frag.spv
 shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/environment.vert.spv
 shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag.spv
-shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.frag.spv
-shaders_spirv: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/voxel.vert.spv
 shaders_spirv: CMakeFiles/shaders_spirv.dir/build.make
 .PHONY : shaders_spirv
 

@@ -1,0 +1,31 @@
+[ 14%] Built target shaders_spirv
+[ 17%] Building CXX object CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::pruneFarChunks(int, int, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:289:135: warning: conversion to ‘std::vector<VkFence_T*>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  289 |     VkFence currentFence = (frameFences_ && frameIndex >= 0 && frameIndex < static_cast<int>(frameFences_->size())) ? (*frameFences_)[frameIndex] : VK_NULL_HANDLE;
+      |                                                                                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘int graphics::VoxelTerrain::sampleHeight(int, int, graphics::BlockType&, graphics::BlockType&) const’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:444:24: error: ‘baseNoise’ was not declared in this scope; did you mean ‘biomeNoise’?
+  444 |          heightValue = baseNoise * baseWeight + detailNoise * detailWeight + highFreqNoise * blendConfig_.highFreqWeight;
+      |                        ^~~~~~~~~
+      |                        biomeNoise
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:444:49: error: ‘detailNoise’ was not declared in this scope
+  444 |          heightValue = baseNoise * baseWeight + detailNoise * detailWeight + highFreqNoise * blendConfig_.highFreqWeight;
+      |                                                 ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:451:24: error: ‘baseNoise’ was not declared in this scope; did you mean ‘biomeNoise’?
+  451 |          heightValue = baseNoise * baseWeight + detailNoise * detailWeight;
+      |                        ^~~~~~~~~
+      |                        biomeNoise
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:451:49: error: ‘detailNoise’ was not declared in this scope
+  451 |          heightValue = baseNoise * baseWeight + detailNoise * detailWeight;
+      |                                                 ^~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp: In member function ‘void graphics::VoxelTerrain::update(float, float, const math::Frustum&, int)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:663:135: warning: conversion to ‘std::vector<VkFence_T*>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  663 |     VkFence currentFence = (frameFences_ && frameIndex >= 0 && frameIndex < static_cast<int>(frameFences_->size())) ? (*frameFences_)[frameIndex] : VK_NULL_HANDLE;
+      |                                                                                                                                       ^~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/graphics/voxel_terrain.cpp:703:48: warning: conversion to ‘std::vector<graphics::VoxelTerrain::update(float, float, const math::Frustum&, int)::ChunkCandidate>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  703 |     candidates.reserve((viewDistance_ * 2 + 1) * (viewDistance_ * 2 + 1));
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+make[2]: *** [CMakeFiles/sisterapp.dir/build.make:317: CMakeFiles/sisterapp.dir/src/graphics/voxel_terrain.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/sisterapp.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2
