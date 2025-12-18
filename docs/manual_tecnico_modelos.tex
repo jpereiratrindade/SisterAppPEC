@@ -76,8 +76,8 @@ O SisterApp v3.9.1 introduz um modelo de dinâmica de vegetação campestre base
 \subsection{Estrutura de Dois Estratos (DDD)}
 A vegetação é modelada como dois estratos competitivos em cada célula do grid ($1m^2$):
 \begin{itemize}
-    \item \textbf{Estrato Inferior (EI):} Gramíneas e herbáceas. Alta taxa de crescimento, alta resiliência ao pastejo, inflamável.
-    \item \textbf{Estrato Superior (ES):} Arbustos e subarbustos. Crescimento lento, suprime o estrato inferior por sombreamento, sensível ao fogo.
+    \item \textbf{Estrato Inferior (EI):} Gramíneas e herbáceas. Alta taxa de crescimento, alta resiliência ao pastejo.
+    \item \textbf{Estrato Superior (ES):} Arbustos e subarbustos. Crescimento lento e não pastejado. Acumula grande biomassa que, quando senescente (baixo vigor/NDVI), torna-se o \textbf{principal combustível} para incêndios de alta intensidade.
 \end{itemize}
 
 O estado de cada célula é definido por um vetor de 4 componentes:

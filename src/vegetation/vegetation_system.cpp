@@ -136,12 +136,39 @@ void VegetationSystem::applyDisturbance(VegetationGrid& grid, const DisturbanceR
          int idx = rand() % size; // Simple random for now
          
          if (regime.type == DisturbanceType::Fire) {
-             // Total removal of biomass, set recovery time
-             grid.ei_coverage[idx] = 0.0f;
-             grid.es_coverage[idx] = 0.0f;
-             grid.ei_vigor[idx] = 0.0f;
-             grid.es_vigor[idx] = 0.0f;
-             grid.recovery_timer[idx] = regime.averageRecoveryTime; 
+             // Ecological Fire Logic (v3.9.2):
+             // High flammability = High ES Biomass AND Low Vigor (Dry fuel).
+             // EI (Grass) burns easier but has less fuel load.
+             
+             float flammability = 0.0f;
+             
+             // Contribution from Dry Shrub (Primary Fuel according to user feedback)
+             if (grid.es_coverage[idx] > 0.2f) {
+                 // Flammability increases as Vigor decreases (e.g., Vigor < 0.5)
+                 float dryness = std::max(0.0f, 1.0f - grid.es_vigor[idx]);
+                 // Non-linear response to dryness
+                 if (dryness > 0.5f) { // If vigor < 0.5
+                      flammability += grid.es_coverage[idx] * (dryness * 2.0f); 
+                 }
+             }
+             
+             // Contribution from Grass (Fine fuel)
+             // Grass is flammable even with moderate vigor, but less intense
+             flammability += grid.ei_coverage[idx] * 0.3f * (1.0f - grid.ei_vigor[idx]);
+
+             // Stochastic Ignition threshold based on flammability
+             // Base probability + Flammability factor
+             float prob = 0.05f + flammability * 0.8f; 
+             
+             if ((float)rand() / RAND_MAX < prob) {
+                 // FIRE EVENT!
+                 // Total removal of biomass
+                 grid.ei_coverage[idx] = 0.0f;
+                 grid.es_coverage[idx] = 0.0f;
+                 grid.ei_vigor[idx] = 0.0f; // Ash/Blackened
+                 grid.es_vigor[idx] = 0.0f;
+                 grid.recovery_timer[idx] = regime.averageRecoveryTime; 
+             }
          } 
          else if (regime.type == DisturbanceType::Grazing) {
              // Selective removal of EI (Grass)
