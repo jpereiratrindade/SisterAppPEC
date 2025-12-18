@@ -5,6 +5,7 @@ file(REMOVE_RECURSE
   "shaders/environment.frag.spv"
   "shaders/environment.vert.spv"
   "shaders/red.frag.spv"
+  "shaders/terrain.frag.spv"
 )
 
 # Per-language clean rules from dependency scanning.

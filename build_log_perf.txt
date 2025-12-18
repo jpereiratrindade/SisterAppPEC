@@ -1,0 +1,26 @@
+[ 13%] Built target shaders_spirv
+[ 15%] Building CXX object CMakeFiles/sisterapp.dir/src/core/application.cpp.o
+[ 17%] Building CXX object CMakeFiles/sisterapp.dir/main.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::processEvents(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:431:91: warning: conversion to ‘std::vector<float>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  431 |                          float flux = finiteMap_->fluxMap()[hitZ * finiteMap_->getWidth() + hitX];
+      |                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:432:97: warning: conversion to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  432 |                          int basinID = finiteMap_->watershedMap()[hitZ * finiteMap_->getWidth() + hitX];
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::update(double)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:612:56: warning: conversion from ‘Uint32’ {aka ‘unsigned int’} to ‘float’ may change value [-Wconversion]
+  612 |             vegetation::VegetationSystem::update(*veg, vegetationUpdateIntervalMs_ / 1000.0f);
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:618:66: warning: conversion from ‘Uint32’ {aka ‘unsigned int’} to ‘float’ may change value [-Wconversion]
+  618 |                 float prob = disturbanceParams_.fireFrequency * (vegetationUpdateIntervalMs_ / 1000.0f);
+      |                                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:619:37: warning: conversion from ‘int’ to ‘float’ changes value from ‘2147483647’ to ‘2.14748365e+9f’ [-Wfloat-conversion]
+  619 |                 if ((float)rand() / RAND_MAX < prob) {
+      |                                     ^~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp: In member function ‘void core::Application::performRegeneration()’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/application.cpp:1004:59: warning: explicit by-copy capture of ‘this’ with by-copy capture default only available with ‘-std=c++20’ or ‘-std=gnu++20’ [-Wc++20-extensions]
+ 1004 |         regenFuture_ = std::async(std::launch::async, [=, this]() {
+      |                                                           ^~~~
+[ 20%] Linking CXX executable sisterapp
+[100%] Built target sisterapp

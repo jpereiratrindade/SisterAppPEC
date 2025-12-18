@@ -185,12 +185,23 @@ void Application::init() {
             // }
             // core::Preferences::instance().save();
         },
+
         [this]() { // loadPreferences
             // v3.8.1 Disabled
             // core::Preferences::instance().load();
             // if (terrain_) {
             //     terrain_->setSlopeConfig(core::Preferences::instance().getSlopeConfig());
             // }
+        },
+        [this]() { // resetVegetation (v3.9.1)
+            if (finiteMap_ && finiteMap_->getVegetation()) {
+                vegetation::VegetationSystem::initialize(*finiteMap_->getVegetation(), currentSeed_);
+                // Force immediate upload? Or let next update cycle handle it?
+                // Next cycle will handle it if we reset accumulator time? 
+                // Creating a flag might be better but initialize + next frame update is fine.
+                // We also might want to trigger immediate upload if paused.
+                if (finiteRenderer_) finiteRenderer_->updateVegetation(*finiteMap_->getVegetation()); 
+            }
         },
         // v3.6.5 Resolution
         // v3.6.5 Resolution + v3.7.8 Seed + v3.8.0 Water Level
@@ -586,25 +597,43 @@ void Application::update(double dt) {
     
     // v3.9.0 Vegetation Simulation
     if (finiteMap_ && finiteMap_->getVegetation() && vegetationMode_ > 0) {
-        auto* veg = finiteMap_->getVegetation();
-        
-        // 1. Update (Recovery/Growth)
-        vegetation::VegetationSystem::update(*veg, static_cast<float>(dt));
+        // v3.9.1 Throttle Updates (Wall Clock to avoid dt spiral)
+        if (nowMs - lastVegetationUpdateMs_ >= vegetationUpdateIntervalMs_) {
+            lastVegetationUpdateMs_ = nowMs;
+            
+            auto* veg = finiteMap_->getVegetation();
+            
+            // Performance Profiling
+            Uint32 t0 = SDL_GetTicks();
+            
+            // 1. Update (Recovery/Growth) 
+            // We pass a fixed delta or the actual elapsed? 
+            // Passing 0.2s (interval) is decent approx for simulation stability.
+            vegetation::VegetationSystem::update(*veg, vegetationUpdateIntervalMs_ / 1000.0f);
+            
+            Uint32 t1 = SDL_GetTicks();
 
-        // 2. Disturbance (Fire)
-        if (disturbanceParams_.fireFrequency > 0.0f) {
-            float prob = disturbanceParams_.fireFrequency * static_cast<float>(dt);
-            // Simple random check
-            if ((float)rand() / RAND_MAX < prob) {
-                disturbanceParams_.type = vegetation::DisturbanceType::Fire;
-                vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
-                std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
+            // 2. Disturbance (Fire)
+            if (disturbanceParams_.fireFrequency > 0.0f) {
+                float prob = disturbanceParams_.fireFrequency * (vegetationUpdateIntervalMs_ / 1000.0f);
+                if ((float)rand() / RAND_MAX < prob) {
+                    disturbanceParams_.type = vegetation::DisturbanceType::Fire;
+                    vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
+                    std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
+                }
             }
-        }
-        
-        // 3. Upload to GPU
-        if (finiteRenderer_) {
-            finiteRenderer_->updateVegetation(*veg);
+            
+            // 3. Upload to GPU
+            if (finiteRenderer_) {
+                finiteRenderer_->updateVegetation(*veg);
+            }
+            
+            Uint32 t2 = SDL_GetTicks();
+            
+            // Log if slow (>10ms)
+            if (t2 - t0 > 10) {
+                 std::cout << "[Perf] VegUpdate: Sim=" << (t1-t0) << "ms, Upload=" << (t2-t1) << "ms. Total=" << (t2-t0) << "ms" << std::endl;
+            }
         }
     }
 

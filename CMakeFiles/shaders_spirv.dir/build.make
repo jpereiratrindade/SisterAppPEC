@@ -71,6 +71,7 @@ CMakeFiles/shaders_spirv: shaders/basic.frag.spv
 CMakeFiles/shaders_spirv: shaders/red.frag.spv
 CMakeFiles/shaders_spirv: shaders/environment.vert.spv
 CMakeFiles/shaders_spirv: shaders/environment.frag.spv
+CMakeFiles/shaders_spirv: shaders/terrain.frag.spv
 
 shaders/basic.frag.spv: shaders/basic.frag
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Compilando shaders/basic.frag para SPIR-V"
@@ -97,6 +98,11 @@ shaders/red.frag.spv: shaders/red.frag
 	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
 	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/red.frag
 
+shaders/terrain.frag.spv: shaders/terrain.frag
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Compilando shaders/terrain.frag para SPIR-V"
+	/usr/bin/cmake -E make_directory /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders
+	/usr/bin/glslc -o /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/terrain.frag.spv /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/shaders/terrain.frag
+
 CMakeFiles/shaders_spirv.dir/codegen:
 .PHONY : CMakeFiles/shaders_spirv.dir/codegen
 
@@ -106,6 +112,7 @@ shaders_spirv: shaders/basic.vert.spv
 shaders_spirv: shaders/environment.frag.spv
 shaders_spirv: shaders/environment.vert.spv
 shaders_spirv: shaders/red.frag.spv
+shaders_spirv: shaders/terrain.frag.spv
 shaders_spirv: CMakeFiles/shaders_spirv.dir/build.make
 .PHONY : shaders_spirv
 

@@ -206,6 +206,11 @@ namespace core {
         // v3.9.0 Vegetation State
         int vegetationMode_ = 1; // Default to Realistic (1)
         vegetation::DisturbanceRegime disturbanceParams_; // Default constructor has sensible defaults?
+        
+        // v3.9.1 Throttle Vegetation Updates
+        Uint32 lastVegetationUpdateMs_ = 0;
+        Uint32 vegetationUpdateIntervalMs_ = 200; // 5Hz (conservative to break death spiral)
+
     };
 
 } // namespace core

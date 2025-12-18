@@ -72,6 +72,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o.d"
   "CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o"
   "CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o.d"
+  "CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o"
+  "CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o.d"
   "CMakeFiles/sisterapp.dir/src/world.cpp.o"
   "CMakeFiles/sisterapp.dir/src/world.cpp.o.d"
   "sisterapp"

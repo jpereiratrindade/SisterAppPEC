@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.9.2] - 2025-12-18
+### Optimized
+- **Vegetation Performance**: Implemented simulation throttling (~5-10Hz) to debottleneck CPU-GPU bandwidth.
+  - Reduced update frequency from Per-Frame to Fixed-Timestep (200ms default).
+  - Added performance profiling logging (`[Perf]`) to monitor simulation vs upload times.
+  - Solved 1-2 FPS issue on large maps (4096+).
+
 ## [v3.9.1] - 2025-12-17
 ### Added
 - **Grassland Vegetation Model (DDD)**:

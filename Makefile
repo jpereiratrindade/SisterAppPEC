@@ -1006,6 +1006,30 @@ src/ui/ui_layer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.s
 .PHONY : src/ui/ui_layer.cpp.s
 
+src/vegetation/vegetation_system.o: src/vegetation/vegetation_system.cpp.o
+.PHONY : src/vegetation/vegetation_system.o
+
+# target to build an object file
+src/vegetation/vegetation_system.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o
+.PHONY : src/vegetation/vegetation_system.cpp.o
+
+src/vegetation/vegetation_system.i: src/vegetation/vegetation_system.cpp.i
+.PHONY : src/vegetation/vegetation_system.i
+
+# target to preprocess a source file
+src/vegetation/vegetation_system.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.i
+.PHONY : src/vegetation/vegetation_system.cpp.i
+
+src/vegetation/vegetation_system.s: src/vegetation/vegetation_system.cpp.s
+.PHONY : src/vegetation/vegetation_system.s
+
+# target to generate assembly for a file
+src/vegetation/vegetation_system.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.s
+.PHONY : src/vegetation/vegetation_system.cpp.s
+
 src/world.o: src/world.cpp.o
 .PHONY : src/world.o
 
@@ -1148,6 +1172,9 @@ help:
 	@echo "... src/ui/ui_layer.o"
 	@echo "... src/ui/ui_layer.i"
 	@echo "... src/ui/ui_layer.s"
+	@echo "... src/vegetation/vegetation_system.o"
+	@echo "... src/vegetation/vegetation_system.i"
+	@echo "... src/vegetation/vegetation_system.s"
 	@echo "... src/world.o"
 	@echo "... src/world.i"
 	@echo "... src/world.s"

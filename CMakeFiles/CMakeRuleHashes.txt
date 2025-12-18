@@ -5,5 +5,6 @@ c51450cfc10979cd6cc08effe91f77cd shaders/basic.frag.spv
 5da99966b950feed9b45becc005b076c shaders/environment.frag.spv
 8044cd3abc66769c719176691fb9cafe shaders/environment.vert.spv
 30d3d792d318a61591813ee2e4010f92 shaders/red.frag.spv
+aa064381de3601136a879a58eeed499f shaders/terrain.frag.spv
 bed2700124410d0b168cdeed7c0bcb18 shaders/voxel.frag.spv
 fb710e9569742ac733cb012d7d639ea4 shaders/voxel.vert.spv
