@@ -48,9 +48,10 @@ Entidades:
 ### 2.4 Vegetation (Ecological Domain)
 Responsabilidade: simulação de dinâmica de populações vegetais e distúrbios.
 
-Documentação de Referência:
-- [Modelo Ecológico](DDD_Vegetacao_Campestre_Pastoril.md)
-- [Representação Visual](DDD_Representacao_Vegetacao_Campestre.md)
+**Contexto e Documentação Exclusiva:**
+Devido à alta complexidade biológica, o modelo de vegetação é regido por um DDD próprio e separado:
+- [Modelo Ecológico (Regras e Invariantes)](DDD_Vegetacao_Campestre_Pastoril.md)
+- [Representação Visual (Tradução Ontológica)](DDD_Representacao_Vegetacao_Campestre.md)
 
 Entidades:
 - **VegetationSystem**: Aggregate Root. Gerencia crescimento (Growth), competição e mortalidade.
