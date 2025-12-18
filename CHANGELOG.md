@@ -6,7 +6,11 @@
     - Implemented logarithmically positive response for Grass ($R_{EI}$) and exponentially negative response for Shrubs ($R_{ES}$).
     - Disturbance is now a composite index $D = M \cdot F \cdot E$ (Magnitude, Frequency, Extent).
     - Vegetation carrying capacity is now dynamic, modulated by $D$.
-- **Robustness**: Added numerical clamping to prevent infinite growth under extreme parameters.
+- **Robustness & Optimization**: 
+    - Replaced `rand()` with `std::mt19937` for deterministic simulations.
+    - Pre-computed Capacity Noise in `initialize()` to reduce per-frame CPU load.
+    - Implemented **Facilitation**: Shrubs (`ES`) now require `EI > 0.7` to grow.
+    - Added numerical clamping to prevent infinite growth.
 
 ## [v3.9.4] - 2025-12-18
 ### Visualization

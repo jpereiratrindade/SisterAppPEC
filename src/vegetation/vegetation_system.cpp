@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <random>
 
 namespace vegetation {
 
@@ -43,37 +44,51 @@ void VegetationSystem::initialize(VegetationGrid& grid, int seed) {
     int w = grid.width;
     int h = grid.height;
     
+    // Use std::mt19937 for better randomness if needed, but perlin uses integer hash.
+    // We keep the noise functions deterministic based on seed.
+
     #pragma omp parallel for collapse(2)
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             int idx = y * w + x;
             
-            // Generate correlated noise for patches (FBM)
-            // Octave 1
+            // --- 1. EI (Grass) Capacity Initialization ---
+            // FBM (Fractal Brownian Motion) for natural patches
+            // Octave 1: Low Freq, High Amp
             float n1 = smoothNoise(x * 0.02f, y * 0.02f, seed);
-            // Octave 2
+            // Octave 2: Mid Freq, Mid Amp
             float n2 = smoothNoise(x * 0.1f, y * 0.1f, seed + 999);
             
-            float noiseEI = n1 * 0.7f + n2 * 0.3f; // Mixed
+            float capacityNoiseEI = n1 * 0.7f + n2 * 0.3f; // Mixed
             
-            // EI (Grass): High coverage base, modulated by noise
-            grid.ei_coverage[idx] = 0.6f + 0.4f * (noiseEI * 0.5f + 0.5f); // Normalize roughly
+            // Base Capacity for EI (Space/Soil potential)
+            // Range [0.6, 1.0] modulated by noise
+            grid.ei_capacity[idx] = 0.6f + 0.4f * (capacityNoiseEI * 0.5f + 0.5f);
             
-            // ES (Shrub): Clumped distribution
-            // Use similar FBM but shifted
+            // Set initial coverage to full capacity
+            grid.ei_coverage[idx] = grid.ei_capacity[idx];
+
+
+            // --- 2. ES (Shrub) Capacity Initialization ---
+            // Independent noise layer for shrubs (patchy, clumped)
             float esN1 = smoothNoise(x * 0.02f + 100, y * 0.02f + 100, seed);
             float esN2 = smoothNoise(x * 0.1f + 100, y * 0.1f + 100, seed + 888);
-            float noiseES = esN1 * 0.7f + esN2 * 0.3f;
+            float capacityNoiseES = esN1 * 0.7f + esN2 * 0.3f;
             
-            if (noiseES > 0.2f) { // Lower threshold for FBM
-                grid.es_coverage[idx] = (noiseES - 0.2f) * 1.5f; 
-                if (grid.es_coverage[idx] > 1.0f) grid.es_coverage[idx] = 1.0f;
+            // Shrubs are patchier. If noise is low, capacity is zero.
+            if (capacityNoiseES > 0.2f) { 
+                grid.es_capacity[idx] = (capacityNoiseES - 0.2f) * 1.5f; 
+                if (grid.es_capacity[idx] > 1.0f) grid.es_capacity[idx] = 1.0f;
             } else {
-                grid.es_coverage[idx] = 0.0f;
+                grid.es_capacity[idx] = 0.0f;
             }
+
+            // Initial ES coverage (Start with some, but let it grow)
+            grid.es_coverage[idx] = grid.es_capacity[idx] * 0.5f;
+
             
-            // Vigor: Also varies spatially
-            float vigorNoise = smoothNoise(x * 0.1f, y * 0.1f, seed + 55); // Just medium freq for vigor
+            // --- 3. Vigor Initialization ---
+            float vigorNoise = smoothNoise(x * 0.1f, y * 0.1f, seed + 55); 
             grid.ei_vigor[idx] = 0.8f + 0.2f * vigorNoise; 
             grid.es_vigor[idx] = grid.ei_vigor[idx];
             
@@ -102,28 +117,14 @@ void VegetationSystem::update(VegetationGrid& grid, float dt, const DisturbanceR
 
     #pragma omp parallel for
     for (int i = 0; i < size; ++i) {
-        // Compute capacity based on position
-        int x = i % grid.width;
-        int y = i / grid.width;
+        // --- CAPACITY MODULATION (Regime-based) ---
+        // Base capacity from cache, scaled by functional response.
         
-        // FBM (Fractal Brownian Motion) for natural patches
-        // Octave 1: Low Freq, High Amp
-        float n1 = smoothNoise(x * 0.02f, y * 0.02f, 12345);
-        // Octave 2: Mid Freq, Mid Amp
-        float n2 = smoothNoise(x * 0.1f, y * 0.1f, 67890);
+        // EI (Grass): Resilient but responsive
+        float currentMaxEI = grid.ei_capacity[i] * (0.3f + 0.7f * R_EI);
         
-        float capacityNoise = n1 * 0.7f + n2 * 0.3f; // Mixed
-        
-        // Modulate EI Capacity with Disturbance Response
-        // Base capacity from noise, scaled by functional response.
-        // Even with 0 disturbance, we assume some base persistence (e.g. 0.3),
-        // but high disturbance pushes it to full potential.
-        float noiseMax = 0.8f + 0.2f * capacityNoise;
-        float maxEI = noiseMax * (0.3f + 0.7f * R_EI); 
-        
-        // Modulate ES Capacity
-        // ES is suppressed by Disturbance.
-        float maxES = 1.0f * R_ES;
+        // ES (Shrub): Highly sensitive (Exponential decay)
+        float currentMaxES = grid.es_capacity[i] * R_ES;
 
         // Handle Recovery Timer
         if (grid.recovery_timer[i] > 0.0f) {
@@ -131,36 +132,46 @@ void VegetationSystem::update(VegetationGrid& grid, float dt, const DisturbanceR
             if (grid.recovery_timer[i] < 0.0f) grid.recovery_timer[i] = 0.0f;
         }
 
-        // Recovery Logic (Relaxation towards targets)
+        // --- DYNAMICS (Growth/Dieback) ---
         if (grid.recovery_timer[i] <= 0.0f) {
-            // Grass (EI) Dynamics
-            if (grid.ei_coverage[i] < maxEI) {
-                grid.ei_coverage[i] += 0.1f * dt; // Growth
-                if (grid.ei_coverage[i] > maxEI) grid.ei_coverage[i] = maxEI;
-            } else if (grid.ei_coverage[i] > maxEI) {
-                grid.ei_coverage[i] -= 0.05f * dt; // Dieback if over capacity (e.g. disturbance reduced)
-                 if (grid.ei_coverage[i] < maxEI) grid.ei_coverage[i] = maxEI;
+            // 1. EI (Grass) Dynamics
+            if (grid.ei_coverage[i] < currentMaxEI) {
+                grid.ei_coverage[i] += 0.1f * dt; // Logistic Growth
+                if (grid.ei_coverage[i] > currentMaxEI) grid.ei_coverage[i] = currentMaxEI;
+            } else if (grid.ei_coverage[i] > currentMaxEI) {
+                grid.ei_coverage[i] -= 0.05f * dt; // Dieback (Competition/Stress)
+                 if (grid.ei_coverage[i] < currentMaxEI) grid.ei_coverage[i] = currentMaxEI;
             }
             
-            // VIGOR DYNAMICS (Simulated seasonality/stress)
-            float targetVigor = 0.8f + 0.2f * n2;
+            // Vigor (Simulated seasonality)
+            // Ideally should also be cached or global parameter
+            float targetVigor = 0.8f; 
             if (grid.ei_vigor[i] < targetVigor) {
                 grid.ei_vigor[i] += 0.1f * dt;
-            } else if (grid.ei_vigor[i] > targetVigor) {
+            } else {
                 grid.ei_vigor[i] -= 0.05f * dt; 
             }
             grid.ei_vigor[i] = std::max(0.0f, std::min(1.0f, grid.ei_vigor[i]));
+            grid.es_vigor[i] = grid.ei_vigor[i]; // Shared vigor for now
 
-            // Shrub (ES) Dynamics
-            // Grows towards maxES
-            if (grid.es_coverage[i] < maxES) {
-                // Slower growth than grass
-                grid.es_coverage[i] += 0.02f * dt; 
-                if (grid.es_coverage[i] > maxES) grid.es_coverage[i] = maxES;
-            } else if (grid.es_coverage[i] > maxES) {
+            // 2. ES (Shrub) Dynamics with FACILITATION
+            // Rule: Shrubs only grow effectively if grass matrix is established (Microclimate/Soil retention).
+            // Threshold EI > 0.7
+            bool facilitationActive = grid.ei_coverage[i] > 0.7f;
+            
+            if (grid.es_coverage[i] < currentMaxES) {
+                if (facilitationActive) {
+                    grid.es_coverage[i] += 0.02f * dt; // Slow growth
+                } else {
+                     // No growth (stagnation) or very slow? 
+                     // Let's assume stagnation without facilitation.
+                }
+                
+                if (grid.es_coverage[i] > currentMaxES) grid.es_coverage[i] = currentMaxES;
+            } else if (grid.es_coverage[i] > currentMaxES) {
                  // Dieback due to disturbance pressure
-                 grid.es_coverage[i] -= 0.1f * dt; // Dieback is relatively fast
-                 if (grid.es_coverage[i] < maxES) grid.es_coverage[i] = maxES;
+                 grid.es_coverage[i] -= 0.1f * dt; 
+                 if (grid.es_coverage[i] < currentMaxES) grid.es_coverage[i] = currentMaxES;
             }
         } // End Recovery Logic
 
@@ -200,40 +211,40 @@ void VegetationSystem::applyDisturbance(VegetationGrid& grid, const DisturbanceR
     if (!grid.isValid()) return;
     
     int size = static_cast<int>(grid.getSize());
-    int affectedCount = static_cast<int>(size * regime.spatialExtent); // Simple random selection
+    int affectedCount = static_cast<int>(size * regime.spatialExtent); 
     
+    // Modern RNG: Deterministic and high quality
+    // Using static to persist state across calls (Sequence continuity)
+    static std::mt19937 gen(123456789); 
+    std::uniform_int_distribution<> disIndex(0, size - 1);
+    std::uniform_real_distribution<> disProb(0.0f, 1.0f);
+
     // Disturbance Logic
     for (int k = 0; k < affectedCount; ++k) {
-         int idx = rand() % size; // Simple random for now
+         int idx = disIndex(gen); 
          
          if (regime.type == DisturbanceType::Fire) {
              // Ecological Fire Logic (v3.9.2):
              // High flammability = High ES Biomass AND Low Vigor (Dry fuel).
-             // EI (Grass) burns easier but has less fuel load.
              
              float flammability = 0.0f;
              
-             // Contribution from Dry Shrub (Primary Fuel according to user feedback)
+             // Contribution from Dry Shrub
              if (grid.es_coverage[idx] > 0.2f) {
-                 // Flammability increases as Vigor decreases (e.g., Vigor < 0.5)
                  float dryness = std::max(0.0f, 1.0f - grid.es_vigor[idx]);
-                 // Non-linear response to dryness
-                 if (dryness > 0.5f) { // If vigor < 0.5
+                 if (dryness > 0.5f) { 
                       flammability += grid.es_coverage[idx] * (dryness * 2.0f); 
                  }
              }
              
              // Contribution from Grass (Fine fuel)
-             // Grass is flammable even with moderate vigor, but less intense
              flammability += grid.ei_coverage[idx] * 0.3f * (1.0f - grid.ei_vigor[idx]);
 
-             // Stochastic Ignition threshold based on flammability
-             // Base probability + Flammability factor
+             // Stochastic Ignition
              float prob = 0.05f + flammability * 0.8f; 
              
-             if ((float)rand() / RAND_MAX < prob) {
+             if (disProb(gen) < prob) {
                  // FIRE EVENT!
-                 // Total removal of biomass
                  grid.ei_coverage[idx] = 0.0f;
                  grid.es_coverage[idx] = 0.0f;
                  grid.ei_vigor[idx] = 0.0f; // Ash/Blackened
@@ -243,9 +254,9 @@ void VegetationSystem::applyDisturbance(VegetationGrid& grid, const DisturbanceR
          } 
          else if (regime.type == DisturbanceType::Grazing) {
              // Selective removal of EI (Grass)
-             float removal = regime.grazingIntensity; // e.g., 0.2 remove 20%
+             float removal = regime.grazingIntensity; 
              grid.ei_coverage[idx] -= removal;
-             if (grid.ei_coverage[idx] < 0.1f) grid.ei_coverage[idx] = 0.1f; // Overgrazing limit
+             if (grid.ei_coverage[idx] < 0.1f) grid.ei_coverage[idx] = 0.1f;
              
              // Vigor impact
              grid.ei_vigor[idx] -= removal * 0.5f;

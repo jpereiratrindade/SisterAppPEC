@@ -16,7 +16,7 @@ namespace vegetation {
     struct DisturbanceRegime {
         DisturbanceType type = DisturbanceType::None;
         float magnitude = 0.0f;          // 0.0 to 1.0 (Biomass removal)
-        float frequency = 0.0f;          // Events per time unit (probability)
+        float frequency = 0.0f;          // Ecological Frequency (Chronicity). 0.0 = Rare, 1.0 = Chronic. NOT Hz.
         float spatialExtent = 0.0f;      // Scale of disturbance (0.0 to 1.0)
         
         // Extended Params for UI/Simulation
@@ -50,6 +50,7 @@ namespace vegetation {
         // Upper Stratum (Estrato Superior - ES) e.g., Shrubs/Trees
         std::vector<float> es_coverage; // [0.0 - 1.0]
         std::vector<float> es_vigor;    // [0.0 - 1.0]
+        std::vector<float> es_capacity; // [0.0 - 1.0] Max Capacity (Cached)
         
         // Ecological Memory / Hysteresis
         // Usage: Counts down time until recovery begins, or accumulates stress
@@ -70,6 +71,7 @@ namespace vegetation {
             es_vigor.assign(size, 1.0f);
             recovery_timer.assign(size, 0.0f);
             ei_capacity.assign(size, 1.0f); // Default full capacity
+            es_capacity.assign(size, 1.0f);
         }
 
         size_t getSize() const { return ei_coverage.size(); }

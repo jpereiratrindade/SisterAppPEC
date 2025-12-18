@@ -180,7 +180,10 @@ if (grid.ei_coverage[i] < maxEI) {
 }
 \end{lstlisting}
 
-A colonização por arbustos ($C_{ES}$) é dependente da presença prévia de gramíneas ($C_{EI} > 0.8$), simulando a sucessão secundária facilitada.
+A colonização por arbustos ($C_{ES}$) é dependente da presença prévia de gramíneas ($C_{EI} > 0.7$), simulando a sucessão secundária facilitada.
+
+\paragraph{Determinismo e Estocasticidade}
+Para garantir a reprodutibilidade científica dos experimentos, a geração de números aleatórios para eventos estocásticos utiliza um gerador \texttt{Mersenne Twister} (std::mt19937) com semente fixa, eliminando a variabilidade não-controlada entre execuções.
 
 \subsubsection{Probabilidade de Fogo (Fire Probability)}
 A ignição estocástica é calculada localmente com base na inflamabilidade do combustível disponível. O modelo adota a premissa ecológica de que **arbustos secos** ($ES_{dry}$) são o principal vetor de propagação:
