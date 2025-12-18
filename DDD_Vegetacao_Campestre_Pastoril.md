@@ -156,7 +156,7 @@ Permite expansão lateral de estratos entre células vizinhas.
 
 ## 7. Invariantes Ecológicas
 1. EI.coverage + ES.coverage ≤ 1.0  
-2. ES não aumenta sob alta frequência + alta magnitude  
+2. ES torna-se inflamável primariamente quando senescente (Vigor < 0.5) e abundante (Biomassa > 0.2)
 3. EI não colapsa sob distúrbio crônico  
 4. Recuperação de ES é mais lenta que sua degradação  
 5. Distúrbio sem magnitude não altera vegetação  
