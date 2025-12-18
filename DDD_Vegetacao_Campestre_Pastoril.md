@@ -1,5 +1,9 @@
 # DDD — Modelo Conceitual de Simulação da Vegetação Campestre Pastoril
 
+ARQUIVO: DDD_Vegetacao_Campestre_Pastoril.md.txt
+DATA: 18/12/2025
+VERSÃO: v3.9.2 (Fire & Flammability Update)
+
 ## 1. Domínio
 **Domínio:**  
 Simulação da dinâmica espaço-temporal da vegetação campestre em ambientes pastoris, baseada em comunidades vegetais funcionais e regimes de distúrbio.
