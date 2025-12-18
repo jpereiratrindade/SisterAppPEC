@@ -59,6 +59,7 @@ Estado funcional de um estrato vegetal.
 **Tipos**
 - LowerStratum (Estrato Inferior)
 - UpperStratum (Estrato Superior)
+  *Nota: No contexto pastoril, refere-se predominantemente a subarbustos e arbustos baixos (< 1m), sendo formas lenhosas altas menos frequentes.*
 
 ---
 
