@@ -6,7 +6,7 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src -isystem /usr/include/SDL2 -isystem /usr/include/eigen3 -isystem /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui -isystem /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/imgui/backends
 
-CXX_FLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion
+CXX_FLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -fopenmp
 
 # Custom options: CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o_OPTIONS = -Wno-conversion;-Wno-sign-conversion
 

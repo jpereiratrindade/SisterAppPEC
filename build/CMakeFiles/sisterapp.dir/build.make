@@ -604,6 +604,34 @@ CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/vegetation/vegetation_system.cpp -o CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.s
 
+CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o: CMakeFiles/sisterapp.dir/flags.make
+CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/soil_system.cpp
+CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o -MF CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o.d -o CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/soil_system.cpp
+
+CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/soil_system.cpp > CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.i
+
+CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/soil_system.cpp -o CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.s
+
+CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o: CMakeFiles/sisterapp.dir/flags.make
+CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o: /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/hydro_system.cpp
+CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o: CMakeFiles/sisterapp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o -MF CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o.d -o CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o -c /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/hydro_system.cpp
+
+CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/hydro_system.cpp > CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.i
+
+CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/hydro_system.cpp -o CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.s
+
 # Object files for target sisterapp
 sisterapp_OBJECTS = \
 "CMakeFiles/sisterapp.dir/main.cpp.o" \
@@ -643,7 +671,9 @@ sisterapp_OBJECTS = \
 "CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o" \
 "CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o" \
-"CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o"
+"CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o" \
+"CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o" \
+"CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o"
 
 # External object files for target sisterapp
 sisterapp_EXTERNAL_OBJECTS =
@@ -686,6 +716,8 @@ sisterapp: CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/terrain/watershed.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/terrain/landscape_metrics.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o
+sisterapp: CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o
+sisterapp: CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o
 sisterapp: CMakeFiles/sisterapp.dir/build.make
 sisterapp: CMakeFiles/sisterapp.dir/compiler_depend.ts
 sisterapp: /usr/lib64/libSDL2-2.0.so.0.3200.56
@@ -693,7 +725,7 @@ sisterapp: /lib64/libvulkan.so
 sisterapp: /usr/lib/gcc/x86_64-redhat-linux/15/libgomp.so
 sisterapp: /usr/lib64/libpthread.a
 sisterapp: CMakeFiles/sisterapp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Linking CXX executable sisterapp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Linking CXX executable sisterapp"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sisterapp.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

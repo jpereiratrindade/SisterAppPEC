@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include "../vegetation/vegetation_types.h"
+#include "../landscape/landscape_types.h"
 
 namespace terrain {
 
@@ -113,6 +114,14 @@ public:
     vegetation::VegetationGrid* getVegetation() { return vegGrid_.get(); }
     const vegetation::VegetationGrid* getVegetation() const { return vegGrid_.get(); }
 
+    // v4.0: Landscape Soil Grid
+    landscape::SoilGrid* getLandscapeSoil() { return landscapeSoil_.get(); }
+    const landscape::SoilGrid* getLandscapeSoil() const { return landscapeSoil_.get(); }
+
+    // v4.0: Landscape Hydro Grid
+    landscape::HydroGrid* getLandscapeHydro() { return landscapeHydro_.get(); }
+    const landscape::HydroGrid* getLandscapeHydro() const { return landscapeHydro_.get(); }
+
 private:
     int width_;
     int height_;
@@ -131,6 +140,10 @@ private:
 
     // v3.9.0
     std::unique_ptr<vegetation::VegetationGrid> vegGrid_;
+    
+    // v4.0: Integrated Landscape (Soil Foundation)
+    std::unique_ptr<landscape::SoilGrid> landscapeSoil_; // The physical soil state
+    std::unique_ptr<landscape::HydroGrid> landscapeHydro_; // The hydrological state
 };
 
 } // namespace terrain

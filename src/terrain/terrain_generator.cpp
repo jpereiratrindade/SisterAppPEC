@@ -4,6 +4,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include "../landscape/soil_system.h"
+#include "../landscape/hydro_system.h"
 
 namespace terrain {
 
@@ -295,6 +297,22 @@ void TerrainGenerator::applyErosion(TerrainMap& map, int /*iterations*/) {
 
 void TerrainGenerator::generateRivers(TerrainMap& map) {
     (void)map;
+}
+
+// v4.0
+void TerrainGenerator::generateLandscape(TerrainMap& map) {
+    auto* soil = map.getLandscapeSoil();
+    auto* hydro = map.getLandscapeHydro();
+
+    if (soil) {
+         std::cout << "[TerrainGenerator] Initializing Landscape Soil System..." << std::endl;
+        landscape::SoilSystem::initialize(*soil, seed_, map);
+    }
+
+    if (hydro) {
+        std::cout << "[TerrainGenerator] Initializing Landscape Hydro System (Topology)..." << std::endl;
+        landscape::HydroSystem::initialize(*hydro, map);
+    }
 }
 
 } // namespace terrain

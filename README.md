@@ -1,4 +1,4 @@
-# SisterApp Engine v3.9.2
+# SisterApp Engine v4.0.0
 Plataforma de Ecologia Computacional
 
 > **De Engine Gráfica para Laboratório Digital**: V3.8.0 transforma o projeto em uma plataforma científica para simulação de processos ecológicos, geração de padrões espaciais e validação métrica.
@@ -7,7 +7,7 @@ SisterApp é uma **Plataforma de Ecologia Computacional** de alto desempenho (C+
 
 Desenvolvido por **José Pedro Trindade**.
 
-![Version](https://img.shields.io/badge/version-3.9.2-orange.svg)
+![Version](https://img.shields.io/badge/version-4.0.0-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
 ![Status](https://img.shields.io/badge/Status-Stable-green.svg)
 
@@ -15,7 +15,8 @@ Desenvolvido por **José Pedro Trindade**.
 
 ## 🎯 What's New (v3.9.2)
 
--   **High-Scale Vegetation**: Optimized vegetation simulation for large-scale maps (4096^2) via throttled updates (v3.9.2).
+-   **Integrated Landscape Model**: Complete coupling of Hydro (Runoff/Erosion), Soil (Pedogenesis), and Vegetation (Ecofunctional Response) in v4.0.0.
+-   **High-Scale Vegetation**: Optimized vegetation simulation for large-scale maps (4096^2) via throttled updates.
 -   **Vegetation Dynamics (DDD)**: Grass/Shrub competition with Fire and Grazing disturbance regimes (v3.9.1).
 
 -   **Computational Ecology Platform**: Complete rebranding from "Engine" to "Scientific Platform".
@@ -136,7 +137,8 @@ Deterministic O(N) flow accumulation algorithm:
 -   [x] **v3.8.0**: Minimap, Rebranding, & Stability.
     -   [ ] **v3.x**: Scientific Visualization (NDVI Synthesis & Stress Signaling).
     -   [ ] Advanced Texturing (Splatting).
--   [ ] **v4.0.0**: VR Support & Agent Simulation.
+-   [x] **v4.0.0**: Integrated Ecofunctional Landscape (Soil-Hydro-Veg Coupling).
+-   [ ] **v5.0.0**: VR Support & Agent Simulation.
 
 ---
 

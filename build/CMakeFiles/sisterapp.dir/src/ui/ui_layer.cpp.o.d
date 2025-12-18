@@ -313,6 +313,7 @@ CMakeFiles/sisterapp.dir/src/ui/ui_layer.cpp.o: \
  /usr/include/c++/15/backward/auto_ptr.h \
  /usr/include/c++/15/pstl/glue_memory_defs.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../terrain/../vegetation/vegetation_types.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../terrain/../landscape/landscape_types.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../graphics/animation.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/bookmark.h \
  /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h \

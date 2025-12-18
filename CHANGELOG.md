@@ -1,6 +1,16 @@
 # Changelog
 
-## [v3.9.5] - 2025-12-18
+
+## [v4.0.0] - 2025-12-18
+### Integrated Landscape Model
+- **Major Architecture Assessment**: Transitioned from isolated systems to a fully coupled **Soil-Hydro-Vegetation** feedback loop.
+- **Components**:
+    - **Hydro System**: Implemented D8 Flow Routing, Dynamic Runoff ($P - I$), and Stream Power Erosion.
+    - **Soil System**: Implemented dynamic Soil Depth ($d$), Propagule Bank ($\Pi$), and Organic Matter ($OM$).
+    - **Vegetation System**: Implemented Site Quality ($d \times OM$) feedback on Carrying Capacity ($K$) and Water Stress feedback on Vigor ($\phi$).
+- **Documentation**: 
+    - Updated Manual Técnico with Section 4 "Modelo Integrado Ecofuncional".
+    - Verified all DDD invariants in validation testing.
 ### Ecological Modeling
 - **Functional Response to Disturbance**: 
     - Implemented logarithmically positive response for Grass ($R_{EI}$) and exponentially negative response for Shrubs ($R_{ES}$).

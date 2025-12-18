@@ -1,0 +1,299 @@
+\documentclass[
+12pt,
+oneside,
+a4paper,
+brazil
+]{article}
+
+% -------------------------------------------------
+% Pacotes
+% -------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+% -------------------------------------------------
+% Configurações
+% -------------------------------------------------
+\geometry{top=2.5cm,bottom=2.5cm,left=3cm,right=2.5cm}
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+
+% -------------------------------------------------
+% Título
+% -------------------------------------------------
+\title{\textbf{DDD — Modelo Integrado Ecofuncional da Paisagem Campestre}\\
+	\large Fundamentos conceituais e arquiteturais para simulação ecofuncional em larga escala}
+
+\author{
+	José Pedro Trindade\\
+	\small Plataforma de Ecologia Computacional -- SisTerApp
+}
+
+\date{Dezembro de 2025}
+
+% -------------------------------------------------
+\begin{document}
+	\maketitle
+	
+	% =================================================
+	\section{Domínio}
+	% =================================================
+	
+	\textbf{Domínio:}  
+	Modelagem integrada da paisagem campestre como um sistema ecofuncional complexo,
+	espacialmente acoplado e temporalmente explícito, no qual componentes físicos,
+	biológicos e hidrológicos interagem para produzir funções ecológicas mensuráveis
+	e propriedades emergentes.
+	
+	\textbf{Escopo do domínio:}
+	\begin{itemize}
+		\item Tipos de solo e sua organização espacial;
+		\item Relevo, hidrologia superficial e conectividade topográfica;
+		\item Estrutura, dinâmica e memória da vegetação campestre;
+		\item Processos ecofísicos e ecobiológicos;
+		\item Funções ecológicas fundamentais;
+		\item Propriedades emergentes do sistema.
+	\end{itemize}
+	
+	\textbf{Princípio estruturante:}  
+	Nenhuma propriedade sistêmica é modelada diretamente. Todas emergem da interação
+	entre estados, processos, funções e regimes de distúrbio explicitamente representados.
+	
+	% =================================================
+	\section{Subdomínios}
+	% =================================================
+	
+	\begin{itemize}
+		\item \textbf{Ambiente Físico} (Supporting)
+		\item \textbf{Vegetação Campestre} (Core)
+		\item \textbf{Hidrologia Superficial} (Core)
+		\item \textbf{Processos Ecofuncionais} (Core)
+		\item \textbf{Funções Ecofuncionais} (Core)
+		\item \textbf{Propriedades Emergentes} (Generic)
+	\end{itemize}
+	
+	% =================================================
+	\section{Agregado Central e Considerações Arquiteturais}
+	% =================================================
+	
+	\subsection{LandscapeCell (Raiz de Agregado Lógica)}
+	
+	A \textit{LandscapeCell} representa a unidade lógica mínima da paisagem no domínio
+	conceitual.
+	
+	\textbf{Identidade}
+	\begin{itemize}
+		\item CellID
+	\end{itemize}
+	
+	\textbf{Responsabilidades Conceituais}
+	\begin{itemize}
+		\item Representar um ponto da paisagem ecofuncional;
+		\item Referenciar estados ambientais e biológicos locais;
+		\item Servir como base para processos, funções e métricas emergentes.
+	\end{itemize}
+	
+	\textbf{Nota Arquitetural:}  
+	Embora conceitualmente tratada como uma entidade integrada no DDD, a
+	\textit{LandscapeCell} pode ser implementada computacionalmente como um identificador
+	(index), com seus estados distribuídos em componentes independentes (ex.: SoilState,
+	VegetationState) organizados em estruturas orientadas a dados (SoA / ECS), visando
+	processamento paralelo e eficiência de cache.
+	
+	% =================================================
+	\section{Estados de Domínio}
+	% =================================================
+	
+	\subsection{SoilState}
+	
+	\begin{itemize}
+		\item soilType
+		\item soilDepth
+		\item surfaceExposure (fração de solo descoberto)
+		\item infiltrationCapacity
+		\item compactionLevel
+		\item propaguleBank (potencial regenerativo)
+	\end{itemize}
+	
+	\subsection{TerrainState}
+	
+	\begin{itemize}
+		\item slope
+		\item curvature
+		\item topographicPosition
+	\end{itemize}
+	
+	\subsection{VegetationState}
+	
+	\begin{itemize}
+		\item Coverage$_{EI}$
+		\item Coverage$_{ES}$
+		\item Vigor$_{EI}$
+		\item Vigor$_{ES}$
+		\item structuralHeterogeneity
+		\item propaguleBank (sementes, gemas, memória biológica)
+	\end{itemize}
+	
+	\subsection{HydrologicalState}
+	
+	\begin{itemize}
+		\item flowAccumulation
+		\item runoffPotential
+		\item laminarErosionRisk
+	\end{itemize}
+	
+	% =================================================
+	\section{Vizinhança Espacial e Interações de Borda}
+	% =================================================
+	
+	A paisagem é modelada como um sistema espacialmente acoplado.
+	
+	\textbf{Definição de Vizinhança:}
+	\begin{itemize}
+		\item Vizinhança de Moore (8 células adjacentes) para processos difusivos;
+		\item Vizinhança direcionada (ex.: D8) para escoamento hidrológico.
+	\end{itemize}
+	
+	As interações de borda incluem:
+	\begin{itemize}
+		\item Fluxo de água entre células;
+		\item Propagação de distúrbios (fogo, erosão);
+		\item Recolonização vegetal lateral.
+	\end{itemize}
+	
+	% =================================================
+	\section{Processos Ecofísicos e Ecobiológicos}
+	% =================================================
+	
+	Os processos ecofuncionais são formalizados como \textbf{Serviços de Domínio}, pois
+	operam sobre conjuntos de células e suas interações espaciais.
+	
+	\textbf{Exemplos de Serviços de Domínio:}
+	\begin{itemize}
+		\item GrowthService (crescimento e recuperação vegetal);
+		\item RunoffService (escoamento superficial e fluxo hidrológico);
+		\item ErosionService (perda progressiva de solo);
+		\item PropagationService (dispersão e recolonização);
+		\item CompactionService (pisoteio e selamento superficial).
+	\end{itemize}
+	
+	Esses serviços não pertencem a uma única célula isolada, mas à dinâmica do sistema
+	como um todo.
+	
+	% =================================================
+	\section{Tempo e Loop de Atualização}
+	% =================================================
+	
+	O sistema opera em tempo discreto, organizado em passos de simulação ($\Delta t$).
+	
+	\textbf{Loop de Atualização Conceitual:}
+	\begin{enumerate}
+		\item Aplicação de regimes de distúrbio;
+		\item Execução dos processos ecofuncionais;
+		\item Atualização dos estados de domínio;
+		\item Cálculo das funções ecofuncionais;
+		\item Derivação das propriedades emergentes.
+	\end{enumerate}
+	
+	O tempo é tratado como entidade implícita do domínio, sendo essencial para a
+	interpretação de resiliência e trajetórias ecofuncionais.
+	
+	% =================================================
+	\section{Regimes de Distúrbio}
+	% =================================================
+	
+	Os regimes de distúrbio são agentes estruturantes da paisagem.
+	
+	\begin{itemize}
+		\item tipo (fogo, pastejo, pisoteio, seca);
+		\item frequência;
+		\item magnitude;
+		\item seletividade funcional;
+		\item escala espacial.
+	\end{itemize}
+	
+	Eles modulam trajetórias do sistema, não sendo considerados ruído aleatório.
+	
+	% =================================================
+	\section{Funções Ecofuncionais}
+	% =================================================
+	
+	As funções ecofuncionais traduzem estados e processos em capacidades ecológicas.
+	
+	\begin{itemize}
+		\item Infiltração de água;
+		\item Proteção do solo;
+		\item Produção primária;
+		\item Estabilidade estrutural da vegetação.
+	\end{itemize}
+	
+	\[
+	F_{prot} = f(C_{EI}, C_{ES}, H_{estrutural})
+	\]
+	
+	% =================================================
+	\section{Diversidade como Função Derivada}
+	% =================================================
+	
+	\begin{itemize}
+		\item Diversidade específica (proxy estrutural-funcional);
+		\item Diversidade funcional (variedade de respostas);
+		\item Diversidade estrutural (heterogeneidade espacial).
+	\end{itemize}
+	
+	% =================================================
+	\section{Propriedades Emergentes}
+	% =================================================
+	
+	\subsection{Resiliência Ecofuncional}
+	
+	\[
+	R = g(F_{prot}, F_{inf}, F_{prod}, D, T)
+	\]
+	
+	A resiliência é uma propriedade sistêmica derivada, não um estado primário.
+	
+	% =================================================
+	\section{Invariantes do Sistema}
+	% =================================================
+	
+	\begin{enumerate}
+		\item Solo descoberto elevado implica aumento de erosão;
+		\item A perda funcional precede o colapso estrutural;
+		\item Regeneração depende de memória biológica local;
+		\item Propriedades emergentes não retroagem diretamente sobre estados.
+	\end{enumerate}
+	
+	% =================================================
+	\section{Linguagem Ubíqua do Domínio}
+	% =================================================
+	
+	\begin{itemize}
+		\item LandscapeCell
+		\item Serviço de Domínio
+		\item Processo ecofuncional
+		\item Regime de distúrbio
+		\item Banco de propágulos
+		\item Função ecofuncional
+		\item Resiliência ecofuncional
+		\item Mancha campestre
+	\end{itemize}
+	
+	% =================================================
+	\section{Síntese}
+	% =================================================
+	
+	Este documento consolida um modelo ecofuncional integrado da paisagem campestre,
+	alinhando fundamentos ecológicos, clareza ontológica e viabilidade computacional
+	para simulações em larga escala e aplicações científicas e extensionistas.
+	
+\end{document}

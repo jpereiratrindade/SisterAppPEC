@@ -439,4 +439,37 @@ RCC = \frac{4\pi A}{P^{2}}
 em que $A$ corresponde à área da mancha e $P$ ao seu perímetro. O RCC varia entre 0 e 1, sendo valores próximos de 1 indicativos de manchas altamente compactas e valores menores associados a formas alongadas ou fragmentadas.
 
 
+
+\section{Modelo Integrado Ecofuncional da Paisagem (v4.0)}
+Com a atualização v4.0 (Dezembro/2025), o SisterApp transcende a simulação isolada de vegetação para incorporar um Modelo Integrado de Paisagem (Integrated Landscape Model - ILM), atendendo aos requisitos de acoplamento ecofuncional.
+
+\subsection{Arquitetura de Sistemas Integrados}
+O modelo adota uma arquitetura em camadas interconectadas, onde processos físicos (Hidrologia, Pedogênese) e biológicos (Crescimento Vegetal) operam em feedback contínuo.
+
+\subsubsection{Fundação Edáfica (Soil System)}
+Implementado como um \textit{SoilGrid} (SoA), o sistema de solo introduz propriedades dinâmicas e funcionais para cada célula:
+\begin{itemize}
+    \item \textbf{Profundidade do Solo ($d_{soil}$):} Variável de estado crítica, sujeita a erosão e intemperismo. Solos rasos ($d < 0.2m$) limitam severamente o Vigor vegetal.
+    \item \textbf{Banco de Propágulos ($\Pi$):} Representa a \textit{Memória Ecológica}. A capacidade de regeneração ($\tau_{rec}$) depende da integridade deste banco. Erosão severa remove o banco, levando à desertificação irreversível.
+    \item \textbf{Matéria Orgânica ($OM$):} Acumulada pela biomassa vegetal, aumenta a capacidade de infiltração e suporte.
+\end{itemize}
+
+\subsubsection{Hidrologia Dinâmica (Hydro System)}
+Diferente da abordagem estática anterior (apenas visualização de drenagem), o novo \textit{HydroGrid} simula fluxo de água ativo a cada passo de tempo:
+\[ Q_{runoff} = \max(0, P_{rain} - I_{infil}) \]
+Onde a Infiltração ($I_{infil}$) é modulada pela cobertura vegetal: $I_{infil} = K_{sat} \cdot (1 + \beta \cdot C_{veg})$. Cobertura densa aumenta a infiltração em até 3x, reduzindo o escoamento superficial.
+
+\subsubsection{Erosão e Sedimentação}
+O risco de erosão ($E_{risk}$) é calculado pelo poder de fluxo de água (Stream Power) ponderado pela proteção vegetal:
+\[ E_{risk} = Q_{runoff} \cdot S_{lope} \cdot (1 - C_{veg}) \]
+Se $E_{risk}$ excede um limiar crítico, ocorre remoção de $d_{soil}$. Este feedback negativo (Perda de Cobertura $\to$ Erosão $\to$ Perda de Solo $\to$ Menor Capacidade de Suporte) é o mecanismo central de degradação da paisagem.
+
+\subsection{Acoplamento Solo-Planta-Água}
+A vegetação agora responde ativamente ao estado da paisagem:
+\begin{enumerate}
+    \item \textbf{Site Quality:} A Capacidade de Suporte ($K_{EI}, K_{ES}$) é multiplicada pelo Índice de Qualidade do Solo ($SQ = d_{soil} \cdot OM$).
+    \item \textbf{Estresse Hídrico:} O Vigor ($\phi$) decai se o solo estiver saturado (Runoff excessivo) ou muito raso (incapaz de reter água).
+    \item \textbf{Resiliência:} A taxa de recuperação pós-distúrbio é limitada pela disponibilidade de propágulos local e vizinha.
+\end{enumerate}
+
 \end{document}

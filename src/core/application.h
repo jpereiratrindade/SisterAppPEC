@@ -210,6 +210,9 @@ namespace core {
         // v3.9.1 Throttle Vegetation Updates
         Uint32 lastVegetationUpdateMs_ = 0;
         Uint32 vegetationUpdateIntervalMs_ = 200; // 5Hz (conservative to break death spiral)
+        
+        // v4.0: Landscape Integration
+        float rainIntensity_ = 50.0f; // mm/h (Heavy Rain for Testing)
 
     };
 

@@ -1,6 +1,12 @@
 #include "application.h"
 #include "../graphics/geometry_utils.h"
-#include "../vegetation/vegetation_system.h" // v3.9.0
+#include "core/graphics_context.h"
+#include "terrain/terrain_generator.h"
+#include "terrain/terrain_renderer.h"
+#include "vegetation/vegetation_system.h"
+#include "landscape/hydro_system.h"
+#include "landscape/soil_system.h"
+#include "math/noise.h"
 #include "../terrain/watershed.h" // v3.6.3
 #include "../imgui_backend.h"
 #include "../math/math_types.h"
@@ -635,27 +641,40 @@ void Application::update(double dt) {
             lastVegetationUpdateMs_ = nowMs;
             
             auto* veg = finiteMap_->getVegetation();
+            auto* soil = finiteMap_->getLandscapeSoil();
+            auto* hydro = finiteMap_->getLandscapeHydro();
             
             // Performance Profiling
             Uint32 t0 = SDL_GetTicks();
             
-            // 1. Update (Recovery/Growth) 
-            // We pass a fixed delta or the actual elapsed? 
-            // Passing 0.2s (interval) is decent approx for simulation stability.
-            vegetation::VegetationSystem::update(*veg, vegetationUpdateIntervalMs_ / 1000.0f, disturbanceParams_);
-            
-            Uint32 t1 = SDL_GetTicks();
+            float dtSim = vegetationUpdateIntervalMs_ / 1000.0f;
 
-            // 2. Disturbance (Fire)
+            // 0. Disturbance (Fire)
             if (disturbanceParams_.fireFrequency > 0.0f) {
-                float prob = disturbanceParams_.fireFrequency * (vegetationUpdateIntervalMs_ / 1000.0f);
+                float prob = disturbanceParams_.fireFrequency * dtSim;
                 if ((float)rand() / RAND_MAX < prob) {
                     disturbanceParams_.type = vegetation::DisturbanceType::Fire;
                     vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
                     std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
                 }
             }
+
+            // v4.0: Integrated Landscape Loop
+            // 1. Hydro (Rain -> Runoff -> Erosion)
+            if (soil && hydro) {
+                landscape::HydroSystem::update(*hydro, *soil, *veg, rainIntensity_, dtSim);
+            }
+
+            // 2. Soil (Compaction/Weathering)
+            if (soil) {
+                landscape::SoilSystem::update(*soil, dtSim);
+            }
             
+            // 3. Vegetation (Growth/Recovery) 
+            vegetation::VegetationSystem::update(*veg, dtSim, disturbanceParams_, soil, hydro);
+            
+            Uint32 t1 = SDL_GetTicks();
+
             // 3. Upload to GPU
             if (finiteRenderer_) {
                 finiteRenderer_->updateVegetation(*veg);

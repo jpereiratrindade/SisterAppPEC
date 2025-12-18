@@ -24,6 +24,14 @@ void TerrainMap::resize(int width, int height) {
     // v3.9.0: Vegetation
     if (!vegGrid_) vegGrid_ = std::make_unique<vegetation::VegetationGrid>();
     vegGrid_->resize(width, height);
+
+    // v4.0: Landscape Soil
+    if (!landscapeSoil_) landscapeSoil_ = std::make_unique<landscape::SoilGrid>();
+    landscapeSoil_->resize(width, height);
+
+    // v4.0: Landscape Hydro
+    if (!landscapeHydro_) landscapeHydro_ = std::make_unique<landscape::HydroGrid>();
+    landscapeHydro_->resize(width, height);
 }
 
 void TerrainMap::clear() {

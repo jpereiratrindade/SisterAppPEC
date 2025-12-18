@@ -1,3 +1,4 @@
+#pragma once
 #include "terrain_map.h"
 #include "../math/noise.h"
 #include <memory>
@@ -12,6 +13,8 @@ public:
     void generateBaseTerrain(TerrainMap& map, const TerrainConfig& config);
     // v3.7.3: Semantic Soil Classification (CPU Authority)
     void classifySoil(TerrainMap& map, const TerrainConfig& config);
+    // v4.0: Integrated Landscape Generation
+    void generateLandscape(TerrainMap& map);
     
     // Replaced applyErosion with calculateDrainage (User Request)
     void calculateDrainage(TerrainMap& map);

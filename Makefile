@@ -694,6 +694,54 @@ src/init_sdl.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/init_sdl.cpp.s
 .PHONY : src/init_sdl.cpp.s
 
+src/landscape/hydro_system.o: src/landscape/hydro_system.cpp.o
+.PHONY : src/landscape/hydro_system.o
+
+# target to build an object file
+src/landscape/hydro_system.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.o
+.PHONY : src/landscape/hydro_system.cpp.o
+
+src/landscape/hydro_system.i: src/landscape/hydro_system.cpp.i
+.PHONY : src/landscape/hydro_system.i
+
+# target to preprocess a source file
+src/landscape/hydro_system.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.i
+.PHONY : src/landscape/hydro_system.cpp.i
+
+src/landscape/hydro_system.s: src/landscape/hydro_system.cpp.s
+.PHONY : src/landscape/hydro_system.s
+
+# target to generate assembly for a file
+src/landscape/hydro_system.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/landscape/hydro_system.cpp.s
+.PHONY : src/landscape/hydro_system.cpp.s
+
+src/landscape/soil_system.o: src/landscape/soil_system.cpp.o
+.PHONY : src/landscape/soil_system.o
+
+# target to build an object file
+src/landscape/soil_system.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.o
+.PHONY : src/landscape/soil_system.cpp.o
+
+src/landscape/soil_system.i: src/landscape/soil_system.cpp.i
+.PHONY : src/landscape/soil_system.i
+
+# target to preprocess a source file
+src/landscape/soil_system.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.i
+.PHONY : src/landscape/soil_system.cpp.i
+
+src/landscape/soil_system.s: src/landscape/soil_system.cpp.s
+.PHONY : src/landscape/soil_system.s
+
+# target to generate assembly for a file
+src/landscape/soil_system.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sisterapp.dir/build.make CMakeFiles/sisterapp.dir/src/landscape/soil_system.cpp.s
+.PHONY : src/landscape/soil_system.cpp.s
+
 src/math/frustum.o: src/math/frustum.cpp.o
 .PHONY : src/math/frustum.o
 
@@ -1133,6 +1181,12 @@ help:
 	@echo "... src/init_sdl.o"
 	@echo "... src/init_sdl.i"
 	@echo "... src/init_sdl.s"
+	@echo "... src/landscape/hydro_system.o"
+	@echo "... src/landscape/hydro_system.i"
+	@echo "... src/landscape/hydro_system.s"
+	@echo "... src/landscape/soil_system.o"
+	@echo "... src/landscape/soil_system.i"
+	@echo "... src/landscape/soil_system.s"
 	@echo "... src/math/frustum.o"
 	@echo "... src/math/frustum.i"
 	@echo "... src/math/frustum.s"

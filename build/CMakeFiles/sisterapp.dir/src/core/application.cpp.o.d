@@ -345,6 +345,7 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/../terrain/terrain_map.h \
  /usr/include/c++/15/cstdint \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/../terrain/../vegetation/vegetation_types.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/../terrain/../landscape/landscape_types.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../ui/bookmark.h \
  /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h \
  /usr/include/c++/15/unordered_map \
@@ -370,7 +371,9 @@ CMakeFiles/sisterapp.dir/src/core/application.cpp.o: \
  /usr/include/c++/15/atomic /usr/include/c++/15/bits/std_thread.h \
  /usr/include/c++/15/chrono \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../graphics/geometry_utils.h \
- /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../vegetation/vegetation_system.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/vegetation/vegetation_system.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/hydro_system.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/landscape/soil_system.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../terrain/watershed.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/../imgui_backend.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/core/preferences.h \

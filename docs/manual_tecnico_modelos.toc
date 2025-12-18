@@ -21,6 +21,7 @@
 \contentsline {subsubsection}{\numberline {3.8.2}Sinalização de Estresse (Early Warning)}{6}{subsubsection.3.8.2}%
 \contentsline {subsection}{\numberline {3.9}Formulação Matemática Detalhada}{6}{subsection.3.9}%
 \contentsline {subsubsection}{\numberline {3.9.1}Dinâmica de Crescimento e Recuperação}{7}{subsubsection.3.9.1}%
+\contentsline {paragraph}{Determinismo e Estocasticidade}{7}{section*.2}%
 \contentsline {subsubsection}{\numberline {3.9.2}Probabilidade de Fogo (Fire Probability)}{7}{subsubsection.3.9.2}%
 \contentsline {subsubsection}{\numberline {3.9.3}Dinâmica de Pastejo}{7}{subsubsection.3.9.3}%
 \contentsline {subsubsection}{\numberline {3.9.4}Implementação Computacional}{8}{subsubsection.3.9.4}%
@@ -48,6 +49,6 @@
 \contentsline {subsection}{\numberline {10.1}Metodologia: Ruído Coerente e Métricas de Paisagem (v3.8.0).}{12}{subsection.10.1}%
 \contentsline {subsection}{\numberline {10.2}Minimap e Navegação Interativa}{12}{subsection.10.2}%
 \contentsline {subsection}{\numberline {10.3}Classes e Cores}{13}{subsection.10.3}%
-\contentsline {paragraph}{Índice de Forma da Paisagem (LSI)}{13}{section*.3}%
-\contentsline {paragraph}{Complexidade da Forma (CF)}{14}{section*.4}%
-\contentsline {paragraph}{Coeficiente de Circularidade Relativa (RCC)}{14}{section*.5}%
+\contentsline {paragraph}{Índice de Forma da Paisagem (LSI)}{13}{section*.4}%
+\contentsline {paragraph}{Complexidade da Forma (CF)}{14}{section*.5}%
+\contentsline {paragraph}{Coeficiente de Circularidade Relativa (RCC)}{14}{section*.6}%

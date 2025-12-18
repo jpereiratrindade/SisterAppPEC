@@ -321,6 +321,7 @@ CMakeFiles/sisterapp.dir/src/ui/minimap.cpp.o: \
  /usr/include/c++/15/bits/charconv.h \
  /usr/include/c++/15/bits/basic_string.tcc /usr/include/c++/15/cstdint \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../terrain/../vegetation/vegetation_types.h \
+ /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../terrain/../landscape/landscape_types.h \
  /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/src/ui/../graphics/camera.h \
  /usr/include/c++/15/array /usr/include/c++/15/compare \
  /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \

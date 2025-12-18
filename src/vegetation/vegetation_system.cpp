@@ -1,4 +1,5 @@
 #include "vegetation_system.h"
+#include "../landscape/landscape_types.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -97,7 +98,8 @@ void VegetationSystem::initialize(VegetationGrid& grid, int seed) {
     }
 }
 
-void VegetationSystem::update(VegetationGrid& grid, float dt, const DisturbanceRegime& regime) {
+void VegetationSystem::update(VegetationGrid& grid, float dt, const DisturbanceRegime& regime, 
+                              const landscape::SoilGrid* soil, const landscape::HydroGrid* hydro) {
     if (!grid.isValid()) return;
     
     // In OpenMP parallel loop for performance
@@ -106,25 +108,31 @@ void VegetationSystem::update(VegetationGrid& grid, float dt, const DisturbanceR
     // Calculate Global Disturbance Index (Regime-based)
     float D = regime.magnitude * regime.frequency * regime.spatialExtent;
     
-    // Calculate Functional Responses
-    // EI (Grass): Logarithmic positive response to disturbance
+    // Functional Responses
     float R_EI = std::log(1.0f + regime.alpha * D);
-    R_EI = std::max(0.0f, std::min(1.0f, R_EI)); // Clamp to [0,1]
+    R_EI = std::max(0.0f, std::min(1.0f, R_EI));
     
-    // ES (Shrub): Exponential negative response to disturbance
     float R_ES = std::exp(-regime.beta * D);
-    R_ES = std::max(0.0f, std::min(1.0f, R_ES)); // Clamp to [0,1]
+    R_ES = std::max(0.0f, std::min(1.0f, R_ES)); 
 
     #pragma omp parallel for
     for (int i = 0; i < size; ++i) {
-        // --- CAPACITY MODULATION (Regime-based) ---
-        // Base capacity from cache, scaled by functional response.
+        // --- COUPLING: Site Index (Soil Depth + Organic Matter) ---
+        float siteIndex = 1.0f; // Default good
+        float recoveryPot = 1.0f; // Propagule Bank
         
-        // EI (Grass): Resilient but responsive
-        float currentMaxEI = grid.ei_capacity[i] * (0.3f + 0.7f * R_EI);
-        
-        // ES (Shrub): Highly sensitive (Exponential decay)
-        float currentMaxES = grid.es_capacity[i] * R_ES;
+        if (soil) {
+             // If soil is thin, capacity is reduced.
+             // Depth 1.0m = 100%. Depth 0.0m = 0%.
+             float depthFactor = std::min(1.0f, soil->depth[i]); 
+             siteIndex = depthFactor * (0.5f + 0.5f * soil->organic_matter[i]);
+             
+             recoveryPot = soil->propagule_bank[i];
+        }
+
+        // --- CAPACITY MODULATION (Regime + Site) ---
+        float currentMaxEI = grid.ei_capacity[i] * (0.3f + 0.7f * R_EI) * siteIndex;
+        float currentMaxES = grid.es_capacity[i] * R_ES * siteIndex;
 
         // Handle Recovery Timer
         if (grid.recovery_timer[i] > 0.0f) {
@@ -134,58 +142,60 @@ void VegetationSystem::update(VegetationGrid& grid, float dt, const DisturbanceR
 
         // --- DYNAMICS (Growth/Dieback) ---
         if (grid.recovery_timer[i] <= 0.0f) {
+            
             // 1. EI (Grass) Dynamics
             if (grid.ei_coverage[i] < currentMaxEI) {
-                grid.ei_coverage[i] += 0.1f * dt; // Logistic Growth
+                // Growth depends on Recovery Potential (Seeds)
+                grid.ei_coverage[i] += 0.1f * dt * recoveryPot; 
                 if (grid.ei_coverage[i] > currentMaxEI) grid.ei_coverage[i] = currentMaxEI;
             } else if (grid.ei_coverage[i] > currentMaxEI) {
-                grid.ei_coverage[i] -= 0.05f * dt; // Dieback (Competition/Stress)
+                grid.ei_coverage[i] -= 0.05f * dt; 
                  if (grid.ei_coverage[i] < currentMaxEI) grid.ei_coverage[i] = currentMaxEI;
             }
             
-            // Vigor (Simulated seasonality)
-            // Ideally should also be cached or global parameter
+            // Vigor (Simulated seasonality + Water Stress)
             float targetVigor = 0.8f; 
+            if (hydro) {
+                // If Flux (Runoff) is high, it means either:
+                // 1. Saturation -> Good for some, bad for others
+                // 2. High slope loss -> Bad
+                // Let's simplified: 
+                // Water Stress Inverse to Soil Depth (Reservoir). 
+                // Shallow soil dries faster.
+                if (soil && soil->depth[i] < 0.2f) targetVigor = 0.2f; 
+            }
+            
             if (grid.ei_vigor[i] < targetVigor) {
                 grid.ei_vigor[i] += 0.1f * dt;
             } else {
                 grid.ei_vigor[i] -= 0.05f * dt; 
             }
             grid.ei_vigor[i] = std::max(0.0f, std::min(1.0f, grid.ei_vigor[i]));
-            grid.es_vigor[i] = grid.ei_vigor[i]; // Shared vigor for now
+            grid.es_vigor[i] = grid.ei_vigor[i]; 
 
             // 2. ES (Shrub) Dynamics with FACILITATION
-            // Rule: Shrubs only grow effectively if grass matrix is established (Microclimate/Soil retention).
-            // Threshold EI > 0.7
             bool facilitationActive = grid.ei_coverage[i] > 0.7f;
             
             if (grid.es_coverage[i] < currentMaxES) {
                 if (facilitationActive) {
-                    grid.es_coverage[i] += 0.02f * dt; // Slow growth
-                } else {
-                     // No growth (stagnation) or very slow? 
-                     // Let's assume stagnation without facilitation.
-                }
-                
+                    grid.es_coverage[i] += 0.02f * dt * recoveryPot; 
+                } 
                 if (grid.es_coverage[i] > currentMaxES) grid.es_coverage[i] = currentMaxES;
             } else if (grid.es_coverage[i] > currentMaxES) {
-                 // Dieback due to disturbance pressure
                  grid.es_coverage[i] -= 0.1f * dt; 
                  if (grid.es_coverage[i] < currentMaxES) grid.es_coverage[i] = currentMaxES;
             }
-        } // End Recovery Logic
+        } 
 
-        // Competition Logic: ES suppresses EI (Shading/Space)
-        // If ES grows, it pushes EI out.
+        // Competition Logic
         if (grid.es_coverage[i] > 0.0f) {
             float availableSpace = 1.0f - grid.es_coverage[i];
             if (grid.ei_coverage[i] > availableSpace) {
                 grid.ei_coverage[i] = availableSpace;
             }
         }
-    } // End Parallel For Loop
+    } 
     
-    // Explicit invariant enforcement pass (vectorized/parallel friendly)
     enforceInvariants(grid);
 }
 
