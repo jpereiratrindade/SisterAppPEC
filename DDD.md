@@ -25,7 +25,11 @@ Entidades:
 - **TerrainMap**: Entidade central. Contém os dados de altura (Heightmap) e metadados (Erosion, Water).
 - **TerrainGenerator**: Serviço de domínio para geração procedural (Perlin/Simplex), Drenagem D8 e Erosão.
 - **Watershed (Service)**: Algoritmo de segmentação de bacias hidrográficas.
+- **Watershed (Service)**: Algoritmo de segmentação de bacias hidrográficas.
 - **LandscapeMetricCalculator (Service)**: Cálculo de métricas de ecologia da paisagem (LSI, CF, RCC).
+
+Documentação de Referência:
+- [Padrões de Solo](DDD_Padroes_Manchas_Solo.md)
 
 ---
 
