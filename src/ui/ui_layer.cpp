@@ -609,7 +609,7 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         // v3.9.0: Vegetation Model
         if (ImGui::CollapsingHeader("Vegetation Model (Grassland)", ImGuiTreeNodeFlags_DefaultOpen)) {
             // Mode Selection
-            const char* vegModes[] = { "OFF", "Realistic (Blend)", "Heatmap: EI (Grass)", "Heatmap: ES (Shrub)", "Heatmap: Vigor" };
+            const char* vegModes[] = { "OFF", "Realistic (Blend)", "Heatmap: EI (Grass)", "Heatmap: ES (Shrub)", "NDVI (Greenness)" };
             ImGui::Combo("Visualization", &ctx.vegetationMode, vegModes, IM_ARRAYSIZE(vegModes));
 
             if (ctx.vegetationMode > 0) {
@@ -661,12 +661,20 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
                     ImGui::ColorButton("##ShrubHigh", ImVec4(1.0f, 0.0f, 0.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16)); 
                     ImGui::SameLine(); ImGui::Text("100%%");
                 }
-                else if (ctx.vegetationMode == 4) { // Vigor
-                    ImGui::ColorButton("##VigorLow", ImVec4(0.0f, 0.0f, 0.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16));
-                    ImGui::SameLine(); ImGui::Text("Dead");
+                else if (ctx.vegetationMode == 4) { // NDVI
+                    // Scientific Palette: Soil(Brown)->Sparse(Yellow)->Dense(Green)
+                    ImGui::TextDisabled("NDVI (Simulated):");
+                    
+                    ImGui::ColorButton("##Soil", ImVec4(0.6f, 0.5f, 0.4f, 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(16,16));
+                    ImGui::SameLine(); ImGui::Text("0.1 (Soil)");
+                    ImGui::SameLine();
+                    
+                    ImGui::ColorButton("##Sparse", ImVec4(0.9f, 0.9f, 0.5f, 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(16,16));
+                    ImGui::SameLine(); ImGui::Text("0.3 (Mix)");
                     ImGui::SameLine(); 
-                    ImGui::ColorButton("##VigorHigh", ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16)); 
-                    ImGui::SameLine(); ImGui::Text("Best State");
+                    
+                    ImGui::ColorButton("##Dense", ImVec4(0.0f, 0.6f, 0.0f, 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(16,16)); 
+                    ImGui::SameLine(); ImGui::Text("0.8+ (Dense)");
                 }
                 ImGui::Dummy(ImVec2(0, 5));
             }

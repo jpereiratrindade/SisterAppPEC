@@ -462,7 +462,12 @@ void Application::processEvents(double dt) {
                                      ss << "-- Vegetacao --\n";
                                      ss << "EI (Grama): " << std::fixed << std::setprecision(2) << ei*100.0f << "%\n";
                                      ss << "ES (Arbusto): " << es*100.0f << "%\n";
-                                     ss << "Vigor: " << vigor*100.0f << "%";
+                                     ss << "Vigor: " << vigor*100.0f << "%\n";
+                                     
+                                     // NDVI Sim (v3.9.3)
+                                     float biomass = std::clamp(ei * 0.7f + es * 0.3f, 0.0f, 1.0f);
+                                     float ndvi = 0.1f + (biomass * vigor * 0.8f);
+                                     ss << "NDVI: " << std::fixed << std::setprecision(2) << ndvi;
                                  }
                              }
                          }

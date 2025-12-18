@@ -87,20 +87,42 @@ vec3 getRealisticLook(vec4 bioData) {
     return structuralLayer;
 }
 
+// Scientific NDVI Palette (Standardized)
 vec3 getNDVILook(vec4 bioData) {
     float ei = bioData.r;
     float es = bioData.g;
     float vigor = bioData.b;
 
-    // Approximate NDVI from coverage and vigor
-    float ndvi = clamp(ei * 0.7 * vigor + es * 0.3 * vigor, 0.0, 1.0);
+    // 1. Calculate Synthetic NDVI (-1.0 to 1.0)
+    // We start from 0.0 (Soil) to 1.0 (Dense Healthy Veg)
+    float biomass = clamp(ei * 0.7 + es * 0.3, 0.0, 1.0);
+    float ndvi = biomass * vigor; 
+    
+    // Remap to Scientific Range
+    // Soil Base: 0.1
+    // Full Veg: 0.9
+    ndvi = 0.1 + (ndvi * 0.8); 
 
-    vec3 low  = vec3(0.8, 0.2, 0.2);
-    vec3 mid  = vec3(0.9, 0.9, 0.2);
-    vec3 high = vec3(0.1, 0.8, 0.1);
+    // Palette Ramps
+    vec3 cWater = vec3(0.0, 0.0, 1.0);  // -1.0 to 0.0
+    vec3 cSoil  = vec3(0.6, 0.5, 0.4);  // 0.0 to 0.2
+    vec3 cSparse= vec3(0.9, 0.9, 0.5);  // 0.2 to 0.4
+    vec3 cDense = vec3(0.0, 0.6, 0.0);  // 0.4 to 0.8
+    vec3 cRich  = vec3(0.0, 0.3, 0.0);  // 0.8 to 1.0
 
-    if (ndvi < 0.5) return mix(low, mid, ndvi * 2.0);
-    return mix(mid, high, (ndvi - 0.5) * 2.0);
+    // Gradient Logic
+    if (ndvi < 0.2) {
+       float t = ndvi / 0.2;
+       return mix(cSoil, cSparse, t);
+    } 
+    else if (ndvi < 0.4) {
+       float t = (ndvi - 0.2) / 0.2;
+       return mix(cSparse, cDense, t);
+    }
+    else {
+       float t = clamp((ndvi - 0.4) / 0.5, 0.0, 1.0); 
+       return mix(cDense, cRich, t);
+    }
 }
 
 void main() {

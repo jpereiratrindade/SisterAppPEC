@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.9.4] - 2025-12-18
+### Visualization
+- **Standardized NDVI**: Updated NDVI visualization to use scientific color palette (Brown/Yellow/Green) and standardized range (0.1 - 0.9).
+- **NDVI Probe**: Added real-time simulated NDVI value readout to the terrain probe.
+
 ## [v3.9.3] - 2025-12-18
 ### Performance
 - **Parallel Computing**: Enabled OpenMP support to utilize all CPU cores for vegetation simulation and texture generation (16-32x speedup on high-end CPUs).

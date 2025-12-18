@@ -95,11 +95,13 @@ Define o modo de leitura da paisagem.
 ### 4.4 NDVISimulator
 Value Object responsável pela síntese de bandas espectrais virtuais.
 
-**Fórmula**
-`NDVI = (NIR - Red) / (NIR + Red)`
-Onde:
-- NIR (Infravermelho Próximo) $\propto$ Biomasa clorofilada (Coverage * Vigor)
-- Red (Vermelho Visível) $\propto$ Absorção por pigmentos (1.0 - Vigor)
+**Fórmula Simulada**
+`NDVI_Sim = 0.1 + (Biomass * Vigor * 0.8)`
+Range Padrão (Scientific):
+- **< 0.0**: Água / Nuvens (Não simulado na vegetação, mas na água)
+- **0.0 - 0.2**: Solo Exposto (BTextural, Raso)
+- **0.2 - 0.5**: Vegetação Esparsa (EI inicial)
+- **0.5 - 1.0**: Vegetação Densa e Vigorosa (EI + ES Full)
 
 --------------------------------------------------
 
