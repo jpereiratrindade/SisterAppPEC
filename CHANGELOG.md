@@ -6,7 +6,16 @@
   - Reduced update frequency from Per-Frame to Fixed-Timestep (200ms default).
   - Added performance profiling logging (`[Perf]`) to monitor simulation vs upload times.
   - Solved 1-2 FPS issue on large maps (4096+).
+- Solved 1-2 FPS issue on large maps (4096+).
 
+### Ecological Accuracy
+- **Refined Fire Logic**: Flammability is now driven by dry Upper Stratum (High Biomass + Low Vigor) rather than random probability.
+- **Ecological Invariants**: Updated DDD to enforce that "ES becomes flammable primarily when senescent".
+
+### Documentation
+- **Visual DDD**: Formalized concepts for **NDVI Synthesis** and **Visual Stress Signaling** in `DDD_Representacao_Vegetacao_Campestre.md`.
+- **Manual**: Clarified Upper Stratum definition as "Sub-shrubs (< 1m)" typical of pastoral environments.
+- **Reference**: Updated `DDD.md` to explicitly link the new Vegetation Domain documents.
 ## [v3.9.1] - 2025-12-17
 ### Added
 - **Grassland Vegetation Model (DDD)**:
