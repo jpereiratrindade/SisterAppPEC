@@ -162,13 +162,6 @@ Assegura que manchas ecológicas correspondam a padrões visuais coerentes.
 8. INVARIANTES DA REPRESENTAÇÃO
 ==================================================
 
-1. A representação não pode criar estrutura onde ES = 0
-2. A representação não pode ocultar queda de NDVI
-3. O mesmo estado ecológico deve gerar a mesma leitura visual
-4. Modos visuais não alteram o estado ecológico
-1. A representação não pode criar estrutura onde ES = 0
-2. A representação não pode ocultar queda de NDVI ("Greenwashing visual")
-3. O mesmo estado ecológico deve gerar a mesma leitura visual
 4. Modos visuais não alteram o estado ecológico
 5. Nenhuma entidade visual existe sem correspondência ecológica
 6. Estresse fisiológico deve ser visível antes do colapso de biomassa (Pre-Signaling)
