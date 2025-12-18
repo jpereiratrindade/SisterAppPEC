@@ -101,6 +101,18 @@ Exemplos:
 
 Esta abstração permite que o modelo seja agnóstico à escala (Scale-Independent) em sua lógica interna, enquanto a renderização adapta a densidade visual à geometria física.
 
+\subsubsection{Definição de Vigor ($\phi$)}
+O Vigor ($\phi \in [0, 1]$) não representa biomassa, mas sim o **estado fisiológico** da planta.
+\begin{itemize}
+    \item $\phi \approx 1.0$: Turgor máximo, alta clorofila, baixo estresse hídrico. (Visual: Verde)
+    \item $\phi < 0.5$: Senescência ou estresse severo. (Visual: Amarelo/Marrom)
+    \item $\phi = 0.0$: Planta morta (Necromassa em pé).
+\end{itemize}
+
+Diferente de modelos estáticos, o Vigor no SisterApp é dinâmico e espacialmente heterogêneo:
+\[ \phi_{target}(x,y) = 0.8 + 0.2 \cdot \text{Noise}(x,y) \]
+A vegetação busca constantemente esse alvo, simulando microclimas variados. Se perturbada (ex: pisoteio ou seca não simulada explicitamente), o vigor decai, aumentando a probabilidade de fogo ($\mathcal{F}$) antes mesmo da perda de cobertura.
+
 \subsection{Dinâmica de Distúrbios}
 O modelo implementa dois agentes principais de perturbação:
 
