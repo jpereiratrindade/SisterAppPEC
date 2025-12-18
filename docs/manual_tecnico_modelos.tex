@@ -110,6 +110,17 @@ O shader de terreno foi atualizado para combinar a coloração do solo (Pedologi
     \item \textbf{Heatmaps:} Modos de diagnóstico para visualizar cobertura bruta de EI/ES e níveis de estresse fisiológico (Vigor).
 \end{itemize}
 
+\subsection{Inovações de Visualização Científica (Roadmap)}
+Para aumentar a fidelidade ontológica da plataforma, foram definidos conceitos avançados de tradução visual (DDD Visual):
+
+\subsubsection{Síntese de NDVI Virtual}
+Para validação cruzada com sensoriamento remoto, o sistema prevê a geração de "Falso-Cor" baseada na reflectância espectral simulada:
+\[ NDVI_{sim} = \frac{(C_{total} \cdot Vigor) - (1 - Vigor)}{(C_{total} \cdot Vigor) + (1 - Vigor)} \]
+Isso permite comparar diretamente os output do modelo com imagens Sentinel-2 ou Landsat.
+
+\subsubsection{Sinalização de Estresse (Early Warning)}
+Diferente de engines de jogos que apenas "removem" a planta morta, o SisterApp implementa a \textbf{Atenuação Visual}: plantas sob estresse hídrico ou de pastejo manifestam redução de turgor (suavização de normal map) e transparência antes da perda efetiva de biomassa.
+
 \subsection{Formulação Matemática}
 A dinâmica temporal da vegetação é regida por equações diferenciais discretizadas no tempo ($\Delta t \approx 0.1s$).
 

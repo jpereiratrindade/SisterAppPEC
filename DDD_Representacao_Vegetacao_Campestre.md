@@ -85,10 +85,31 @@ Define o modo de leitura da paisagem.
 
 **Tipos**
 - Realista
-- NDVI_FalsoCor
+- NDVI_FalsoCor (Simulated Remote Sensing)
 - Estrutural
 - Estresse
 - Debug
+
+--------------------------------------------------
+
+### 4.4 NDVISimulator
+Value Object responsável pela síntese de bandas espectrais virtuais.
+
+**Fórmula**
+`NDVI = (NIR - Red) / (NIR + Red)`
+Onde:
+- NIR (Infravermelho Próximo) $\propto$ Biomasa clorofilada (Coverage * Vigor)
+- Red (Vermelho Visível) $\propto$ Absorção por pigmentos (1.0 - Vigor)
+
+--------------------------------------------------
+
+### 4.5 VisualStressSignal
+Define a assinatura visual de estresse pré-colapso ("Atenuação").
+
+**Atributos**
+- OpacityDrop (Transparência/Secura)
+- RoughnessSmoothing (Perda de turgor)
+- ColorShift (Amarelecimento)
 
 --------------------------------------------------
 
@@ -145,7 +166,13 @@ Assegura que manchas ecológicas correspondam a padrões visuais coerentes.
 2. A representação não pode ocultar queda de NDVI
 3. O mesmo estado ecológico deve gerar a mesma leitura visual
 4. Modos visuais não alteram o estado ecológico
+1. A representação não pode criar estrutura onde ES = 0
+2. A representação não pode ocultar queda de NDVI ("Greenwashing visual")
+3. O mesmo estado ecológico deve gerar a mesma leitura visual
+4. Modos visuais não alteram o estado ecológico
 5. Nenhuma entidade visual existe sem correspondência ecológica
+6. Estresse fisiológico deve ser visível antes do colapso de biomassa (Pre-Signaling)
+7. A escala de visualização (LOD) não pode alterar a semântica da mancha (apenas a precisão)
 
 ==================================================
 9. RELAÇÃO COM O DOMÍNIO ECOLÓGICO

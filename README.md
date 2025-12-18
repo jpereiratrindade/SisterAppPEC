@@ -134,6 +134,7 @@ Deterministic O(N) flow accumulation algorithm:
 -   [x] **v3.6.0**: D8 Drainage & Watersheds.
 -   [x] **v3.7.0**: Semantic Soil & Landscape Metrics.
 -   [x] **v3.8.0**: Minimap, Rebranding, & Stability.
+    -   [ ] **v3.x**: Scientific Visualization (NDVI Synthesis & Stress Signaling).
     -   [ ] Advanced Texturing (Splatting).
 -   [ ] **v4.0.0**: VR Support & Agent Simulation.
 
