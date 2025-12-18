@@ -37,7 +37,21 @@ Entidades:
 - **Camera**: Abstração de View/Projection (Free Flight / Orbital).
 - **Mesh**: Wrapper para recursos Vulkan (Buffer, Memory).
 
+- **Mesh**: Wrapper para recursos Vulkan (Buffer, Memory).
+
 ---
+
+### 2.4 Vegetation (Ecological Domain)
+Responsabilidade: simulação de dinâmica de populações vegetais e distúrbios.
+
+Documentação de Referência:
+- [Modelo Ecológico](DDD_Vegetacao_Campestre_Pastoril.md)
+- [Representação Visual](DDD_Representacao_Vegetacao_Campestre.md)
+
+Entidades:
+- **VegetationSystem**: Aggregate Root. Gerencia crescimento (Growth), competição e mortalidade.
+- **VegetationGrid**: Estrutura de dados (SoA) otimizada para cache contendo biomassa de EI/ES e Vigor.
+- **DisturbanceRegime**: Value Object que define Fogo e Pastejo.
 
 ### 2.4 UI (Presentation)
 Responsabilidade: interface interativa via Dear ImGui.
@@ -95,5 +109,4 @@ RN-01 **Deferred Updates**: O upload de malha para a GPU ocorre apenas no iníci
 ---
 
 ## 6. Future Roadmap
-- **Vegetation**: Reimplementação para Finite World (Instanced Rendering).
 - **Compute Shaders**: Mover simulação de erosão para GPU.
