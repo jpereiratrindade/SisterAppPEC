@@ -121,15 +121,47 @@ Isso permite comparar diretamente os output do modelo com imagens Sentinel-2 ou 
 \subsubsection{Sinalização de Estresse (Early Warning)}
 Diferente de engines de jogos que apenas "removem" a planta morta, o SisterApp implementa a \textbf{Atenuação Visual}: plantas sob estresse hídrico ou de pastejo manifestam redução de turgor (suavização de normal map) e transparência antes da perda efetiva de biomassa.
 
-\subsection{Formulação Matemática}
-A dinâmica temporal da vegetação é regida por equações diferenciais discretizadas no tempo ($\Delta t \approx 0.1s$).
+\subsection{Formulação Matemática Detalhada}
+O modelo utiliza uma abordagem híbrida de Autômatos Celulares e Equações Diferenciais Discretas. O estado de cada célula $i$ no tempo $t$ é vetorizado como:
+\[ \mathbf{V}_i(t) = [ C_{EI}, C_{ES}, \phi_{EI}, \phi_{ES}, \tau_{rec} ] \]
+Onde $C$ é a cobertura (0-1), $\phi$ é o vigor fisiológico (0-1) e $\tau_{rec}$ é o temporizador de recuperação pós-distúrbio.
 
-\subsubsection{Crescimento e Recuperação}
-Após o período de latência ($T_{recovery}$), a biomassa do Estrato Inferior ($C_{EI}$) recupera-se linearmente até a capacidade de suporte local ($K_{EI}$):
+\subsubsection{Dinâmica de Crescimento e Recuperação}
+Quando $\tau_{rec} \le 0$, a vegetação recupera biomassa seguindo uma função logística linearizada próxima à capacidade de suporte $K$:
+
 \[
-\frac{dC_{EI}}{dt} = r_{growth} \cdot Vigor_{EI} \quad \text{se} \quad C_{EI} < K_{EI}
+\frac{dC_{EI}}{dt} = r_{EI} \cdot (K_{EI} - C_{EI}) \cdot \phi_{EI}
 \]
-Onde $r_{growth} = 0.1 s^{-1}$ representa a taxa de crescimento intrínseca. O Estrato Superior ($C_{ES}$) coloniza a área apenas se houver estabilidade ($C_{EI} > 0.8$) e espaço disponível, simulando a sucessão ecológica secundária.
+Implementado numericamente como:
+\begin{lstlisting}[language=C++]
+if (grid.ei_coverage[i] < maxEI) {
+    grid.ei_coverage[i] += 0.1f * dt; // Taxa r = 0.1
+    if (grid.ei_coverage[i] > maxEI) grid.ei_coverage[i] = maxEI;
+}
+\end{lstlisting}
+
+A colonização por arbustos ($C_{ES}$) é dependente da presença prévia de gramíneas ($C_{EI} > 0.8$), simulando a sucessão secundária facilitada.
+
+\subsubsection{Probabilidade de Fogo (Fire Probability)}
+A ignição estocástica é calculada localmente com base na inflamabilidade do combustível disponível. O modelo adota a premissa ecológica de que **arbustos secos** ($ES_{dry}$) são o principal vetor de propagação:
+
+1. **Fator de Secura ($\delta_{ES}$):**
+\[ \delta_{ES} = \max(0, 1.0 - \phi_{ES}) \]
+
+2. **Inflamabilidade ($\mathcal{F}_i$):**
+\[ \mathcal{F}_i = \underbrace{C_{ES} \cdot (2\delta_{ES})}_{\text{Lenhoso Seco}} + \underbrace{C_{EI} \cdot 0.3 \cdot (1-\phi_{EI})}_{\text{Fino Morto}} \]
+*Nota: A contribuição do ES é nula se $\delta_{ES} < 0.5$ (Vigor > 0.5).*
+
+3. **Probabilidade de Ignição ($P_{ign}$):**
+\[ P_{ign} = P_{base} + \alpha \cdot \mathcal{F}_i \]
+Onde $P_{base} = 0.05$ e $\alpha = 0.8$. Se um número aleatório $R \in [0,1] < P_{ign}$, ocorre a remoção total de biomassa.
+
+\subsubsection{Dinâmica de Pastejo}
+O pastejo atua como uma força de remoção seletiva sobre o Estrato Inferior:
+\[ C_{EI}(t+\Delta t) = C_{EI}(t) - I_{grazing} \cdot \Delta t \]
+Com impacto colateral no vigor:
+\[ \phi_{EI}(t+\Delta t) = \phi_{EI}(t) - \frac{I_{grazing}}{2} \cdot \Delta t \]
+Isso simula o "superpastejo" que reduz não apenas a biomassa, mas a capacidade fotossintética futura.
 
 \subsubsection{Implementação Computacional}
 Para garantir a escalabilidade em grandes paisagens ($> 16 \text{ milhões de células}$), o sistema adota uma abordagem de \textit{Fixed-Time Step Simulation}:
