@@ -87,7 +87,7 @@ O estado de cada célula é definido por um vetor de 4 componentes:
 A célula ($V_{cell}$) é a unidade atômica da simulação, representando um estado homogêneo estatístico. Embora a simulação opere em espaço de grade abstrato (Grid Space), a interpretação física da "Cobertura" ($C$) é dependente da resolução métrica configurada na interface:
 
 \subsubsection{Resolução Física ($R$)}
-Definida pelo parâmetro \textbf{Cell Size}, padronizado em $R = 1.0m$. A área física de uma célula é dada por $A_{cell} = R^2$.
+A dimensão espacial da célula é definida pelo parâmetro \textbf{Cell Size (Resolution)}, acessível na interface do usuário sob o menu "Map Generator". Este parâmetro permite o ajuste dinâmico em tempo de execução de $R \in [0.1m, 4.0m]$. O valor padrão é $R = 1.0m$. A área física de uma célula é dada por $A_{cell} = R^2$.
 
 \subsubsection{Interpretação da Cobertura}
 O valor de cobertura $C \in [0, 1]$ representa a fração da área da célula ocupada pelo estrato:
