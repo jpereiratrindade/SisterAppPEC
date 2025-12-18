@@ -110,6 +110,23 @@ O shader de terreno foi atualizado para combinar a coloração do solo (Pedologi
     \item \textbf{Heatmaps:} Modos de diagnóstico para visualizar cobertura bruta de EI/ES e níveis de estresse fisiológico (Vigor).
 \end{itemize}
 
+\subsection{Formulação Matemática}
+A dinâmica temporal da vegetação é regida por equações diferenciais discretizadas no tempo ($\Delta t \approx 0.1s$).
+
+\subsubsection{Crescimento e Recuperação}
+Após o período de latência ($T_{recovery}$), a biomassa do Estrato Inferior ($C_{EI}$) recupera-se linearmente até a capacidade de suporte local ($K_{EI}$):
+\[
+\frac{dC_{EI}}{dt} = r_{growth} \cdot Vigor_{EI} \quad \text{se} \quad C_{EI} < K_{EI}
+\]
+Onde $r_{growth} = 0.1 s^{-1}$ representa a taxa de crescimento intrínseca. O Estrato Superior ($C_{ES}$) coloniza a área apenas se houver estabilidade ($C_{EI} > 0.8$) e espaço disponível, simulando a sucessão ecológica secundária.
+
+\subsubsection{Implementação Computacional}
+Para garantir a escalabilidade em grandes paisagens ($> 16 \text{ milhões de células}$), o sistema adota uma abordagem de \textit{Fixed-Time Step Simulation}:
+\begin{itemize}
+    \item \textbf{Frequency:} 5-10 Hz (desacoplado do Frame Rate de renderização).
+    \item \textbf{Throttling:} A atualização de estado e a transferência de dados (CPU $\to$ GPU) são limitadas temporalmente para evitar gargalos no barramento PCIe.
+\end{itemize}
+
 \section{Geração de Topologia (Terrain Models)}
 É fundamental distinguir o \textbf{Gerador de Topologia} do \textbf{Analisador de Declividade}. O sistema mantém três perfis de geração baseados em ruído Perlin, que definem a geometria física do mundo.
 
