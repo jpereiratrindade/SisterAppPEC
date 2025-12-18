@@ -69,6 +69,9 @@ struct UiFrameContext {
     // v3.9.0 Vegetation
     int& vegetationMode;
     vegetation::DisturbanceRegime& disturbanceParams;
+    
+    // v4.0.0 Hydro
+    float& rainIntensity;
 };
 
 struct Callbacks {

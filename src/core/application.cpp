@@ -455,6 +455,26 @@ void Application::processEvents(double dt) {
                          ss << "Fluxo: " << std::setprecision(1) << flux << " m2\n";
                          ss << "Bacia ID: " << basinID << "\n";
                          
+                         // v4.0.0: Soil & Hydro Probe
+                         if (finiteMap_->getLandscapeSoil()) {
+                              auto* soil = finiteMap_->getLandscapeSoil();
+                              int idx = hitZ * finiteMap_->getWidth() + hitX;
+                              if (idx >= 0 && idx < soil->depth.size()) {
+                                  ss << "Solo Depth: " << std::fixed << std::setprecision(2) << soil->depth[idx] << " m\n";
+                                  ss << "Mat. Org: " << std::setprecision(2) << soil->organic_matter[idx] * 100.0f << "%\n";
+                              }
+                         }
+                         if (finiteMap_->getLandscapeHydro()) {
+                              auto* hydro = finiteMap_->getLandscapeHydro();
+                              int idx = hitZ * finiteMap_->getWidth() + hitX;
+                              if (idx >= 0 && idx < hydro->water_depth.size()) {
+                                  float wd = hydro->water_depth[idx] * 1000.0f; // mm
+                                  float er = hydro->erosion_risk[idx];
+                                  ss << "Runoff: " << std::fixed << std::setprecision(1) << wd << " mm\n";
+                                  ss << "Erosion Risk: " << std::setprecision(3) << er << "\n";
+                              }
+                         }
+                         
                          // v3.9.1: Vegetation Probe
                          if (finiteMap_->getVegetation()) {
                              auto* veg = finiteMap_->getVegetation();
@@ -914,7 +934,10 @@ void Application::render(size_t frameIndex) {
         
         // v3.9.0 Vegetation
         vegetationMode_,
-        disturbanceParams_
+        disturbanceParams_,
+        
+        // v4.0.0 Hydro
+        rainIntensity_
     };
 
     uiLayer_->render(uiCtx, cmd);

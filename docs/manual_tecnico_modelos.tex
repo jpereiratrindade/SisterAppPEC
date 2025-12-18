@@ -472,4 +472,15 @@ A vegetação agora responde ativamente ao estado da paisagem:
     \item \textbf{Resiliência:} A taxa de recuperação pós-distúrbio é limitada pela disponibilidade de propágulos local e vizinha.
 \end{enumerate}
 
+\subsection{Interface de Controle e Diagnóstico}
+Para suportar a experimentação em tempo real, a interface do SisterApp v4.0 expõe parâmetros críticos:
+\begin{itemize}
+    \item \textbf{Controle de Precipitação:} Slider \textit{Rain Intensity} [0-100 mm/h] (Menu \textit{Map Generator}). Permite forçar eventos de tempestade para observar o escoamento dinâmico.
+    \item \textbf{Sonda Pedológica (Probe):} A ferramenta de inspeção visual (Clique Esquerdo) agora reporta:
+    \begin{itemize}
+        \item \textit{Soil Depth} ($m$) e \textit{Organic Matter} ($\%$)
+        \item \textit{Runoff Accumulation} ($mm$) e \textit{Erosion Risk} (Adimensional)
+    \end{itemize}
+\end{itemize}
+
 \end{document}

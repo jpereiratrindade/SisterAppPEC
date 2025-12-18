@@ -454,8 +454,16 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
              ImGui::Indent();
              ImGui::SliderFloat("Intensity", &ctx.drainageIntensity, 0.05f, 1.0f, "%.2f");
              if (ImGui::IsItemHovered()) ImGui::SetTooltip("Sensitivity: Lower = Only Rivers, Higher = Catchment Areas");
+             
+             ImGui::SliderFloat("Intensity", &ctx.drainageIntensity, 0.05f, 1.0f, "%.2f");
+             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Sensitivity: Lower = Only Rivers, Higher = Catchment Areas");
              ImGui::Unindent();
         }
+        
+        // v4.0.0 Rainfall Control (Always visible)
+        ImGui::SliderFloat("Rain Intensity", &ctx.rainIntensity, 0.0f, 100.0f, "%.1f mm/h");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls dynamic runoff generation (affects Erosion & Veg).");
+        
         if (ctx.showDrainage && ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
 
         bool wasShown = ctx.showWatershedVis;

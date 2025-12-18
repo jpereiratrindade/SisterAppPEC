@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.11.13)  18 DEC 2025 17:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.11.13)  18 DEC 2025 17:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -655,18 +655,24 @@ Overfull \hbox (5.74736pt too wide) in paragraph at lines 361--362
 -ral (La-ranja), Ar-gila Ex-pan-siva (Roxo). 
  []
 
-[12] [13] [14] (./manual_tecnico_modelos.aux)
+[12] [13] [14] [15] (./manual_tecnico_modelos.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-10-24>
  ***********
-Package rerunfilecheck Info: File `manual_tecnico_modelos.out' has not changed.
 
-(rerunfilecheck)             Checksum: 1EB1B26D01ECBF08B6C007FF213E235C;11291.
+
+Package rerunfilecheck Warning: File `manual_tecnico_modelos.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `manual_tecnico_modelos.out':
+(rerunfilecheck)             Before: 1EB1B26D01ECBF08B6C007FF213E235C;11291
+(rerunfilecheck)             After:  B685EB1912E35CB1791C174FB684ACFE;12734.
  ) 
 Here is how much of TeX's memory you used:
- 13335 strings out of 467538
- 202767 string characters out of 5419551
+ 13345 strings out of 467538
+ 202892 string characters out of 5419551
  826833 words of memory out of 5000000
  41998 multiletter control sequences out of 15000+600000
  645615 words of font info for 79 fonts, out of 8000000 for 9000
@@ -694,10 +700,10 @@ mf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/local/texlive/2025/texmf
 ist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2025/texmf-dis
 t/fonts/type1/public/cm-super/sfti1200.pfb></usr/local/texlive/2025/texmf-dist/
 fonts/type1/public/cm-super/sftt1200.pfb>
-Output written on manual_tecnico_modelos.pdf (14 pages, 407923 bytes).
+Output written on manual_tecnico_modelos.pdf (15 pages, 415738 bytes).
 PDF statistics:
- 469 PDF objects out of 1000 (max. 8388607)
- 403 compressed objects within 5 object streams
- 82 named destinations out of 1000 (max. 500000)
+ 484 PDF objects out of 1000 (max. 8388607)
+ 417 compressed objects within 5 object streams
+ 92 named destinations out of 1000 (max. 500000)
  393 words of extra memory for PDF output out of 10000 (max. 10000000)
 
