@@ -203,6 +203,16 @@ void Application::init() {
                 if (finiteRenderer_) finiteRenderer_->updateVegetation(*finiteMap_->getVegetation()); 
             }
         },
+        [this]() { // triggerFireEvent (v3.9.2)
+            if (finiteMap_ && finiteMap_->getVegetation()) {
+                 vegetation::DisturbanceRegime firePulse;
+                 firePulse.type = vegetation::DisturbanceType::Fire;
+                 firePulse.spatialExtent = 1.0f; 
+                 firePulse.fireFrequency = 1.0f; 
+                 vegetation::VegetationSystem::applyDisturbance(*finiteMap_->getVegetation(), firePulse);
+                 if (finiteRenderer_) finiteRenderer_->updateVegetation(*finiteMap_->getVegetation());
+            }
+        },
         // v3.6.5 Resolution
         // v3.6.5 Resolution + v3.7.8 Seed + v3.8.0 Water Level
         [this](const terrain::TerrainConfig& config) { // regenerateFiniteWorld
@@ -437,7 +447,25 @@ void Application::processEvents(double dt) {
                          ss << "Decliv: " << std::setprecision(1) << slopePct << "%\n";
                          ss << "Solo: " << soilType << "\n";
                          ss << "Fluxo: " << std::setprecision(1) << flux << " m2\n";
-                         ss << "Bacia ID: " << basinID;
+                         ss << "Bacia ID: " << basinID << "\n";
+                         
+                         // v3.9.1: Vegetation Probe
+                         if (finiteMap_->getVegetation()) {
+                             auto* veg = finiteMap_->getVegetation();
+                             if (veg->isValid()) { // Ensure grid is allocated
+                                 int vegIdx = hitZ * finiteMap_->getWidth() + hitX;
+                                 if (vegIdx >= 0 && vegIdx < veg->getSize()) {
+                                     float ei = veg->ei_coverage[vegIdx];
+                                     float es = veg->es_coverage[vegIdx];
+                                     float vigor = veg->ei_vigor[vegIdx]; // Assuming correlated vigor
+                                     
+                                     ss << "-- Vegetacao --\n";
+                                     ss << "EI (Grama): " << std::fixed << std::setprecision(2) << ei*100.0f << "%\n";
+                                     ss << "ES (Arbusto): " << es*100.0f << "%\n";
+                                     ss << "Vigor: " << vigor*100.0f << "%";
+                                 }
+                             }
+                         }
                          
                          lastSurfaceInfo_ = ss.str();
                          lastSurfaceValid_ = true;

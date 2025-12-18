@@ -42,6 +42,8 @@ sisterapp: \
   CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o \
   /usr/lib64/libSDL2-2.0.so.0.3200.56 \
   /lib64/libvulkan.so \
+  /usr/lib/gcc/x86_64-redhat-linux/15/libgomp.so \
+  /usr/lib64/libpthread.a \
   /usr/lib/gcc/x86_64-redhat-linux/15/libstdc++.so \
   /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/libm.so \
   /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/libm.so \
@@ -155,6 +157,10 @@ CMakeFiles/sisterapp.dir/src/vegetation/vegetation_system.cpp.o:
 /usr/lib64/libSDL2-2.0.so.0.3200.56:
 
 /lib64/libvulkan.so:
+
+/usr/lib/gcc/x86_64-redhat-linux/15/libgomp.so:
+
+/usr/lib64/libpthread.a:
 
 /usr/lib/gcc/x86_64-redhat-linux/15/libstdc++.so:
 

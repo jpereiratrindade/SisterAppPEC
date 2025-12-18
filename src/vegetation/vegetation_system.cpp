@@ -48,24 +48,33 @@ void VegetationSystem::initialize(VegetationGrid& grid, int seed) {
         for (int x = 0; x < w; ++x) {
             int idx = y * w + x;
             
-            // Generate correlated noise for patches
-            float scale = 0.05f; // Frequency
-            float noiseEI = smoothNoise(x * scale, y * scale, seed) * 0.5f + 0.5f; // 0-1
-            float noiseES = smoothNoise(x * scale + 100, y * scale + 100, seed) * 0.5f + 0.5f;
+            // Generate correlated noise for patches (FBM)
+            // Octave 1
+            float n1 = smoothNoise(x * 0.02f, y * 0.02f, seed);
+            // Octave 2
+            float n2 = smoothNoise(x * 0.1f, y * 0.1f, seed + 999);
+            
+            float noiseEI = n1 * 0.7f + n2 * 0.3f; // Mixed
             
             // EI (Grass): High coverage base, modulated by noise
-            grid.ei_coverage[idx] = 0.6f + 0.4f * noiseEI; // 0.6 - 1.0
+            grid.ei_coverage[idx] = 0.6f + 0.4f * (noiseEI * 0.5f + 0.5f); // Normalize roughly
             
             // ES (Shrub): Clumped distribution
-            if (noiseES > 0.6f) {
-                grid.es_coverage[idx] = (noiseES - 0.6f) * 2.5f; // 0.0 - 1.0 blobs
+            // Use similar FBM but shifted
+            float esN1 = smoothNoise(x * 0.02f + 100, y * 0.02f + 100, seed);
+            float esN2 = smoothNoise(x * 0.1f + 100, y * 0.1f + 100, seed + 888);
+            float noiseES = esN1 * 0.7f + esN2 * 0.3f;
+            
+            if (noiseES > 0.2f) { // Lower threshold for FBM
+                grid.es_coverage[idx] = (noiseES - 0.2f) * 1.5f; 
+                if (grid.es_coverage[idx] > 1.0f) grid.es_coverage[idx] = 1.0f;
             } else {
                 grid.es_coverage[idx] = 0.0f;
             }
             
             // Vigor: Also varies spatially
-            float vigorNoise = smoothNoise(x * scale * 2.0f, y * scale * 2.0f, seed + 99);
-            grid.ei_vigor[idx] = 0.8f + 0.2f * vigorNoise; // 0.6 - 1.0 (Healthy)
+            float vigorNoise = smoothNoise(x * 0.1f, y * 0.1f, seed + 55); // Just medium freq for vigor
+            grid.ei_vigor[idx] = 0.8f + 0.2f * vigorNoise; 
             grid.es_vigor[idx] = grid.ei_vigor[idx];
             
             grid.recovery_timer[idx] = 0.0f;
@@ -82,15 +91,18 @@ void VegetationSystem::update(VegetationGrid& grid, float dt) {
 
     #pragma omp parallel for
     for (int i = 0; i < size; ++i) {
-        // Compute capacity based on position (re-using pseudoNoise)
+        // Compute capacity based on position
         int x = i % grid.width;
         int y = i / grid.width;
         
-        // Capacity Logic: Not 1.0 everywhere!
-        // Re-calculate noise to keep "Carrying Capacity" consistent with initialization
-        // We use the same seed 0 implicit or passed? We don't have seed here.
-        // We'll trust a static seed or simple hash for stability.
-        float capacityNoise = pseudoNoise(x / 20, y / 20, 12345); // Coarse patches
+        // FBM (Fractal Brownian Motion) for natural patches
+        // Octave 1: Low Freq, High Amp
+        float n1 = smoothNoise(x * 0.02f, y * 0.02f, 12345);
+        // Octave 2: Mid Freq, Mid Amp
+        float n2 = smoothNoise(x * 0.1f, y * 0.1f, 67890);
+        
+        float capacityNoise = n1 * 0.7f + n2 * 0.3f; // Mixed
+        
         float maxEI = 0.8f + 0.2f * capacityNoise; // 0.6 - 1.0
         
         // Handle Recovery Timer
@@ -106,23 +118,58 @@ void VegetationSystem::update(VegetationGrid& grid, float dt) {
                 grid.ei_coverage[i] += 0.1f * dt; // 10 seconds to full
                 if (grid.ei_coverage[i] > maxEI) grid.ei_coverage[i] = maxEI;
             }
-            if (grid.ei_vigor[i] < 1.0f) {
-                grid.ei_vigor[i] += 0.2f * dt;
-                if (grid.ei_vigor[i] > 1.0f) grid.ei_vigor[i] = 1.0f;
-            }
             
+            // VIGOR DYNAMICS (Simulated seasonality/stress)
+            // Instead of always forcing to 1.0, we target a variable level based on noise/time
+            float targetVigor = 0.8f + 0.2f * n2; // Vigor varies 0.8-1.0 spatially
+            
+            // Decay or Recover towards target
+            if (grid.ei_vigor[i] < targetVigor) {
+                grid.ei_vigor[i] += 0.1f * dt;
+            } else if (grid.ei_vigor[i] > targetVigor) {
+                grid.ei_vigor[i] -= 0.05f * dt; // Slow decay
+            }
+            grid.ei_vigor[i] = std::max(0.0f, std::min(1.0f, grid.ei_vigor[i]));
+
             // Shrubs (ES) recovers slowly if EI is healthy
             // Limit ES based on EI presence?
-            float maxES = (maxEI > 0.9f) ? 0.8f : 0.0f; // Only supports shrubs in high capacity zones?
             // Actually, keep it simpler:
             if (grid.ei_coverage[i] > 0.8f && grid.es_coverage[i] < 1.0f) {
                 grid.es_coverage[i] += 0.01f * dt; // 100 seconds to full
                 if (grid.es_coverage[i] > 1.0f) grid.es_coverage[i] = 1.0f;
             }
+        } // End Recovery Logic
+
+        // Competition Logic: ES suppresses EI (Shading/Space)
+        // If ES grows, it pushes EI out.
+        if (grid.es_coverage[i] > 0.0f) {
+            float availableSpace = 1.0f - grid.es_coverage[i];
+            if (grid.ei_coverage[i] > availableSpace) {
+                grid.ei_coverage[i] = availableSpace;
+            }
+        }
+    } // End Parallel For Loop
+    
+    // Explicit invariant enforcement pass (vectorized/parallel friendly)
+    enforceInvariants(grid);
+}
+
+void VegetationSystem::enforceInvariants(VegetationGrid& grid) {
+    if (!grid.isValid()) return;
+    int size = static_cast<int>(grid.getSize());
+
+    #pragma omp parallel for
+    for (int i = 0; i < size; ++i) {
+        // Invariant 1: EI + ES <= 1.0
+        float total = grid.ei_coverage[i] + grid.es_coverage[i];
+        if (total > 1.0f) {
+            // Prioritize ES (Structural) over EI (Opportunistic)
+            // Shrink EI to fit
+            float excess = total - 1.0f;
+            grid.ei_coverage[i] -= excess;
+            if (grid.ei_coverage[i] < 0.0f) grid.ei_coverage[i] = 0.0f;
         }
     }
-    
-    enforceInvariants(grid);
 }
 
 void VegetationSystem::applyDisturbance(VegetationGrid& grid, const DisturbanceRegime& regime) {
@@ -188,11 +235,6 @@ void VegetationSystem::processRecovery(VegetationGrid& grid, float dt) {
     (void)grid; (void)dt;
 }
 
-void VegetationSystem::enforceInvariants(VegetationGrid& grid) {
-    // Ensure 0-1 range
-    // Parallelized in update loop implicitly, but if called separately:
-    // Skipping for performace as update handles limits.
-    (void)grid;
-}
+
 
 } // namespace vegetation

@@ -690,6 +690,8 @@ sisterapp: CMakeFiles/sisterapp.dir/build.make
 sisterapp: CMakeFiles/sisterapp.dir/compiler_depend.ts
 sisterapp: /usr/lib64/libSDL2-2.0.so.0.3200.56
 sisterapp: /lib64/libvulkan.so
+sisterapp: /usr/lib/gcc/x86_64-redhat-linux/15/libgomp.so
+sisterapp: /usr/lib64/libpthread.a
 sisterapp: CMakeFiles/sisterapp.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Linking CXX executable sisterapp"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sisterapp.dir/link.txt --verbose=$(VERBOSE)

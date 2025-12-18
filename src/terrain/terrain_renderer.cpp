@@ -347,65 +347,85 @@ void TerrainRenderer::createVegetationResources(int width, int height) {
 }
 
 void TerrainRenderer::updateVegetation(const vegetation::VegetationGrid& grid) {
+
     if (!grid.isValid()) return;
 
-    // Check if resize is needed
+    // 1. Initialization / Resize Check
     if (vegImage_ == VK_NULL_HANDLE || vegWidth_ != grid.width || vegHeight_ != grid.height) {
-        // Recreate resources
         if (vegImage_ != VK_NULL_HANDLE) {
             destroyVegetationResources();
         }
         createVegetationResources(grid.width, grid.height);
+        
+        // Ensure Fence and Command Buffer exist
+        if (uploadFence_ == VK_NULL_HANDLE) {
+            VkFenceCreateInfo fenceInfo{};
+            fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+            fenceInfo.flags = 0; // Starts unsignaled
+            vkCreateFence(ctx_.device(), &fenceInfo, nullptr, &uploadFence_);
+            
+            // Allocate Command Buffer once
+            VkCommandBufferAllocateInfo allocInfo{};
+            allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+            allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+            allocInfo.commandPool = commandPool_;
+            allocInfo.commandBufferCount = 1;
+            vkAllocateCommandBuffers(ctx_.device(), &allocInfo, &uploadCmd_);
+        }
     }
 
     VkDeviceSize imageSize = grid.width * grid.height * 4;
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+    // 2. Wait for previous upload to complete (Back-pressure)
+    if (hasPendingUpload_) {
+        vkWaitForFences(ctx_.device(), 1, &uploadFence_, VK_TRUE, UINT64_MAX);
+        vkResetFences(ctx_.device(), 1, &uploadFence_);
+    }
 
+    // 3. Staging Buffer Management
+    if (imageSize > stagingSize_ || stagingBuffer_ == VK_NULL_HANDLE) {
+        // Free old
+        if (stagingBuffer_ != VK_NULL_HANDLE) {
+            vkDestroyBuffer(ctx_.device(), stagingBuffer_, nullptr);
+            vkFreeMemory(ctx_.device(), stagingMemory_, nullptr);
+        }
+        // Allocate new (Host Visible)
+        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     stagingBuffer_, stagingMemory_);
+        stagingSize_ = imageSize;
+    }
+
+    // 4. Map and Fill (Parallel)
     void* data;
-    vkMapMemory(ctx_.device(), stagingBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(ctx_.device(), stagingMemory_, 0, imageSize, 0, &data);
     
-    // Convert SoA to AoS (R8G8B8A8)
     uint8_t* pixels = static_cast<uint8_t*>(data);
     size_t count = grid.getSize();
+
+    // PARALLEL CONVERSION (Critical for 4K)
+    #pragma omp parallel for
     for (size_t i = 0; i < count; ++i) {
-        // Clamp and Scale to 0-255
         pixels[i * 4 + 0] = static_cast<uint8_t>(std::clamp(grid.ei_coverage[i], 0.0f, 1.0f) * 255.0f);
         pixels[i * 4 + 1] = static_cast<uint8_t>(std::clamp(grid.es_coverage[i], 0.0f, 1.0f) * 255.0f);
         pixels[i * 4 + 2] = static_cast<uint8_t>(std::clamp(grid.ei_vigor[i], 0.0f, 1.0f) * 255.0f);
         pixels[i * 4 + 3] = static_cast<uint8_t>(std::clamp(grid.es_vigor[i], 0.0f, 1.0f) * 255.0f);
     }
     
-    vkUnmapMemory(ctx_.device(), stagingBufferMemory);
+    vkUnmapMemory(ctx_.device(), stagingMemory_);
 
-    // Copy Buffer to Image (Naive: using ctx_.graphicsQueue directly or existing command pool? 
-    // We should use a single time command buffer.)
-    // Assuming context provides access to Pool/Queue.
-    // If not, we iterate. Let's create a temporary command buffer.
-    
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool_;
-    allocInfo.commandBufferCount = 1;
-
-    VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(ctx_.device(), &allocInfo, &commandBuffer);
-
+    // 5. Submit Upload Command
+    vkResetCommandBuffer(uploadCmd_, 0);
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    vkBeginCommandBuffer(uploadCmd_, &beginInfo);
     
-    // Transition Undefined -> Transfer Dst
+    // Transition Undefined/Read -> Transfer Dst
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED; // Or general if we update repeatedly. 
-    // Actually, if we update every frame, oldLayout should be SHADER_READ_ONLY_OPTIMAL except first time.
-    // For simplicity, let's use UNDEFINED and drop previous content (we overwrite all).
+    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED; // Or SHADER_READ_ONLY if preserving? We overwrite all, so UNDEFINED is fine/faster.
     barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -418,20 +438,14 @@ void TerrainRenderer::updateVegetation(const vegetation::VegetationGrid& grid) {
     barrier.srcAccessMask = 0;
     barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
-    vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+    vkCmdPipelineBarrier(uploadCmd_, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
     VkBufferImageCopy region{};
-    region.bufferOffset = 0;
-    region.bufferRowLength = 0;
-    region.bufferImageHeight = 0;
     region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel = 0;
-    region.imageSubresource.baseArrayLayer = 0;
     region.imageSubresource.layerCount = 1;
-    region.imageOffset = {0, 0, 0};
     region.imageExtent = { (uint32_t)grid.width, (uint32_t)grid.height, 1 };
 
-    vkCmdCopyBufferToImage(commandBuffer, stagingBuffer, vegImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    vkCmdCopyBufferToImage(uploadCmd_, stagingBuffer_, vegImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
     // Transition Transfer Dst -> Shader Read Only
     barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
@@ -439,21 +453,18 @@ void TerrainRenderer::updateVegetation(const vegetation::VegetationGrid& grid) {
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-    vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+    vkCmdPipelineBarrier(uploadCmd_, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-    vkEndCommandBuffer(commandBuffer);
+    vkEndCommandBuffer(uploadCmd_);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
+    submitInfo.pCommandBuffers = &uploadCmd_;
 
-    vkQueueSubmit(ctx_.graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(ctx_.graphicsQueue()); // Wait for upload
-
-    vkFreeCommandBuffers(ctx_.device(), commandPool_, 1, &commandBuffer);
-    vkDestroyBuffer(ctx_.device(), stagingBuffer, nullptr);
-    vkFreeMemory(ctx_.device(), stagingBufferMemory, nullptr);
+    // Submit with Fence
+    vkQueueSubmit(ctx_.graphicsQueue(), 1, &submitInfo, uploadFence_);
+    hasPendingUpload_ = true;
 }
 
 void TerrainRenderer::destroyVegetationResources() {
@@ -464,6 +475,26 @@ void TerrainRenderer::destroyVegetationResources() {
     if (vegMemory_) vkFreeMemory(device, vegMemory_, nullptr);
     if (vegDescPool_) vkDestroyDescriptorPool(device, vegDescPool_, nullptr);
     if (vegDescLayout_) vkDestroyDescriptorSetLayout(device, vegDescLayout_, nullptr);
+    
+    // Clean up Async Resources
+    if (stagingBuffer_) vkDestroyBuffer(device, stagingBuffer_, nullptr);
+    if (stagingMemory_) vkFreeMemory(device, stagingMemory_, nullptr);
+    if (uploadFence_) vkDestroyFence(device, uploadFence_, nullptr);
+    // Command Buffer is freed with pool usually, but to be clean:
+    if (uploadCmd_) vkFreeCommandBuffers(device, commandPool_, 1, &uploadCmd_);
+    
+    vegSampler_ = VK_NULL_HANDLE;
+    vegView_ = VK_NULL_HANDLE;
+    vegImage_ = VK_NULL_HANDLE;
+    vegMemory_ = VK_NULL_HANDLE;
+    vegDescPool_ = VK_NULL_HANDLE;
+    vegDescLayout_ = VK_NULL_HANDLE;
+    stagingBuffer_ = VK_NULL_HANDLE;
+    stagingMemory_ = VK_NULL_HANDLE;
+    uploadFence_ = VK_NULL_HANDLE;
+    uploadCmd_ = VK_NULL_HANDLE;
+    stagingSize_ = 0;
+    hasPendingUpload_ = false;
 }
 
 uint32_t TerrainRenderer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {

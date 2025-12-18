@@ -59,6 +59,16 @@ private:
     VkImageView vegView_ = VK_NULL_HANDLE;
     VkSampler vegSampler_ = VK_NULL_HANDLE;
     
+    // v3.9.2: Async Upload Synchronization
+    VkFence uploadFence_ = VK_NULL_HANDLE;
+    VkCommandBuffer uploadCmd_ = VK_NULL_HANDLE;
+    bool hasPendingUpload_ = false;
+
+    // Persistent Staging Buffer
+    VkBuffer stagingBuffer_ = VK_NULL_HANDLE;
+    VkDeviceMemory stagingMemory_ = VK_NULL_HANDLE;
+    VkDeviceSize stagingSize_ = 0;
+    
     // Vegetation Descriptors
     VkDescriptorSetLayout vegDescLayout_ = VK_NULL_HANDLE;
     VkDescriptorPool vegDescPool_ = VK_NULL_HANDLE;

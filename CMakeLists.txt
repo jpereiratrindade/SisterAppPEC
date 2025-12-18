@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(SDL2 REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(OpenMP REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 
@@ -69,7 +70,7 @@ else()
     target_link_libraries(sisterapp PRIVATE ${SDL2_LIBRARIES})
 endif()
 
-target_link_libraries(sisterapp PRIVATE Vulkan::Vulkan)
+target_link_libraries(sisterapp PRIVATE Vulkan::Vulkan OpenMP::OpenMP_CXX)
 
 find_program(GLSLC glslc)
 set(SHADER_SRC

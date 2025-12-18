@@ -12269,9 +12269,11 @@ sisterapp: /lib64/ld-linux-x86-64.so.2 \
   /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o \
   /usr/lib/gcc/x86_64-redhat-linux/15/libgcc.a \
   /usr/lib/gcc/x86_64-redhat-linux/15/libgcc_s.so \
+  /usr/lib/gcc/x86_64-redhat-linux/15/libgomp.so \
   /usr/lib/gcc/x86_64-redhat-linux/15/libstdc++.so \
   /usr/lib64/libSDL2-2.0.so.0.3200.56 \
   /usr/lib64/libc_nonshared.a \
+  /usr/lib64/libpthread.a \
   CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_sdl2.cpp.o \
   CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o \
   CMakeFiles/sisterapp.dir/imgui/imgui.cpp.o \
@@ -13130,6 +13132,8 @@ CMakeFiles/sisterapp.dir/src/terrain/hydrology_report.cpp.o:
 
 /usr/lib/gcc/x86_64-redhat-linux/15/include/prfchiintrin.h:
 
+/usr/lib64/libpthread.a:
+
 /usr/lib/gcc/x86_64-redhat-linux/15/include/prfchwintrin.h:
 
 /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/main.cpp:
@@ -13473,6 +13477,8 @@ CMakeFiles/sisterapp.dir/imgui/backends/imgui_impl_vulkan.cpp.o:
 /usr/include/c++/15/bits/memoryfwd.h:
 
 /usr/include/c++/15/bits/nested_exception.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/15/libgomp.so:
 
 /usr/include/X11/Xatom.h:
 

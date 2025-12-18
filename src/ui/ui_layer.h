@@ -83,6 +83,7 @@ struct Callbacks {
     std::function<void()> savePreferences; // v3.4.0
     std::function<void()> loadPreferences; // v3.4.0
     std::function<void()> resetVegetation; // v3.9.1: Refresh button
+    std::function<void()> triggerFireEvent; // v3.9.2: Manual Fire
     RegenerateFiniteWorldCallback regenerateFiniteWorld; // v3.5.1
     RequestMeshUpdateCallback updateMesh; // v3.6.3
 };

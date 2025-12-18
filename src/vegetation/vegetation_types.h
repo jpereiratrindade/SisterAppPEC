@@ -38,6 +38,7 @@ namespace vegetation {
         // Lower Stratum (Estrato Inferior - EI) e.g., Grass
         std::vector<float> ei_coverage; // [0.0 - 1.0]
         std::vector<float> ei_vigor;    // [0.0 - 1.0] (Health/Greenness)
+        std::vector<float> ei_capacity; // [0.0 - 1.0] Max Capacity (Cached Noise)
 
         // Upper Stratum (Estrato Superior - ES) e.g., Shrubs/Trees
         std::vector<float> es_coverage; // [0.0 - 1.0]
@@ -61,6 +62,7 @@ namespace vegetation {
             ei_vigor.assign(size, 1.0f);
             es_vigor.assign(size, 1.0f);
             recovery_timer.assign(size, 0.0f);
+            ei_capacity.assign(size, 1.0f); // Default full capacity
         }
 
         size_t getSize() const { return ei_coverage.size(); }

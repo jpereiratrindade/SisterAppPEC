@@ -620,9 +620,9 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
                 ImGui::SliderFloat("Avg Recovery Time", &ctx.disturbanceParams.averageRecoveryTime, 1.0f, 120.0f, "%.0f s");
                 
                 if (ImGui::Button("Trigger Fire Now")) {
-                    // Logic to trigger fire manually? 
-                    // Needs callback or flag in DisturbParams to signal "ManualPulse"
-                    // For now, just params.
+                    if (callbacks_.triggerFireEvent) {
+                       callbacks_.triggerFireEvent();
+                    }
                 }
                 
                 ImGui::SameLine();
@@ -635,6 +635,40 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
                 }
                 
                 ImGui::Unindent();
+
+                // Legend Section
+                ImGui::Dummy(ImVec2(0, 5));
+                ImGui::TextDisabled("Legend / Key:");
+                
+                if (ctx.vegetationMode == 1) { // Realistic
+                    ImGui::ColorButton("##Healthy", ImVec4(0.2f, 0.7f, 0.2f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16)); 
+                    ImGui::SameLine(); ImGui::Text("Healthy");
+                    ImGui::SameLine();
+                    ImGui::ColorButton("##Dry", ImVec4(0.7f, 0.6f, 0.1f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16)); 
+                    ImGui::SameLine(); ImGui::Text("Dry/Fuel");
+                } 
+                else if (ctx.vegetationMode == 2) { // EI Grass
+                    ImGui::ColorButton("##GrassLow", ImVec4(0.0f, 0.0f, 0.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16));
+                    ImGui::SameLine(); ImGui::Text("0%%");
+                    ImGui::SameLine(); 
+                    ImGui::ColorButton("##GrassHigh", ImVec4(0.0f, 1.0f, 0.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16)); 
+                    ImGui::SameLine(); ImGui::Text("100%%");
+                }
+                else if (ctx.vegetationMode == 3) { // ES Shrub
+                    ImGui::ColorButton("##ShrubLow", ImVec4(0.0f, 0.0f, 0.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16));
+                    ImGui::SameLine(); ImGui::Text("0%%");
+                    ImGui::SameLine(); 
+                    ImGui::ColorButton("##ShrubHigh", ImVec4(1.0f, 0.0f, 0.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16)); 
+                    ImGui::SameLine(); ImGui::Text("100%%");
+                }
+                else if (ctx.vegetationMode == 4) { // Vigor
+                    ImGui::ColorButton("##VigorLow", ImVec4(0.0f, 0.0f, 0.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16));
+                    ImGui::SameLine(); ImGui::Text("Dead");
+                    ImGui::SameLine(); 
+                    ImGui::ColorButton("##VigorHigh", ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop, ImVec2(16,16)); 
+                    ImGui::SameLine(); ImGui::Text("Best State");
+                }
+                ImGui::Dummy(ImVec2(0, 5));
             }
         }
         ImGui::Separator();
