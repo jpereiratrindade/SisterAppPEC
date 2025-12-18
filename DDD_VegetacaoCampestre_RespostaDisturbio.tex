@@ -1,0 +1,138 @@
+\documentclass[a4paper,12pt]{article}
+
+% -------------------------------------------------
+% Pacotes
+% -------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\geometry{top=3cm, bottom=2.5cm, left=3cm, right=2.5cm}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=black,
+	urlcolor=blue
+}
+
+\title{\textbf{Modelo de Resposta Funcional da Vegetação Campestre ao Distúrbio}\\
+	\large Formulação Conceitual, Matemática e Implicações Computacionais}
+\author{José Pedro Trindade}
+\date{\today}
+
+\begin{document}
+	\maketitle
+	
+	\section{Contexto Ecológico e Motivação}
+	
+	A persistência de ecossistemas campestres não pode ser compreendida a partir de trajetórias sucessionais lineares orientadas à estabilização estrutural máxima. Diferentemente de sistemas florestais, campos naturais dependem de regimes recorrentes de distúrbio para manter sua identidade funcional, estrutura aberta e diversidade.
+	
+	No contexto do modelo de Vegetação Campestre do \textit{SisterApp}, o distúrbio não é tratado como exceção ou ruído, mas como um \textbf{fator estruturante} do sistema, responsável por modular a dominância funcional entre o Estrato Inferior (EI) e o Estrato Superior (ES).
+	
+	\section{Definição Operacional do Distúrbio}
+	
+	O distúrbio ($D$) é definido como uma variável escalar composta, que integra três dimensões fundamentais:
+	
+	\begin{itemize}
+		\item \textbf{Magnitude} ($M$): intensidade do evento (ex.: pressão de pastejo, severidade do fogo);
+		\item \textbf{Frequência} ($F$): recorrência temporal dos eventos;
+		\item \textbf{Escala Espacial} ($E$): proporção da paisagem afetada.
+	\end{itemize}
+	
+	Para garantir coerência ecológica e evitar efeitos espúrios, o distúrbio é operacionalizado como:
+	\[
+	D = M \cdot F \cdot E
+	\]
+	
+	Essa formulação assegura que eventos de frequência nula ou escala desprezível não produzam resposta funcional no sistema.
+	
+	\section{Resposta Funcional do Estrato Inferior (EI)}
+	
+	O Estrato Inferior (EI), composto predominantemente por gramíneas e herbáceas, apresenta elevada tolerância e resposta positiva ao distúrbio. Contudo, essa resposta não é ilimitada, exibindo retornos decrescentes à medida que a intensidade do distúrbio aumenta.
+	
+	Essa dinâmica é representada por uma \textbf{função logarítmica positiva}:
+	\[
+	R_{EI}(D) = \log(1 + \alpha D)
+	\]
+	
+	onde $\alpha$ representa o coeficiente de sensibilidade ecológica do EI ao distúrbio.
+	
+	Ecologicamente, essa formulação expressa que:
+	\begin{itemize}
+		\item distúrbios de baixa intensidade promovem forte resposta funcional do EI;
+		\item distúrbios intermediários mantêm sua persistência e dominância;
+		\item distúrbios elevados resultam em saturação funcional, sem ganhos proporcionais adicionais.
+	\end{itemize}
+	
+	No modelo, $R_{EI}$ não atua como incremento direto de biomassa. Trata-se de um \textbf{modulador funcional}, utilizado para ajustar:
+	\begin{itemize}
+		\item a capacidade de suporte local ($K_{EI}$);
+		\item a probabilidade de persistência;
+		\item a velocidade de recolonização pós-distúrbio.
+	\end{itemize}
+	
+	Para garantir estabilidade numérica e coerência ontológica, os valores derivados de $R_{EI}$ são restringidos ao intervalo funcional esperado por meio de normalização ou saturação na implementação computacional.
+	
+	\section{Resposta Funcional do Estrato Superior (ES)}
+	
+	O Estrato Superior (ES), associado à biomassa lenhosa de baixo porte, responde negativamente ao aumento da intensidade do distúrbio. Sua persistência depende de regimes de baixa perturbação, sendo progressivamente suprimida sob maior pressão ecológica.
+	
+	Essa resposta é modelada por uma \textbf{função exponencial negativa}:
+	\[
+	R_{ES}(D) = e^{-\beta D}
+	\]
+	
+	onde $\beta$ expressa a sensibilidade do ES ao distúrbio.
+	
+	Essa formulação captura:
+	\begin{itemize}
+		\item o acúmulo gradual de biomassa lenhosa sob baixo distúrbio;
+		\item a redução acelerada da persistência do ES sob regimes intensos ou frequentes;
+		\item o controle funcional do processo de encroachment arbustivo.
+	\end{itemize}
+	
+	\section{Integração das Respostas Funcionais}
+	
+	As respostas funcionais $R_{EI}(D)$ e $R_{ES}(D)$ são integradas ao modelo como moduladores de estados-alvo e limites estruturais, e não como forças determinísticas diretas.
+	
+	De forma conceitual:
+	\[
+	K_{EI}(D) \propto R_{EI}(D)
+	\qquad\text{e}\qquad
+	K_{ES}(D) \propto R_{ES}(D)
+	\]
+	
+	Essa abordagem permite ao sistema:
+	\begin{itemize}
+		\item exibir múltiplos estados funcionais estáveis;
+		\item responder de forma não linear ao distúrbio;
+		\item transitar suavemente entre dominância herbácea e lenhosa.
+	\end{itemize}
+	
+	\section{Implicações para Vigor e NDVI Simulado}
+	
+	O vigor fisiológico ($\phi$) e os índices derivados de visualização, como o NDVI simulado, são interpretados como \textbf{respostas emergentes} da interação entre cobertura estrutural e regime de distúrbio.
+	
+	O NDVI simulado não representa reflectância espectral real, mas um \textbf{índice funcional comparável}, sensível às respostas não lineares dos estratos ao distúrbio. Essa escolha permite diagnósticos visuais de estresse, recuperação e persistência sem recorrer à simulação física detalhada da interação solo–planta–radiação.
+	
+	\section{Considerações sobre Implementação Computacional}
+	
+	Na arquitetura do \textit{SisterApp}, as respostas funcionais ao distúrbio definem \textbf{estados-alvo} para os quais cada célula evolui ao longo do tempo, por meio de dinâmicas relaxacionais com passo de tempo fixo.
+	
+	Essa estratégia:
+	\begin{itemize}
+		\item preserva a estabilidade numérica do sistema;
+		\item evita crescimento ilimitado ou colapsos abruptos;
+		\item mantém coerência entre formulação ecológica e implementação em C++.
+	\end{itemize}
+	
+	\section{Considerações Finais}
+	
+	A adoção de respostas funcionais assimétricas ao distúrbio para os estratos da vegetação campestre confere ao modelo maior fidelidade ecológica e clareza ontológica. A formulação apresentada permite representar, de forma simples e robusta, o papel central do distúrbio na manutenção de paisagens campestres, evitando tanto a simplificação excessiva quanto a complexificação desnecessária.
+	
+\end{document}

@@ -642,7 +642,7 @@ void Application::update(double dt) {
             // 1. Update (Recovery/Growth) 
             // We pass a fixed delta or the actual elapsed? 
             // Passing 0.2s (interval) is decent approx for simulation stability.
-            vegetation::VegetationSystem::update(*veg, vegetationUpdateIntervalMs_ / 1000.0f);
+            vegetation::VegetationSystem::update(*veg, vegetationUpdateIntervalMs_ / 1000.0f, disturbanceParams_);
             
             Uint32 t1 = SDL_GetTicks();
 
@@ -1034,7 +1034,7 @@ void Application::performRegeneration() {
         regenRequested_ = false;
         isRegenerating_ = true;
 
-        regenFuture_ = std::async(std::launch::async, [=, this]() {
+        regenFuture_ = std::async(std::launch::async, [=]() {
             // 1. Create independent resources
             auto map = std::make_unique<terrain::TerrainMap>(config.width, config.height);
             auto gen = std::make_unique<terrain::TerrainGenerator>(config.seed);

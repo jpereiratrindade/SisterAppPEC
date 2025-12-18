@@ -23,6 +23,13 @@ namespace vegetation {
         float fireFrequency = 0.0f;      // Specific to Fire
         float grazingIntensity = 0.0f;   // Specific to Grazing
         float averageRecoveryTime = 10.0f; // Seconds
+
+        // Functional Response Coefficients
+        float alpha = 10.0f;   // EI (Grass) sensitivity to disturbance (Logarithmic gain)
+        float beta = 5.0f;     // ES (Shrub) sensitivity to disturbance (Exponential decay)
+        
+        // Runtime / Computed
+        float calculated_disturbance_index = 0.0f; // D = M * F * E
     };
 
     // Data Structure: Struct of Arrays (SoA) for cache-friendly processing

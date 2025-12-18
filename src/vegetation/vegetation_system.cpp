@@ -82,12 +82,23 @@ void VegetationSystem::initialize(VegetationGrid& grid, int seed) {
     }
 }
 
-void VegetationSystem::update(VegetationGrid& grid, float dt) {
+void VegetationSystem::update(VegetationGrid& grid, float dt, const DisturbanceRegime& regime) {
     if (!grid.isValid()) return;
     
     // In OpenMP parallel loop for performance
     int size = static_cast<int>(grid.getSize());
     
+    // Calculate Global Disturbance Index (Regime-based)
+    float D = regime.magnitude * regime.frequency * regime.spatialExtent;
+    
+    // Calculate Functional Responses
+    // EI (Grass): Logarithmic positive response to disturbance
+    float R_EI = std::log(1.0f + regime.alpha * D);
+    R_EI = std::max(0.0f, std::min(1.0f, R_EI)); // Clamp to [0,1]
+    
+    // ES (Shrub): Exponential negative response to disturbance
+    float R_ES = std::exp(-regime.beta * D);
+    R_ES = std::max(0.0f, std::min(1.0f, R_ES)); // Clamp to [0,1]
 
     #pragma omp parallel for
     for (int i = 0; i < size; ++i) {
@@ -103,40 +114,53 @@ void VegetationSystem::update(VegetationGrid& grid, float dt) {
         
         float capacityNoise = n1 * 0.7f + n2 * 0.3f; // Mixed
         
-        float maxEI = 0.8f + 0.2f * capacityNoise; // 0.6 - 1.0
+        // Modulate EI Capacity with Disturbance Response
+        // Base capacity from noise, scaled by functional response.
+        // Even with 0 disturbance, we assume some base persistence (e.g. 0.3),
+        // but high disturbance pushes it to full potential.
+        float noiseMax = 0.8f + 0.2f * capacityNoise;
+        float maxEI = noiseMax * (0.3f + 0.7f * R_EI); 
         
+        // Modulate ES Capacity
+        // ES is suppressed by Disturbance.
+        float maxES = 1.0f * R_ES;
+
         // Handle Recovery Timer
         if (grid.recovery_timer[i] > 0.0f) {
             grid.recovery_timer[i] -= dt;
             if (grid.recovery_timer[i] < 0.0f) grid.recovery_timer[i] = 0.0f;
         }
 
-        // Recovery Logic (Succession)
+        // Recovery Logic (Relaxation towards targets)
         if (grid.recovery_timer[i] <= 0.0f) {
-            // Grass (EI) recovers fast
+            // Grass (EI) Dynamics
             if (grid.ei_coverage[i] < maxEI) {
-                grid.ei_coverage[i] += 0.1f * dt; // 10 seconds to full
+                grid.ei_coverage[i] += 0.1f * dt; // Growth
                 if (grid.ei_coverage[i] > maxEI) grid.ei_coverage[i] = maxEI;
+            } else if (grid.ei_coverage[i] > maxEI) {
+                grid.ei_coverage[i] -= 0.05f * dt; // Dieback if over capacity (e.g. disturbance reduced)
+                 if (grid.ei_coverage[i] < maxEI) grid.ei_coverage[i] = maxEI;
             }
             
             // VIGOR DYNAMICS (Simulated seasonality/stress)
-            // Instead of always forcing to 1.0, we target a variable level based on noise/time
-            float targetVigor = 0.8f + 0.2f * n2; // Vigor varies 0.8-1.0 spatially
-            
-            // Decay or Recover towards target
+            float targetVigor = 0.8f + 0.2f * n2;
             if (grid.ei_vigor[i] < targetVigor) {
                 grid.ei_vigor[i] += 0.1f * dt;
             } else if (grid.ei_vigor[i] > targetVigor) {
-                grid.ei_vigor[i] -= 0.05f * dt; // Slow decay
+                grid.ei_vigor[i] -= 0.05f * dt; 
             }
             grid.ei_vigor[i] = std::max(0.0f, std::min(1.0f, grid.ei_vigor[i]));
 
-            // Shrubs (ES) recovers slowly if EI is healthy
-            // Limit ES based on EI presence?
-            // Actually, keep it simpler:
-            if (grid.ei_coverage[i] > 0.8f && grid.es_coverage[i] < 1.0f) {
-                grid.es_coverage[i] += 0.01f * dt; // 100 seconds to full
-                if (grid.es_coverage[i] > 1.0f) grid.es_coverage[i] = 1.0f;
+            // Shrub (ES) Dynamics
+            // Grows towards maxES
+            if (grid.es_coverage[i] < maxES) {
+                // Slower growth than grass
+                grid.es_coverage[i] += 0.02f * dt; 
+                if (grid.es_coverage[i] > maxES) grid.es_coverage[i] = maxES;
+            } else if (grid.es_coverage[i] > maxES) {
+                 // Dieback due to disturbance pressure
+                 grid.es_coverage[i] -= 0.1f * dt; // Dieback is relatively fast
+                 if (grid.es_coverage[i] < maxES) grid.es_coverage[i] = maxES;
             }
         } // End Recovery Logic
 

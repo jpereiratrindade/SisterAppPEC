@@ -113,22 +113,32 @@ Diferente de modelos estáticos, o Vigor no SisterApp é dinâmico e espacialmen
 \[ \phi_{target}(x,y) = 0.8 + 0.2 \cdot \text{Noise}(x,y) \]
 A vegetação busca constantemente esse alvo, simulando microclimas variados. Se perturbada (ex: pisoteio ou seca não simulada explicitamente), o vigor decai, aumentando a probabilidade de fogo ($\mathcal{F}$) antes mesmo da perda de cobertura.
 
-\subsection{Dinâmica de Distúrbios}
-O modelo implementa dois agentes principais de perturbação:
-
-\subsubsection{Fogo (Fire)}
-Ocorrência estocástica baseada em probabilidade $P_{fire}$ e biomassa disponível.
+\subsection{Definição Operacional do Distúrbio}
+O distúrbio ($D$) é definido como uma variável escalar composta que integra três dimensões fundamentais:
 \begin{itemize}
-    \item \textbf{Efeito:} Remoção total de cobertura ($Coverage \to 0$) em ambos os estratos.
-    \item \textbf{Recuperação:} O sistema inicia um contador de "Recovery Time". A recolonização ocorre via nucleação a partir de vizinhos ou banco de sementes (simulado por ruído de base).
+    \item \textbf{Magnitude} ($M$): intensidade do evento;
+    \item \textbf{Frequência Ecológica} ($F$): probabilidade relativa do regime (0.1 = Raro, 0.9 = Crônico);
+    \item \textbf{Escala Espacial} ($E$): proporção da paisagem afetada.
 \end{itemize}
+\[ D = M \cdot F \cdot E \]
 
-\subsubsection{Pastejo (Grazing)}
-Pressão constante e seletiva sobre o estrato inferior (Gramíneas).
-\begin{itemize}
-    \item \textbf{Efeito:} Redução linear da cobertura do EI proporcional à intensidade ($I_{grazing}$).
-    \item \textbf{Consequência:} A redução do EI libera espaço e recursos, podendo facilitar a invasão arbustiva (emcasting encroachment) em escalas temporais longas (não simulado em tempo real nesta versão).
-\end{itemize}
+\subsection{Resposta Funcional ao Distúrbio}
+O sistema modela a capacidade de suporte ($K$) de cada estrato como uma função direta do regime de distúrbio vigente:
+
+\subsubsection{Estrato Inferior (EI - Gramíneas)}
+Apresenta resposta \textbf{logarítmica positiva}:
+\[ R_{EI}(D) = \text{clamp}(\log(1 + \alpha D), 0, 1) \]
+Onde $\alpha$ é o coeficiente de sensibilidade (Ganho). Ecologicamente, isso expressa que distúrbios de baixa intensidade já promovem forte resposta do EI, saturando em regimes intensos.
+
+\subsubsection{Estrato Superior (ES - Arbustos)}
+Apresenta resposta \textbf{exponencial negativa}:
+\[ R_{ES}(D) = \text{clamp}(e^{-\beta D}, 0, 1) \]
+Onde $\beta$ é o coeficiente de decaimento. Isso captura a supressão acelerada de lenhosas sob regimes de perturbação frequente.
+
+\subsection{Modulação da Capacidade de Suporte}
+Ao contrário do modelo anterior de remoção direta, os índices $R_{EI}$ e $R_{ES}$ modulam os alvos de equilíbrio:
+\[ K_{EI}^{target} \propto R_{EI}(D) \quad \text{e} \quad K_{ES}^{target} \propto R_{ES}(D) \]
+A vegetação então "relaxa" em direção a esses alvos ao longo do tempo ($\tau_{rec}$), permitindo transições suaves entre estados de savana, campo limpo e arbustal.
 
 \subsection{Heterogeneidade Espacial (Spatial Noise)}
 Para evitar a monotonia visual e simular a variabilidade edáfica não mapeada, a inicialização e a capacidade de suporte local ($K$) são moduladas por funções de ruído procedural (Perlin Noise). Isso gera manchas naturais de alta e baixa densidade, independentemente dos distúrbios.

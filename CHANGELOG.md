@@ -1,5 +1,13 @@
 # Changelog
 
+## [v3.9.5] - 2025-12-18
+### Ecological Modeling
+- **Functional Response to Disturbance**: 
+    - Implemented logarithmically positive response for Grass ($R_{EI}$) and exponentially negative response for Shrubs ($R_{ES}$).
+    - Disturbance is now a composite index $D = M \cdot F \cdot E$ (Magnitude, Frequency, Extent).
+    - Vegetation carrying capacity is now dynamic, modulated by $D$.
+- **Robustness**: Added numerical clamping to prevent infinite growth under extreme parameters.
+
 ## [v3.9.4] - 2025-12-18
 ### Visualization
 - **Standardized NDVI**: Updated NDVI visualization to use scientific color palette (Brown/Yellow/Green) and standardized range (0.1 - 0.9).

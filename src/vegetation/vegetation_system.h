@@ -7,7 +7,8 @@ namespace vegetation {
     class VegetationSystem {
     public:
         // Main simulation step: updates recovery, growth, and invariants
-        static void update(VegetationGrid& grid, float dt);
+        // Main simulation step: updates recovery, growth, and invariants
+        static void update(VegetationGrid& grid, float dt, const DisturbanceRegime& regime);
 
         // v3.9.0: Initialize with spatial heterogeneity
         static void initialize(VegetationGrid& grid, int seed);
