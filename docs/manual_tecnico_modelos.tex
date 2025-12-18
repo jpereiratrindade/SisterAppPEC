@@ -83,6 +83,24 @@ A vegetação é modelada como dois estratos competitivos em cada célula do gri
 O estado de cada célula é definido por um vetor de 4 componentes:
 \[ V_{cell} = \{ Coverage_{EI}, Coverage_{ES}, Vigor_{EI}, Vigor_{ES} \} \]
 
+\subsection{Definição de Escala e Resolução}
+A célula ($V_{cell}$) é a unidade atômica da simulação, representando um estado homogêneo estatístico. Embora a simulação opere em espaço de grade abstrato (Grid Space), a interpretação física da "Cobertura" ($C$) é dependente da resolução métrica configurada na interface:
+
+\subsubsection{Resolução Física ($R$)}
+Definida pelo parâmetro \textbf{Cell Size}, padronizado em $R = 1.0m$. A área física de uma célula é dada por $A_{cell} = R^2$.
+
+\subsubsection{Interpretação da Cobertura}
+O valor de cobertura $C \in [0, 1]$ representa a fração da área da célula ocupada pelo estrato:
+\[ \text{Área Ocupada} (m^2) = C \cdot R^2 \]
+
+Exemplos:
+\begin{itemize}
+    \item Para $R=1.0m$ (Padrão): $C=0.5$ implica $0.5m^2$ de biomassa.
+    \item Para $R=0.5m$ (Alta Definição): A área total é $0.25m^2$, logo $C=0.5$ implica $0.125m^2$.
+\end{itemize}
+
+Esta abstração permite que o modelo seja agnóstico à escala (Scale-Independent) em sua lógica interna, enquanto a renderização adapta a densidade visual à geometria física.
+
 \subsection{Dinâmica de Distúrbios}
 O modelo implementa dois agentes principais de perturbação:
 
