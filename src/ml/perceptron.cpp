@@ -41,12 +41,12 @@ bool Perceptron::load(const std::string& path) {
             std::cerr << "[ML] Dimension mismatch. Json: " << w.size() 
                       << ", Alloc: " << weights_.size() << std::endl;
             // Resize if we want to be flexible, but better to warn
-            weights_.resize(w.size());
+            weights_.resize(static_cast<Eigen::Index>(w.size()));
         }
 
         // Copy data
         for (size_t i = 0; i < w.size(); ++i) {
-            weights_[i] = w[i];
+            weights_[static_cast<Eigen::Index>(i)] = w[i];
         }
 
         std::cout << "[ML] Model loaded successfully." << std::endl;
@@ -56,5 +56,28 @@ bool Perceptron::load(const std::string& path) {
         return false;
     }
 }
+
+    float Perceptron::sigmoidPrime(float z) {
+        float s = sigmoid(z);
+        return s * (1.0f - s);
+    }
+
+    void Perceptron::train(const Eigen::VectorXf& input, float target, float lr) {
+        // Forward
+        float z = weights_.dot(input) + bias_;
+        float prediction = sigmoid(z);
+
+        // Error (Local Gradient)
+        float error = target - prediction; // dLoss/dPred * dPred/dZ (simplified MSE derivative)
+        
+        // Use derivative of sigmoid for correct backprop
+        float delta = error * sigmoidPrime(z);
+
+        // Update Weights: w += lr * input * delta
+        weights_ += lr * delta * input;
+
+        // Update Bias: b += lr * delta
+        bias_ += lr * delta;
+    }
 
 } // namespace ml

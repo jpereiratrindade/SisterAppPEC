@@ -75,6 +75,8 @@ struct UiFrameContext {
     
     // v4.0.0 ML
     bool& showMLSoil;
+    size_t mlDatasetSize;
+    bool isTraining;
 };
 
 struct Callbacks {
@@ -92,6 +94,10 @@ struct Callbacks {
     std::function<void()> triggerFireEvent; // v3.9.2: Manual Fire
     RegenerateFiniteWorldCallback regenerateFiniteWorld; // v3.5.1
     RequestMeshUpdateCallback updateMesh; // v3.6.3
+    
+    // v4.0.0 ML Hooks
+    std::function<void(int)> mlCollectData;
+    std::function<void(int, float)> mlTrainModel;
 };
 
 // ... (Moved include to top)

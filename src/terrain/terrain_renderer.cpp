@@ -1,4 +1,5 @@
 #include "terrain_renderer.h"
+#include "../ml/ml_service.h"
 #include "../graphics/geometry_utils.h"
 #include <iostream>
 #include <cstring>
@@ -21,8 +22,8 @@ TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass 
     // Material initialized.
 
 // 1. Refactored buildMesh to use helper
-void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale) {
-    MeshData data = generateMeshData(map, gridScale);
+void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService) {
+    MeshData data = generateMeshData(map, gridScale, mlService);
     uploadMesh(data);
 }
 
@@ -31,7 +32,7 @@ void TerrainRenderer::uploadMesh(const MeshData& data) {
     mesh_ = std::make_unique<graphics::Mesh>(ctx_, data.vertices, data.indices);
 }
 
-TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::TerrainMap& map, float gridScale) {
+TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService) {
     int w = map.getWidth();
     int h = map.getHeight();
     
@@ -83,6 +84,22 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
                 v.color[0] = 0.45f; v.color[1] = 0.38f; v.color[2] = 0.31f; // Darker Brown
             } else { // Cliff (Rock)
                 v.color[0] = 0.4f; v.color[1] = 0.4f; v.color[2] = 0.45f; // Blue-Grey Rock
+            }
+            
+            // v4.0.0 ML Override
+            if (mlService && map.getLandscapeSoil()) {
+                int idx = z * w + x;
+                auto* soil = map.getLandscapeSoil();
+                float d = soil->depth[idx];
+                float om = soil->organic_matter[idx];
+                float inf = soil->infiltration[idx] / 100.0f;
+                float comp = soil->compaction[idx];
+                
+                // Predict
+                Eigen::Vector3f mlColor = mlService->predictSoilColor(d, om, inf, comp);
+                v.color[0] = mlColor.x();
+                v.color[1] = mlColor.y();
+                v.color[2] = mlColor.z();
             }
             
             // v3.6.1 Flux (Drainage) Visualization

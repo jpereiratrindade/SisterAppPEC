@@ -1,0 +1,64 @@
+Declividade (m/m):
+  - Metodo:              Steepest Descent (Max Drop / Distance)
+  - Media:               0.0770078 (7.70078%)
+  - Maxima:              0.261969 (26.1969%)
+
+3. PARAMETROS FUNCIONAIS (HIDROLOGIA)
+-----------------------------------------------------------------
+Area de Contribuicao (Fluxo Acumulado):
+  - Maximo:              116049 m2
+
+Potencia do Fluxo (Stream Power Index ~ A_spec * S):
+  - Maximo:              3445.35
+  - Indicativo de potencial geomorfologico: Regioes com alto SPI sao suscetiveis.
+
+4. PARAMETROS ECO-HIDROLOGICOS
+-----------------------------------------------------------------
+Indice Topografico de Umidade (TWI = ln(a / tanB)):
+  - Minimo:              1.63019 (Zonas secas/divisores)
+  - Maximo:              18.5695 (Zonas saturadas)
+  - Medio:               5.91455
+  - Area com TWI > 8:    4.98657 %
+
+5. REDE DE DRENAGEM
+-----------------------------------------------------------------
+Threshold de Canalizacao: Fluxo (Cells) > 100
+Densidade de Drenagem:
+  - Densidade:           1.030497e-01 m/m2 (m-1)
+  - Equivalente:         103.05 Km de rios por Km2
+  - Extension Total:     108055.00 m (approx)
+
+6. ESTATISTICAS DE BACIAS (Watershed Segmentation)
+-----------------------------------------------------------------
+Total de Bacias Identificadas: 58
+Maior Bacia (Area):            116049 m2
+Dominancia da Maior Bacia:     11.07 % da area total
+
+7. ANALISE DETALHADA: PRINCIPAIS BACIAS
+-----------------------------------------------------------------
+7.1. BACIA ID 17 (Area: 116049.00 m2)
+   - Elevação (Min/Med/Max):     37.08 / 48.23 / 63.40
+   - Declividade Média:          0.08 (8.44%)
+   - TWI Médio:                  6.05
+   - Saturação (TWI>8):          4.48 %
+   - Densidade Drenagem:         1.55e-01 m-1
+   - Stream Power Max:           2274.08
+
+7.2. BACIA ID 15 (Area: 96729.00 m2)
+   - Elevação (Min/Med/Max):     32.11 / 42.54 / 58.88
+   - Declividade Média:          0.08 (8.11%)
+   - TWI Médio:                  5.99
+   - Saturação (TWI>8):          4.73 %
+   - Densidade Drenagem:         1.14e-01 m-1
+   - Stream Power Max:           3445.35
+
+7.3. BACIA ID 32 (Area: 73028.00 m2)
+   - Elevação (Min/Med/Max):     33.98 / 43.09 / 56.86
+   - Declividade Média:          0.09 (8.71%)
+   - TWI Médio:                  5.95
+   - Saturação (TWI>8):          6.03 %
+   - Densidade Drenagem:         1.51e-01 m-1
+   - Stream Power Max:           985.24
+
+=================================================================
+Fim do Relatorio.

@@ -8,6 +8,8 @@
 #include <vector>
 #include "../vegetation/vegetation_types.h"
 
+namespace ml { class MLService; }
+
 namespace shape {
 
 class TerrainRenderer {
@@ -24,10 +26,10 @@ public:
      * @brief Build the GPU mesh from the terrain map.
      * Use generateMeshData + uploadMesh for async loading.
      */
-    void buildMesh(const terrain::TerrainMap& map, float gridScale = 1.0f);
+    void buildMesh(const terrain::TerrainMap& map, float gridScale = 1.0f, const ml::MLService* mlService = nullptr);
 
     // Async Support
-    static MeshData generateMeshData(const terrain::TerrainMap& map, float gridScale = 1.0f);
+    static MeshData generateMeshData(const terrain::TerrainMap& map, float gridScale = 1.0f, const ml::MLService* mlService = nullptr);
     void uploadMesh(const MeshData& data);
 
     /**

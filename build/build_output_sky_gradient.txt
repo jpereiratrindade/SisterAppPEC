@@ -1,3 +1,0 @@
-[  2%] Compilando shaders/environment.frag para SPIR-V
-[ 14%] Built target shaders_spirv
-[100%] Built target sisterapp

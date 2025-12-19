@@ -227,7 +227,9 @@ namespace core {
         // No, I need to include, or forward declare.
         // I will define it as unique_ptr with forward decl in namespace.
         std::unique_ptr<ml::MLService> mlService_;
-
+        
+        bool isTraining_ = false;
+        std::future<void> trainingFuture_;
     };
 
 } // namespace core

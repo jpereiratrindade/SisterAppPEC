@@ -12,7 +12,7 @@ bool initSDL(SDLContext& sdl, const char* title, int width, int height) {
                                   SDL_WINDOWPOS_CENTERED,
                                   SDL_WINDOWPOS_CENTERED,
                                   width, height,
-                                  SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+                                  SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 
     if (!sdl.window) {
         std::fprintf(stderr, "Erro ao criar janela SDL: %s\n", SDL_GetError());

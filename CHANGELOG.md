@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [v4.2.0] - 2025-12-19
+### New Features
+- **Generic ML Service**: Refactored `MLService` to support multiple named models (e.g., "soil_color", "hydro_runoff") with generic input vectors.
+- **Windowed Mode**: Removed forced fullscreen. App now launches in a resizeable 1600x900 window by default.
+- **Generic Training API**: Unified training pipeline for all perceptron models.
+
 ## [v4.1.1] - 2025-12-19
 ### Bug Fixes
 - **Soil System**: Fixed initialization bug where soil depth was stuck at default 1.0m (Landscape generation call was missing).

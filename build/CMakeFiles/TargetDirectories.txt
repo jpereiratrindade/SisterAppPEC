@@ -1,4 +1,0 @@
-/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles/sisterapp.dir
-/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles/shaders_spirv.dir
-/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles/edit_cache.dir
-/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppEngine_base_v330/build/CMakeFiles/rebuild_cache.dir

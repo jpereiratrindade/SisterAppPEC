@@ -514,8 +514,15 @@ Para suportar a validação deste modelo complexo, a interface foi expandida:
     \item \textbf{Ecological Probe:} A ferramenta de inspeção agora revela estados internos ocultos ($d_{soil}$, $OM$, $E_{risk}$) para "debug" biológico.
 \end{itemize}
 
-\subsection{Integração Machine Learning (v4.0.0 Experimental)}
-O sistema incorpora um módulo experimental de Machine Learning para inferência de propriedades pedológicas e visuais, operando em modo híbrido (Physics-Guided ML).
+\subsection{Integração Machine Learning Genérica (v4.2.0)}
+O sistema incorpora um módulo avançado de Machine Learning (\texttt{MLService}) capaz de gerenciar múltiplos modelos preditivos simultaneamente.
+
+\subsubsection{Arquitetura Genérica}
+A classe \texttt{MLService} foi refatorada para abstrair a natureza dos inputs e outputs, permitindo o suporte a qualquer modelo Perceptron via um mapa associativo:
+\[ \text{Models} : \{ \text{"soil\_color"} \to P_1, \text{"hydro\_runoff"} \to P_2, \dots \} \]
+
+\subsubsection{Pipeline de Treinamento}
+O treinamento ocorre de forma assíncrona (background thread), utilizando vetores de entrada genéricos ($\mathbf{x} \in \mathbb{R}^n$) e alvos escalares ($y \in [0,1]$). Isso permite que novos modelos (ex: previsão de biomassa ou risco de fogo) sejam adicionados sem recompilação do núcleo da engine.
 
 \subsubsection{Arquitetura Perceptron (Eigen)}
 A implementação utiliza um Perceptron Multicamadas otimizado com a biblioteca Eigen para vetorização SIMD (AVX/SSE).
@@ -523,7 +530,7 @@ A implementação utiliza um Perceptron Multicamadas otimizado com a biblioteca 
 \textbf{Modelo Matemático:}
 \[ y = \sigma(\mathbf{W} \cdot \mathbf{x} + b) \]
 Onde $\sigma(z) = \frac{1}{1 + e^{-z}}$ é a função de ativação Sigmoid. O modelo processa vetores de entrada normalizados das propriedades do solo:
-\[ \mathbf{x} = [ \text{Depth}, \text{OM}, \text{Infiltration}, \text{Compaction} ] \]
+\[ \mathbf{x} = [ \text{Depth}, \text{OM}, \text{Infiltration}, \text{Compaction} ] \quad (\text{para soil\_color}) \]
 
 \subsubsection{Pipeline de Renderização Híbrida}
 Diferente de abordagens "Black Box" puras, o SisterApp utiliza o ML como um "Surrogate Model" para enriquecer a visualização:

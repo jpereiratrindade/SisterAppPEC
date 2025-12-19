@@ -440,12 +440,12 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
     if (ImGui::Begin("Map Generator (v3.5)", nullptr, 0)) {
         ImGui::Checkbox("Show Slope Analysis", &ctx.showSlopeAnalysis);
         if (ctx.showSlopeAnalysis) {
-             ImGui::TextColored(ImVec4(0.2,0.4,0.8,1), "0-3%%: Flat");
-             ImGui::TextColored(ImVec4(0.2,0.8,0.8,1), "3-8%%: Gentle");
-             ImGui::TextColored(ImVec4(0.2,0.8,0.2,1), "8-20%%: Moderate");
-             ImGui::TextColored(ImVec4(0.8,0.8,0.0,1), "20-45%%: Steep");
-             ImGui::TextColored(ImVec4(1.0,0.5,0.0,1), "45-75%%: V.Steep");
-             ImGui::TextColored(ImVec4(0.8,0.0,0.0,1), ">75%%: Extreme");
+             ImGui::TextColored(ImVec4(0.2f,0.4f,0.8f,1.0f), "0-3%%: Flat");
+             ImGui::TextColored(ImVec4(0.2f,0.8f,0.8f,1.0f), "3-8%%: Gentle");
+             ImGui::TextColored(ImVec4(0.2f,0.8f,0.2f,1.0f), "8-20%%: Moderate");
+             ImGui::TextColored(ImVec4(0.8f,0.8f,0.0f,1.0f), "20-45%%: Steep");
+             ImGui::TextColored(ImVec4(1.0f,0.5f,0.0f,1.0f), "45-75%%: V.Steep");
+             ImGui::TextColored(ImVec4(0.8f,0.0f,0.0f,1.0f), ">75%%: Extreme");
         }
         if (ctx.showSlopeAnalysis && ctx.showDrainage) ctx.showSlopeAnalysis = false; // Mutually exclusive preferred
         
@@ -480,7 +480,7 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
                  if (callbacks_.mlCollectData) callbacks_.mlCollectData(samples);
             }
             ImGui::SameLine();
-            ImGui::TextDisabled("Dataset: %d", ctx.mlDatasetSize);
+            ImGui::TextDisabled("Dataset: %zu", ctx.mlDatasetSize);
             ImGui::SameLine();
             ImGui::TextDisabled("| Loss: %.4f", 0.0f); // Placeholder until we link metrics
             
@@ -563,24 +563,15 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
              
              // Inverting logic for User: "Render Distance" instead of Fog Density
              // High density = Low distance. Low density = High distance.
-             float renderDist = (0.01f - ctx.fogDensity) * 10000.0f; // Approx mapping
              if (ImGui::SliderFloat("Render Distance (Fog)", &ctx.fogDensity, 0.0f, 0.005f, "%.5f")) {
                  // Direct update
              }
         }
 
-        if (ImGui::CollapsingHeader("Visual & Lighting Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
-             ImGui::SliderFloat("Sun Azimuth", &ctx.sunAzimuth, 0.0f, 360.0f, "%.0f deg");
-             ImGui::SliderFloat("Sun Elevation", &ctx.sunElevation, -90.0f, 90.0f, "%.0f deg");
-             ImGui::SliderFloat("Light Intensity", &ctx.lightIntensity, 0.0f, 2.0f, "%.2f"); // v3.8.1
-             float renderDist = (0.01f - ctx.fogDensity) * 10000.0f; 
-             if (ImGui::SliderFloat("Render Distance (Fog)", &ctx.fogDensity, 0.0f, 0.005f, "%.5f")) { }
-        }
 
-        ImGui::Separator();
         ImGui::Text("Terrain Generator Options");
         
-        const char* terrainTypes[] = { "Hills", "Mountains", "Plains", "Valleys" };
+
 
         // 1. State Declarations
         static int selectedSize = 1024;

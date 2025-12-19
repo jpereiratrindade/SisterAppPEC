@@ -66,7 +66,7 @@ Application::~Application() {
 
 void Application::init() {
     std::string title = std::string(APP_NAME) + " - " + std::string(APP_VERSION_TAG);
-    if (!initSDL(sdl_, title.c_str(), 1280, 720)) {
+    if (!initSDL(sdl_, title.c_str(), 1600, 900)) {
         throw std::runtime_error("Failed to initialize SDL");
     }
 
@@ -168,8 +168,16 @@ void Application::init() {
     mlService_->init();
     mlService_->loadModel("soil_color", "assets/models/soil_color.json");
 
+    // v3.9.0: Initialize Vegetation System on Startup
+    if (finiteMap_->getVegetation()) {
+        vegetation::VegetationSystem::initialize(*finiteMap_->getVegetation(), currentSeed_);
+        if (finiteRenderer_) {
+            finiteRenderer_->updateVegetation(*finiteMap_->getVegetation());
+        }
+    }
+
     // Update mesh for 3D View
-    finiteRenderer_->buildMesh(*finiteMap_, 1.0f, showMLSoil_ ? mlService_.get() : nullptr);
+    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_, showMLSoil_ ? mlService_.get() : nullptr);
 
     camera_.setCameraMode(graphics::CameraMode::FreeFlight);
     float cx = 1024.0f / 2.0f;
@@ -237,11 +245,10 @@ void Application::init() {
             // Defer to next frame start
             meshUpdateRequested_ = true;
         },
-        // v4.0.0 ML Training
+        // v4.2.0 ML Training (Generic)
         [this](int samples) { // mlCollectData
              if (!finiteMap_ || !mlService_) return;
-             // Implementation Logic
-             std::cout << "[SisterApp] Collecting " << samples << " samples..." << std::endl;
+             std::cout << "[SisterApp] Collecting " << samples << " samples for 'soil_color'..." << std::endl;
              std::srand(std::time(nullptr));
              int w = finiteMap_->getWidth();
              int h = finiteMap_->getHeight();
@@ -254,20 +261,20 @@ void Application::init() {
                  float inf = finiteMap_->getLandscapeSoil()->infiltration[z*w+x] / 100.0f;
                  float comp = finiteMap_->getLandscapeSoil()->compaction[z*w+x];
                  
-                 // Ground Truth Heuristic (Target)
+                 // Ground Truth Heuristic
                  float target = 0.5f * (d/2.0f) + 0.3f * (om/5.0f) + 0.2f * (1.0f - comp);
-                 mlService_->collectTrainingSample(d, om, inf, comp, std::clamp(target, 0.0f, 1.0f));
+                 mlService_->collectTrainingSample("soil_color", {d, om, inf, comp}, std::clamp(target, 0.0f, 1.0f));
              }
-             std::cout << "[SisterApp] Dataset: " << mlService_->datasetSize() << std::endl;
+             std::cout << "[SisterApp] Dataset: " << mlService_->datasetSize("soil_color") << std::endl;
         },
         [this](int epochs, float lr) { // mlTrainModel
              if(mlService_ && !isTraining_) {
                  isTraining_ = true;
-                 std::cout << "[SisterApp] Starting Async Training..." << std::endl;
+                 std::cout << "[SisterApp] Starting Async Training 'soil_color'..." << std::endl;
                  
-                 // Launch Async
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
-                     mlService_->trainModel(epochs, lr);
+                     mlService_->trainModel("soil_color", epochs, lr); // Added modelName
+                     isTraining_ = false; // Reset flag (not strict thread safe but OK for UI flag)
                  });
              }
         }
@@ -522,10 +529,17 @@ void Application::processEvents(double dt) {
                               auto* hydro = finiteMap_->getLandscapeHydro();
                               int idx = hitZ * finiteMap_->getWidth() + hitX;
                               if (idx >= 0 && idx < hydro->water_depth.size()) {
-                                  float wd = hydro->flow_flux[idx] * 1000.0f; // mm (per step)
+                                  float dtSim = vegetationUpdateIntervalMs_ / 1000.0f;
+                                  if (dtSim <= 0.0001f) dtSim = 0.2f; // Safety
+                                  
+                                  // Convert m/step to mm/h
+                                  // flow_flux [m] / dt [s] = m/s
+                                  // m/s * 3600000 = mm/h
+                                  float flowRate = (hydro->flow_flux[idx] / dtSim) * 3600000.0f; 
+                                  
                                   float er = hydro->erosion_risk[idx];
-                                  ss << "Runoff: " << std::fixed << std::setprecision(1) << wd << " mm\n";
-                                  ss << "Erosion Risk: " << std::setprecision(3) << er << "\n";
+                                  ss << "Fluxo: " << std::fixed << std::setprecision(1) << flowRate << " mm/h\n";
+                                  ss << "Erosion Risk: " << std::setprecision(4) << er << "\n";
                               }
                          }
                          
@@ -709,7 +723,8 @@ void Application::update(double dt) {
     camera_.update(static_cast<float>(dt));
     
     // v3.9.0 Vegetation Simulation
-    if (finiteMap_ && finiteMap_->getVegetation() && vegetationMode_ > 0) {
+    // v3.9.0 Vegetation & Landscape Simulation
+    if (finiteMap_) {
         // v3.9.1 Throttle Updates (Wall Clock to avoid dt spiral)
         if (nowMs - lastVegetationUpdateMs_ >= vegetationUpdateIntervalMs_) {
             lastVegetationUpdateMs_ = nowMs;
@@ -723,19 +738,9 @@ void Application::update(double dt) {
             
             float dtSim = vegetationUpdateIntervalMs_ / 1000.0f;
 
-            // 0. Disturbance (Fire)
-            if (disturbanceParams_.fireFrequency > 0.0f) {
-                float prob = disturbanceParams_.fireFrequency * dtSim;
-                if ((float)rand() / RAND_MAX < prob) {
-                    disturbanceParams_.type = vegetation::DisturbanceType::Fire;
-                    vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
-                    std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
-                }
-            }
-
             // v4.0: Integrated Landscape Loop
-            // 1. Hydro (Rain -> Runoff -> Erosion)
-            if (soil && hydro) {
+            // 1. Hydro (Rain -> Runoff -> Erosion) - Runs regardless of Veg Mode
+            if (soil && hydro && veg) {
                 landscape::HydroSystem::update(*hydro, *soil, *veg, rainIntensity_, dtSim);
             }
 
@@ -744,21 +749,33 @@ void Application::update(double dt) {
                 landscape::SoilSystem::update(*soil, dtSim);
             }
             
-            // 3. Vegetation (Growth/Recovery) 
-            vegetation::VegetationSystem::update(*veg, dtSim, disturbanceParams_, soil, hydro);
-            
-            Uint32 t1 = SDL_GetTicks();
+            // 3. Vegetation (Growth/Recovery) & Disturbance
+            // Only run detailed Vegetation Dynamics if we have a valid grid
+            if (veg && veg->isValid()) { // Ensure veg is valid
+                  // 0. Disturbance (Fire)
+                  if (disturbanceParams_.fireFrequency > 0.0f) {
+                      float prob = disturbanceParams_.fireFrequency * dtSim;
+                      if ((float)rand() / RAND_MAX < prob) {
+                          disturbanceParams_.type = vegetation::DisturbanceType::Fire;
+                          vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
+                          std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
+                      }
+                  }
 
-            // 3. Upload to GPU
-            if (finiteRenderer_) {
-                finiteRenderer_->updateVegetation(*veg);
-            }
+                  // Growth
+                  vegetation::VegetationSystem::update(*veg, dtSim, disturbanceParams_, soil, hydro);
             
-            Uint32 t2 = SDL_GetTicks();
-            
-            // Log if slow (>10ms)
-            if (t2 - t0 > 10) {
-                 std::cout << "[Perf] VegUpdate: Sim=" << (t1-t0) << "ms, Upload=" << (t2-t1) << "ms. Total=" << (t2-t0) << "ms" << std::endl;
+                  // Upload to GPU if visualizing (or always? Keeps texture valid for probing)
+                  // Let's update always to safe-guard probing
+                  if (finiteRenderer_) {
+                      finiteRenderer_->updateVegetation(*veg);
+                  }
+                  Uint32 t2 = SDL_GetTicks();
+                  
+                  // Log if slow (>10ms)
+                  if (t2 - t0 > 10) {
+                       // std::cout << "[Perf] Sim Update: " << (t2-t0) << "ms" << std::endl;
+                  }
             }
         }
     }
@@ -994,9 +1011,10 @@ void Application::render(size_t frameIndex) {
         rainIntensity_,
         
         // v4.0.0 ML
+        // v4.0.0 ML
         showMLSoil_,
-        /* ml stats */ mlService_ ? mlService_->datasetSize() : 0,
-        /* isTraining */ isTraining_
+        mlService_ ? mlService_->datasetSize("soil_color") : 0,
+        isTraining_
     };
 
     uiLayer_->render(uiCtx, cmd);

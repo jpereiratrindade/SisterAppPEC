@@ -23,7 +23,10 @@ public:
     bool load(const std::string& path);
 
     // Getters for inspection
-    int getInputSize() const { return weights_.size(); }
+    int getInputSize() const { return static_cast<int>(weights_.size()); }
+
+    // On-device training (Backprop)
+    void train(const Eigen::VectorXf& input, float target, float lr);
 
 private:
     Eigen::VectorXf weights_;
@@ -31,6 +34,7 @@ private:
 
     // Activation function
     static float sigmoid(float z);
+    static float sigmoidPrime(float z);
 };
 
 } // namespace ml
