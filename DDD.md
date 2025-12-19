@@ -114,4 +114,4 @@ RN-01 **Deferred Updates**: O upload de malha para a GPU ocorre apenas no iníci
 ---
 
 ## 6. Future Roadmap
-- **Compute Shaders**: Mover simulação de erosão para GPU.
+- **Compute Shaders**: Mover simulação de erosão para GPU. 
