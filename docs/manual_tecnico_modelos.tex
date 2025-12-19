@@ -441,46 +441,75 @@ em que $A$ corresponde à área da mancha e $P$ ao seu perímetro. O RCC varia e
 
 
 \section{Modelo Integrado Ecofuncional da Paisagem (v4.0)}
-Com a atualização v4.0 (Dezembro/2025), o SisterApp transcende a simulação isolada de vegetação para incorporar um Modelo Integrado de Paisagem (Integrated Landscape Model - ILM), atendendo aos requisitos de acoplamento ecofuncional.
+Com a atualização v4.0 (Dezembro/2025), o SisterApp transcende a simulação isolada de vegetação para incorporar um Modelo Integrado de Paisagem (Integrated Landscape Model - ILM), atendendo aos requisitos de acoplamento ecofuncional definidos na Documentação de Domínio (DDD).
 
-\subsection{Arquitetura de Sistemas Integrados}
-O modelo adota uma arquitetura em camadas interconectadas, onde processos físicos (Hidrologia, Pedogênese) e biológicos (Crescimento Vegetal) operam em feedback contínuo.
+\subsection{Definição do Domínio}
+O domínio é definido como a modelagem integrada da paisagem campestre como um sistema ecofuncional complexo, espacialmente acoplado e temporalmente explícito. Nenhuma propriedade sistêmica é modelada diretamente; todas emergem da interação entre estados, processos e regimes de distúrbio.
 
-\subsubsection{Fundação Edáfica (Soil System)}
-Implementado como um \textit{SoilGrid} (SoA), o sistema de solo introduz propriedades dinâmicas e funcionais para cada célula:
-\begin{itemize}
-    \item \textbf{Profundidade do Solo ($d_{soil}$):} Variável de estado crítica, sujeita a erosão e intemperismo. Solos rasos ($d < 0.2m$) limitam severamente o Vigor vegetal.
-    \item \textbf{Banco de Propágulos ($\Pi$):} Representa a \textit{Memória Ecológica}. A capacidade de regeneração ($\tau_{rec}$) depende da integridade deste banco. Erosão severa remove o banco, levando à desertificação irreversível.
-    \item \textbf{Matéria Orgânica ($OM$):} Acumulada pela biomassa vegetal, aumenta a capacidade de infiltração e suporte.
-\end{itemize}
-
-\subsubsection{Hidrologia Dinâmica (Hydro System)}
-Diferente da abordagem estática anterior (apenas visualização de drenagem), o novo \textit{HydroGrid} simula fluxo de água ativo a cada passo de tempo:
-\[ Q_{runoff} = \max(0, P_{rain} - I_{infil}) \]
-Onde a Infiltração ($I_{infil}$) é modulada pela cobertura vegetal: $I_{infil} = K_{sat} \cdot (1 + \beta \cdot C_{veg})$. Cobertura densa aumenta a infiltração em até 3x, reduzindo o escoamento superficial.
-
-\subsubsection{Erosão e Sedimentação}
-O risco de erosão ($E_{risk}$) é calculado pelo poder de fluxo de água (Stream Power) ponderado pela proteção vegetal:
-\[ E_{risk} = Q_{runoff} \cdot S_{lope} \cdot (1 - C_{veg}) \]
-Se $E_{risk}$ excede um limiar crítico, ocorre remoção de $d_{soil}$. Este feedback negativo (Perda de Cobertura $\to$ Erosão $\to$ Perda de Solo $\to$ Menor Capacidade de Suporte) é o mecanismo central de degradação da paisagem.
-
-\subsection{Acoplamento Solo-Planta-Água}
-A vegetação agora responde ativamente ao estado da paisagem:
+\subsection{Arquitetura e Agregado Central (LandscapeCell)}
+A \textbf{LandscapeCell} representa a unidade lógica mínima da paisagem. Embora implementada computacionalmente com estruturas "Structure of Arrays" (SoA) para eficiência de cache, conceitualmente ela agrega:
 \begin{enumerate}
-    \item \textbf{Site Quality:} A Capacidade de Suporte ($K_{EI}, K_{ES}$) é multiplicada pelo Índice de Qualidade do Solo ($SQ = d_{soil} \cdot OM$).
-    \item \textbf{Estresse Hídrico:} O Vigor ($\phi$) decai se o solo estiver saturado (Runoff excessivo) ou muito raso (incapaz de reter água).
-    \item \textbf{Resiliência:} A taxa de recuperação pós-distúrbio é limitada pela disponibilidade de propágulos local e vizinha.
+    \item \textbf{Identidade:} CellID único na grade.
+    \item \textbf{Responsabilidades:} Representar um ponto espacial, referenciar estados biológicos/físicos e servir de base para métricas emergentes.
 \end{enumerate}
 
-\subsection{Interface de Controle e Diagnóstico}
-Para suportar a experimentação em tempo real, a interface do SisterApp v4.0 expõe parâmetros críticos:
+\subsection{Estados de Domínio}
+O estado de cada célula é composto por vetores independentes que interagem via serviços:
+
+\subsubsection{SoilState (Fundação Edáfica)}
 \begin{itemize}
-    \item \textbf{Controle de Precipitação:} Slider \textit{Rain Intensity} [0-100 mm/h] (Menu \textit{Map Generator}). Permite forçar eventos de tempestade para observar o escoamento dinâmico.
-    \item \textbf{Sonda Pedológica (Probe):} A ferramenta de inspeção visual (Clique Esquerdo) agora reporta:
-    \begin{itemize}
-        \item \textit{Soil Depth} ($m$) e \textit{Organic Matter} ($\%$)
-        \item \textit{Runoff Accumulation} ($mm$) e \textit{Erosion Risk} (Adimensional)
-    \end{itemize}
+    \item \textbf{SoilDepth ($d_{soil}$):} Variável crítica sujeita a erosão. Solos $< 0.2m$ limitam o vigor.
+    \item \textbf{PropaguleBank ($\Pi$):} Memória ecológica que define a resiliência ($\tau_{rec}$).
+    \item \textbf{InfiltrationCapacity:} Modulada pela matéria orgânica e compactação.
+    \item \textbf{SurfaceExposure:} Fração de solo descoberto, aumentando risco de erosão.
 \end{itemize}
 
-\end{document}
+\subsubsection{VegetationState (Biomassa)}
+\begin{itemize}
+    \item \textbf{Coverage ($C_{EI}, C_{ES}$):} Cobertura dos estratos Inferior e Superior.
+    \item \textbf{Vigor ($\phi_{EI}, \phi_{ES}$):} Estado fisiológico (0-1).
+    \item \textbf{StructuralHeterogeneity:} Variabilidade espacial local.
+\end{itemize}
+
+\subsubsection{HydrologicalState (Fluxo Ativo)}
+\begin{itemize}
+    \item \textbf{RunoffPotential:} Água disponível para escoamento superficial ($P - I_{infil}$).
+    \item \textbf{FlowAccumulation:} Volume acumulado via D8.
+    \item \textbf{ErosionRisk:} Potencial de destacamento de solo ($StreamPower \times (1 - Coverage)$).
+\end{itemize}
+
+\subsection{Serviços de Domínio (Processos Ecofuncionais)}
+Os processos não pertencem à célula, mas operam sobre a grade como serviços:
+\begin{itemize}
+    \item \textbf{GrowthService:} Calcula crescimento logístico e competição inter-estratos.
+    \item \textbf{RunoffService:} Resolve o fluxo hidrológico D8 a cada tick, transportando água e sedimentos.
+    \item \textbf{ErosionService:} Remove $d_{soil}$ baseado no risco de erosão e deposita em bacias de sedimentação.
+    \item \textbf{DisturbanceService:} Aplica regimes de Fogo e Pastejo conforme magnitude e frequência.
+\end{itemize}
+
+\subsection{Loop de Atualização e Tempo}
+O sistema opera em tempo discreto ($\Delta t$). O ciclo de atualização conceitual segue a ordem:
+\begin{enumerate}
+    \item Aplicação de Regimes de Distúrbio.
+    \item Execução de Processos Físicos (Hidrologia, Erosão).
+    \item Execução de Processos Biológicos (Crescimento, Mortalidade).
+    \item Atualização de Estados.
+    \item Derivação de Propriedades Emergentes (ex: Resiliência).
+\end{enumerate}
+
+\subsection{Propriedades Emergentes e Invariantes}
+\textbf{Resiliência Ecofuncional:} Não é uma variável, mas uma função da capacidade do sistema de recuperar $C_{veg}$ após $D$ (Distúrbio), dependendo de $\Pi$ (Banco de Propágulos) e $d_{soil}$.
+
+\textbf{Invariantes do Sistema:}
+\begin{itemize}
+    \item Solo descoberto elevado $\implies$ Aumento não-linear de erosão.
+    \item A perda funcional (Vigor) precede o colapso estrutural (Cobertura).
+    \item Regeneração é impossível sem banco de propágulos (Estado de Desertificação).
+\end{itemize}
+
+\subsection{Interface de Controle e Diagnóstico (v4.0)}
+Para suportar a validação deste modelo complexo, a interface foi expandida:
+\begin{itemize}
+    \item \textbf{Rain Intensity Slider:} Permite forçar tempestades extremas para testar $RunoffService$.
+    \item \textbf{Ecological Probe:} A ferramenta de inspeção agora revela estados internos ocultos ($d_{soil}$, $OM$, $E_{risk}$) para "debug" biológico.
+\end{itemize}
