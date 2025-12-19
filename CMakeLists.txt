@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(SisterAppEngine VERSION 3.3 LANGUAGES CXX)
+project(SisterAppPEC VERSION 4.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,7 +22,7 @@ set(IMGUI_SOURCES
     ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
 )
 
-add_executable(sisterapp
+add_executable(SisterAppPEC
     main.cpp
     src/init_sdl.cpp
 
@@ -52,25 +52,25 @@ add_executable(sisterapp
     ${IMGUI_SOURCES}
 )
 
-target_include_directories(sisterapp PRIVATE
+target_include_directories(SisterAppPEC PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
 )
 
-target_include_directories(sisterapp SYSTEM PRIVATE
+target_include_directories(SisterAppPEC SYSTEM PRIVATE
     ${EIGEN3_INCLUDE_DIR}
     ${IMGUI_DIR}
     ${IMGUI_DIR}/backends
 )
 
 if (TARGET SDL2::SDL2)
-    target_link_libraries(sisterapp PRIVATE SDL2::SDL2)
+    target_link_libraries(SisterAppPEC PRIVATE SDL2::SDL2)
 else()
-    target_link_libraries(sisterapp PRIVATE ${SDL2_LIBRARIES})
+    target_link_libraries(SisterAppPEC PRIVATE ${SDL2_LIBRARIES})
 endif()
 
-target_link_libraries(sisterapp PRIVATE Vulkan::Vulkan OpenMP::OpenMP_CXX)
+target_link_libraries(SisterAppPEC PRIVATE Vulkan::Vulkan OpenMP::OpenMP_CXX)
 
 find_program(GLSLC glslc)
 set(SHADER_SRC
