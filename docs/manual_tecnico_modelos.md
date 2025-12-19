@@ -191,7 +191,7 @@ $$ \text{Modelo (Geometria)} \rightarrow \text{Heightmap Grid} \rightarrow \text
 # 5. Configuração do Usuário
 Interface atualizada no menu _Tools_:
 *   **Slope Sliders:** Ajuste dos limites percentuais para cada classe.
-*   **Probe Tool:** Ferramenta de diagnóstico (clique esquerdo) mostra $S_{\%}$ exato.
+*   **Probe Tool:** Ferramenta de diagnóstico (clique esquerdo) mostra o valor de $S$ (declividade, em %).
 
 ## 5.1. Variáveis de Controle Espacial
 O sistema permite o ajuste fino da topografia através de três variáveis principais:
@@ -393,7 +393,10 @@ O sistema incorpora um módulo avançado de Machine Learning (`MLService`) capaz
 
 ### 11.8.1. Arquitetura Genérica
 A classe `MLService` foi refatorada para abstrair a natureza dos inputs e outputs, permitindo o suporte a qualquer modelo Perceptron via um mapa associativo:
-$$ \text{Models} : \{ \text{"soil\_color"} \to P_1, \text{"hydro\_runoff"} \to P_2, \dots \} $$
+
+$$
+\text{Models} : \{ \text{"soil\_color"} \to P_1, \text{"hydro\_runoff"} \to P_2, \dots \}
+$$
 
 ### 11.8.2. Pipeline de Treinamento
 O treinamento ocorre de forma assíncrona (background thread), utilizando vetores de entrada genéricos ($\mathbf{x} \in \mathbb{R}^n$) e alvos escalares ($y \in [0,1]$). Isso permite que novos modelos (ex: previsão de biomassa ou risco de fogo) sejam adicionados sem recompilação do núcleo da engine.
@@ -402,20 +405,27 @@ O treinamento ocorre de forma assíncrona (background thread), utilizando vetore
 A implementação utiliza um Perceptron Multicamadas otimizado com a biblioteca Eigen para vetorização SIMD (AVX/SSE).
 
 **Modelo Matemático:**
-$$ y = \sigma(\mathbf{W} \cdot \mathbf{x} + b) $$
+
+$$
+y = \sigma(\mathbf{W} \cdot \mathbf{x} + b)
+$$
+
 Onde $\sigma(z) = \frac{1}{1 + e^{-z}}$ é a função de ativação Sigmoid. O modelo processa vetores de entrada normalizados das propriedades do solo:
-$$ \mathbf{x} = [ \text{Depth}, \text{OM}, \text{Infiltration}, \text{Compaction} ] \quad (\text{para soil\_color}) $$
+
+$$
+\mathbf{x} = [ \text{Depth}, \text{OM}, \text{Infiltration}, \text{Compaction} ] \quad (\text{para soil\_color})
+$$
 
 ### 11.8.4. Modelo de Hidrologia ("hydro_runoff")
 Este modelo estima a geração de escoamento superficial sem resolver a equação de fluxo completa, permitindo inferências rápidas para visualização ou heurísticas de IA.
 
 **Inputs ($\mathbf{x}$):**
-*   Intensidade da Chuva (Normalizada $0-100 mm/h$)
+*   Intensidade da Chuva (Normalizada $0-100 \text{ mm/h}$)
 *   Taxa de Infiltração Efetiva (Baseada no Tipo de Solo)
 *   Biomassa Vegetal ($C_{EI} + C_{ES}$)
 
 **Target ($y$):**
-*   Coeficiente de Runoff ou Fluxo Absoluto ($mm/h$).
+*   Coeficiente de Runoff ou Fluxo Absoluto ($\text{mm/h}$).
 
 **Geração de Dados Estocástica:**
 Para garantir generalização, o treinamento não utiliza apenas a chuva atual do mapa. O sistema sorteia cenários de chuva aleatórios ($R \sim U[0, 100]$) para cada célula amostrada, ensinando a rede a prever o comportamento hidrológico sob diversas condições climáticas.
