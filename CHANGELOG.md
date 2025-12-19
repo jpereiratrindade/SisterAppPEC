@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [v4.1.1] - 2025-12-19
+### Bug Fixes
+- **Soil System**: Fixed initialization bug where soil depth was stuck at default 1.0m (Landscape generation call was missing).
+- **Hydro Probe**: Fixed "Runoff" displaying 0.0 (was reading unused variable `water_depth`, switched to `flow_flux`).
+- **Erosion**: Adjusted erosion threshold from `1e-4` to `1e-9` to correctly visualize micro-erosion at small time steps.
+
 ## [v4.1.0] - 2025-12-19
 ### UI Refactoring (Domain-Driven UI)
 - **Split "Map Generator"**: Refactored the monolithic tool window into 4 domain-specific floating windows:

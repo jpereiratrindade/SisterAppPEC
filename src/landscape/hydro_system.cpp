@@ -149,7 +149,7 @@ namespace landscape {
             float erosionPot = flux * slope * K_erod * resistance;
             
             // Threshold
-            if (erosionPot > 0.0001f) { // Very small threshold
+            if (erosionPot > 1e-9f) { // Very small threshold (Physics-based)
                  if (soil.depth[i] > 0.0f) {
                      soil.depth[i] -= erosionPot * dt;
                      if (soil.depth[i] < 0.0f) soil.depth[i] = 0.0f; // Bedrock

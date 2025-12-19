@@ -129,7 +129,7 @@ void Application::init() {
     
     // --- V3.5.0: Finite World Initialization ---
     // Defaulting to Finite World
-    std::cout << "[SisterApp v4.1.0] Initializing Finite World (1024x1024)..." << std::endl;
+    std::cout << "[SisterApp v4.1.1] Initializing Finite World (1024x1024)..." << std::endl;
     finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
     // v3.7.8: Use Config Seed
     finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(currentSeed_);
@@ -159,6 +159,9 @@ void Application::init() {
     
     // v3.7.3: Semantic Soil Classification
     finiteGenerator_->classifySoil(*finiteMap_, config);
+
+    // v4.0.0: Initialize Landscape Systems (Soil, Hydro)
+    finiteGenerator_->generateLandscape(*finiteMap_);
     
     // v4.0.0 ML Service Initialization
     mlService_ = std::make_unique<ml::MLService>();
@@ -177,7 +180,7 @@ void Application::init() {
     camera_.setFovDegrees(60.0f); // Wider view
 
     
-    std::cout << "[SisterApp v4.1.0] Finite World Ready!" << std::endl;
+    std::cout << "[SisterApp v4.1.1] Finite World Ready!" << std::endl;
 
     // V3.4.0: Load preferences on startup
     // v3.8.1: Preferences Disabled
@@ -519,7 +522,7 @@ void Application::processEvents(double dt) {
                               auto* hydro = finiteMap_->getLandscapeHydro();
                               int idx = hitZ * finiteMap_->getWidth() + hitX;
                               if (idx >= 0 && idx < hydro->water_depth.size()) {
-                                  float wd = hydro->water_depth[idx] * 1000.0f; // mm
+                                  float wd = hydro->flow_flux[idx] * 1000.0f; // mm (per step)
                                   float er = hydro->erosion_risk[idx];
                                   ss << "Runoff: " << std::fixed << std::setprecision(1) << wd << " mm\n";
                                   ss << "Erosion Risk: " << std::setprecision(3) << er << "\n";
@@ -1146,6 +1149,9 @@ void Application::performRegeneration() {
             gen->generateBaseTerrain(*map, config);
             gen->calculateDrainage(*map);
             gen->classifySoil(*map, config);
+            
+            // v4.0.0: Initialize Landscape Systems
+            gen->generateLandscape(*map);
 
             // v3.9.0: Initialize Vegetation (Async)
             if (map->getVegetation()) {

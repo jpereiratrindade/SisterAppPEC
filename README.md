@@ -7,7 +7,7 @@ SisterApp é uma **Plataforma de Ecologia Computacional** de alto desempenho (C+
 
 Desenvolvido por **José Pedro Trindade**.
 
-![Version](https://img.shields.io/badge/version-4.1.0-orange.svg)
+![Version](https://img.shields.io/badge/version-4.1.1-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
 ![Status](https://img.shields.io/badge/Status-Stable-green.svg)
 
