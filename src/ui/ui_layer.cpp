@@ -462,6 +462,13 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         
         // v4.0.0 Rainfall Control (Always visible)
         ImGui::SliderFloat("Rain Intensity", &ctx.rainIntensity, 0.0f, 100.0f, "%.1f mm/h");
+        
+        // v4.0.0 ML Integration
+        if (ImGui::Checkbox("Accurate Soil Color (ML Prediction)", &ctx.showMLSoil)) {
+            // Trigger mesh update on toggle
+            if (callbacks_.updateMesh) callbacks_.updateMesh();
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Uses Neural Network to predict soil color from properties (Depth, OM, etc)");
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls dynamic runoff generation (affects Erosion & Veg).");
         
         if (ctx.showDrainage && ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;

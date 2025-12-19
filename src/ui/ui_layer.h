@@ -72,6 +72,9 @@ struct UiFrameContext {
     
     // v4.0.0 Hydro
     float& rainIntensity;
+    
+    // v4.0.0 ML
+    bool& showMLSoil;
 };
 
 struct Callbacks {

@@ -12,6 +12,7 @@
 #include "../math/math_types.h"
 #include "preferences.h" // v3.4.0
 #include "version.h"
+#include "../ml/ml_service.h"
 
 #include "backends/imgui_impl_sdl2.h"
 #include "backends/imgui_impl_vulkan.h"
@@ -159,8 +160,13 @@ void Application::init() {
     // v3.7.3: Semantic Soil Classification
     finiteGenerator_->classifySoil(*finiteMap_, config);
     
+    // v4.0.0 ML Service Initialization
+    mlService_ = std::make_unique<ml::MLService>();
+    mlService_->init();
+    mlService_->loadModel("soil_color", "assets/models/soil_color.json");
+
     // Update mesh for 3D View
-    finiteRenderer_->buildMesh(*finiteMap_);
+    finiteRenderer_->buildMesh(*finiteMap_, 1.0f, showMLSoil_ ? mlService_.get() : nullptr);
 
     camera_.setCameraMode(graphics::CameraMode::FreeFlight);
     float cx = 1024.0f / 2.0f;
@@ -937,7 +943,10 @@ void Application::render(size_t frameIndex) {
         disturbanceParams_,
         
         // v4.0.0 Hydro
-        rainIntensity_
+        rainIntensity_,
+        
+        // v4.0.0 ML
+        showMLSoil_
     };
 
     uiLayer_->render(uiCtx, cmd);
@@ -1059,7 +1068,7 @@ void Application::performMeshUpdate() {
     vkDeviceWaitIdle(ctx_->device());
 
     std::cout << "[SisterApp] Performing deferred mesh update..." << std::endl;
-    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_);
+    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_, showMLSoil_ ? mlService_.get() : nullptr);
     
     meshUpdateRequested_ = false;
 }
@@ -1097,7 +1106,7 @@ void Application::performRegeneration() {
             }
 
             // 4. Prepare Mesh Data (CPU Heavy)
-            auto meshData = shape::TerrainRenderer::generateMeshData(*map, config.resolution);
+            auto meshData = shape::TerrainRenderer::generateMeshData(*map, config.resolution, this->showMLSoil_ ? this->mlService_.get() : nullptr);
 
             // 5. Output to Background Members (Thread Safe? No, member access needs care.)
             // Since main thread checks "future.valid/ready" and doesn't touch these until then, 

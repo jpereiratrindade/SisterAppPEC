@@ -28,6 +28,8 @@
 #include <chrono>
 #include <string>
 
+namespace ml { class MLService; } // Forward decl
+
 namespace core {
     /**
      * @brief The main Engine class encapsulating the application lifecycle.
@@ -213,6 +215,18 @@ namespace core {
         
         // v4.0: Landscape Integration
         float rainIntensity_ = 50.0f; // mm/h (Heavy Rain for Testing)
+     
+        // v4.0.0 ML Visualization Toggle
+        bool showMLSoil_ = false; // Default OFF for PoC verification
+
+        // ML Service (v4.0 PoC)
+        // Forward declared in .h or included? We need include.
+        // Actually unique_ptr needs definition if incomplete type used in destructor?
+        // But headers are included. Let's rely on forward decl in .h but here include is needed?
+        // ml::MLService is not included here. I forward declared it?
+        // No, I need to include, or forward declare.
+        // I will define it as unique_ptr with forward decl in namespace.
+        std::unique_ptr<ml::MLService> mlService_;
 
     };
 

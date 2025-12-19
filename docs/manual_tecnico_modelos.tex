@@ -513,3 +513,22 @@ Para suportar a validação deste modelo complexo, a interface foi expandida:
     \item \textbf{Rain Intensity Slider:} Permite forçar tempestades extremas para testar $RunoffService$.
     \item \textbf{Ecological Probe:} A ferramenta de inspeção agora revela estados internos ocultos ($d_{soil}$, $OM$, $E_{risk}$) para "debug" biológico.
 \end{itemize}
+
+\subsection{Integração Machine Learning (v4.0.0 Experimental)}
+O sistema incorpora um módulo experimental de Machine Learning para inferência de propriedades pedológicas e visuais, operando em modo híbrido (Physics-Guided ML).
+
+\subsubsection{Arquitetura Perceptron (Eigen)}
+A implementação utiliza um Perceptron Multicamadas otimizado com a biblioteca Eigen para vetorização SIMD (AVX/SSE).
+\\\\
+\textbf{Modelo Matemático:}
+\[ y = \sigma(\mathbf{W} \cdot \mathbf{x} + b) \]
+Onde $\sigma(z) = \frac{1}{1 + e^{-z}}$ é a função de ativação Sigmoid. O modelo processa vetores de entrada normalizados das propriedades do solo:
+\[ \mathbf{x} = [ \text{Depth}, \text{OM}, \text{Infiltration}, \text{Compaction} ] \]
+
+\subsubsection{Pipeline de Renderização Híbrida}
+Diferente de abordagens "Black Box" puras, o SisterApp utiliza o ML como um "Surrogate Model" para enriquecer a visualização:
+\begin{enumerate}
+    \item A simulação física calcula os estados brutos ($d_{soil}$, etc).
+    \item O \texttt{MLService} infere uma "Assinatura Espectral" (Cor) baseada nesses estados.
+    \item O renderizador mistura essa predição com a textura base, permitindo visualizar correlações não-lineares aprendidas de dados reais (quando o modelo for treinado).
+\end{enumerate}
