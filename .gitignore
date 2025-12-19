@@ -1,0 +1,43 @@
+# Build System (CMake)
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+cmake_log.txt
+
+# Editors & OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+imgui.ini
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Data / Logs
+*.csv
+*.log
+
+# LaTeX Intermediates
+*.aux
+*.bbl
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+# Note: Keep .pdf allowed so you can version the Manual if desired.
