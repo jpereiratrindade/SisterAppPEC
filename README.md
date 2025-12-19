@@ -151,7 +151,8 @@ Deterministic O(N) flow accumulation algorithm:
 
 ## 📜 License
 
-Provided as-is for research and educational purposes.
+This project is licensed under the **GNU General Public License v3.0**.  
+See the [LICENSE](LICENSE) file for details.
 
 ---
 
