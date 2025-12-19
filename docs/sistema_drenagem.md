@@ -56,9 +56,9 @@ O tempo de concentração expressa o tempo necessário para que a água percorra
 
 Uma métrica simples e amplamente utilizada como proxy da capacidade de transporte é dada por:
 
-**E ~ A · S**
+$$ E \sim A \cdot S $$
 
-onde *A* é a área de contribuição e *S* a declividade. Essa relação permite identificar trechos sensíveis e zonas potencialmente instáveis da rede de drenagem.
+onde $A$ é a área de contribuição e $S$ a declividade. Essa relação permite identificar trechos sensíveis e zonas potencialmente instáveis da rede de drenagem.
 
 ## 4. Parâmetros Eco-hidrológicos
 
@@ -68,7 +68,7 @@ Os parâmetros eco-hidrológicos conectam a drenagem à organização dos ecossi
 
 O Índice Topográfico de Umidade (TWI) é definido como:
 
-**TWI = ln( A / tan(β) )**
+$$ \text{TWI} = \ln\left(\frac{A}{\tan \beta}\right) $$
 
 Esse índice é amplamente utilizado para identificar:
 *   zonas de solos hidromórficos;

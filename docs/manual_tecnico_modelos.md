@@ -15,7 +15,9 @@ Este modelo substitui a anterior lógica abstrata de resiliência por uma aborda
 ### 2.1. Cálculo de Inclinação (Percentual)
 A declividade é calculada como a razão entre a diferença de altura (rise) e a distância horizontal (run), expressa em porcentagem. Para um ponto no terreno, a inclinação *S%* é dada por:
 
-**S(%) = ( √(Δx² + Δz²) / run ) × 100**
+$$
+S = \frac{\sqrt{(\Delta x)^2 + (\Delta z)^2}}{run} \times 100
+$$
 
 Onde:
 *   *Δx* e *Δz* são os gradientes de altura nas direções X e Z.
