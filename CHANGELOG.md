@@ -4,6 +4,7 @@
 ## [v4.2.0] - 2025-12-19
 ### New Features
 - **Generic ML Service**: Refactored `MLService` to support multiple named models (e.g., "soil_color", "hydro_runoff") with generic input vectors.
+- **Hydrology ML Model**: Implemented "hydro_runoff" model including stochastic training data generation (randomized rain events).
 - **Windowed Mode**: Removed forced fullscreen. App now launches in a resizeable 1600x900 window by default.
 - **Generic Training API**: Unified training pipeline for all perceptron models.
 

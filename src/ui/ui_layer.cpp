@@ -459,6 +459,22 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         
         // v4.0.0 Rainfall Control (Always visible)
         ImGui::SliderFloat("Rain Intensity", &ctx.rainIntensity, 0.0f, 100.0f, "%.1f mm/h");
+
+        // v4.2.0 Hydro ML
+        if (ImGui::CollapsingHeader("ML Runoff Prediction", ImGuiTreeNodeFlags_None)) {
+             ImGui::Indent();
+             static int hydroSamples = 2000;
+             if (ImGui::Button("Collect Hydro Data")) {
+                 if (callbacks_.mlCollectHydroData) callbacks_.mlCollectHydroData(hydroSamples);
+             }
+             ImGui::SameLine();
+             if (ImGui::Button("Train Runoff Model")) {
+                 if (callbacks_.mlTrainHydroModel) callbacks_.mlTrainHydroModel(50, 0.05f);
+             }
+             ImGui::SameLine();
+             ImGui::TextDisabled("%zu samples", ctx.mlHydroDatasetSize);
+             ImGui::Unindent();
+        }
         
         // v4.0.0 ML Integration
         if (ImGui::Checkbox("Accurate Soil Color (ML Prediction)", &ctx.showMLSoil)) {
@@ -467,29 +483,23 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         }
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Uses Neural Network to predict soil color from properties (Depth, OM, etc)");
         
-        // v4.0.0 Phase 4: Training UI
-        if (ctx.showMLSoil) {
-            ImGui::Indent();
-            ImGui::TextDisabled("Physics-Guided Training:");
-            
-            static int samples = 1000;
-            static int epochs = 100;
-            static float lr = 0.1f;
-            
-            if (ImGui::Button("1. Collect Data")) {
-                 if (callbacks_.mlCollectData) callbacks_.mlCollectData(samples);
-            }
-            ImGui::SameLine();
-            ImGui::TextDisabled("Dataset: %zu", ctx.mlDatasetSize);
-            ImGui::SameLine();
-            ImGui::TextDisabled("| Loss: %.4f", 0.0f); // Placeholder until we link metrics
-            
-            if (ctx.isTraining) ImGui::BeginDisabled();
-            if (ImGui::Button(ctx.isTraining ? "Training..." : "2. Train Model")) {
-                 if (callbacks_.mlTrainModel) callbacks_.mlTrainModel(epochs, lr);
-            }
-            if (ctx.isTraining) ImGui::EndDisabled();
-            ImGui::Unindent();
+        // v4.2.0 Generic ML Controls
+        if (ImGui::CollapsingHeader("ML Training (Soil Color)", ImGuiTreeNodeFlags_DefaultOpen)) {
+             ImGui::Indent();
+             ImGui::Text("Dataset Size: %zu samples", ctx.mlDatasetSize);
+             
+             if (ctx.isTraining) {
+                 ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Training 'soil_color' in progress...");
+             } else {
+                 if (ImGui::Button("Collect Data (1000 pts)")) {
+                     if (callbacks_.mlCollectData) callbacks_.mlCollectData(1000);
+                 }
+                 ImGui::SameLine();
+                 if (ImGui::Button("Train Model (50 Epochs)")) {
+                     if (callbacks_.mlTrainModel) callbacks_.mlTrainModel(50, 0.1f);
+                 }
+             }
+             ImGui::Unindent();
         }
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls dynamic runoff generation (affects Erosion & Veg).");
         

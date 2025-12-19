@@ -76,6 +76,7 @@ struct UiFrameContext {
     // v4.0.0 ML
     bool& showMLSoil;
     size_t mlDatasetSize;
+    size_t mlHydroDatasetSize; // v4.2.0
     bool isTraining;
 };
 
@@ -98,6 +99,10 @@ struct Callbacks {
     // v4.0.0 ML Hooks
     std::function<void(int)> mlCollectData;
     std::function<void(int, float)> mlTrainModel;
+
+    // v4.2.0 Hydro ML
+    std::function<void(int)> mlCollectHydroData;
+    std::function<void(int, float)> mlTrainHydroModel;
 };
 
 // ... (Moved include to top)

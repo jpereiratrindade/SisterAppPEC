@@ -532,6 +532,22 @@ A implementação utiliza um Perceptron Multicamadas otimizado com a biblioteca 
 Onde $\sigma(z) = \frac{1}{1 + e^{-z}}$ é a função de ativação Sigmoid. O modelo processa vetores de entrada normalizados das propriedades do solo:
 \[ \mathbf{x} = [ \text{Depth}, \text{OM}, \text{Infiltration}, \text{Compaction} ] \quad (\text{para soil\_color}) \]
 
+\subsubsection{Modelo de Hidrologia ("hydro\_runoff")}
+Este modelo estima a geração de escoamento superficial sem resolver a equação de fluxo completa, permitindo inferências rápidas para visualização ou heurísticas de IA.
+\\\\
+\textbf{Inputs ($\mathbf{x}$):}
+\begin{itemize}
+    \item Intensidade da Chuva (Normalizada $0-100 mm/h$)
+    \item Taxa de Infiltração Efetiva (Baseada no Tipo de Solo)
+    \item Biomassa Vegetal ($C_{EI} + C_{ES}$)
+\end{itemize}
+\textbf{Target ($y$):}
+\begin{itemize}
+    \item Coeficiente de Runoff ou Fluxo Absoluto ($mm/h$).
+\end{itemize}
+\textbf{Geração de Dados Estocástica:}
+Para garantir generalização, o treinamento não utiliza apenas a chuva atual do mapa. O sistema sorteia cenários de chuva aleatórios ($R \sim U[0, 100]$) para cada célula amostrada, ensinando a rede a prever o comportamento hidrológico sob diversas condições climáticas.
+
 \subsubsection{Pipeline de Renderização Híbrida}
 Diferente de abordagens "Black Box" puras, o SisterApp utiliza o ML como um "Surrogate Model" para enriquecer a visualização:
 \begin{enumerate}

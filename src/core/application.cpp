@@ -277,6 +277,54 @@ void Application::init() {
                      isTraining_ = false; // Reset flag (not strict thread safe but OK for UI flag)
                  });
              }
+        },
+        // v4.2.0 Hydro ML Implementation
+        [this](int samples) { // mlCollectHydroData
+             if (!finiteMap_ || !mlService_) return;
+             std::cout << "[SisterApp] Collecting " << samples << " samples for 'hydro_runoff'..." << std::endl;
+             
+             int w = finiteMap_->getWidth();
+             int h = finiteMap_->getHeight();
+             
+             for(int i=0; i<samples; ++i) {
+                 int x = std::rand() % w;
+                 int z = std::rand() % h;
+                 int idx = z*w + x;
+                 
+                 // Inputs: Rain (Randomized 0-100), Infil (Soil), Veg (Biomass)
+                 float rain = static_cast<float>(std::rand() % 100); 
+                 float infilBase = finiteMap_->getLandscapeSoil()->infiltration[idx];
+                 float biomass = 0.0f;
+                 if (finiteMap_->getVegetation()) {
+                     biomass = finiteMap_->getVegetation()->ei_coverage[idx] + finiteMap_->getVegetation()->es_coverage[idx];
+                 }
+                 
+                 // Physics Ground Truth (Same logic as HydroSystem)
+                 // effectiveInfil = base * (1 + 2*biomass)
+                 float effInfil = infilBase * (1.0f + 2.0f * biomass);
+                 float runoff = std::max(0.0f, rain - effInfil);
+                 float target = runoff; // Predict absolute runoff mm/h? Or Ratio? Let's try Ratio: runoff/rain?
+                 // Let's predict Normalized Output? 
+                 // If we predict absolute, we need to normalize inputs.
+                 // Input Rain 0-100 -> Normalize / 100.
+                 // Input Infil 0-100 -> Normalize / 100.
+                 // Target Runoff 0-100 -> Normalize / 100.
+                 
+                 mlService_->collectTrainingSample("hydro_runoff", 
+                    {rain/100.0f, effInfil/100.0f, biomass}, 
+                    runoff/100.0f);
+             }
+             std::cout << "[SisterApp] Hydro Dataset: " << mlService_->datasetSize("hydro_runoff") << std::endl;
+        },
+        [this](int epochs, float lr) { // mlTrainHydroModel
+             if(mlService_ && !isTraining_) {
+                 isTraining_ = true;
+                 std::cout << "[SisterApp] Training 'hydro_runoff'..." << std::endl;
+                 trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
+                     mlService_->trainModel("hydro_runoff", epochs, lr);
+                     isTraining_ = false;
+                 });
+             }
         }
     };
     // UI Layer
@@ -1011,9 +1059,9 @@ void Application::render(size_t frameIndex) {
         rainIntensity_,
         
         // v4.0.0 ML
-        // v4.0.0 ML
         showMLSoil_,
         mlService_ ? mlService_->datasetSize("soil_color") : 0,
+        mlService_ ? mlService_->datasetSize("hydro_runoff") : 0, // v4.2.0
         isTraining_
     };
 
