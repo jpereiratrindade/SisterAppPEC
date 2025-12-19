@@ -1,4 +1,4 @@
-# SisterApp: Plataforma de Ecologia Computacional v3.8.4
+# SisterApp: Plataforma de Ecologia Computacional v4.2.0
 ## Manual Técnico de Modelos Computacionais
 
 **Autor:** José Pedro Trindade  
@@ -7,7 +7,7 @@
 ---
 
 # 1. Introdução
-O **SisterApp** evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão 3.8.0 consolida ferramentas de navegação, análise de paisagem e validação métrica. A versão 3.8.4 remove definitivamente o suporte a Voxel para focar em terrenos de alta fidelidade (Finite World).
+O **SisterApp** evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão 3.8.0 consolida ferramentas de navegação, análise de paisagem e validação métrica. A versão 3.8.4 remove definitivamente o suporte a Voxel para focar em terrenos de alta fidelidade (Finite World). A versão atual **v4.2.0** introduz uma arquitetura genérica de Machine Learning e suporte a múltiplos modelos preditivos (Hidrologia e Pedologia).
 
 # 2. Modelo de Análise de Declividade (Slope Analysis)
 Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
