@@ -12,15 +12,13 @@ O **SisterApp** evoluiu de uma engine gráfica para uma plataforma científica r
 # 2. Modelo de Análise de Declividade (Slope Analysis)
 Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
 
-## 2.1. Cálculo de Inclinação (Percentual)
-A declividade é calculada como a razão entre a diferença de altura (rise) e a distância horizontal (run), expressa em porcentagem. Para um ponto no terreno, a inclinação $S_{\%}$ é dada por:
+### 2.1. Cálculo de Inclinação (Percentual)
+A declividade é calculada como a razão entre a diferença de altura (rise) e a distância horizontal (run), expressa em porcentagem. Para um ponto no terreno, a inclinação *S%* é dada por:
 
-$$
-S_{\%} = \frac{\sqrt{(\Delta x)^2 + (\Delta z)^2}}{\text{run}} \times 100
-$$
+**S(%) = ( √(Δx² + Δz²) / run ) × 100**
 
 Onde:
-*   $\Delta x$ e $\Delta z$ são os gradientes de altura nas direções X e Z.
+*   *Δx* e *Δz* são os gradientes de altura nas direções X e Z.
 *   A distância base (*run*) é definida pela resolução do voxel (2 unidades).
 
 Isto permite uma correlação direta com normas técnicas de engenharia civil.
@@ -28,13 +26,13 @@ Isto permite uma correlação direta com normas técnicas de engenharia civil.
 ## 2.2. Classificação Topológica (5 Classes)
 O terreno é segmentado em classes configuráveis pelo usuário. Os limiares (thresholds) padrão são:
 
-| Classe | Intervalo ($S_{\%}$) | Descrição |
+| Classe | Intervalo (*S%*) | Descrição |
 | :--- | :--- | :--- |
-| Flat (Plano) | $0\% - 3.0\%$ | Áreas adequadas para infraestrutura. |
-| Gentle Slope (Suave) | $3.0\% - 8.0\%$ | Áreas de transição suave. |
-| Rolling (Ondulado) | $8.0\% - 20.0\%$ | Terreno ondulado, requer terraplanagem. |
-| Steep Slope (Íngreme/Forte) | $20.0\% - 45.0\%$ | Encostas fortes, risco de erosão. |
-| Mountain (Montanha) | $> 45.0\%$ | Áreas inacessíveis ou de preservação. |
+| Flat (Plano) | 0% - 3.0% | Áreas adequadas para infraestrutura. |
+| Gentle Slope (Suave) | 3.0% - 8.0% | Áreas de transição suave. |
+| Rolling (Ondulado) | 8.0% - 20.0% | Terreno ondulado, requer terraplanagem. |
+| Steep Slope (Íngreme/Forte) | 20.0% - 45.0% | Encostas fortes, risco de erosão. |
+| Mountain (Montanha) | > 45.0% | Áreas inacessíveis ou de preservação. |
 
 # 3. Modelo de Vegetação Campestre (Grassland Model)
 O SisterApp v3.9.1 introduz um modelo de dinâmica de vegetação campestre baseado em princípios de ecologia espacial e regimes de distúrbio (Fogo e Pastejo). Devido à complexidade biológica, este módulo possui uma **Documentação de Domínio (DDD) Exclusiva** que define suas regras e invariantes.
@@ -42,62 +40,62 @@ O SisterApp v3.9.1 introduz um modelo de dinâmica de vegetação campestre base
 ## 3.1. Estrutura de Dois Estratos (DDD)
 A vegetação é modelada como dois estratos competitivos em cada célula do grid ($1m^2$):
 *   **Estrato Inferior (EI):** Gramíneas e herbáceas. Alta taxa de crescimento, alta resiliência ao pastejo.
-*   **Estrato Superior (ES):** Subarbustos e arbustos baixos (geralmente $< 1m$). Crescimento lento e não pastejado. Apesar do porte baixo, acumula biomassa lenhosa que, quando senescente, atua como combustível principal.
+*   **Estrato Superior (ES):** Subarbustos e arbustos baixos (geralmente < 1m). Crescimento lento e não pastejado. Apesar do porte baixo, acumula biomassa lenhosa que, quando senescente, atua como combustível principal.
 
 O estado de cada célula é definido por um vetor de 4 componentes:
-$$ V_{cell} = \{ Coverage_{EI}, Coverage_{ES}, Vigor_{EI}, Vigor_{ES} \} $$
+**V_cell = { Coverage_EI, Coverage_ES, Vigor_EI, Vigor_ES }**
 
 ## 3.2. Definição de Escala e Resolução
-A célula ($V_{cell}$) é a unidade atômica da simulação, representando um estado homogêneo estatístico. Embora a simulação opere em espaço de grade abstrato (Grid Space), a interpretação física da "Cobertura" ($C$) é dependente da resolução métrica configurada na interface:
+A célula (*V_cell*) é a unidade atômica da simulação, representando um estado homogêneo estatístico. Embora a simulação opere em espaço de grade abstrato (Grid Space), a interpretação física da "Cobertura" (*C*) é dependente da resolução métrica configurada na interface:
 
-### 3.2.1. Resolução Física ($R$)
-A dimensão espacial da célula é definida pelo parâmetro **Cell Size (Resolution)**, acessível na interface do usuário sob o menu "Map Generator". Este parâmetro permite o ajuste dinâmico em tempo de execução de $R \in [0.1m, 4.0m]$. O valor padrão é $R = 1.0m$. A área física de uma célula é dada por $A_{cell} = R^2$.
+### 3.2.1. Resolução Física (*R*)
+A dimensão espacial da célula é definida pelo parâmetro **Cell Size (Resolution)**, acessível na interface do usuário sob o menu "Map Generator". Este parâmetro permite o ajuste dinâmico em tempo de execução de *R* ∈ [0.1m, 4.0m]. O valor padrão é *R* = 1.0m. A área física de uma célula é dada por *Area_cell* = *R*².
 
 ### 3.2.2. Interpretação da Cobertura
-O valor de cobertura $C \in [0, 1]$ representa a fração da área da célula ocupada pelo estrato:
-$$ \text{Área Ocupada} (m^2) = C \cdot R^2 $$
+O valor de cobertura *C* ∈ [0, 1] representa a fração da área da célula ocupada pelo estrato:
+**Área Ocupada (m²) = C · R²**
 
 Exemplos:
-*   Para $R=1.0m$ (Padrão): $C=0.5$ implica $0.5m^2$ de biomassa.
-*   Para $R=0.5m$ (Alta Definição): A área total é $0.25m^2$, logo $C=0.5$ implica $0.125m^2$.
+*   Para *R*=1.0m (Padrão): *C*=0.5 implica 0.5m² de biomassa.
+*   Para *R*=0.5m (Alta Definição): A área total é 0.25m², logo *C*=0.5 implica 0.125m².
 
 Esta abstração permite que o modelo seja agnóstico à escala (Scale-Independent) em sua lógica interna, enquanto a renderização adapta a densidade visual à geometria física.
 
-### 3.2.3. Definição de Vigor ($\phi$)
-O Vigor ($\phi \in [0, 1]$) não representa biomassa, mas sim o **estado fisiológico** da planta.
-*   $\phi \approx 1.0$: Turgor máximo, alta clorofila, baixo estresse hídrico. (Visual: Verde)
-*   $\phi < 0.5$: Senescência ou estresse severo. (Visual: Amarelo/Marrom)
-*   $\phi = 0.0$: Planta morta (Necromassa em pé).
+### 3.2.3. Definição de Vigor (φ)
+O Vigor (*φ* ∈ [0, 1]) não representa biomassa, mas sim o **estado fisiológico** da planta.
+*   *φ* ≈ 1.0: Turgor máximo, alta clorofila, baixo estresse hídrico. (Visual: Verde)
+*   *φ* < 0.5: Senescência ou estresse severo. (Visual: Amarelo/Marrom)
+*   *φ* = 0.0: Planta morta (Necromassa em pé).
 
 Diferente de modelos estáticos, o Vigor no SisterApp é dinâmico e espacialmente heterogêneo:
-$$ \phi_{target}(x,y) = 0.8 + 0.2 \cdot \text{Noise}(x,y) $$
-A vegetação busca constantemente esse alvo, simulando microclimas variados. Se perturbada (ex: pisoteio ou seca não simulada explicitamente), o vigor decai, aumentando a probabilidade de fogo ($\mathcal{F}$) antes mesmo da perda de cobertura.
+**φ_target(x,y) = 0.8 + 0.2 · Noise(x,y)**
+A vegetação busca constantemente esse alvo, simulando microclimas variados. Se perturbada (ex: pisoteio ou seca não simulada explicitamente), o vigor decai, aumentando a probabilidade de fogo (*F*) antes mesmo da perda de cobertura.
 
 ## 3.3. Definição Operacional do Distúrbio
-O distúrbio ($D$) é definido como uma variável escalar composta que integra três dimensões fundamentais:
-*   **Magnitude** ($M$): intensidade do evento;
-*   **Frequência Ecológica** ($F$): probabilidade relativa do regime (0.1 = Raro, 0.9 = Crônico);
-*   **Escala Espacial** ($E$): proporção da paisagem afetada.
+O distúrbio (*D*) é definido como uma variável escalar composta que integra três dimensões fundamentais:
+*   **Magnitude** (*M*): intensidade do evento;
+*   **Frequência Ecológica** (*F*): probabilidade relativa do regime (0.1 = Raro, 0.9 = Crônico);
+*   **Escala Espacial** (*E*): proporção da paisagem afetada.
 
-$$ D = M \cdot F \cdot E $$
+**D = M · F · E**
 
 ## 3.4. Resposta Funcional ao Distúrbio
-O sistema modela a capacidade de suporte ($K$) de cada estrato como uma função direta do regime de distúrbio vigente:
+O sistema modela a capacidade de suporte (*K*) de cada estrato como uma função direta do regime de distúrbio vigente:
 
 ### 3.4.1. Estrato Inferior (EI - Gramíneas)
 Apresenta resposta **logarítmica positiva**:
-$$ R_{EI}(D) = \text{clamp}(\log(1 + \alpha D), 0, 1) $$
-Onde $\alpha$ é o coeficiente de sensibilidade (Ganho). Ecologicamente, isso expressa que distúrbios de baixa intensidade já promovem forte resposta do EI, saturando em regimes intensos.
+**R_EI(D) = clamp(log(1 + α·D), 0, 1)**
+Onde *α* é o coeficiente de sensibilidade (Ganho). Ecologicamente, isso expressa que distúrbios de baixa intensidade já promovem forte resposta do EI, saturando em regimes intensos.
 
 ### 3.4.2. Estrato Superior (ES - Arbustos)
 Apresenta resposta **exponencial negativa**:
-$$ R_{ES}(D) = \text{clamp}(e^{-\beta D}, 0, 1) $$
-Onde $\beta$ é o coeficiente de decaimento. Isso captura a supressão acelerada de lenhosas sob regimes de perturbação frequente.
+**R_ES(D) = clamp(e^(-β·D), 0, 1)**
+Onde *β* é o coeficiente de decaimento. Isso captura a supressão acelerada de lenhosas sob regimes de perturbação frequente.
 
 ## 3.5. Modulação da Capacidade de Suporte
-Ao contrário do modelo anterior de remoção direta, os índices $R_{EI}$ e $R_{ES}$ modulam os alvos de equilíbrio:
-$$ K_{EI}^{target} \propto R_{EI}(D) \quad \text{e} \quad K_{ES}^{target} \propto R_{ES}(D) $$
-A vegetação então "relaxa" em direção a esses alvos ao longo do tempo ($\tau_{rec}$), permitindo transições suaves entre estados de savana, campo limpo e arbustal.
+Ao contrário do modelo anterior de remoção direta, os índices *R_EI* e *R_ES* modulam os alvos de equilíbrio:
+**K_EI_target ∝ R_EI(D)**  e  **K_ES_target ∝ R_ES(D)**
+A vegetação então "relaxa" em direção a esses alvos ao longo do tempo (*τ_rec*), permitindo transições suaves entre estados de savana, campo limpo e arbustal.
 
 ## 3.6. Heterogeneidade Espacial (Spatial Noise)
 Para evitar a monotonia visual e simular a variabilidade edáfica não mapeada, a inicialização e a capacidade de suporte local ($K$) são moduladas por funções de ruído procedural (Perlin Noise). Isso gera manchas naturais de alta e baixa densidade, independentemente dos distúrbios.
