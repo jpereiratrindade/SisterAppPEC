@@ -454,9 +454,6 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
              ImGui::Indent();
              ImGui::SliderFloat("Intensity", &ctx.drainageIntensity, 0.05f, 1.0f, "%.2f");
              if (ImGui::IsItemHovered()) ImGui::SetTooltip("Sensitivity: Lower = Only Rivers, Higher = Catchment Areas");
-             
-             ImGui::SliderFloat("Intensity", &ctx.drainageIntensity, 0.05f, 1.0f, "%.2f");
-             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Sensitivity: Lower = Only Rivers, Higher = Catchment Areas");
              ImGui::Unindent();
         }
         
@@ -469,6 +466,31 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
             if (callbacks_.updateMesh) callbacks_.updateMesh();
         }
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Uses Neural Network to predict soil color from properties (Depth, OM, etc)");
+        
+        // v4.0.0 Phase 4: Training UI
+        if (ctx.showMLSoil) {
+            ImGui::Indent();
+            ImGui::TextDisabled("Physics-Guided Training:");
+            
+            static int samples = 1000;
+            static int epochs = 100;
+            static float lr = 0.1f;
+            
+            if (ImGui::Button("1. Collect Data")) {
+                 if (callbacks_.mlCollectData) callbacks_.mlCollectData(samples);
+            }
+            ImGui::SameLine();
+            ImGui::TextDisabled("Dataset: %d", ctx.mlDatasetSize);
+            ImGui::SameLine();
+            ImGui::TextDisabled("| Loss: %.4f", 0.0f); // Placeholder until we link metrics
+            
+            if (ctx.isTraining) ImGui::BeginDisabled();
+            if (ImGui::Button(ctx.isTraining ? "Training..." : "2. Train Model")) {
+                 if (callbacks_.mlTrainModel) callbacks_.mlTrainModel(epochs, lr);
+            }
+            if (ctx.isTraining) ImGui::EndDisabled();
+            ImGui::Unindent();
+        }
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls dynamic runoff generation (affects Erosion & Veg).");
         
         if (ctx.showDrainage && ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;

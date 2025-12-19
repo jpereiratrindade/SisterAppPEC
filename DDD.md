@@ -56,9 +56,24 @@ Devido à alta complexidade biológica, o modelo de vegetação é regido por um
 Entidades:
 - **VegetationSystem**: Aggregate Root. Gerencia crescimento (Growth), competição e mortalidade.
 - **VegetationGrid**: Estrutura de dados (SoA) otimizada para cache contendo biomassa de EI/ES e Vigor.
+- [Representação Visual (Tradução Ontológica)](DDD_Representacao_Vegetacao_Campestre.md)
+
+Entidades:
+- **VegetationSystem**: Aggregate Root. Gerencia crescimento (Growth), competição e mortalidade.
+- **VegetationGrid**: Estrutura de dados (SoA) otimizada para cache contendo biomassa de EI/ES e Vigor.
 - **DisturbanceRegime**: Value Object que define Fogo e Pastejo.
 
-### 2.4 UI (Presentation)
+### 2.5 Machine Learning (Surrogate Modeling)
+Responsabilidade: Treinamento e inferência de modelos para aproximação de processos físicos (cor do solo, etc).
+
+- [DDD Machine Learning e Transparência](docs/DDD_Machine_Learning.md)
+
+Entidades:
+- **MLService**: Serviço de domínio.
+- **Perceptron**: Agregado de modelo neural.
+- **TrainingSession**: Sessão de aprendizado com relatório de transparência.
+
+### 2.6 UI (Presentation)
 Responsabilidade: interface interativa via Dear ImGui.
 
 Funcionalidades:

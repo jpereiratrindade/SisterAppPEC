@@ -251,6 +251,15 @@ void main() {
             color = mix(color, vec3(r,g,b), 0.6);
         }
     }
+    
+    // v3.6.4: Basin Outlines (Uses Smooth interpolated ID to detect edges)
+    if (useBasinOutlines) {
+        float edge = fwidth(fragAuxSmooth);
+        // If derivative is high, we are on a transition between basins
+        if (edge > 0.1) {
+            color = vec3(1.0); // White contours
+        }
+    }
 
     // 5. Vegetation Visualization (v3.9.0 DDD Implementation)
     // Decode Mode from high bits (16-19)
