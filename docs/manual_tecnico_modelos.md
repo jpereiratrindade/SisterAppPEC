@@ -395,7 +395,7 @@ O sistema incorpora um módulo avançado de Machine Learning (`MLService`) capaz
 A classe `MLService` foi refatorada para abstrair a natureza dos inputs e outputs, permitindo o suporte a qualquer modelo Perceptron via um mapa associativo:
 
 $$
-\text{Models} : \{ \text{"soil\_color"} \to P_1, \text{"hydro\_runoff"} \to P_2, \dots \}
+\text{Models} : \{ \text{"soil\\_color"} \to P_1, \text{"hydro\\_runoff"} \to P_2, \dots \}
 $$
 
 ### 11.8.2. Pipeline de Treinamento
@@ -413,7 +413,7 @@ $$
 Onde $\sigma(z) = \frac{1}{1 + e^{-z}}$ é a função de ativação Sigmoid. O modelo processa vetores de entrada normalizados das propriedades do solo:
 
 $$
-\mathbf{x} = [ \text{Depth}, \text{OM}, \text{Infiltration}, \text{Compaction} ] \quad (\text{para soil\_color})
+\mathbf{x} = \left[ \text{Depth}, \text{OM}, \text{Infiltration}, \text{Compaction} \right] \quad (\text{para soil\\_color})
 $$
 
 ### 11.8.4. Modelo de Hidrologia ("hydro_runoff")
