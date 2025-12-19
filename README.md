@@ -13,22 +13,29 @@ Desenvolvido por **José Pedro Trindade**.
 
 ---
 
-## 🎯 What's New (v3.9.2)
+## 🎯 What's New (v4.0.0)
 
--   **Integrated Landscape Model**: Complete coupling of Hydro (Runoff/Erosion), Soil (Pedogenesis), and Vegetation (Ecofunctional Response) in v4.0.0.
--   **High-Scale Vegetation**: Optimized vegetation simulation for large-scale maps (4096^2) via throttled updates.
--   **Vegetation Dynamics (DDD)**: Grass/Shrub competition with Fire and Grazing disturbance regimes (v3.9.1).
+### 🌍 Integrated Ecofunctional Landscape Model
+The environment is now a fully coupled ecosystem where **Soil, Hydrology, and Vegetation** interact dynamically:
 
--   **Computational Ecology Platform**: Complete rebranding from "Engine" to "Scientific Platform".
--   **Interactive Minimap**: Real-time navigation aid with peak detection (symbols), zoom, and click-to-teleport.
--   **Landscape Metrics**: Integration of LSI (Shape), CF (Complexity), and RCC (Circularity) for validation of soil patch distribution.
--   **Water Level Control**: Adjustable sea-level for terrain generation, preventing "all-blue" maps.
--   **Finite World Mode**: High-fidelity terrain maps (up to 2048x2048) with realistic generation (v3.5+).
--   **Drainage Analysis (D8)**: Deterministic flow accumulation visualization (v3.6+).
--   **Semantic Soil**: CPU-authoritative soil classification ensuring 100% Visual-PROBE consistency (v3.7+).
--   **Deterministic Seeding**: Full control over map seeds for reproducible terrain analysis (v3.7+).
--   **Experimental Blend (Finite)**: Multi-frequency terrain blending ported to Finite World generator (v3.8.3).
--   **Eco-Reports**: Automated generation of hydrological and landscape stats (v3.7+).
+- **Hydro System**: 
+    - **D8 Flow Routing**: Real-time water accumulation.
+    - **Dynamic Runoff**: Water surplus calculation ($P - I$) driving flux.
+    - **Stream Power Erosion**: Topographical modification based on water flow energy.
+
+- **Soil System**:
+    - **Dynamic Pedogenesis**: Soil Depth ($d$) evolves based on erosion and deposition.
+    - **Organic Matter ($OM$)**: Simulated accumulation affecting soil quality.
+
+- **Vegetation System**:
+    - **Ecophysiological Feedback**: Carrying Capacity ($K$) depends on Site Quality ($d \times OM$).
+    - **Water Stress**: Plant Vigor ($\phi$) is limited by water availability.
+    - **Disturbance Regimes**: Fire (Fuel-driven) and Grazing (Selective) dynamics.
+
+### Previous Highlights
+- **High-Scale Vegetation**: Optimized simulation for 4096² maps (v3.9.2).
+- **Interactive Minimap**: Real-time navigation with peak detection (v3.8.0).
+- **Landscape Metrics**: LSI, CF, and RCC validation (v3.7.0).
 
 ---
 
