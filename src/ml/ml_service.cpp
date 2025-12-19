@@ -42,6 +42,38 @@ void MLService::init() {
         return Eigen::Vector3f(1.0f - output, output, 0.2f); 
     }
 
+    // Runoff Wrapper
+    float MLService::predictRunoff(float rain, float infil, float biomass) const {
+        Eigen::VectorXf input(3);
+        // Normalize inputs to match training data collection (which was normalized /100 /100)
+        // Note: Application::mlCollectHydroData normalized rain/100, effInfil/100.
+        // So we must normalize here too if we want correct inference.
+        // Assuming raw inputs are passed here.
+        float nRain = rain / 100.0f;
+        float nInfil = infil / 100.0f;
+        float nBio = biomass; // Already 0-1
+        
+        input << nRain, nInfil, nBio;
+        
+        float output = predict("hydro_runoff", input);
+        // Output is normalized runoff/100.0f
+        return output * 100.0f; // Denormalize
+    }
+
+    // Fire Risk Wrapper
+    float MLService::predictFireRisk(float cEI, float cES, float vEI, float vES) const {
+         Eigen::VectorXf input(4);
+         input << cEI, cES, vEI, vES; // All 0-1
+         return predict("fire_risk", input);
+    }
+
+    // Growth Wrapper
+    float MLService::predictGrowth(float currentC, float k, float vigor) const {
+         Eigen::VectorXf input(3);
+         input << currentC, k, vigor; // All 0-1
+         return predict("biomass_growth", input);
+    }
+
     // Generic Collection
     void MLService::collectTrainingSample(const std::string& modelName, const std::vector<float>& inputs, float target) {
         trainingSets_[modelName].push_back({inputs, target});

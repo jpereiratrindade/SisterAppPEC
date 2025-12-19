@@ -1,4 +1,4 @@
-# SisterApp: Plataforma de Ecologia Computacional v4.2.0
+# SisterApp: Plataforma de Ecologia Computacional v4.2.1
 ## Manual Técnico de Modelos Computacionais
 
 **Autor:** José Pedro Trindade  

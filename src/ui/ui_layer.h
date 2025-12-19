@@ -78,6 +78,11 @@ struct UiFrameContext {
     size_t mlDatasetSize;
     size_t mlHydroDatasetSize; // v4.2.0
     bool isTraining;
+    
+    // v4.2.1 Advanced ML Controls
+    int& mlTrainingEpochs;
+    float& mlLearningRate;
+    int& mlSampleCount;
 };
 
 struct Callbacks {
@@ -103,6 +108,12 @@ struct Callbacks {
     // v4.2.0 Hydro ML
     std::function<void(int)> mlCollectHydroData;
     std::function<void(int, float)> mlTrainHydroModel;
+    
+    // v4.2.1 Phase 2 ML Hooks
+    std::function<void(int)> mlCollectFireData;
+    std::function<void(int, float)> mlTrainFireModel;
+    std::function<void(int)> mlCollectGrowthData;
+    std::function<void(int, float)> mlTrainGrowthModel;
 };
 
 // ... (Moved include to top)

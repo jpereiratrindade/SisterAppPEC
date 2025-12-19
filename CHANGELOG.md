@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [v4.2.1] - 2025-12-19
+### New Features
+- **ML Phase 2: Disturbance & Growth**: 
+    - Integrated "fire_risk" and "biomass_growth" ML models into `MLService`.
+    - Multi-model real-time inference in Terrain Probe.
+- **Advanced ML Hub**:
+    - Unified UI panel with dynamic hyperparameter control (Epochs, Learning Rate).
+    - User-defined sampling size for dataset collection.
+
 ## [v4.2.0] - 2025-12-19
 ### New Features
 - **Generic ML Service**: Refactored `MLService` to support multiple named models (e.g., "soil_color", "hydro_runoff") with generic input vectors.

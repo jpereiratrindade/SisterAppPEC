@@ -167,6 +167,10 @@ void Application::init() {
     mlService_ = std::make_unique<ml::MLService>();
     mlService_->init();
     mlService_->loadModel("soil_color", "assets/models/soil_color.json");
+    mlService_->loadModel("hydro_runoff", "assets/models/hydro_runoff.json");
+    // Phase 2 Models
+    mlService_->loadModel("fire_risk", "assets/models/fire_risk.json");
+    mlService_->loadModel("biomass_growth", "assets/models/biomass_growth.json");
 
     // v3.9.0: Initialize Vegetation System on Startup
     if (finiteMap_->getVegetation()) {
@@ -322,6 +326,96 @@ void Application::init() {
                  std::cout << "[SisterApp] Training 'hydro_runoff'..." << std::endl;
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
                      mlService_->trainModel("hydro_runoff", epochs, lr);
+                     isTraining_ = false;
+                 });
+             }
+        },
+        
+        // v4.2.1 Phase 2 ML Hooks
+        [this](int samples) { // mlCollectFireData
+             if (!finiteMap_ || !mlService_ || !finiteMap_->getVegetation()) return;
+             std::cout << "[SisterApp] Collecting " << samples << " samples for 'fire_risk'..." << std::endl;
+             
+             auto* veg = finiteMap_->getVegetation();
+             int w = finiteMap_->getWidth();
+             int h = finiteMap_->getHeight();
+             
+             for(int i=0; i<samples; ++i) {
+                 int idx = std::rand() % (w * h);
+                 // 1. Randomize Inputs or Sample from Map?
+                 // To learn the equation P = Pbase + alpha*F, we need diverse inputs.
+                 // Let's generate synthetic inputs covering the domain [0,1]
+                 
+                 float cEI = static_cast<float>(std::rand()) / RAND_MAX;
+                 float cES = static_cast<float>(std::rand()) / RAND_MAX;
+                 float vEI = static_cast<float>(std::rand()) / RAND_MAX;
+                 float vES = static_cast<float>(std::rand()) / RAND_MAX;
+                 
+                 // 2. Calculate Ground Truth (DDD 3.9.2)
+                 float deltaES = std::max(0.0f, 1.0f - vES);
+                 // Note: ES contribution is zero if vigor > 0.5 (delta < 0.5)
+                 // Or logic: "contribution is null if delta < 0.5" -> means vigor > 0.5
+                 // Formula: F_i = C_ES * (2 * deltaES) + C_EI * 0.3 * (1 - vEI)
+                 // But manual says: "Contribution of ES is null if delta < 0.5" -> Implies clamping?
+                 // Let's implement literally:
+                 float termES = (deltaES < 0.5f) ? 0.0f : (cES * 2.0f * deltaES);
+                 float termEI = cEI * 0.3f * (1.0f - vEI);
+                 
+                 float F_i = termES + termEI;
+                 float P_ign = 0.05f + 0.8f * F_i; // P_base + alpha * F
+                 
+                 mlService_->collectTrainingSample("fire_risk", {cEI, cES, vEI, vES}, std::clamp(P_ign, 0.0f, 1.0f));
+             }
+             std::cout << "[SisterApp] Fire Dataset: " << mlService_->datasetSize("fire_risk") << std::endl;
+        },
+        [this](int epochs, float lr) { // mlTrainFireModel
+             if(mlService_ && !isTraining_) {
+                 isTraining_ = true;
+                 std::cout << "[SisterApp] Training 'fire_risk'..." << std::endl;
+                 trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
+                     mlService_->trainModel("fire_risk", epochs, lr);
+                     isTraining_ = false;
+                 });
+             }
+        },
+        
+        [this](int samples) { // mlCollectGrowthData
+             if (!mlService_) return;
+             std::cout << "[SisterApp] Collecting " << samples << " samples for 'biomass_growth'..." << std::endl;
+             
+             for(int i=0; i<samples; ++i) {
+                 // Synthetic Domain Sampling
+                 float C = static_cast<float>(std::rand()) / RAND_MAX;
+                 float K = static_cast<float>(std::rand()) / RAND_MAX;
+                 float V = static_cast<float>(std::rand()) / RAND_MAX;
+                 
+                 // Ground Truth (DDD 3.9.1)
+                 // dC/dt = r * (K - C) * V
+                 // Normalized r=1.0 for prediction target? Or predict absolute rate?
+                 // Let's predict the factor (K-C)*V. The rate 'r' is a scaling constant.
+                 // Target: The "Growth Potential" [0-1]
+                 // Wait, if C > K, growth is negative.
+                 // Perceptron (Sigmoid) output is [0,1]. It cannot predict negative growth!
+                 // Solution: Predict "Next Step Coverage" or "Logistic Term + 0.5"?
+                 // Or just predict the positive growth component?
+                 // Actually, DDD says: C += r * (K-C) * V. 
+                 // If K < C, term is negative.
+                 // Simplification for Phase 2: Predict Growth Rate assuming C < K (Recovery Phase).
+                 // We will clamp target to >= 0 or shift it.
+                 // Let's predict: Growth Potential = (K - C) * V
+                 // If K < C, target is 0. 
+                 
+                 float potential = (K > C) ? (K - C) * V : 0.0f;
+                 mlService_->collectTrainingSample("biomass_growth", {C, K, V}, potential);
+             }
+             std::cout << "[SisterApp] Growth Dataset: " << mlService_->datasetSize("biomass_growth") << std::endl;
+        },
+        [this](int epochs, float lr) { // mlTrainGrowthModel
+             if(mlService_ && !isTraining_) {
+                 isTraining_ = true;
+                 std::cout << "[SisterApp] Training 'biomass_growth'..." << std::endl;
+                 trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
+                     mlService_->trainModel("biomass_growth", epochs, lr);
                      isTraining_ = false;
                  });
              }
@@ -588,6 +682,30 @@ void Application::processEvents(double dt) {
                                   float er = hydro->erosion_risk[idx];
                                   ss << "Fluxo: " << std::fixed << std::setprecision(1) << flowRate << " mm/h\n";
                                   ss << "Erosion Risk: " << std::setprecision(4) << er << "\n";
+                                  
+                                  // ML Prediction
+                                  if (mlService_) {
+                                      float biomass = 0.0f;
+                                      if (finiteMap_->getVegetation() && finiteMap_->getVegetation()->isValid()) {
+                                          int vegIdx = hitZ * finiteMap_->getWidth() + hitX;
+                                          if (vegIdx >= 0 && vegIdx < finiteMap_->getVegetation()->getSize()) {
+                                              biomass = finiteMap_->getVegetation()->ei_coverage[vegIdx] + finiteMap_->getVegetation()->es_coverage[vegIdx];
+                                          }
+                                      }
+                                      float infilBase = 0.0f;
+                                      if (finiteMap_->getLandscapeSoil()) {
+                                           int sIdx = hitZ * finiteMap_->getWidth() + hitX;
+                                           if (sIdx >= 0 && sIdx < finiteMap_->getLandscapeSoil()->infiltration.size()) {
+                                               infilBase = finiteMap_->getLandscapeSoil()->infiltration[sIdx];
+                                           }
+                                      }
+                                      
+                                      // Effective Infil (Same logic as Training)
+                                      float effInfil = infilBase * (1.0f + 2.0f * biomass);
+                                      
+                                      float predRunoff = mlService_->predictRunoff(rainIntensity_, effInfil, biomass);
+                                      ss << "ML Runoff: " << std::fixed << std::setprecision(1) << predRunoff << " mm/h\n";
+                                  }
                               }
                          }
                          
@@ -609,7 +727,20 @@ void Application::processEvents(double dt) {
                                      // NDVI Sim (v3.9.3)
                                      float biomass = std::clamp(ei * 0.7f + es * 0.3f, 0.0f, 1.0f);
                                      float ndvi = 0.1f + (biomass * vigor * 0.8f);
-                                     ss << "NDVI: " << std::fixed << std::setprecision(2) << ndvi;
+                                     ss << "NDVI: " << std::fixed << std::setprecision(2) << ndvi << "\n";
+                                      // v4.2.1 ML Vegetation Insights
+                                      if (mlService_) {
+                                          float eiStr = veg->ei_coverage[vegIdx];
+                                          float esStr = veg->es_coverage[vegIdx];
+                                          float eiVig = veg->ei_vigor[vegIdx];
+                                          float esVig = veg->es_vigor[vegIdx];
+                                          
+                                          float pFire = mlService_->predictFireRisk(eiStr, esStr, eiVig, esVig);
+                                          float growth = mlService_->predictGrowth(eiStr + esStr, 1.0f, eiVig);
+                                          
+                                          ss << "ML Risco Fogo: " << std::fixed << std::setprecision(1) << pFire * 100.0f << "%\n";
+                                          ss << "ML Crescimento: " << std::fixed << std::setprecision(2) << growth;
+                                      }
                                  }
                              }
                          }
@@ -1062,7 +1193,12 @@ void Application::render(size_t frameIndex) {
         showMLSoil_,
         mlService_ ? mlService_->datasetSize("soil_color") : 0,
         mlService_ ? mlService_->datasetSize("hydro_runoff") : 0, // v4.2.0
-        isTraining_
+        isTraining_,
+        
+        /* v4.2.1 Advanced ML */
+        mlTrainingEpochs_,
+        mlLearningRate_,
+        mlSampleCount_
     };
 
     uiLayer_->render(uiCtx, cmd);

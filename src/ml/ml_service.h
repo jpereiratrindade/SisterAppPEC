@@ -27,6 +27,17 @@ public:
     // Helper: Soil Color specific wrapper (keeps existing UI code working)
     Eigen::Vector3f predictSoilColor(float n, float p, float k, float ph) const;
 
+    // Helper: Runoff specific wrapper
+    float predictRunoff(float rain, float infil, float biomass) const;
+
+    // Helper: Fire Risk Prediction
+    // Inputs: cEI, cES, vEI, vES. Output: Probability [0-1]
+    float predictFireRisk(float cEI, float cES, float vEI, float vES) const;
+
+    // Helper: Biomass Growth Prediction
+    // Inputs: currentCoverage, K (Carrying Capacity), Vigor. Output: Growth Rate
+    float predictGrowth(float currentC, float k, float vigor) const;
+
     // Generic Training
     void collectTrainingSample(const std::string& modelName, const std::vector<float>& inputs, float target);
     size_t datasetSize(const std::string& modelName) const;

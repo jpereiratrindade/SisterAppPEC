@@ -1,4 +1,4 @@
-# SisterApp Engine v4.0.0
+# SisterApp Engine v4.2.1
 Plataforma de Ecologia Computacional
 
 > **De Engine Gráfica para Laboratório Digital**: V3.8.0 transforma o projeto em uma plataforma científica para simulação de processos ecológicos, geração de padrões espaciais e validação métrica.
@@ -7,13 +7,16 @@ SisterApp é uma **Plataforma de Ecologia Computacional** de alto desempenho (C+
 
 Desenvolvido por **José Pedro Trindade**.
 
-![Version](https://img.shields.io/badge/version-4.1.1-orange.svg)
+![Version](https://img.shields.io/badge/version-4.2.1-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
 ![Status](https://img.shields.io/badge/Status-Stable-green.svg)
 
 ---
 
-## 🎯 What's New (v4.0.0)
+## 🎯 What's New (v4.2.1)
+- **ML Hub (v4.2)**: Integrated control for all ecological models with dynamic hyperparameter tuning.
+- **Fire Risk & Growth ML**: Neural networks predict disturbance probabilities and vegetation recovery potential.
+- **Unified Training Panel**: Scientific control over Epochs, Learning Rate, and Dataset sampling.
 
 ### 🌍 Integrated Ecofunctional Landscape Model
 The environment is now a fully coupled ecosystem where **Soil, Hydrology, and Vegetation** interact dynamically:

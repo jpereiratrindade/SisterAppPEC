@@ -28,37 +28,5 @@ Densidade de Drenagem:
   - Equivalente:         103.05 Km de rios por Km2
   - Extension Total:     108055.00 m (approx)
 
-6. ESTATISTICAS DE BACIAS (Watershed Segmentation)
------------------------------------------------------------------
-Total de Bacias Identificadas: 58
-Maior Bacia (Area):            116049 m2
-Dominancia da Maior Bacia:     11.07 % da area total
-
-7. ANALISE DETALHADA: PRINCIPAIS BACIAS
------------------------------------------------------------------
-7.1. BACIA ID 17 (Area: 116049.00 m2)
-   - Elevação (Min/Med/Max):     37.08 / 48.23 / 63.40
-   - Declividade Média:          0.08 (8.44%)
-   - TWI Médio:                  6.05
-   - Saturação (TWI>8):          4.48 %
-   - Densidade Drenagem:         1.55e-01 m-1
-   - Stream Power Max:           2274.08
-
-7.2. BACIA ID 15 (Area: 96729.00 m2)
-   - Elevação (Min/Med/Max):     32.11 / 42.54 / 58.88
-   - Declividade Média:          0.08 (8.11%)
-   - TWI Médio:                  5.99
-   - Saturação (TWI>8):          4.73 %
-   - Densidade Drenagem:         1.14e-01 m-1
-   - Stream Power Max:           3445.35
-
-7.3. BACIA ID 32 (Area: 73028.00 m2)
-   - Elevação (Min/Med/Max):     33.98 / 43.09 / 56.86
-   - Declividade Média:          0.09 (8.71%)
-   - TWI Médio:                  5.95
-   - Saturação (TWI>8):          6.03 %
-   - Densidade Drenagem:         1.51e-01 m-1
-   - Stream Power Max:           985.24
-
 =================================================================
 Fim do Relatorio.

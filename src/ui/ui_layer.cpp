@@ -460,45 +460,79 @@ void UiLayer::drawFiniteTools(UiFrameContext& ctx) {
         // v4.0.0 Rainfall Control (Always visible)
         ImGui::SliderFloat("Rain Intensity", &ctx.rainIntensity, 0.0f, 100.0f, "%.1f mm/h");
 
-        // v4.2.0 Hydro ML
-        if (ImGui::CollapsingHeader("ML Runoff Prediction", ImGuiTreeNodeFlags_None)) {
+        // v4.2.1 Unified ML Control Panel
+        if (ImGui::CollapsingHeader("Machine Learning Hub (v4.2)", ImGuiTreeNodeFlags_DefaultOpen)) {
              ImGui::Indent();
-             static int hydroSamples = 2000;
-             if (ImGui::Button("Collect Hydro Data")) {
-                 if (callbacks_.mlCollectHydroData) callbacks_.mlCollectHydroData(hydroSamples);
-             }
-             ImGui::SameLine();
-             if (ImGui::Button("Train Runoff Model")) {
-                 if (callbacks_.mlTrainHydroModel) callbacks_.mlTrainHydroModel(50, 0.05f);
-             }
-             ImGui::SameLine();
-             ImGui::TextDisabled("%zu samples", ctx.mlHydroDatasetSize);
-             ImGui::Unindent();
-        }
-        
-        // v4.0.0 ML Integration
-        if (ImGui::Checkbox("Accurate Soil Color (ML Prediction)", &ctx.showMLSoil)) {
-            // Trigger mesh update on toggle
-            if (callbacks_.updateMesh) callbacks_.updateMesh();
-        }
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Uses Neural Network to predict soil color from properties (Depth, OM, etc)");
-        
-        // v4.2.0 Generic ML Controls
-        if (ImGui::CollapsingHeader("ML Training (Soil Color)", ImGuiTreeNodeFlags_DefaultOpen)) {
-             ImGui::Indent();
-             ImGui::Text("Dataset Size: %zu samples", ctx.mlDatasetSize);
              
-             if (ctx.isTraining) {
-                 ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Training 'soil_color' in progress...");
-             } else {
-                 if (ImGui::Button("Collect Data (1000 pts)")) {
-                     if (callbacks_.mlCollectData) callbacks_.mlCollectData(1000);
+             // 1. Global Hyperparameters
+             ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Hyperparameters:");
+             ImGui::SliderInt("Epochs", &ctx.mlTrainingEpochs, 10, 1000);
+             ImGui::SliderFloat("Learning Rate", &ctx.mlLearningRate, 0.01f, 0.5f, "%.3f");
+             ImGui::InputInt("Sample Count", &ctx.mlSampleCount, 100, 10000);
+             if (ctx.mlSampleCount < 100) ctx.mlSampleCount = 100; // Safety clamp
+             
+             ImGui::Separator();
+
+             // 2. Soil Color Model
+             if (ImGui::TreeNode("Model: Soil Color")) {
+                 if (ImGui::Checkbox("Use ML Prediction", &ctx.showMLSoil)) {
+                    if (callbacks_.updateMesh) callbacks_.updateMesh();
+                 }
+                 ImGui::Text("Dataset: %zu samples", ctx.mlDatasetSize);
+                 
+                 if (ImGui::Button("Collect Data")) {
+                     if (callbacks_.mlCollectData) callbacks_.mlCollectData(ctx.mlSampleCount);
                  }
                  ImGui::SameLine();
-                 if (ImGui::Button("Train Model (50 Epochs)")) {
-                     if (callbacks_.mlTrainModel) callbacks_.mlTrainModel(50, 0.1f);
+                 if (ImGui::Button("Train Model")) {
+                     if (callbacks_.mlTrainModel) callbacks_.mlTrainModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
                  }
+                 ImGui::TreePop();
              }
+
+             // 3. Hydro Runoff Model
+             if (ImGui::TreeNode("Model: Hydro Runoff")) {
+                 ImGui::Text("Dataset: %zu samples", ctx.mlHydroDatasetSize);
+                 if (ImGui::Button("Collect Hydro Data")) {
+                     if (callbacks_.mlCollectHydroData) callbacks_.mlCollectHydroData(ctx.mlSampleCount);
+                 }
+                 ImGui::SameLine();
+                 if (ImGui::Button("Train Runoff Model")) {
+                     if (callbacks_.mlTrainHydroModel) callbacks_.mlTrainHydroModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
+                 }
+                 ImGui::TreePop();
+             }
+
+             // 4. Fire Risk Model (Phase 2)
+             if (ImGui::TreeNode("Model: Fire Risk")) {
+                 ImGui::Text("Predicts Ignition Probability based on Biomass/Vigor.");
+                 if (ImGui::Button("Collect Fire Data")) {
+                     if (callbacks_.mlCollectFireData) callbacks_.mlCollectFireData(ctx.mlSampleCount);
+                 }
+                 ImGui::SameLine();
+                 if (ImGui::Button("Train Fire Model")) {
+                     if (callbacks_.mlTrainFireModel) callbacks_.mlTrainFireModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
+                 }
+                 ImGui::TreePop();
+             }
+             
+             // 5. Growth Model (Phase 2)
+             if (ImGui::TreeNode("Model: Biomass Growth")) {
+                 ImGui::Text("Predicts Growth Rate based on Carrying Capacity.");
+                 if (ImGui::Button("Collect Growth Data")) {
+                     if (callbacks_.mlCollectGrowthData) callbacks_.mlCollectGrowthData(ctx.mlSampleCount);
+                 }
+                 ImGui::SameLine();
+                 if (ImGui::Button("Train Growth Model")) {
+                     if (callbacks_.mlTrainGrowthModel) callbacks_.mlTrainGrowthModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
+                 }
+                 ImGui::TreePop();
+             }
+             
+             if (ctx.isTraining) {
+                  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "BUSY: Training in background thread...");
+             }
+
              ImGui::Unindent();
         }
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Controls dynamic runoff generation (affects Erosion & Veg).");

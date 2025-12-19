@@ -228,8 +228,14 @@ namespace core {
         // I will define it as unique_ptr with forward decl in namespace.
         std::unique_ptr<ml::MLService> mlService_;
         
+        // v4.2.1 Advanced ML Controls
         bool isTraining_ = false;
         std::future<void> trainingFuture_;
+        
+        int mlTrainingEpochs_ = 50;
+        float mlLearningRate_ = 0.1f;
+        int mlSampleCount_ = 1000;
+        
     };
 
 } // namespace core
