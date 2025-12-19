@@ -129,7 +129,7 @@ void Application::init() {
     
     // --- V3.5.0: Finite World Initialization ---
     // Defaulting to Finite World
-    std::cout << "[SisterApp v3.5.0] Initializing Finite World (1024x1024)..." << std::endl;
+    std::cout << "[SisterApp v4.1.0] Initializing Finite World (1024x1024)..." << std::endl;
     finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
     // v3.7.8: Use Config Seed
     finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(currentSeed_);
@@ -177,7 +177,7 @@ void Application::init() {
     camera_.setFovDegrees(60.0f); // Wider view
 
     
-    std::cout << "[SisterApp v3.5.0] Finite World Ready!" << std::endl;
+    std::cout << "[SisterApp v4.1.0] Finite World Ready!" << std::endl;
 
     // V3.4.0: Load preferences on startup
     // v3.8.1: Preferences Disabled
@@ -233,6 +233,40 @@ void Application::init() {
         [this]() { // updateMesh
             // Defer to next frame start
             meshUpdateRequested_ = true;
+        },
+        // v4.0.0 ML Training
+        [this](int samples) { // mlCollectData
+             if (!finiteMap_ || !mlService_) return;
+             // Implementation Logic
+             std::cout << "[SisterApp] Collecting " << samples << " samples..." << std::endl;
+             std::srand(std::time(nullptr));
+             int w = finiteMap_->getWidth();
+             int h = finiteMap_->getHeight();
+             
+             for(int i=0; i<samples; ++i) {
+                 int x = std::rand() % w;
+                 int z = std::rand() % h;
+                 float d = finiteMap_->getLandscapeSoil()->depth[z*w+x];
+                 float om = finiteMap_->getLandscapeSoil()->organic_matter[z*w+x];
+                 float inf = finiteMap_->getLandscapeSoil()->infiltration[z*w+x] / 100.0f;
+                 float comp = finiteMap_->getLandscapeSoil()->compaction[z*w+x];
+                 
+                 // Ground Truth Heuristic (Target)
+                 float target = 0.5f * (d/2.0f) + 0.3f * (om/5.0f) + 0.2f * (1.0f - comp);
+                 mlService_->collectTrainingSample(d, om, inf, comp, std::clamp(target, 0.0f, 1.0f));
+             }
+             std::cout << "[SisterApp] Dataset: " << mlService_->datasetSize() << std::endl;
+        },
+        [this](int epochs, float lr) { // mlTrainModel
+             if(mlService_ && !isTraining_) {
+                 isTraining_ = true;
+                 std::cout << "[SisterApp] Starting Async Training..." << std::endl;
+                 
+                 // Launch Async
+                 trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
+                     mlService_->trainModel(epochs, lr);
+                 });
+             }
         }
     };
     // UI Layer
@@ -330,6 +364,17 @@ void Application::run() {
         if (regenRequested_) {
             performRegeneration();
         }
+        
+        // v4.0.0 Async Training Check
+        if (isTraining_ && trainingFuture_.valid() && 
+            trainingFuture_.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            
+            trainingFuture_.get(); // Join/Rethrow exceptions
+            isTraining_ = false;
+            std::cout << "[SisterApp] Async Training Completed." << std::endl;
+            performMeshUpdate();
+        }
+
         if (meshUpdateRequested_) {
             performMeshUpdate();
         }
@@ -946,7 +991,9 @@ void Application::render(size_t frameIndex) {
         rainIntensity_,
         
         // v4.0.0 ML
-        showMLSoil_
+        showMLSoil_,
+        /* ml stats */ mlService_ ? mlService_->datasetSize() : 0,
+        /* isTraining */ isTraining_
     };
 
     uiLayer_->render(uiCtx, cmd);

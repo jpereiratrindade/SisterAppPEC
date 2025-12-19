@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [v4.1.0] - 2025-12-19
+### UI Refactoring (Domain-Driven UI)
+- **Split "Map Generator"**: Refactored the monolithic tool window into 4 domain-specific floating windows:
+    - **Terrain & Environment**: Generation parameters, lighting, fog, and slope analysis.
+    - **Hydrology Tools**: Rain intensity, drainage visualization, and watershed segmentation.
+    - **Soil & ML**: Soil map filters and Machine Learning controls.
+    - **Vegetation Tools**: Disturbance settings (Fire/Grazing) and visualization modes.
+- **Main Menu**: Added "Domain Windows" menu to toggle these windows individually.
+- **Goal**: Align UI with DDD aggregates and reduce visual clutter.
+
 ## [v4.0.0] - 2025-12-18
 ### Integrated Landscape Model
 - **Major Architecture Assessment**: Transitioned from isolated systems to a fully coupled **Soil-Hydro-Vegetation** feedback loop.
@@ -14,7 +24,10 @@
     - Updated Manual Técnico with Section 4 "Modelo Integrado Ecofuncional".
     - Verified all DDD invariants in validation testing.
 ### Machine Learning (Experimental)
-- **Soil Color Prediction**:
+- **Experimental ML Integration**: Added `MLService` and `Perceptron` for soil color prediction (PoC).
+    - **Physics-Guided Training**: Implemented in-game data collection and asynchronous training loop to prevent UI freezes.
+    - **UI Updates**: Added "ML Training" controls and "Accurate Soil Color" toggle.
+    - **Documentation**: Added Section 4.7 to Manual detailing ML architecture.
     - Integrated Eigen-based Multi-Layer Perceptron (MLP).
     - Added `MLService` for loading and managing model lifecycles.
     - Implemented hybrid rendering where soil color is predicted from physical properties ($d$, $OM$, $Inf$, $Comp$).
