@@ -11,6 +11,15 @@
 - **Documentation**: 
     - Updated Manual Técnico with Section 4 "Modelo Integrado Ecofuncional".
     - Verified all DDD invariants in validation testing.
+    - Updated Manual Técnico with Section 4 "Modelo Integrado Ecofuncional".
+    - Verified all DDD invariants in validation testing.
+### Machine Learning (Experimental)
+- **Soil Color Prediction**:
+    - Integrated Eigen-based Multi-Layer Perceptron (MLP).
+    - Added `MLService` for loading and managing model lifecycles.
+    - Implemented hybrid rendering where soil color is predicted from physical properties ($d$, $OM$, $Inf$, $Comp$).
+    - Added "Accurate Soil Color" toggle in Map Generator UI.
+
 ### Ecological Modeling
 - **Functional Response to Disturbance**: 
     - Implemented logarithmically positive response for Grass ($R_{EI}$) and exponentially negative response for Shrubs ($R_{ES}$).

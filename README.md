@@ -32,6 +32,12 @@ The environment is now a fully coupled ecosystem where **Soil, Hydrology, and Ve
     - **Water Stress**: Plant Vigor ($\phi$) is limited by water availability.
     - **Disturbance Regimes**: Fire (Fuel-driven) and Grazing (Selective) dynamics.
 
+    - **Disturbance Regimes**: Fire (Fuel-driven) and Grazing (Selective) dynamics.
+
+### 🧠 Experimental ML Integration
+- **Hybrid Modeling**: A new `MLService` enables **Physics-Guided Machine Learning**.
+- **Soil Color**: Neural network (Perceptron) serves as a surrogate model to predict visual soil properties from physical state vectors.
+
 ### Previous Highlights
 - **High-Scale Vegetation**: Optimized simulation for 4096² maps (v3.9.2).
 - **Interactive Minimap**: Real-time navigation with peak detection (v3.8.0).
