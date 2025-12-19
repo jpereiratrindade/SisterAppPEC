@@ -165,7 +165,7 @@ See the [LICENSE](LICENSE) file for details.
 ## 👨‍💻 Author
 
 **José Pedro Trindade**  
-_Voxel World Exploration & Visualization_
+_Integrated Ecofunctional Landscape Modeling & Visualization_
 
 ---
 
