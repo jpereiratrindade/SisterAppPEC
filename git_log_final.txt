@@ -1,0 +1,10 @@
+* b01e8b3 Release v4.2.1: Advanced ML Hub and Phase 2 Ecological Models (Fire Risk & Growth)
+* 797b4f0 feat: Implement Generic ML Service and Hydro Model (v4.2.0)
+* 2bc00ed docs: Fix LaTeX escape sequences for underscores (section 11)
+* f128182 docs: Update technical manual version to v4.2.0
+* d2048ad docs: Fix math blocks and units in Section 11 (LaTeX/GitHub)
+  feat/ml-integration 501d934 fix(hydro): resolve soil depth and runoff visualization bugs (v4.1.1)
+* main                b01e8b3 [origin/main: ahead 1] Release v4.2.1: Advanced ML Hub and Phase 2 Ecological Models (Fire Risk & Growth)
+  master              c3f8f42 Docs: Updated manual, README and CHANGELOG to correct resilience logic descriptions and document UI fix
+origin	git@github.com:jpereiratrindade/SisterAppPEC.git (fetch)
+origin	git@github.com:jpereiratrindade/SisterAppPEC.git (push)

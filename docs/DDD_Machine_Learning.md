@@ -1,4 +1,4 @@
-# Domain-Driven Design: Machine Learning Ecofuncional (v4.0.0)
+# Domain-Driven Design: Machine Learning Ecofuncional (v4.2.1)
 
 **Bounded Context:** `EcofunctionalMachineLearning`
 **Subdomínio:** Suporte / Genérico (Surrogate Modeling)
@@ -35,6 +35,11 @@ O contexto de ML se relaciona com o contexto principal (`EcofunctionalLandscape`
 
 #### `Model` (Aggregate Root)
 Representa a rede neural ou algoritmo estatístico. Possui identidade (ex: "SoilColorPredictor") e ciclo de vida.
+*   **Identificadores Registrados:**
+    *   `soil_color`: Predição de reflectância visual.
+    *   `hydro_runoff`: Predição de escoamento superficial.
+    *   `fire_risk`: Predição de probabilidade de ignição.
+    *   `biomass_growth`: Predição de dinâmica de recuperação vegetal.
 *   **Atributos:**
     *   `Weights`: Matrizes de pesos sinápticos (Mutável).
     *   `Architecture`: Definição de camadas (Imutável após criação).
@@ -49,9 +54,14 @@ Representa uma execução única de otimização.
 
 ### 3.2. Objetos de Valor (Value Objects)
 
-#### `SoilSample`
+#### `TrainingSample`
 Um ponto de dados imutável extraído da simulação.
-*   **Estrutura:** $\{ \mathbf{x}: [d, OM, Inf, Comp], \mathbf{y}: [TargetColor] \}$
+*   **Estrutura:** $\{ \mathbf{x}: [f_1, f_2, \dots, f_n], y: [Target] \}$
+*   **Domínios de Amostragem:**
+    *   Soil: $[d, OM, Inf, Comp] \to Color$
+    *   Hydro: $[Rain, EffInf, Bio] \to Runoff$
+    *   Fire: $[C_{EI}, C_{ES}, \phi_{EI}, \phi_{ES}] \to P_{fire}$
+    *   Growth: $[C_{total}, K, \phi] \to \Delta C$
 *   **Propriedade de Transparência:** Deve conter metadados de origem (coordenada $(x,z)$, ID da Bacia) para rastreabilidade.
 
 #### `TrainingMetrics`

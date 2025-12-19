@@ -435,3 +435,34 @@ Diferente de abordagens "Black Box" puras, o SisterApp utiliza o ML como um "Sur
 1.  A simulação física calcula os estados brutos ($d_{soil}$, etc).
 2.  O `MLService` infere uma "Assinatura Espectral" (Cor) baseada nesses estados.
 3.  O renderizador mistura essa predição com a textura base, permitindo visualizar correlações não-lineares aprendidas de dados reais (quando o modelo for treinado).
+
+### 11.8.6. Modelo de Risco de Fogo ("fire_risk")
+Este modelo atua como um classificador de probabilidade de ignição baseado no estado atual da vegetação.
+
+**Inputs ($\mathbf{x}$):**
+*   Cobertura EI e ES ($C_{EI}, C_{ES}$)
+*   Vigor EI e ES ($\phi_{EI}, \phi_{ES}$)
+
+**Target ($y$):**
+*   Probabilidade de Ignição $P \in [0,1]$.
+*   **Ground Truth:** Baseado na fórmula de inflamabilidade do DDD 3.9.2, onde o risco aumenta com biomassa alta e vigor (saúde/umidade) baixo.
+
+### 11.8.7. Modelo de Crescimento ("biomass_growth")
+Prediz o potencial de crescimento de biomassa para o próximo passo de tempo, servindo como um acelerador para a simulação de dinâmica vegetal.
+
+**Inputs ($\mathbf{x}$):**
+*   Biomassa Atual ($C_{Total}$)
+*   Capacidade de Suporte local ($K$)
+*   Vigor Médio ($\phi$)
+
+**Target ($y$):**
+*   Delta de Crescimento $\Delta C \in [0,1]$.
+*   **Lógica:** Segue uma função logística, onde o crescimento é máximo em coberturas intermediárias e desacelera ao atingir $K$.
+
+### 11.8.8. ML Hub e Hiperparâmetros Avançados (v4.2.1)
+O painel de controle de ML foi unificado para permitir amostragem e treinamento consistentes entre todos os modelos:
+*   **Epochs:** Número de iterações sobre o dataset completo.
+*   **Learning Rate:** Velocidade de ajuste dos pesos senápticos ($\eta$).
+*   **Sample Count:** Quantidade de células amostradas do terreno para gerar o dataset de treinamento.
+
+O sistema garante que as predições de ML sejam sempre normalizadas e consistentes com as grandezas físicas simuladas, permitindo a substituição transparente ou o enriquecimento visual dos modelos determinísticos.
