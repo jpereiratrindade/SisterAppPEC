@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.4.0] - 2025-12-22
+### Features
+- **User-Defined Geology**: Introduced the **SCORPAN Vector Architecture**.
+    - **Geology Layer**: Users can now select Parent Material (Lithology) in the inspector.
+    - **Physical Simulation**: Soil formation is now a function of $f(Lithology, Slope)$.
+    - **Lithology Registry**: Default definitions for Basalt, Granite, Sandstone.
+    - **UI**: Added "Geology" tool and inspector panel.
+
 ## [v4.3.13] - 2025-12-22
 ### Documentation
 - **Theoretical Manual**: Formalized the **SCORPAN Vector Architecture**, defining $s,c,o,r,p,a,n$ as independent state vectors to support future Data-Oriented simulation.

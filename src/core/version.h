@@ -3,6 +3,6 @@
 
 namespace core {
     const std::string APP_NAME = "SisterApp Platform";
-const std::string APP_VERSION = "v4.3.13";
-const std::string APP_VERSION_TAG = "v4.3.13 (Vector Theory)"; 
+const std::string APP_VERSION = "v4.4.0";
+const std::string APP_VERSION_TAG = "v4.4.0 (Vector Geology)"; 
 }

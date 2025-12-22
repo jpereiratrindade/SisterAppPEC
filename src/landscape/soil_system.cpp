@@ -1,4 +1,5 @@
 #include "soil_system.h"
+#include "lithology_registry.h"
 #include "../terrain/terrain_map.h"
 #include <cmath>
 #include <algorithm>

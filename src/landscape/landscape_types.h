@@ -25,6 +25,9 @@ namespace landscape {
      * - compaction: Process state (Service: SoilSystem)
      * - propagule_bank: Biological memory (Service: GrowthService)
      */
+    // v4.4.0: Geology Layer
+    using LithologyID = uint8_t;
+
     struct SoilGrid {
         int width = 0;
         int height = 0;
@@ -38,8 +41,9 @@ namespace landscape {
         // Biological Memory (Resilience Factor)
         std::vector<float> propagule_bank; // [0.0 - 1.0] Potential for regeneration (Seeds/Buds)
 
-        // Classification
+        // Classification & Geology
         std::vector<uint8_t> soil_type;    // Maps to SoilType
+        std::vector<LithologyID> lithology_id; // v4.4.0: ID of Parent Material
 
         void resize(int w, int h) {
             width = w;
@@ -52,13 +56,14 @@ namespace landscape {
             organic_matter.assign(size, 0.5f);  // Moderate organic matter
             propagule_bank.assign(size, 1.0f);  // Full regenerative potential
             soil_type.assign(size, static_cast<uint8_t>(SoilType::Silt_Loam));
+            lithology_id.assign(size, 0);       // Default Lithology (0 = Generic)
         }
 
         size_t getSize() const { return depth.size(); }
 
         bool isValid() const {
             return !depth.empty() && 
-                   depth.size() == compaction.size() &&
+                   depth.size() == lithology_id.size() &&
                    width * height == static_cast<int>(depth.size());
         }
     };

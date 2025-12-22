@@ -1,4 +1,5 @@
 #include "ui_layer.h"
+#include "../landscape/lithology_registry.h"
 
 #include "../imgui_backend.h"
 #include "backends/imgui_impl_vulkan.h"
@@ -477,6 +478,14 @@ void UiLayer::drawToolbar(UiFrameContext& ctx) {
         
         ImGui::SameLine();
         
+        // Geology Mode
+        bool isGeo = (activeTool_ == ActiveTool::Geology);
+        if (isGeo) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.4f, 0.4f, 1.0f)); // Red/Clay
+        if (ImGui::Button("Geology", btnSize)) activeTool_ = ActiveTool::Geology;
+        if (isGeo) ImGui::PopStyleColor();
+
+        ImGui::SameLine();
+
         // Soil Mode
         bool isSoil = (activeTool_ == ActiveTool::Soil);
         if (isSoil) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.4f, 0.2f, 1.0f));
@@ -570,6 +579,9 @@ void UiLayer::drawInspector(UiFrameContext& ctx) {
                 break;
             case ActiveTool::Soil:
                 drawSoilInspector(ctx);
+                break;
+            case ActiveTool::Geology:
+                drawGeologyInspector(ctx); // v4.4.0
                 break;
             case ActiveTool::Vegetation:
                 drawVegetationInspector(ctx);
@@ -777,7 +789,46 @@ void UiLayer::drawHydrologyInspector(UiFrameContext& ctx) {
     }
 }
 
-// Renamed from drawSoilMLInspector
+// v4.4.0: Geology Painting
+void UiLayer::drawGeologyInspector(UiFrameContext& ctx) {
+    ImGui::Text("Lithology (Parent Material):");
+    ImGui::Separator();
+    
+    static int selectedRock = 0;
+    const char* rocks[] = { "Generic", "Basalto", "Granito", "Arenito" };
+    
+    // Geology Palette
+    for (int i = 0; i < 4; ++i) {
+        if (ImGui::RadioButton(rocks[i], selectedRock == i)) {
+            selectedRock = i;
+        }
+        ImGui::SameLine();
+        const auto& def = landscape::LithologyRegistry::instance().get(i);
+        ImGui::ColorButton("##rockColor", ImVec4(def.r, def.g, def.b, 1.0f), ImGuiColorEditFlags_NoTooltip);
+        if ((i+1) % 2 == 0) ImGui::NewLine(); else ImGui::SameLine();
+    }
+    
+    ImGui::Separator();
+    ImGui::Text("Properties (%s):", rocks[selectedRock]);
+    const auto& currentDef = landscape::LithologyRegistry::instance().get(selectedRock);
+    
+    ImGui::Text("Weathering: %.2f", currentDef.weathering_rate);
+    ImGui::Text("Fertility:  %.2f", currentDef.base_fertility);
+    ImGui::Text("Sand Bias:  %.2f", currentDef.sand_bias);
+    ImGui::Text("Clay Bias:  %.2f", currentDef.clay_bias);
+    
+    ImGui::Separator();
+    ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "Painting Tool");
+    ImGui::TextWrapped("Hold LMB to paint on terrain.");
+    static float brushSize = 50.0f;
+    ImGui::SliderFloat("Brush Size", &brushSize, 10.0f, 500.0f);
+    
+    // Painting Logic (Placeholder for future Input System)
+    // if (ImGui::IsMouseDown(0) && !ImGui::GetIO().WantCaptureMouse) {
+    //      Command::PaintGeology(ctx.cursorPos, selectedRock, brushSize);
+    // }
+}
+
 void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
     // --- Soil Map ---
     ImGui::Checkbox("Show Soil Map", &ctx.showSoilVis);
