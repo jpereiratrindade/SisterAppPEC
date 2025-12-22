@@ -1,5 +1,10 @@
 # Changelog
 
+## [v4.3.8] - 2025-12-22
+### Documentation
+- **ML Integration Manual**: Created `docs/manual_tecnico_ml.md` detailing the "Hub & Spoke" architecture and model catalog.
+- **Architecture**: Adjusted `README.md` to link to the new ML manual.
+
 ## [v4.3.7] - 2025-12-22
 ### Documentation
 - **Architecture Flowcharts**: Added Mermaid diagrams to `README.md` and `manual_tecnico_modelos.md` to visualize system architecture and data flow.
