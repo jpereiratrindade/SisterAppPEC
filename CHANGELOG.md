@@ -1,5 +1,14 @@
 # Changelog
 
+## [v4.3.6] - 2025-12-22
+### Pattern Integrity Lab Alianmnent
+- **Refined Validation Logic**: Implemented "PatternIntegrityLab" adjustments to improve ecological realism.
+    - **Relative Normalization**: Validation metrics (LSI/CF) now calculate deviation relative to the envelope range (`max - min`) rather than absolute max, increasing sensitivity for restrictive soil types.
+    - **Fuzzy Circularity**: Breaks in RCC envelopes now contribute to `Under Tension` state instead of causing immediate `Incompatible` failure.
+    - **New State "In Transition"**: Activated detection of mixed signals (e.g., Stable LSI + Unstable CF) or asymmetric stress, classifying them as transitional landscapes rather than errors.
+    - **Ecological Resolution**: Renamed "Too Small" feedback to "Below Ecological Resolution" to better reflect the epistemological choice of ignoring noise.
+- **Documentation**: Updated `manual_tecnico_modelos.md` Section 4 with new states and theoretical justifications.
+
 
 ## [v4.3.5] - 2025-12-22
 ### Added

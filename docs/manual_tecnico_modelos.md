@@ -504,6 +504,8 @@ O SisterApp v4.3.0 introduz um validador soberano de domínio espacial para gara
 ## 4.1. Fundamentação Teórica (DDD)
 Diferente da validação de regras simples (ex: "tem água?"), a validação de padrão avalia a **forma e distribuição** das manchas. Cada tipo de solo possui uma "Assinatura Espacial" (*Patch Pattern Signature*) característica. O validador compara as métricas observadas com envelopes predefinidos para determinar o estado de integridade.
 
+A partir da versão **4.3.6**, o sistema utiliza uma **Normalização Relativa** para o cálculo de desvio, considerando a amplitude do envelope (`Max - Min`) e não apenas o valor absoluto, garantindo maior sensibilidade em tipos de solo com envelopes estreitos.
+
 ### 4.1.1. Métricas de Paisagem Utilizadas
 O validador utiliza três métricas fundamentais de ecologia de paisagem:
 1.  **LSI (Landscape Shape Index):** Mede a complexidade da borda.
@@ -514,16 +516,17 @@ O validador utiliza três métricas fundamentais de ecologia de paisagem:
     *   Valores altos indicam manchas pequenas ou muito alongadas.
 3.  **RCC (Related Circumscribing Circle):** Mede o quão alongada é a mancha.
     *   $RCC \approx 1.0$: Mancha isotrópica (redonda/quadrada).
-    *   $RCC \approx 0.0$: Mancha linear ou filamentosa.
+    *   $RCC \approx 0.0$: Mancha linear ou filamentosa. *Nota: Tratado agora como um gradiente contínuo de tensão.*
 
 ## 4.2. Estados de Validação
-O sistema classifica cada tipo de solo em um de três estados, exibidos visualmente na interface de inspeção ("Pattern Integrity"):
+O sistema classifica cada tipo de solo em um de quatro estados de integridade:
 
 | Estado | Cor Visual | Descrição | Ação Recomendada |
 | :--- | :--- | :--- | :--- |
-| **Stable** | Verde | As métricas estão dentro de todas as tolerâncias (+/- 10%). | Nenhuma. Padrão ideal. |
-| **Under Tension** | Amarelo | As métricas violam levemente os envelopes (desvio < 20%). | Aceitável para paisagens de transição. |
-| **Incompatible** | Vermelho | Ruptura estrutural (desvio > 20%). | O padrão gerado é geometricamente implausível. |
+| **Stable** | Verde | As métricas estão dentro de todas as tolerâncias. | Nenhuma. Padrão ideal. |
+| **Under Tension** | Amarelo | Violação leve (desvio relativo < 30%) em uma ou mais métricas. | Aceitável indicativo de estresse ambiental. |
+| **In Transition** | Laranja | Sinais mistos (ex: LSI estável mas CF distorcido) ou tensão assimétrica moderada. | Indica reorganização ativa da paisagem. |
+| **Incompatible** | Vermelho | Ruptura estrutural severa ou colapso geométrico. | O padrão gerado é implausível. |
 
 ## 4.3. Configuração e Auto-Correção
 A versão 4.3.3 introduz ferramentas avançadas para lidar com estados de incompatibilidade:
@@ -539,5 +542,5 @@ Para usuários avançados ou biomas específicos, é possível ajustar os envelo
 *   Ajuste os silders de **LSI**, **CF** e **RCC** para cada tipo de solo.
 *   O validador respeitará os novos limites imediatamente, permitindo "legalizar" padrões que seriam rejeitados pelos defaults acadêmicos.
 
-## 4.4. Tolerância a Ruído
-Manchas com área insignificante (< 50 pixels) são consideradas "Ruído de Frequência" e são automaticamente classificadas como **Stable**, evitando que pequenos artefatos numéricos gerem alertas de integridade ("Incompatible").
+## 4.4. Resolução Ecológica
+Manchas com área insignificante (< 50 pixels) são consideradas **"Below Ecological Resolution"** (Abaixo da Resolução Ecológica) e são automaticamente classificadas como **Stable**. Isso evita que artefatos numéricos irrelevantes para os processos ecossistêmicos poluam o relatório de integridade com falsos positivos.
