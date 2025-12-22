@@ -1,0 +1,33 @@
+make: Entrando no diretório '/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/build'
+
+[ 12%] Built target shaders_spirv
+[ 14%] Building CXX object CMakeFiles/SisterAppPEC.dir/src/ui/ui_layer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawToolbar(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:449:12: error: ‘SetNextWindowViewport’ is not a member of ‘ImGui’; did you mean ‘SetNextWindowPos’?
+  449 |     ImGui::SetNextWindowViewport(viewport->ID);
+      |            ^~~~~~~~~~~~~~~~~~~~~
+      |            SetNextWindowPos
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:451:22: warning: unused variable ‘window_flags’ [-Wunused-variable]
+  451 |     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_MenuBar;
+      |                      ^~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawTerrainInspector(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:677:47: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  677 |             float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:678:48: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  678 |             float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:681:59: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  681 |             ctx.camera.setDistance(ctx.finiteMap->getWidth() * 0.8f);
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:688:47: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  688 |             float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:689:48: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  689 |             float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~^~
+make[2]: *** [CMakeFiles/SisterAppPEC.dir/build.make:387: CMakeFiles/SisterAppPEC.dir/src/ui/ui_layer.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/SisterAppPEC.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2
+make: Saindo do diretório '/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/build'
+

@@ -77,6 +77,8 @@ struct UiFrameContext {
     bool& showMLSoil;
     size_t mlDatasetSize;
     size_t mlHydroDatasetSize; // v4.2.0
+    size_t mlFireDatasetSize;  // v4.2.1
+    size_t mlGrowthDatasetSize;// v4.2.1
     bool isTraining;
     
     // v4.2.1 Advanced ML Controls
@@ -138,7 +140,14 @@ private:
     void drawAnimation(UiFrameContext& ctx);
     void drawBookmarks(UiFrameContext& ctx);
     void drawResetCamera(UiFrameContext& ctx);
-    void drawFiniteTools(UiFrameContext& ctx); 
+    void drawToolbar(UiFrameContext& ctx);
+    void drawInspector(UiFrameContext& ctx);
+    
+    // Inspector Content Providers
+    void drawTerrainInspector(UiFrameContext& ctx);
+    void drawHydrologyInspector(UiFrameContext& ctx);
+    void drawSoilMLInspector(UiFrameContext& ctx);
+    void drawVegetationInspector(UiFrameContext& ctx); 
     void drawCrosshair(UiFrameContext& ctx); // v3.8.1 
 
     Theme currentTheme_ = Theme::Dark;
@@ -148,7 +157,9 @@ private:
     // v3.8.0
     bool showMinimap_ = true;
     // v3.8.1: Views Toggles
-    bool showMapGenerator_ = true;
+    // Toolbar State
+    enum class ActiveTool { None, Terrain, Hydro, SoilML, Vegetation };
+    ActiveTool activeTool_ = ActiveTool::Terrain; // Default to Terrain
     bool showCamControls_ = true;
     bool showResetCamera_ = true;
     bool showDebugInfo_ = false; // Default off

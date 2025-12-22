@@ -278,7 +278,7 @@ void Application::init() {
                  
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
                      mlService_->trainModel("soil_color", epochs, lr); // Added modelName
-                     isTraining_ = false; // Reset flag (not strict thread safe but OK for UI flag)
+                     // isTraining_ = false; // MOVED to Main Thread Check
                  });
              }
         },
@@ -326,7 +326,7 @@ void Application::init() {
                  std::cout << "[SisterApp] Training 'hydro_runoff'..." << std::endl;
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
                      mlService_->trainModel("hydro_runoff", epochs, lr);
-                     isTraining_ = false;
+                     // isTraining_ = false;
                  });
              }
         },
@@ -374,7 +374,7 @@ void Application::init() {
                  std::cout << "[SisterApp] Training 'fire_risk'..." << std::endl;
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
                      mlService_->trainModel("fire_risk", epochs, lr);
-                     isTraining_ = false;
+                     // isTraining_ = false;
                  });
              }
         },
@@ -416,7 +416,7 @@ void Application::init() {
                  std::cout << "[SisterApp] Training 'biomass_growth'..." << std::endl;
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
                      mlService_->trainModel("biomass_growth", epochs, lr);
-                     isTraining_ = false;
+                     // isTraining_ = false;
                  });
              }
         }
@@ -1193,6 +1193,8 @@ void Application::render(size_t frameIndex) {
         showMLSoil_,
         mlService_ ? mlService_->datasetSize("soil_color") : 0,
         mlService_ ? mlService_->datasetSize("hydro_runoff") : 0, // v4.2.0
+        mlService_ ? mlService_->datasetSize("fire_risk") : 0,    // v4.2.1
+        mlService_ ? mlService_->datasetSize("biomass_growth") : 0,// v4.2.1
         isTraining_,
         
         /* v4.2.1 Advanced ML */

@@ -3,6 +3,6 @@
 
 namespace core {
     const std::string APP_NAME = "SisterApp Platform";
-const std::string APP_VERSION = "v4.2.0";
-const std::string APP_VERSION_TAG = "v4.2.0 (Generic ML)"; 
+const std::string APP_VERSION = "v4.3.0";
+const std::string APP_VERSION_TAG = "v4.3.0 (Inspector UI)"; 
 }

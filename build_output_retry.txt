@@ -1,0 +1,80 @@
+make: Entrando no diretório '/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/build'
+
+[ 12%] Built target shaders_spirv
+[ 14%] Building CXX object CMakeFiles/SisterAppPEC.dir/src/ui/ui_layer.cpp.o
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp: In member function ‘void ui::UiLayer::drawTerrainWindow(ui::UiFrameContext&)’:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:578:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  578 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:579:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  579 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:582:63: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  582 |                 ctx.camera.setDistance(ctx.finiteMap->getWidth() * 0.8f);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:589:51: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  589 |                 float cx = ctx.finiteMap->getWidth() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:590:52: warning: conversion from ‘int’ to ‘float’ may change value [-Wconversion]
+  590 |                 float cz = ctx.finiteMap->getHeight() / 2.0f;
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:603:23: error: redeclaration of ‘float cx’
+  603 |                 float cx = w / 2.0f;
+      |                       ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:602:23: note: ‘float cx’ previously declared here
+  602 |                 float cx = w / 2.0f;
+      |                       ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp: At global scope:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:759:6: error: expected constructor, destructor, or type conversion before ‘(’ token
+  759 | }Text("Viewer Controls:");
+      |      ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:762:30: error: ‘ctx’ was not declared in this scope
+  762 |         float currentSpeed = ctx.camera.getMoveSpeed();
+      |                              ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:763:9: error: expected unqualified-id before ‘if’
+  763 |         if (ImGui::SliderFloat("Fly Speed", &currentSpeed, 10.0f, 200.0f, "%.0f m/s")) {
+      |         ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:768:9: error: expected unqualified-id before ‘if’
+  768 |         if (ImGui::Button("Orbit Map", ImVec2(100, 0))) {
+      |         ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:779:26: error: expected constructor, destructor, or type conversion before ‘;’ token
+  779 |         ImGui::SameLine();
+      |                          ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:782:9: error: expected unqualified-id before ‘if’
+  782 |         if (ImGui::Button("Fly Center", ImVec2(100, 0))) {
+      |         ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:793:26: error: expected constructor, destructor, or type conversion before ‘;’ token
+  793 |         ImGui::SameLine();
+      |                          ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:796:9: error: expected unqualified-id before ‘if’
+  796 |         if (ImGui::Button("Top View", ImVec2(100, 0))) {
+      |         ^~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:816:17: error: expected constructor, destructor, or type conversion before ‘;’ token
+  816 |     ImGui::End();
+      |                 ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:817:1: error: expected declaration before ‘}’ token
+  817 | }
+      | ^
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:819:6: error: ‘UiLayer’ has not been declared
+  819 | void UiLayer::drawCrosshair(UiFrameContext& ctx) {
+      |      ^~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:819:6: error: variable or field ‘drawCrosshair’ declared void
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:819:29: error: ‘UiFrameContext’ was not declared in this scope; did you mean ‘ui::UiFrameContext’?
+  819 | void UiLayer::drawCrosshair(UiFrameContext& ctx) {
+      |                             ^~~~~~~~~~~~~~
+      |                             ui::UiFrameContext
+In file included from /run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:1:
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.h:22:8: note: ‘ui::UiFrameContext’ declared here
+   22 | struct UiFrameContext {
+      |        ^~~~~~~~~~~~~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:819:45: error: ‘ctx’ was not declared in this scope
+  819 | void UiLayer::drawCrosshair(UiFrameContext& ctx) {
+      |                                             ^~~
+/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/src/ui/ui_layer.cpp:848:1: error: expected declaration before ‘}’ token
+  848 | } // namespace ui
+      | ^
+make[2]: *** [CMakeFiles/SisterAppPEC.dir/build.make:387: CMakeFiles/SisterAppPEC.dir/src/ui/ui_layer.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:90: CMakeFiles/SisterAppPEC.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2
+make: Saindo do diretório '/run/media/jpereiratrindade/labeco10T/dev/cpp/SisterAppPEC/build'
+

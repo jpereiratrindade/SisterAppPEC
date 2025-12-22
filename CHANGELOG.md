@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [v4.3.0] - 2025-12-22
+### UI Overhaul
+- **Toolbar + Inspector Architecture**: Completely replaced the floating window system with a unified persistent Toolbar and a context-sensitive Inspector panel.
+    - **Toolbar**: Quick access to "Terrain", "Hydrology", "Soil & ML", and "Vegetation" modes.
+    - **Inspector**: Dynamic right-side panel that displays controls relevant to the active tool.
+    - **Resizeable/Movable**: Inspector panel can now be resized and moved by the user.
+- **ML UI Feedback**: Added real-time dataset size counters and training status indicators to the Soil & ML Inspector.
+
 ## [v4.2.1] - 2025-12-19
 ### New Features
 - **ML Phase 2: Disturbance & Growth**: 

@@ -1,6 +1,0 @@
-[Test] MLService Integration...
-[ML] Service Initialized.
-[ML] Model loaded successfully.
-[ML] Loaded model: soil_color
-Predicted Color: 0.5 0.5 0.2
-[PASS] MLService logic verified.
