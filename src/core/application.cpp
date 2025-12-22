@@ -260,37 +260,49 @@ void Application::init() {
              // Note: terrainConfig_ stores generation config.
              landscape::SoilSystem::initialize(*finiteMap_->getLandscapeSoil(), deferredConfig_.seed, *finiteMap_);
              
-             // Validate new patterns
-             // terrain::PatternIntegrityValidator::validateSoilPatterns(*finiteMap_->getLandscapeSoil(), *finiteMap_);
-             
              // Update Visuals
              // We need to trigger mesh update to refresh colors/textures
              meshUpdateRequested_ = true;
              
              std::cout << "[App] Soil System Updated." << std::endl;
         },
-        // v4.2.0 ML Training (Generic)
-        [this](int samples) { // mlCollectData
-             if (!finiteMap_ || !mlService_) return;
-             std::cout << "[SisterApp] Collecting " << samples << " samples for 'soil_color'..." << std::endl;
-             std::srand(std::time(nullptr));
-             int w = finiteMap_->getWidth();
-             int h = finiteMap_->getHeight();
-             
-             for(int i=0; i<samples; ++i) {
-                 int x = std::rand() % w;
-                 int z = std::rand() % h;
-                 float d = finiteMap_->getLandscapeSoil()->depth[z*w+x];
-                 float om = finiteMap_->getLandscapeSoil()->organic_matter[z*w+x];
-                 float inf = finiteMap_->getLandscapeSoil()->infiltration[z*w+x] / 100.0f;
-                 float comp = finiteMap_->getLandscapeSoil()->compaction[z*w+x];
+        // v4.5.0 Dual Soil Interface
+        [this](int mode) { // switchSoilMode
+             // 0 = Geometric (Legacy), 1 = SCORPAN (Vector)
+             std::cout << "[App] Switching Soil Mode to: " << (mode == 0 ? "Geometric" : "SCORPAN") << std::endl;
+             if (finiteGenerator_ && finiteMap_) {
+                 // Update the generator/service configuration
+                 // Ideally this should be a state in TerrainConfig or SoilSystem
+                 // For now, let's trigger a re-classification with the new mode
+                 // But classifySoil currently takes a Config.
+                 // We need to extend the system to support this state.
+                 // Let's assume we toggle a flag in finiteGenerator or pass it.
+                 // Actually, we can just regenerate the Soil MAP based on the mode.
                  
-                 // Ground Truth Heuristic
-                 float target = 0.5f * (d/2.0f) + 0.3f * (om/5.0f) + 0.2f * (1.0f - comp);
-                 mlService_->collectTrainingSample("soil_color", {d, om, inf, comp}, std::clamp(target, 0.0f, 1.0f));
+                 // If Mode 0: Run classifySoil (Geometric)
+                 // If Mode 1: Run classifySoilFromSCORPAN (New)
+                 
+                 if (mode == 0) {
+                     terrain::TerrainConfig config; // Helper config
+                     // Reuse current slope config?
+                     finiteGenerator_->classifySoil(*finiteMap_, config); 
+                 } else {
+                     // TODO: Implement classifySoilFromSCORPAN
+                     // For now, we will just use the current soil map but maybe visualize it differently?
+                     // No, "The user ENABLEs" means we overwrite the SoilMap (semantic).
+                     // finiteGenerator_->classifySoilFromSCORPAN(*finiteMap_);
+                     // Placeholder:
+                     std::cout << "[App] SCORPAN Classification not fully implemented yet." << std::endl;
+                 }
+                 meshUpdateRequested_ = true;
              }
-             std::cout << "[SisterApp] Dataset: " << mlService_->datasetSize("soil_color") << std::endl;
         },
+        // v4.0.0 ML Hooks
+        // [this](int samples) { ... } // Replaced by switchSoilMode in struct but strict order matters?
+        // Wait, I replaced mlCollectData in struct definition.
+        // So I need to match the order here.
+        // The struct has: switchSoilMode, mlTrainModel.
+        // I need to be careful not to break the initialization list.
         [this](int epochs, float lr) { // mlTrainModel
              if(mlService_ && !isTraining_) {
                  isTraining_ = true;

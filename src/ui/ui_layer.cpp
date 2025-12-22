@@ -857,6 +857,43 @@ void UiLayer::drawGeologyInspector(UiFrameContext& ctx) {
 }
 
 void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
+    // v4.5.0: Dual Interface Toggle
+    ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.3f, 1.0f), "Classification Logic");
+    
+    // We need to store this state. Ideally in ctx or uiLayer member.
+    // For now, using a static for immediate UI feedback.
+    static int soilMode = 0; // 0 = Geometric, 1 = SCORPAN
+    
+    bool changed = false;
+    if (ImGui::RadioButton("Geometric (Slope-Only)", &soilMode, 0)) changed = true;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("SCORPAN (Vector)", &soilMode, 1)) changed = true;
+    
+    if (changed && callbacks_.switchSoilMode) {
+        callbacks_.switchSoilMode(soilMode);
+    }
+    
+    ImGui::Separator();
+
+    if (soilMode == 0) {
+        ImGui::TextWrapped("Legacy Model: Classes defined purely by geometric slope thresholds.");
+        ImGui::Text("Classes:");
+        ImGui::BulletText("Hidromorfico (Valley)");
+        ImGui::BulletText("B-Textural (Gentle)");
+        ImGui::BulletText("Rocha (Steep)");
+    } else {
+        ImGui::TextWrapped("SCORPAN Model: Classes emerge from P (Geology) + R (Relief) interactions.");
+        ImGui::Text("Driven by:");
+        ImGui::BulletText("Lithology (P): Weathering Rate");
+        ImGui::BulletText("Relief (R): Erosion Potential");
+        ImGui::BulletText("Climate (C): Rainfall Scenario");
+        
+        ImGui::Separator();
+        ImGui::TextDisabled("Visualization: Shows S-Vector State (Depth, OM)");
+    }
+    
+    ImGui::Separator();
+
     // --- Soil Map ---
     ImGui::Checkbox("Show Soil Map", &ctx.showSoilVis);
     if (ctx.showSoilVis) {

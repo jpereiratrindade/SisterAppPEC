@@ -106,8 +106,8 @@ struct Callbacks {
     RequestMeshUpdateCallback updateMesh; // v3.6.3
     std::function<void()> recomputeSoil; // v4.4.2: Recalculate Soil System Only
     
-    // v4.0.0 ML Hooks
-    std::function<void(int)> mlCollectData;
+    // v4.5.0 Dual Soil Interface
+    std::function<void(int)> switchSoilMode; // 0=Geometric, 1=SCORPAN
     std::function<void(int, float)> mlTrainModel;
 
     // v4.2.0 Hydro ML
