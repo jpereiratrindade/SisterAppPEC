@@ -2,8 +2,8 @@
 
 **Bounded Context:** `EcofunctionalMachineLearning`
 **Subdomínio:** Suporte / Genérico (Surrogate Modeling)
-**Autor:** Antigravity (Google Deepmind)
-**Data:** 19 de Dezembro de 2025
+**Autor:** José Pedro Trindade & Antigravity (Google Deepmind)
+**Data:** 22 de Dezembro de 2025
 
 ---
 
@@ -63,6 +63,7 @@ Um ponto de dados imutável extraído da simulação.
     *   Fire: $[C_{EI}, C_{ES}, \phi_{EI}, \phi_{ES}] \to P_{fire}$
     *   Growth: $[C_{total}, K, \phi] \to \Delta C$
 *   **Propriedade de Transparência:** Deve conter metadados de origem (coordenada $(x,z)$, ID da Bacia) para rastreabilidade.
+*   **Validação de Integridade:** Amostras sintéticas devem respeitar os envelopes estruturais definidos em `DDD_Padroes_Manchas_Solo_v0.md` para evitar que o modelo aprenda padrões "Incompatíveis".
 
 #### `TrainingMetrics`
 Métricas de qualidade do modelo.

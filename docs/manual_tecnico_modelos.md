@@ -278,7 +278,7 @@ Cada tipo de solo possui um "perfil de ruído" configurado para mimetizar suas m
 *   **Frequência e Rugosidade:** Simulam o CF. Solos com alto CF utilizam mais oitavas de ruído fractal.
 *   **Anisotropia (Estiramento):** Simula o RCC. Solos com baixo RCC são esticados em um eixo para criar formas alongadas.
 
-O solo final em cada pixel é determinado por uma competição onde o tipo com maior "força" de padrão local vence (dentre os candidatos válidos para a declividade).
+O solo final em cada pixel é determinado por uma competição onde o tipo com maior "força" de padrão local vence. O resultado é posteriormente validado pelo **PatternIntegrityValidator** (Domínio Soberano) para garantir que as manchas resultantes respeitem os envelopes estruturais (Ver Seção 11).
 
 ## 10.2. Minimap e Navegação Interativa
 A versão 3.8.0 introduz um Minimapa e controles de câmera aprimorados para facilitar a navegação e a compreensão espacial.
@@ -330,7 +330,38 @@ Avalia a proximidade com um círculo perfeito:
 $$ RCC = \frac{4\pi A}{P^{2}} $$
 Varia entre 0 e 1 (1 = círculo).
 
-# 11. Modelo Integrado Ecofuncional da Paisagem (v4.0)
+# 11. Validação de Integridade de Padrões de Manchas (DDD)
+Este domínio é **soberano** na definição e validação da integridade espacial dos padrões de manchas de solo. Ele não gera paisagens, mas delimita o espaço do possível ecológico.
+
+## 11.1. Propósito e Linguagem Ubíqua
+O objetivo garantira que a simulação mantenha coerência com processos pedogenéticos, respeitando envelopes estruturais de forma, complexidade e conectividade.
+
+| Termo | Definição |
+|------|----------|
+| **Patch** | Unidade espacial contínua de um mesmo tipo de solo. |
+| **Patch Pattern** | Configuração espacial resultante do conjunto de manchas. |
+| **Pattern Stability** | Capacidade do padrão se manter dentro de envelopes estruturais. |
+| **Constraint** | Regra ecológica que limita variações estruturais. |
+
+## 11.2. Aggregate Root: LandscapeScenario
+O `LandscapeScenario` orquestra a coerência entre Tipo de Solo (`SoilType`) e os processos dominantes. Cada tipo de solo possui uma **Assinatura Espacial (`PatchPatternSignature`)** esperada.
+
+### Tipos de Solo e Invariantes
+*   **Solo Raso:** Esperado em altas declividades, com alta fragmentação e LSI elevado.
+*   **Bem Desenvolvido:** Esperado em áreas planas/suaves, com manchas grandes e conectadas (baixo CF).
+*   **Hidromórfico:** Associado a drenagem, deve apresentar formas dendríticas ou lineares (alto CF, baixo RCC).
+
+## 11.3. Estados de Validação
+Todo cenário deve estar em um dos estados:
+1.  **Stable (Estável):** Métricas observadas dentro dos envelopes.
+2.  **Under Tension (Sob Tensão):** Desvio leve, indicando degradação incipiente ou pressão antrópica.
+3.  **In Transition (Em Transição):** Mudança de regime ativa.
+4.  **Incompatible (Incompatível):** Ruptura estrutural não-natural (glitch ou erro de modelagem).
+
+## 11.4. Domain Service: PatternIntegrityValidator
+Responsável por comparar métricas observadas (LSI, CF, RCC) com a assinatura do tipo de solo e emitir eventos de domínio como `PatternDriftDetected` ou `PedogeneticStabilityLost`.
+
+# 12. Modelo Integrado Ecofuncional da Paisagem (v4.0)
 Com a atualização v4.0 (Dezembro/2025), o SisterApp transcende a simulação isolada de vegetação para incorporar um Modelo Integrado de Paisagem (Integrated Landscape Model - ILM), atendendo aos requisitos de acoplamento ecofuncional definidos na Documentação de Domínio (DDD).
 
 ## 11.1. Definição do Domínio

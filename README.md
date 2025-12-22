@@ -137,6 +137,7 @@ Soil distribution is simulated using spatially coherent noise patterns inspired 
 - **CF (Complexity Factor)**: Controls internal roughness via Fractal Octaves.
 - **RCC (Related Circumscribing Circle)**: Controls patch elongation via Anisotropy.
 - **Classes**: Hidromórfico, B Textural, Argila Expansiva, Bem Desenvolvido, Raso, Rocha.
+- **Validação DDD (v4.3.0)**: Padrões validados pelo `PatternIntegrityValidator` conforme `DDD_Padroes_Manchas_Solo_v0.md`.
 
 ### 3. Hydrology (D8)
 Deterministic O(N) flow accumulation algorithm:
