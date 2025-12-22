@@ -181,6 +181,10 @@ private:
     float genBlendHigh_ = 0.25f;
     float genBlendExp_ = 1.0f;
     float genResolution_ = 1.0f;
+
+    // v4.3.5: Metrics Cache
+    std::map<terrain::SoilType, terrain::ClassMetrics> lastMetrics_;
+    double lastMetricsCalcTime_ = 0.0;
 };
 
 } // namespace ui
