@@ -35,6 +35,8 @@ Esta métrica aproxima o gradiente hidráulico e físico. A classificação pedo
     *   **Profundidade**: $D \sim U(1.0, 2.0)$ metros (Profundo).
     *   **Hidrologia**: Infiltração moderada ($40 \text{mm/h}$), retenção de água.
 
+    *   **Hidrologia**: Infiltração moderada ($40 \text{mm/h}$), retenção de água.
+
 Este modelo assume que o *Organismo* ($o$) e *Material de Origem* ($p$) são constantes ou derivados do relevo nesta escala de simulação.
 
 ## 1.2. Propriedades Físico-Químicas
@@ -45,6 +47,45 @@ Outras propriedades são derivadas da profundidade ($D$):
 *   **Infiltração ($I$)**: Definida pelo tipo de solo (textura).
     *   *Arenoso/Franco*: Alto $I$ (drenagem rápida).
     *   *Argiloso/Rochoso*: Baixo $I$ (maior escoamento).
+
+## 1.3. Arquitetura de Vetores SCORPAN ($\mathbf{V}_{scorpan}$)
+Avançando em direção a uma simulação totalmente orientada a dados (Data-Driven), adotamos o acrônimo **SCORPAN** não apenas como mnemônica, mas como a **Definição Formal da Estrutura de Dados** do sistema.
+
+$$ \mathbf{S} = f( \mathbf{s}, \mathbf{c}, \mathbf{o}, \mathbf{r}, \mathbf{p}, \mathbf{a}, \mathbf{n} ) $$
+
+Cada letra representa um **Vetor de Estado independente**:
+
+### 1. **$\mathbf{s}$ (Soil - Estado Atual)**
+O vetor alvo que buscamos prever ou simular.
+*   $\mathbf{v}_{s} = [ \text{Profundidade}, \text{Textura}, \text{Mat.Org}, \text{pH}, \text{CTC} ]$
+
+### 2. **$\mathbf{c}$ (Climate - Vetor Climático)**
+Inputs atmosféricos forçantes.
+*   $\mathbf{v}_{c} = [ \text{Precipitação}, \text{Temperatura}, \text{Evapotranspiração} ]$
+
+### 3. **$\mathbf{o}$ (Organisms - Vetor Biótico)**
+Influência da biomassa e atividade biológica.
+*   $\mathbf{v}_{o} = [ \text{Bio.Gramíneas}, \text{Bio.Arbustos}, \text{Atividade.Microbiana} ]$
+
+### 4. **$\mathbf{r}$ (Relief - Vetor Topográfico)**
+Métricas derivadas do Modelo Digital de Elevação (DEM).
+*   $\mathbf{v}_{r} = [ \text{Slope}, \text{Aspect}, \text{Curvatura}, \text{TWI (Índice de Umidade)} ]$
+
+### 5. **$\mathbf{p}$ (Parent Material - Vetor Geológico)**
+Propriedades intrínsecas da rocha mãe (Definido por Litologia).
+*   $\mathbf{v}_{p} = [ \text{Taxa.Intemperismo}, \text{Viés.Areia}, \text{Viés.Argila}, \text{Nutrientes.Base} ]$
+
+### 6. **$\mathbf{a}$ (Age - Vetor Temporal)**
+Tempo de exposição e história pedogenética.
+*   $\mathbf{v}_{a} = [ \text{Idade.Geológica}, \text{Tempo.Desde.Distúrbio} ]$
+
+### 7. **$\mathbf{n}$ (Space - Vetor Posicional)**
+Contexto espacial e vizinhança.
+*   $\mathbf{v}_{n} = [ x, y, z, \text{Vizinhança} ]$
+
+---
+
+Esta abstração permite que qualquer processo (seja uma equação física em C++ ou uma Rede Neural no Python) opere consumindo e produzindo esses vetores padronizados. O "input do usuário" torna-se simplesmente a definição dos vetores iniciais ($\mathbf{v}_{p}, \mathbf{v}_{c}$).
 
 ---
 

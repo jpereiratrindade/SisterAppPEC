@@ -1,5 +1,9 @@
 # Changelog
 
+## [v4.3.13] - 2025-12-22
+### Documentation
+- **Theoretical Manual**: Formalized the **SCORPAN Vector Architecture**, defining $s,c,o,r,p,a,n$ as independent state vectors to support future Data-Oriented simulation.
+
 ## [v4.3.12] - 2025-12-22
 ### Documentation
 - **Theoretical Manual**: Deep dive into *scorpan* Topographic Model, detailing the specific slope heuristic ($\max \Delta H$) and exact threshold values for soil classification.
