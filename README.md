@@ -43,6 +43,7 @@ The environment is now a fully coupled ecosystem where **Soil, Hydrology, and Ve
 - **Hybrid Modeling**: A new `MLService` enables **Physics-Guided Machine Learning**.
 - **Soil Color**: Neural network (Perceptron) serves as a surrogate model to predict visual soil properties from physical state vectors.
 - [📘 Technical Manual: ML Service Integration](docs/manual_tecnico_ml.md)
+- [📘 Theoretical Manual: System Foundations (Physics)](docs/manual_teorico_sistemas.md)
 
 ### Previous Highlights
 - **High-Scale Vegetation**: Optimized simulation for 4096² maps (v3.9.2).

@@ -1,5 +1,9 @@
 # Changelog
 
+## [v4.3.11] - 2025-12-22
+### Documentation
+- **Theoretical Manual**: Added `docs/manual_teorico_sistemas.md` detailing the mathematical models behind Soil (scorpan), Hydro (D8/StreamPower), and Vegetation (Logistic Growth).
+
 ## [v4.3.10] - 2025-12-22
 ### Bug Fixes
 - **Documentation**: Fixed Mermaid diagram syntax in `manual_tecnico_ml.md` (escaped parentheses in node labels).
