@@ -1,5 +1,9 @@
 # Changelog
 
+## [v4.3.10] - 2025-12-22
+### Bug Fixes
+- **Documentation**: Fixed Mermaid diagram syntax in `manual_tecnico_ml.md` (escaped parentheses in node labels).
+
 ## [v4.3.9] - 2025-12-22
 ### UI Improvements
 - **Dedicated ML Hub**: Extracted Machine Learning controls from "Soil" inspector into a new, dedicated "Machine Learning Hub" inspector.

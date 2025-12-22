@@ -20,18 +20,18 @@ graph TD
     classDef output fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px;
 
     subgraph "Physics Simulation Layer (Inputs)"
-        Soil[Soil System<br/>(Depth, OM, Infil)]:::domain
-        Hydro[Hydro System<br/>(Rain Intensity)]:::domain
-        Veg[Vegetation System<br/>(Biomass, Vigor)]:::domain
+        Soil["Soil System<br/>(Depth, OM, Infil)"]:::domain
+        Hydro["Hydro System<br/>(Rain Intensity)"]:::domain
+        Veg["Vegetation System<br/>(Biomass, Vigor)"]:::domain
     end
 
-    MLService((ML Service<br/>Inference Engine)):::hub
+    MLService(("ML Service<br/>Inference Engine")):::hub
 
     subgraph "Predictions / Responses (Outputs)"
-        P_Color(Soil Color<br/>RGB Vector):::output
-        P_Runoff(Runoff Est.<br/>mm/h):::output
-        P_Fire(Fire Risk<br/>Probability):::output
-        P_Growth(Growth Rate<br/>Delta C):::output
+        P_Color("Soil Color<br/>RGB Vector"):::output
+        P_Runoff("Runoff Est.<br/>mm/h"):::output
+        P_Fire("Fire Risk<br/>Probability"):::output
+        P_Growth("Growth Rate<br/>Delta C"):::output
     end
 
     %% Conexões
