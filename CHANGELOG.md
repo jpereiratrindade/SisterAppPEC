@@ -1,5 +1,10 @@
 # Changelog
 
+## [v4.4.2] - 2025-12-22
+### Improvements
+- **Interactive Geology**: Added real-time sliders to customize Lithology Vectors (Weathering, Fertility, Texture Bias).
+- **Live Update**: Added "Apply Changes (Recalculate Soil)" button to instantly update the map without full regeneration.
+
 ## [v4.4.0] - 2025-12-22
 ### Features
 - **User-Defined Geology**: Introduced the **SCORPAN Vector Architecture**.

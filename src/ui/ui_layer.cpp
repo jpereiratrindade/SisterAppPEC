@@ -810,13 +810,40 @@ void UiLayer::drawGeologyInspector(UiFrameContext& ctx) {
     
     ImGui::Separator();
     ImGui::Text("Properties (%s):", rocks[selectedRock]);
-    const auto& currentDef = landscape::LithologyRegistry::instance().get(selectedRock);
     
-    ImGui::Text("Weathering: %.2f", currentDef.weathering_rate);
-    ImGui::Text("Fertility:  %.2f", currentDef.base_fertility);
-    ImGui::Text("Sand Bias:  %.2f", currentDef.sand_bias);
-    ImGui::Text("Clay Bias:  %.2f", currentDef.clay_bias);
+    // Get mutable copy or update via registry
+    landscape::LithologyDef currentDef = landscape::LithologyRegistry::instance().get(selectedRock);
+    bool changed = false;
     
+    // v4.4.1: User-Defined Vectors (Parametrization)
+    // The user "Chooses the Model" by defining these coefficients.
+    if (ImGui::SliderFloat("Weathering Rate", &currentDef.weathering_rate, 0.0f, 2.0f, "%.2f")) changed = true;
+    if (ImGui::SliderFloat("Base Fertility", &currentDef.base_fertility, 0.0f, 1.0f, "%.2f")) changed = true;
+    
+    ImGui::TextDisabled("Texture Bias (Vector p):");
+    if (ImGui::SliderFloat("Sand Bias", &currentDef.sand_bias, 0.0f, 1.0f, "%.2f")) changed = true;
+    if (ImGui::SliderFloat("Clay Bias", &currentDef.clay_bias, 0.0f, 1.0f, "%.2f")) changed = true;
+    
+    if (changed) {
+         landscape::LithologyRegistry::instance().registerLithology(selectedRock, currentDef);
+    }
+    
+    ImGui::Dummy(ImVec2(0.0f, 10.0f)); 
+    // v4.4.2: Explicit Apply Button
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
+    if (ImGui::Button("Apply Changes (Recalculate Soil)", ImVec2(-1, 0))) {
+        if (callbacks_.recomputeSoil) {
+            callbacks_.recomputeSoil();
+        }
+    }
+    ImGui::PopStyleColor();
+    
+    ImGui::Separator();
+    
+    // Explanation for User
+    ImGui::TextColored(ImVec4(0.5f, 1.0f, 0.5f, 1.0f), "Result: Generates Soil (s)");
+    ImGui::TextWrapped("These parameters drive the physical pedogenesis model. High Weathering + Flat Slope -> Deep Soil.");
+
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "Painting Tool");
     ImGui::TextWrapped("Hold LMB to paint on terrain.");

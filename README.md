@@ -21,7 +21,11 @@ Desenvolvido por **José Pedro Trindade**.
 - **Improved Workflow**: Streamlined experience for rapid iteration on generated landscapes.
 
 ### 🌍 Integrated Ecofunctional Landscape Model
-The environment is now a fully coupled ecosystem where **Soil, Hydrology, and Vegetation** interact dynamically:
+The environment is now driven by the **SCORPAN Vector Architecture** ($S = f(s,c,o,r,p,a,n)$), where users define the inputs (Vectors) to generate complex soil and vegetation dynamics:
+
+- **Geology ($\mathbf{p}$ - Parent Material)**: 
+    - **User-Defined Lithology**: Paint rocks (Basalt, Granite) and tune their vectors (Weathering Rate, Fertility).
+    - **Physical Output**: Generates specific Soil Types (Latossolo vs Neossolo) based on the interaction with Slope.
 
 - **Hydro System**: 
     - **D8 Flow Routing**: Real-time water accumulation.

@@ -8,6 +8,7 @@
 #include "landscape/soil_system.h"
 #include "math/noise.h"
 #include "../terrain/watershed.h" // v3.6.3
+#include "../terrain/pattern_validator.h" // v4.4.2
 #include "../imgui_backend.h"
 #include "../math/math_types.h"
 #include "preferences.h" // v3.4.0
@@ -248,6 +249,25 @@ void Application::init() {
         [this]() { // updateMesh
             // Defer to next frame start
             meshUpdateRequested_ = true;
+        },
+        // v4.4.2: Interactive Soil Update
+        [this]() { // recomputeSoil
+             if (!finiteMap_) return;
+             std::cout << "[App] Recomputing Soil System (Vector Geology Update)..." << std::endl;
+             
+             // Re-run Soil Genesis with new Lithology Parameters
+             // Reuse existing seed from config
+             // Note: terrainConfig_ stores generation config.
+             landscape::SoilSystem::initialize(*finiteMap_->getLandscapeSoil(), deferredConfig_.seed, *finiteMap_);
+             
+             // Validate new patterns
+             // terrain::PatternIntegrityValidator::validateSoilPatterns(*finiteMap_->getLandscapeSoil(), *finiteMap_);
+             
+             // Update Visuals
+             // We need to trigger mesh update to refresh colors/textures
+             meshUpdateRequested_ = true;
+             
+             std::cout << "[App] Soil System Updated." << std::endl;
         },
         // v4.2.0 ML Training (Generic)
         [this](int samples) { // mlCollectData

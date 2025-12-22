@@ -104,6 +104,7 @@ struct Callbacks {
     std::function<void()> triggerFireEvent; // v3.9.2: Manual Fire
     RegenerateFiniteWorldCallback regenerateFiniteWorld; // v3.5.1
     RequestMeshUpdateCallback updateMesh; // v3.6.3
+    std::function<void()> recomputeSoil; // v4.4.2: Recalculate Soil System Only
     
     // v4.0.0 ML Hooks
     std::function<void(int)> mlCollectData;
