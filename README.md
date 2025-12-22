@@ -148,6 +148,35 @@ Deterministic O(N) flow accumulation algorithm:
 
 ---
 
+## 🏗️ Architecture Overview
+
+The engine follows a layered architecture to separate scientific simulation from visualization:
+
+```mermaid
+graph TD
+    App[Application Core] -->|Updates| Sim[Simulation Layer]
+    App -->|Renders| View[Presentation Layer]
+    
+    subgraph "Simulation Layer"
+        Terrain[Terrain System]
+        Hydro[Hydrology]
+        Veg[Vegetation]
+        ML[ML Service]
+    end
+    
+    subgraph "Presentation Layer"
+        Renderer[Vulkan Renderer]
+        UI[ImGui Interface]
+    end
+    
+    Sim -->|Data| View
+    ML -.->|Feedback| Sim
+```
+
+For a detailed data flow diagram, please refer to the [Technical Manual](docs/manual_tecnico_modelos.md).
+
+---
+
 ## 🚀 Roadmap
 
 -   [x] **v3.5.0**: Finite World & Slope Analysis.

@@ -1,5 +1,10 @@
 # Changelog
 
+## [v4.3.7] - 2025-12-22
+### Documentation
+- **Architecture Flowcharts**: Added Mermaid diagrams to `README.md` and `manual_tecnico_modelos.md` to visualize system architecture and data flow.
+- **Manual Structure**: Renumbered sections in the Technical Manual for consistency.
+
 ## [v4.3.6] - 2025-12-22
 ### Pattern Integrity Lab Alianmnent
 - **Refined Validation Logic**: Implemented "PatternIntegrityLab" adjustments to improve ecological realism.

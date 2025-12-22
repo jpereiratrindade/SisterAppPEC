@@ -9,7 +9,77 @@
 # 1. Introdução
 O **SisterApp** evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão 3.8.0 consolida ferramentas de navegação, análise de paisagem e validação métrica. A versão 3.8.4 remove definitivamente o suporte a Voxel para focar em terrenos de alta fidelidade (Finite World). A versão atual **v4.2.0** introduz uma arquitetura genérica de Machine Learning e suporte a múltiplos modelos preditivos (Hidrologia e Pedologia).
 
-# 2. Modelo de Análise de Declividade (Slope Analysis)
+
+# 2. Arquitetura do Sistema e Fluxo de Dados
+A plataforma utiliza uma arquitetura em camadas para isolar a complexidade da simulação ecológica da renderização gráfica. O diagrama abaixo ilustra o fluxo de dados entre os principais componentes:
+
+```mermaid
+graph TD
+    subgraph "Core Engine"
+        App[Application]
+        SDL[SDL2 Window/Events]
+        VK[Vulkan Context]
+        Input[Input Manager]
+    end
+
+    subgraph "Simulation Layer"
+        Terrain[Terrain System]
+        Gen[Terrain Generator]
+        Hydro[Hydrology System]
+        Soil[Soil System]
+        Veg[Vegetation System]
+        ML[ML Service]
+    end
+
+    subgraph "Presentation Layer"
+        Renderer[Shape Renderer]
+        ImGui[UI Layer]
+        Minimap[Minimap]
+        Camera[Camera]
+    end
+
+    %% Initialization Flow
+    App -->|Init| SDL
+    App -->|Init| VK
+    App -->|Init| ML
+    App -->|Init| Gen
+
+    %% Main Loop Flow
+    SDL -->|Events| Input
+    Input -->|Update| App
+    Input -->|Control| Camera
+    
+    %% Logic Update
+    App -->|Update| Veg
+    Veg -.->|Disturbance/Growth| Terrain
+    ML -.->|Predict| Veg
+    ML -.->|Predict| Hydro
+
+    %% Generation/Regeneration
+    Gen -->|Create/Modify| Terrain
+    Gen -- Uses --> Hydro
+    Gen -- Uses --> Soil
+    Gen -- Uses --> Veg
+
+    %% Rendering Flow
+    App -->|Render Frame| Renderer
+    Terrain -->|Mesh Data| Renderer
+    Veg -->|Instance Data| Renderer
+    
+    Renderer -->|Draw Commands| VK
+    
+    %% UI Overlay
+    App -->|Render UI| ImGui
+    ImGui -- Queries --> Terrain
+    ImGui -- Calls --> ML
+    ImGui -->|Visualizes| Minimap
+    
+    %% Data Dependencies
+    Soil -- Defines --> Terrain
+    Hydro -- Modifies --> Terrain
+```
+
+# 3. Modelo de Análise de Declividade (Slope Analysis)
 Este modelo substitui a anterior lógica abstrata de resiliência por uma abordagem quantitativa baseada na inclinação local do terreno.
 
 ### 2.1. Cálculo de Inclinação (Percentual)
@@ -36,7 +106,7 @@ O terreno é segmentado em classes configuráveis pelo usuário. Os limiares (th
 | Steep Slope (Íngreme/Forte) | 20.0% - 45.0% | Encostas fortes, risco de erosão. |
 | Mountain (Montanha) | > 45.0% | Áreas inacessíveis ou de preservação. |
 
-# 3. Modelo de Vegetação Campestre (Grassland Model)
+# 4. Modelo de Vegetação Campestre (Grassland Model)
 O SisterApp v3.9.1 introduz um modelo de dinâmica de vegetação campestre baseado em princípios de ecologia espacial e regimes de distúrbio (Fogo e Pastejo). Devido à complexidade biológica, este módulo possui uma **Documentação de Domínio (DDD) Exclusiva** que define suas regras e invariantes.
 
 ## 3.1. Estrutura de Dois Estratos (DDD)
@@ -169,7 +239,7 @@ Para garantir a escalabilidade em grandes paisagens ($> 16 \text{ milhões de c�
 *   **Frequency:** 5-10 Hz (desacoplado do Frame Rate de renderização).
 *   **Throttling:** A atualização de estado e a transferência de dados (CPU $\to$ GPU) são limitadas temporalmente para evitar gargalos no barramento PCIe.
 
-# 4. Geração de Topologia (Terrain Models)
+# 5. Geração de Topologia (Terrain Models)
 É fundamental distinguir o **Gerador de Topologia** do **Analisador de Declividade**. O sistema mantém três perfis de geração baseados em ruído Perlin, que definem a geometria física do mundo.
 
 ## 4.1. Modelo Experimental Blend (v3.8.3)
@@ -188,7 +258,7 @@ Onde:
 O fluxo de processamento é:
 $$ \text{Modelo (Geometria)} \rightarrow \text{Heightmap Grid} \rightarrow \text{Slope Analysis (Classificação)} $$
 
-# 5. Configuração do Usuário
+# 6. Configuração do Usuário
 Interface atualizada no menu _Tools_:
 *   **Slope Sliders:** Ajuste dos limites percentuais para cada classe.
 *   **Probe Tool:** Ferramenta de diagnóstico (clique esquerdo) mostra o valor de $S$ (declividade, em %).
@@ -202,7 +272,7 @@ O sistema permite o ajuste fino da topografia através de três variáveis princ
 3.  **Amplitude:** A altura máxima vertical em metros.
 4.  **Cell Size (Resolução):** A dimensão física de cada pixel da grade (em metros).
 
-# 6. Modelo de Drenagem (D8 Flow)
+# 7. Modelo de Drenagem (D8 Flow)
 A partir da versão v3.6.0, o sistema substituiu o modelo estocástico de erosão por partículas por um algoritmo determinístico de drenagem D8 (Steepest Descent).
 
 ## 6.1. Direção do Fluxo (Flow Direction)
@@ -225,7 +295,7 @@ O shader utiliza o mapa de fluxo acumulado para renderizar recursos hídricos:
 *   **Canais Principais:** Células com fluxo $F > 1.0$ (limite visual configurável) são coloridas em Cyan (0.0, 0.8, 1.0).
 *   **Continuidade:** O método D8 garante redes de drenagem dendríticas contínuas sem artefatos geométricos ("spots").
 
-# 7. Análise de Bacias Hidrográficas (Watershed Analysis)
+# 8. Análise de Bacias Hidrográficas (Watershed Analysis)
 Introduzido na versão v3.6.3, este módulo permite a identificação e delimitação de bacias de drenagem baseadas na topologia D8.
 
 ## 7.1. Segmentação Global
@@ -239,7 +309,7 @@ Permite ao usuário consultar a bacia de contribuição de um ponto arbitrário 
 ## 7.3. Visualização de Contornos
 O usuário pode habilitar a opção "Show Contours" na interface. O sistema utiliza a derivada parcial do ID da bacia (via shader `fwidth`) para detectar arestas onde o ID muda, desenhando uma linha escura de 1 pixel sobre os limites das bacias para melhor distinção visual.
 
-# 8. Métricas Eco-Hidrológicas
+# 9. Métricas Eco-Hidrológicas
 O Relatório Hidrológico foi expandido para incluir indicadores funcionais derivados da topografia:
 
 ## 8.1. Índice Topográfico de Umidade (TWI)
@@ -256,7 +326,7 @@ O sistema agora agrega métricas de elevação, declividade, TWI e densidade de 
 ## 8.4. Geração Assíncrona (v3.8.3)
 A partir da versão 3.8.3, a geração de terrenos (especialmente em resoluções altas como $4096 \times 4096$) é executada de forma assíncrona em uma thread separada. Isso previne o congelamento da interface ("Not Responding") durante o processamento de milhões de células. Uma tela de carregamento informa o progresso ao usuário.
 
-# 9. Resolução Espacial Variável (V3.6.5)
+# 10. Resolução Espacial Variável (V3.6.5)
 Para atender à necessidade de maior definição nos limites de bacias e redes de drenagem, foi introduzido o controle de **Cell Size (Resolução)**.
 
 ## 9.1. Definição de Escala
@@ -267,7 +337,7 @@ O usuário pode ajustar o tamanho métrico de cada célula (pixel) da grade de s
 
 O sistema ajusta automaticamente a visualização e a lógica de interação (raycasting) para manter a coerência espacial independentemente da escala escolhida.
 
-# 10. Módulo de Análise de Solos (V3.7.3)
+# 11. Módulo de Análise de Solos (V3.7.3)
 O sistema inclui agora uma camada de pedologia probabilística baseada na declividade, conforme a tabela de relação Relevo-Solo definida pelo usuário.
 
 ## 10.1. Metodologia: Ruído Coerente e Métricas de Paisagem (v3.8.0)
@@ -330,7 +400,7 @@ Avalia a proximidade com um círculo perfeito:
 $$ RCC = \frac{4\pi A}{P^{2}} $$
 Varia entre 0 e 1 (1 = círculo).
 
-# 11. Validação de Integridade de Padrões de Manchas (DDD)
+# 12. Validação de Integridade de Padrões de Manchas (DDD)
 Este domínio é **soberano** na definição e validação da integridade espacial dos padrões de manchas de solo. Ele não gera paisagens, mas delimita o espaço do possível ecológico.
 
 ## 11.1. Propósito e Linguagem Ubíqua
@@ -361,7 +431,7 @@ Todo cenário deve estar em um dos estados:
 ## 11.4. Domain Service: PatternIntegrityValidator
 Responsável por comparar métricas observadas (LSI, CF, RCC) com a assinatura do tipo de solo e emitir eventos de domínio como `PatternDriftDetected` ou `PedogeneticStabilityLost`.
 
-# 12. Modelo Integrado Ecofuncional da Paisagem (v4.0)
+# 13. Modelo Integrado Ecofuncional da Paisagem (v4.0)
 Com a atualização v4.0 (Dezembro/2025), o SisterApp transcende a simulação isolada de vegetação para incorporar um Modelo Integrado de Paisagem (Integrated Landscape Model - ILM), atendendo aos requisitos de acoplamento ecofuncional definidos na Documentação de Domínio (DDD).
 
 ## 11.1. Definição do Domínio
@@ -498,7 +568,7 @@ O painel de controle de ML foi unificado para permitir amostragem e treinamento 
 
 O sistema garante que as predições de ML sejam sempre normalizadas e consistentes com as grandezas físicas simuladas, permitindo a substituição transparente ou o enriquecimento visual dos modelos determinísticos.
 
-# 4. Validador de Integridade de Padrão (Pattern Integrity)
+# 14. Validador de Integridade de Padrão (Pattern Integrity)
 O SisterApp v4.3.0 introduz um validador soberano de domínio espacial para garantir a plausibilidade ecológica das manchas de solo geradas. Este sistema opera como uma camada de observação sobre o terreno gerado proceduralmente (Finite World), analisando metricamente se as formas resultantes são compatíveis com os processos geomorfológicos esperados para cada tipo de solo.
 
 ## 4.1. Fundamentação Teórica (DDD)
