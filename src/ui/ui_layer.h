@@ -166,6 +166,21 @@ private:
     
     Callbacks callbacks_;
     std::unique_ptr<Minimap> minimap_;
+
+    // Generation State (Refactored v4.3.2)
+    int genSelectedSize_ = 1024;
+    float genScale_ = 0.0010f; // Matches terrain_map.h
+    float genAmplitude_ = 80.0f;
+    int genPreset_ = 1; 
+    float genPersistence_ = 0.40f; // Matches terrain_map.h
+    float genWaterLvl_ = 64.0f;
+    int genSeedInput_ = 12345;
+    bool genUseBlend_ = false;
+    float genBlendLow_ = 1.0f;
+    float genBlendMid_ = 0.5f;
+    float genBlendHigh_ = 0.25f;
+    float genBlendExp_ = 1.0f;
+    float genResolution_ = 1.0f;
 };
 
 } // namespace ui

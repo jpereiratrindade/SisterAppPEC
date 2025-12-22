@@ -497,3 +497,47 @@ O painel de controle de ML foi unificado para permitir amostragem e treinamento 
 *   **Sample Count:** Quantidade de células amostradas do terreno para gerar o dataset de treinamento.
 
 O sistema garante que as predições de ML sejam sempre normalizadas e consistentes com as grandezas físicas simuladas, permitindo a substituição transparente ou o enriquecimento visual dos modelos determinísticos.
+
+# 4. Validador de Integridade de Padrão (Pattern Integrity)
+O SisterApp v4.3.0 introduz um validador soberano de domínio espacial para garantir a plausibilidade ecológica das manchas de solo geradas. Este sistema opera como uma camada de observação sobre o terreno gerado proceduralmente (Finite World), analisando metricamente se as formas resultantes são compatíveis com os processos geomorfológicos esperados para cada tipo de solo.
+
+## 4.1. Fundamentação Teórica (DDD)
+Diferente da validação de regras simples (ex: "tem água?"), a validação de padrão avalia a **forma e distribuição** das manchas. Cada tipo de solo possui uma "Assinatura Espacial" (*Patch Pattern Signature*) característica. O validador compara as métricas observadas com envelopes predefinidos para determinar o estado de integridade.
+
+### 4.1.1. Métricas de Paisagem Utilizadas
+O validador utiliza três métricas fundamentais de ecologia de paisagem:
+1.  **LSI (Landscape Shape Index):** Mede a complexidade da borda.
+    *   $LSI = 1.0$: Círculo perfeito (mínimo de borda).
+    *   $LSI > 20.0$: Formas extremamente complexas, dendríticas ou fraturadas.
+2.  **CF (Compactness Factor):** Razão Perímetro/Área.
+    *   Valores baixos indicam manchas grandes e consolidadas.
+    *   Valores altos indicam manchas pequenas ou muito alongadas.
+3.  **RCC (Related Circumscribing Circle):** Mede o quão alongada é a mancha.
+    *   $RCC \approx 1.0$: Mancha isotrópica (redonda/quadrada).
+    *   $RCC \approx 0.0$: Mancha linear ou filamentosa.
+
+## 4.2. Estados de Validação
+O sistema classifica cada tipo de solo em um de três estados, exibidos visualmente na interface de inspeção ("Pattern Integrity"):
+
+| Estado | Cor Visual | Descrição | Ação Recomendada |
+| :--- | :--- | :--- | :--- |
+| **Stable** | Verde | As métricas estão dentro de todas as tolerâncias (+/- 10%). | Nenhuma. Padrão ideal. |
+| **Under Tension** | Amarelo | As métricas violam levemente os envelopes (desvio < 20%). | Aceitável para paisagens de transição. |
+| **Incompatible** | Vermelho | Ruptura estrutural (desvio > 20%). | O padrão gerado é geometricamente implausível. |
+
+## 4.3. Configuração e Auto-Correção
+A versão 4.3.3 introduz ferramentas avançadas para lidar com estados de incompatibilidade:
+
+### 4.3.1. Auto-Fix Stability
+Um botão de ação rápida ("Auto-Fix Stability") que reconfigura automaticamente os parâmetros de geração procedural para valores conhecidos de estabilidade:
+*   Reduz a escala de ruído (Scale \approx 0.0010) para gerar manchas maiores.
+*   Suaviza a rugosidade (Persistence \approx 0.40) para reduzir a complexidade de borda (LSI).
+
+### 4.3.2. Configuração de Envelopes (User Override)
+Para usuários avançados ou biomas específicos, é possível ajustar os envelopes de validação em tempo de execução via UI:
+*   Expanda o menu "Configure Envelopes" no inspetor.
+*   Ajuste os silders de **LSI**, **CF** e **RCC** para cada tipo de solo.
+*   O validador respeitará os novos limites imediatamente, permitindo "legalizar" padrões que seriam rejeitados pelos defaults acadêmicos.
+
+## 4.4. Tolerância a Ruído
+Manchas com área insignificante (< 50 pixels) são consideradas "Ruído de Frequência" e são automaticamente classificadas como **Stable**, evitando que pequenos artefatos numéricos gerem alertas de integridade ("Incompatible").

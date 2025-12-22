@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [v4.3.5] - 2025-12-22
+### Added
+- **Configurable Pattern Envelopes:** Added UI in "Soil & ML" inspector to adjust LSI, CF, and RCC validation ranges at runtime.
+- **Auto-Fix Stability:** Button to automatically apply terrain parameters (Scale 0.0010, Persistence 0.40) that guarantee stable patterns.
+- **Noise Tolerance:** Validator now ignores patches < 50 pixels.
+
+### Changed
+- **Default Terrain:** Updated default noise scale to 0.0010 and persistence to 0.40.
+- **Validation Logic:** Relaxed default envelopes for LSI.
+
 ## [v4.3.0] - 2025-12-22
 ### UI Overhaul
 - **Toolbar + Inspector Architecture**: Completely replaced the floating window system with a unified persistent Toolbar and a context-sensitive Inspector panel.

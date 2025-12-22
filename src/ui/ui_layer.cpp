@@ -6,6 +6,7 @@
 
 #include "../terrain/hydrology_report.h"
 #include "../terrain/landscape_metrics.h"
+#include "../terrain/pattern_validator.h" // v4.3.0 DDD
 #include "../terrain/watershed.h"
 #include <fstream>
 
@@ -579,64 +580,53 @@ void UiLayer::drawTerrainInspector(UiFrameContext& ctx) {
     ImGui::Separator();
     ImGui::Text("Generation Parameters:");
 
-    // Statics for Generation State
-    static int selectedSize = 1024;
-    static float scale = 0.002f;
-    static float amplitude = 80.0f;
-    static int preset = 1; // 0=Plains, 1=Hills, 2=Mountains, 3=Alpine
-    static float persistence = 0.5f; 
-    static float waterLvl = 64.0f;
-    static int seedInput = 12345;
-    static bool useBlend = false; 
-    static float blendLow = 1.0f;
-    static float blendMid = 0.5f;
-    static float blendHigh = 0.25f;
-    static float blendExp = 1.0f;
-    static float resolution = 1.0f;
+    // Generation Config (Refactored to Members v4.3.2)
+    ImGui::Separator();
+    ImGui::Text("Generation Parameters:");
 
-    if (ImGui::Combo("Terrain Preset", &preset, "Plains\0Hills\0Mountains\0Alpine\0\0")) {
-        if (preset == 0) { scale = 0.001f; amplitude = 40.0f; persistence = 0.4f; waterLvl = 30.0f; }      
-        if (preset == 1) { scale = 0.002f; amplitude = 80.0f; persistence = 0.5f; waterLvl = 64.0f; }      
-        if (preset == 2) { scale = 0.003f; amplitude = 180.0f; persistence = 0.6f; waterLvl = 80.0f; }     
-        if (preset == 3) { scale = 0.004f; amplitude = 250.0f; persistence = 0.7f; waterLvl = 100.0f; }     
+    if (ImGui::Combo("Terrain Preset", &genPreset_, "Plains\0Hills\0Mountains\0Alpine\0\0")) {
+        if (genPreset_ == 0) { genScale_ = 0.001f; genAmplitude_ = 40.0f; genPersistence_ = 0.4f; genWaterLvl_ = 30.0f; }      
+        if (genPreset_ == 1) { genScale_ = 0.002f; genAmplitude_ = 80.0f; genPersistence_ = 0.5f; genWaterLvl_ = 64.0f; }      
+        if (genPreset_ == 2) { genScale_ = 0.003f; genAmplitude_ = 180.0f; genPersistence_ = 0.6f; genWaterLvl_ = 80.0f; }     
+        if (genPreset_ == 3) { genScale_ = 0.004f; genAmplitude_ = 250.0f; genPersistence_ = 0.7f; genWaterLvl_ = 100.0f; }     
     }
 
-    ImGui::SliderFloat("Feature Size", &scale, 0.0001f, 0.01f, "%.4f");
-    ImGui::SliderFloat("Roughness", &persistence, 0.2f, 0.8f, "%.2f");
-    ImGui::SliderFloat("Amplitude", &amplitude, 50.0f, 500.0f, "%.0f m");
-    ImGui::SliderFloat("Water Level", &waterLvl, 0.0f, 200.0f, "%.0f m");
+    ImGui::SliderFloat("Feature Size", &genScale_, 0.0001f, 0.01f, "%.4f");
+    ImGui::SliderFloat("Roughness", &genPersistence_, 0.2f, 0.8f, "%.2f");
+    ImGui::SliderFloat("Amplitude", &genAmplitude_, 50.0f, 500.0f, "%.0f m");
+    ImGui::SliderFloat("Water Level", &genWaterLvl_, 0.0f, 200.0f, "%.0f m");
 
     // Map Size
     const char* sizeItems[] = { "512 x 512", "1024 x 1024", "2048 x 2048", "4096 x 4096" };
     int currentSizeIdx = 1; 
-    if (selectedSize == 512) currentSizeIdx = 0;
-    else if (selectedSize == 1024) currentSizeIdx = 1;
-    else if (selectedSize == 2048) currentSizeIdx = 2;
-    else if (selectedSize == 4096) currentSizeIdx = 3;
+    if (genSelectedSize_ == 512) currentSizeIdx = 0;
+    else if (genSelectedSize_ == 1024) currentSizeIdx = 1;
+    else if (genSelectedSize_ == 2048) currentSizeIdx = 2;
+    else if (genSelectedSize_ == 4096) currentSizeIdx = 3;
     if (ImGui::Combo("Map Size", &currentSizeIdx, sizeItems, IM_ARRAYSIZE(sizeItems))) {
-        if (currentSizeIdx == 0) selectedSize = 512;
-        if (currentSizeIdx == 1) selectedSize = 1024;
-        if (currentSizeIdx == 2) selectedSize = 2048;
-        if (currentSizeIdx == 3) selectedSize = 4096;
+        if (currentSizeIdx == 0) genSelectedSize_ = 512;
+        if (currentSizeIdx == 1) genSelectedSize_ = 1024;
+        if (currentSizeIdx == 2) genSelectedSize_ = 2048;
+        if (currentSizeIdx == 3) genSelectedSize_ = 4096;
     }
 
-    ImGui::SliderFloat("Resolution", &resolution, 0.1f, 4.0f, "%.1f m");
+    ImGui::SliderFloat("Resolution", &genResolution_, 0.1f, 4.0f, "%.1f m");
     
-    ImGui::Checkbox("Use Experimental Blend", &useBlend);
-    if (useBlend) {
+    ImGui::Checkbox("Use Experimental Blend", &genUseBlend_);
+    if (genUseBlend_) {
         ImGui::Indent();
-        ImGui::SliderFloat("Low Freq", &blendLow, 0.0f, 2.0f);
-        ImGui::SliderFloat("Mid Freq", &blendMid, 0.0f, 2.0f);
-        ImGui::SliderFloat("High Freq", &blendHigh, 0.0f, 1.0f);
-        ImGui::SliderFloat("Exponent", &blendExp, 0.1f, 4.0f);
+        ImGui::SliderFloat("Low Freq", &genBlendLow_, 0.0f, 2.0f);
+        ImGui::SliderFloat("Mid Freq", &genBlendMid_, 0.0f, 2.0f);
+        ImGui::SliderFloat("High Freq", &genBlendHigh_, 0.0f, 1.0f);
+        ImGui::SliderFloat("Exponent", &genBlendExp_, 0.1f, 4.0f);
         ImGui::Unindent();
     }
 
     static bool initialized = false;
-    if (!initialized) { seedInput = ctx.seed; initialized = true; }
-    ImGui::InputInt("Seed", &seedInput);
+    if (!initialized) { genSeedInput_ = ctx.seed; initialized = true; }
+    ImGui::InputInt("Seed", &genSeedInput_);
     ImGui::SameLine();
-    if (ImGui::Button("Rnd")) seedInput = rand(); 
+    if (ImGui::Button("Rnd")) genSeedInput_ = rand(); 
 
     ImGui::Separator();
     
@@ -645,21 +635,26 @@ void UiLayer::drawTerrainInspector(UiFrameContext& ctx) {
     if (gen) {
         if (callbacks_.regenerateFiniteWorld) {
             terrain::TerrainConfig config;
-            config.width = selectedSize;
-            config.height = selectedSize;
-            config.noiseScale = scale;
-            config.maxHeight = amplitude;
-            config.resolution = resolution;
-            config.persistence = persistence;
-            config.seed = seedInput;
-            config.waterLevel = waterLvl;
-            if (useBlend) {
+            config.width = genSelectedSize_;
+            config.height = genSelectedSize_;
+            config.noiseScale = genScale_;
+            config.maxHeight = genAmplitude_;
+            config.resolution = genResolution_;
+            config.persistence = genPersistence_;
+            config.seed = genSeedInput_;
+            config.waterLevel = genWaterLvl_;
+            if (genUseBlend_) {
                 config.model = terrain::TerrainConfig::FiniteTerrainModel::ExperimentalBlend;
-                config.blendConfig.lowFreqWeight = blendLow;
-                config.blendConfig.midFreqWeight = blendMid;
-                config.blendConfig.highFreqWeight = blendHigh;
-                config.blendConfig.exponent = blendExp;
+                config.blendConfig.lowFreqWeight = genBlendLow_;
+                config.blendConfig.midFreqWeight = genBlendMid_;
+                config.blendConfig.highFreqWeight = genBlendHigh_;
+                config.blendConfig.exponent = genBlendExp_;
+            } else {
+                 config.model = terrain::TerrainConfig::FiniteTerrainModel::Default;
             }
+            // v4.3.5: Force clear metrics to avoid stale report
+            lastMetrics_.clear();
+            
             callbacks_.regenerateFiniteWorld(config);
         }
     }
@@ -770,6 +765,150 @@ void UiLayer::drawSoilMLInspector(UiFrameContext& ctx) {
             ImGui::Unindent();
             
             if (ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
+    }
+    
+    ImGui::Separator();
+
+    // v4.3.0: DDD Pattern Integrity Validator
+     if (ImGui::CollapsingHeader("Pattern Integrity (DDD)", ImGuiTreeNodeFlags_DefaultOpen)) {
+          if (ctx.finiteMap) {
+              // Refactored to member v4.3.5
+              double now = ImGui::GetTime();
+              
+              // Recalculate every 2 seconds or if empty (to avoid heavy CPU every frame)
+              if (lastMetrics_.empty() || (now - lastMetricsCalcTime_ > 2.0)) {
+                  lastMetrics_ = terrain::LandscapeMetricCalculator::analyzeGlobal(*ctx.finiteMap, ctx.worldResolution);
+                  lastMetricsCalcTime_ = now;
+              }
+
+             ImGui::TextDisabled("(Updates every 2s)");
+             ImGui::SameLine();
+             
+             // v4.3.2: Auto-Fix Button
+             if (ImGui::SmallButton("Auto-Fix Stability")) {
+                 // Force "Stable" params
+                 genScale_ = 0.0010f; // Scale reduced for larger features (Less LSI)
+                 genPersistence_ = 0.40f; 
+                 
+                 terrain::TerrainConfig config;
+                 config.width = genSelectedSize_;
+                 config.height = genSelectedSize_;
+                 config.scaleXZ = 1.0f;
+                 config.resolution = genResolution_;
+                 config.noiseScale = genScale_;
+                 config.persistence = genPersistence_;
+                 config.minHeight = 0.0f;
+                 config.maxHeight = genAmplitude_;
+                 config.waterLevel = genWaterLvl_;
+                 config.seed = genSeedInput_;
+                 config.model = terrain::TerrainConfig::FiniteTerrainModel::Default; // Simple noise is best for stability
+                 
+                 if (callbacks_.regenerateFiniteWorld) {
+                     // v4.3.5: Force clear metrics
+                     lastMetrics_.clear();
+                     callbacks_.regenerateFiniteWorld(config);
+                 }
+                 // Reset metrics logic will handle refresh on next update
+             }
+             
+             if (ImGui::BeginTable("integrityTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+                 ImGui::TableSetupColumn("Soil Class");
+                 ImGui::TableSetupColumn("Status");
+                 ImGui::TableHeadersRow();
+
+                 // Iterate known types
+                 std::vector<terrain::SoilType> types = {
+                     terrain::SoilType::Hidromorfico, terrain::SoilType::BTextural, 
+                     terrain::SoilType::Argila, terrain::SoilType::BemDes, 
+                     terrain::SoilType::Raso
+                 };
+                 
+                 for (auto t : types) {
+                     ImGui::TableNextRow();
+                     ImGui::TableSetColumnIndex(0);
+                     
+                     std::string name = "Unknown";
+                     if (t == terrain::SoilType::Hidromorfico) name = "Hidromorfico";
+                     if (t == terrain::SoilType::BTextural) name = "B-Textural";
+                     if (t == terrain::SoilType::Argila) name = "Argila";
+                     if (t == terrain::SoilType::BemDes) name = "Bem Des.";
+                     if (t == terrain::SoilType::Raso) name = "Raso";
+                     
+                     ImGui::Text("%s", name.c_str());
+                     
+                     ImGui::TableSetColumnIndex(1);
+                     if (lastMetrics_.count(t)) {
+                         auto state = terrain::PatternIntegrityValidator::validate(t, lastMetrics_[t]);
+                         float r, g, b;
+                         terrain::PatternIntegrityValidator::getStateColor(state, &r, &g, &b);
+                         ImGui::TextColored(ImVec4(r, g, b, 1.0f), "%s", terrain::PatternIntegrityValidator::getStateName(state).c_str());
+                         
+                         // v4.3.1: Show reason inline if not stable
+                         if (state != terrain::ValidationState::Stable) {
+                             ImGui::SameLine();
+                             ImGui::TextDisabled("(%s)", terrain::PatternIntegrityValidator::getViolationReason(t, lastMetrics_[t]).c_str());
+                         }
+                         
+                         // Tooltip with details
+                         if (ImGui::IsItemHovered()) {
+                             ImGui::BeginTooltip();
+                             ImGui::Text("LSI: %.2f", lastMetrics_[t].LSI);
+                             ImGui::Text("CF:  %.2f", lastMetrics_[t].CF);
+                             ImGui::Text("RCC: %.2f", lastMetrics_[t].RCC);
+                             ImGui::Separator();
+                             auto sig = terrain::PatternIntegrityValidator::getSignature(t);
+                             ImGui::TextDisabled("Target LSI: %.1f-%.1f", sig.minLSI, sig.maxLSI);
+                             ImGui::EndTooltip();
+                         }
+                     } else {
+                         ImGui::TextDisabled("No Data");
+                     }
+                 }
+                 ImGui::EndTable();
+             }
+             
+             // v4.3.3: Live Envelope Config
+             if (ImGui::TreeNode("Configure Envelopes (User Override)")) {
+                 std::vector<terrain::SoilType> types = {
+                     terrain::SoilType::Hidromorfico, terrain::SoilType::BTextural, 
+                     terrain::SoilType::Argila, terrain::SoilType::BemDes, 
+                     terrain::SoilType::Raso
+                 };
+                 
+                 for (auto t : types) {
+                     std::string name = "Unknown";
+                     if (t == terrain::SoilType::Hidromorfico) name = "Hidromorfico";
+                     if (t == terrain::SoilType::BTextural) name = "B-Textural";
+                     if (t == terrain::SoilType::Argila) name = "Argila";
+                     if (t == terrain::SoilType::BemDes) name = "Bem Des.";
+                     if (t == terrain::SoilType::Raso) name = "Raso";
+                     
+                     if (ImGui::TreeNode(name.c_str())) {
+                         auto sig = terrain::PatternIntegrityValidator::getSignature(t);
+                         bool changed = false;
+                         
+                         ImGui::TextDisabled("Shape Complexity (LSI)");
+                         if (ImGui::DragFloat2("LSI Range", &sig.minLSI, 0.1f, 0.0f, 100.0f)) changed = true;
+                         
+                         ImGui::TextDisabled("Compactness (CF)");
+                         if (ImGui::DragFloat2("CF Range", &sig.minCF, 0.1f, 0.0f, 10.0f)) changed = true;
+                         
+                         ImGui::TextDisabled("Circularity (RCC)");
+                         if (ImGui::DragFloat2("RCC Range", &sig.minRCC, 0.05f, 0.0f, 1.0f)) changed = true;
+                         
+                         if (changed) {
+                             terrain::PatternIntegrityValidator::setSignature(t, sig);
+                             lastMetrics_.clear(); // Force refresh
+                         }
+                         ImGui::TreePop();
+                     }
+                 }
+                 ImGui::TreePop();
+             }
+             
+         } else {
+             ImGui::TextDisabled("Waiting for Map...");
+         }
     }
     
     ImGui::Separator();

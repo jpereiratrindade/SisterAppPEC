@@ -109,4 +109,4 @@ elseif (MSVC)
     target_compile_options(SisterAppPEC PRIVATE /W4 /permissive-)
 endif()
 
-target_sources(SisterAppPEC PRIVATE src/terrain/terrain_map.cpp src/terrain/terrain_generator.cpp src/terrain/terrain_renderer.cpp src/terrain/hydrology_report.cpp src/terrain/watershed.cpp src/terrain/landscape_metrics.cpp src/vegetation/vegetation_system.cpp src/landscape/soil_system.cpp src/landscape/hydro_system.cpp src/ml/perceptron.cpp src/ml/ml_service.cpp)
+target_sources(SisterAppPEC PRIVATE src/terrain/terrain_map.cpp src/terrain/terrain_generator.cpp src/terrain/terrain_renderer.cpp src/terrain/hydrology_report.cpp src/terrain/watershed.cpp src/terrain/landscape_metrics.cpp src/terrain/pattern_validator.cpp src/vegetation/vegetation_system.cpp src/landscape/soil_system.cpp src/landscape/hydro_system.cpp src/ml/perceptron.cpp src/ml/ml_service.cpp)
