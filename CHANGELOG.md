@@ -1,5 +1,9 @@
 # Changelog
 
+## [v4.3.12] - 2025-12-22
+### Documentation
+- **Theoretical Manual**: Deep dive into *scorpan* Topographic Model, detailing the specific slope heuristic ($\max \Delta H$) and exact threshold values for soil classification.
+
 ## [v4.3.11] - 2025-12-22
 ### Documentation
 - **Theoretical Manual**: Added `docs/manual_teorico_sistemas.md` detailing the mathematical models behind Soil (scorpan), Hydro (D8/StreamPower), and Vegetation (Logistic Growth).

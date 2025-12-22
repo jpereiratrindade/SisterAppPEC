@@ -11,21 +11,31 @@ Este documento detalha as bases teóricas e equações matemáticas implementada
 
 O sistema de solos é responsável por definir as propriedades estáticas e dinâmicas da camada superficial. Em vez de simular processos geológicos de milhões de anos, utilizamos uma abordagem heurística baseada em **correlação topográfica** (Pedometria).
 
-## 1.1. Modelo Topográfico (Baseado em *scorpan*)
-A distribuição dos solos é modelada primariamente em função do relevo ($\text{slope}$), seguindo a lei geral da pedogênese onde o solo se acumula em áreas planas e sofre erosão em áreas íngremes.
-
-A profundidade do solo ($D$) para uma célula $(x,y)$ é dada por:
+## 1.1. Modelo Topográfico (Fator 'r' do *scorpan*)
+A distribuição dos solos é modelada primariamente em função do **Relevo** ($r$), especificamente a declividade local ($\text{slope}$). Implementamos uma heurística de diferença máxima de altura ($H$) entre os 4 vizinhos diretos (Von Neumann neighborhood).
 
 $$
-D(x,y) = 
-\begin{cases} 
-0.1 + \eta_1(0.2) & \text{se } \text{slope} > 2.0 \quad (\text{Neossolo Litólico}) \\
-0.5 + \eta_2(0.5) & \text{se } 0.5 < \text{slope} \le 2.0 \quad (\text{Cambissolo}) \\
-1.0 + \eta_3(1.0) & \text{se } \text{slope} \le 0.5 \quad (\text{Latossolo/Gleissolo})
-\end{cases}
+\text{slope}(x,y) = \max_{k \in \{N,S,E,W\}} |H(x,y) - H(n_k)|
 $$
 
-Onde $\eta \sim U(0,1)$ é um ruído uniforme estocástico.
+Esta métrica aproxima o gradiente hidráulico e físico. A classificação pedológica segue limiares rígidos definidos em `SoilSystem`:
+
+1.  **Neossolo Litólico / Rochoso** ($\text{slope} > 2.0$):
+    *   **Processo**: Erosão supera pedogênese.
+    *   **Profundidade**: $D \sim U(0.1, 0.3)$ metros (Raso).
+    *   **Hidrologia**: Baixa infiltração ($10 \text{mm/h}$), alto runoff.
+
+2.  **Cambissolo / Franco-Arenoso** ($0.5 < \text{slope} \le 2.0$):
+    *   **Processo**: Equilíbrio instável (Vertentes).
+    *   **Profundidade**: $D \sim U(0.5, 1.0)$ metros (Médio).
+    *   **Hidrologia**: Alta infiltração ($80 \text{mm/h}$), drenagem rápida.
+
+3.  **Latossolo / Gleissolo** ($\text{slope} \le 0.5$):
+    *   **Processo**: Deposição e intemperismo profundo (Várzeas/Planaltos).
+    *   **Profundidade**: $D \sim U(1.0, 2.0)$ metros (Profundo).
+    *   **Hidrologia**: Infiltração moderada ($40 \text{mm/h}$), retenção de água.
+
+Este modelo assume que o *Organismo* ($o$) e *Material de Origem* ($p$) são constantes ou derivados do relevo nesta escala de simulação.
 
 ## 1.2. Propriedades Físico-Químicas
 Outras propriedades são derivadas da profundidade ($D$):
