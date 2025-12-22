@@ -8,6 +8,7 @@
 #include "../terrain/landscape_metrics.h"
 #include "../terrain/pattern_validator.h" // v4.3.0 DDD
 #include "../terrain/watershed.h"
+#include "../terrain/soil_palette.h"
 #include <fstream>
 
 #include <array>
@@ -226,11 +227,11 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
 }
 
 void UiLayer::drawCamera(UiFrameContext& ctx) {
-    ImGui::SetNextWindowPos(ImVec2(10, 30), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(10, 80), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(300, 150), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
 
-    ImGui::Begin("Camera Controls");
+    ImGui::Begin("Camera Controls Panel");
 
     const char* modeName = (ctx.camera.getCameraMode() == graphics::CameraMode::Orbital)
                                ? "Orbital"
@@ -493,10 +494,30 @@ void UiLayer::drawToolbar(UiFrameContext& ctx) {
 
         // Quick Actions
         if (ImGui::Button("Regenerate (Ctrl+G)")) {
-            // Trigger regen logic (needs config from state)
-            // For now just alias to the detailed button in Terrain Inspector
-            // Or we can duplicate the quick logic here if we have context.
-            // Let's keep it simple: Toolbar selects mode.
+             std::cout << "[UI] Toolbar Regenerate Clicked!" << std::endl;
+             if (callbacks_.regenerateFiniteWorld && !ctx.isRegenerating) {
+                 terrain::TerrainConfig config;
+                 config.width = genSelectedSize_;
+                 config.height = genSelectedSize_;
+                 config.noiseScale = genScale_;
+                 config.maxHeight = genAmplitude_;
+                 config.resolution = genResolution_;
+                 config.persistence = genPersistence_;
+                 config.seed = genSeedInput_;
+                 config.waterLevel = genWaterLvl_;
+                 
+                 if (genUseBlend_) {
+                     config.model = terrain::TerrainConfig::FiniteTerrainModel::ExperimentalBlend;
+                     config.blendConfig.lowFreqWeight = genBlendLow_;
+                     config.blendConfig.midFreqWeight = genBlendMid_;
+                     config.blendConfig.highFreqWeight = genBlendHigh_;
+                     config.blendConfig.exponent = genBlendExp_;
+                 } else {
+                      config.model = terrain::TerrainConfig::FiniteTerrainModel::Default;
+                 }
+                 lastMetrics_.clear();
+                 callbacks_.regenerateFiniteWorld(config);
+             }
         }
         
         ImGui::SameLine();
@@ -633,6 +654,7 @@ void UiLayer::drawTerrainInspector(UiFrameContext& ctx) {
     if (ctx.isRegenerating) ImGui::BeginDisabled();
     bool gen = ImGui::Button("Generate Map (Ctrl+G)", ImVec2(-1, 40)) || (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_G, false));
     if (gen) {
+        std::cout << "[UI] Generate Button Clicked!" << std::endl;
         if (callbacks_.regenerateFiniteWorld) {
             terrain::TerrainConfig config;
             config.width = genSelectedSize_;
@@ -746,12 +768,13 @@ void UiLayer::drawSoilMLInspector(UiFrameContext& ctx) {
     if (ctx.showSoilVis) {
             ImGui::Indent();
             ImGui::TextDisabled("Legend:");
-            ImGui::ColorButton("##cHidro", ImVec4(0.0f, 0.3f, 0.3f, 1.0f)); ImGui::SameLine(); ImGui::Text("Hidromorfico");
-            ImGui::ColorButton("##cBText", ImVec4(0.7f, 0.35f, 0.05f, 1.0f)); ImGui::SameLine(); ImGui::Text("B-Textural");
-            ImGui::ColorButton("##cArgila", ImVec4(0.4f, 0.0f, 0.5f, 1.0f)); ImGui::SameLine(); ImGui::Text("Argila");
-            ImGui::ColorButton("##cBemDes", ImVec4(0.5f, 0.15f, 0.1f, 1.0f)); ImGui::SameLine(); ImGui::Text("Bem Des.");
-            ImGui::ColorButton("##cRaso", ImVec4(0.7f, 0.7f, 0.2f, 1.0f)); ImGui::SameLine(); ImGui::Text("Raso");
-            ImGui::ColorButton("##cRocha", ImVec4(0.2f, 0.2f, 0.2f, 1.0f)); ImGui::SameLine(); ImGui::Text("Rocha");
+            float c[3];
+            terrain::SoilPalette::getFloatColor(terrain::SoilType::Hidromorfico, c); ImGui::ColorButton("##cHidro", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Hidromorfico");
+            terrain::SoilPalette::getFloatColor(terrain::SoilType::BTextural, c);    ImGui::ColorButton("##cBText", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("B-Textural");
+            terrain::SoilPalette::getFloatColor(terrain::SoilType::Argila, c);       ImGui::ColorButton("##cArgila", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Argila");
+            terrain::SoilPalette::getFloatColor(terrain::SoilType::BemDes, c);       ImGui::ColorButton("##cBemDes", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Bem Des.");
+            terrain::SoilPalette::getFloatColor(terrain::SoilType::Raso, c);         ImGui::ColorButton("##cRaso",   ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Raso");
+            terrain::SoilPalette::getFloatColor(terrain::SoilType::Rocha, c);        ImGui::ColorButton("##cRocha",  ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Rocha");
             
             ImGui::Text("Soil Whitelist:");
             ImGui::BeginGroup(); // Columns hack
@@ -834,7 +857,10 @@ void UiLayer::drawSoilMLInspector(UiFrameContext& ctx) {
                      if (t == terrain::SoilType::BemDes) name = "Bem Des.";
                      if (t == terrain::SoilType::Raso) name = "Raso";
                      
-                     ImGui::Text("%s", name.c_str());
+                     float rgb[3];
+                     terrain::SoilPalette::getFloatColor(t, rgb);
+                     
+                     ImGui::TextColored(ImVec4(rgb[0], rgb[1], rgb[2], 1.0f), "%s", name.c_str());
                      
                      ImGui::TableSetColumnIndex(1);
                      if (lastMetrics_.count(t)) {

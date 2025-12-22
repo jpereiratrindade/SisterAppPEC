@@ -1312,6 +1312,7 @@ void Application::regenerateFiniteWorld(const terrain::TerrainConfig& config) {
     deferredConfig_ = config;
     regenRequested_ = true;
     std::cout << "[SisterApp] Finite generation requested via struct (Deferred): " << config.width << "x" << config.height << std::endl;
+    std::cout << "[SisterApp] regenRequested_ set to TRUE." << std::endl;
 }
 
 void Application::performMeshUpdate() {

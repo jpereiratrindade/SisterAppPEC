@@ -1,7 +1,8 @@
 #include "minimap.h"
 #include "../resources/buffer.h"
 #include "../core/command_pool.h"
-#include "../terrain/terrain_renderer.h" // reuse soil colors if possible, or redefine?
+#include "../terrain/terrain_renderer.h" 
+#include "../terrain/soil_palette.h"
 // Let's redefine readable colors or include header. 
 // TerrainRenderer has getSoilColor but it's not static.
 // We'll reimplement simple coloring here for stability.
@@ -161,17 +162,8 @@ void Minimap::update(const terrain::TerrainMap& map, const terrain::TerrainConfi
         float light = 0.5f + 1.5f * (slopeX - slopeZ); 
         light = std::clamp(light, 0.4f, 1.3f); // Allow brighter highlights, deeper shadows
 
-        uint8_t r = 100, g = 100, b = 100;
-        switch(type) {
-            case terrain::SoilType::Raso:          r=200; g=200; b=100; break; // Yellowish
-            case terrain::SoilType::BemDes:        r=139; g=69;  b=19;  break; // SaddleBrown
-            case terrain::SoilType::Hidromorfico:  r=100; g=100; b=100; break; // Gray/Dark
-            case terrain::SoilType::Argila:        r=160; g=82;  b=45;  break; // Sienna
-            case terrain::SoilType::BTextural:     r=205; g=133; b=63;  break; // Peru
-            case terrain::SoilType::Rocha:         r=80;  g=80;  b=80;  break; // Dark Gray
-            case terrain::SoilType::None:          r=255; g=0;   b=255; break; // Magenta (Debug)
-            default: break;
-        }
+        uint8_t r, g, b;
+        terrain::SoilPalette::getColor(type, r, g, b);
         
         // v3.8.1: Transparent Water on Minimap to show bathymetry/texture
         if (h < config.waterLevel) {
