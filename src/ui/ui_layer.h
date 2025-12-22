@@ -4,6 +4,7 @@
 #include "../graphics/camera.h"
 // VoxelTerrain removed
 #include "../terrain/terrain_map.h" // v3.5.0
+#include "../terrain/landscape_metrics.h" // v4.3.5
 #include "../vegetation/vegetation_types.h" // v3.9.0
 #include "../graphics/animation.h"
 #include "../math/math_types.h"
@@ -12,6 +13,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <map>
 #include <vulkan/vulkan.h>
 #include "minimap.h" // v3.8.0
 

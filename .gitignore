@@ -5,6 +5,10 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 cmake_log.txt
+*.o
+validator_test
+test_output.txt
+
 
 # Editors & OS
 .vscode/
