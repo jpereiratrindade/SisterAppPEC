@@ -148,7 +148,8 @@ private:
     // Inspector Content Providers
     void drawTerrainInspector(UiFrameContext& ctx);
     void drawHydrologyInspector(UiFrameContext& ctx);
-    void drawSoilMLInspector(UiFrameContext& ctx);
+    void drawSoilInspector(UiFrameContext& ctx); // Renamed from drawSoilMLInspector
+    void drawMLInspector(UiFrameContext& ctx);   // New dedicated inspector
     void drawVegetationInspector(UiFrameContext& ctx); 
     void drawCrosshair(UiFrameContext& ctx); // v3.8.1 
 
@@ -160,7 +161,7 @@ private:
     bool showMinimap_ = true;
     // v3.8.1: Views Toggles
     // Toolbar State
-    enum class ActiveTool { None, Terrain, Hydro, SoilML, Vegetation };
+    enum class ActiveTool { None, Terrain, Hydro, Soil, Vegetation, MLHub }; // SoilML -> Soil, Added MLHub
     ActiveTool activeTool_ = ActiveTool::Terrain; // Default to Terrain
     bool showCamControls_ = true;
     bool showResetCamera_ = true;

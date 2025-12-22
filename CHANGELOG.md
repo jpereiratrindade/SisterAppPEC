@@ -1,5 +1,11 @@
 # Changelog
 
+## [v4.3.9] - 2025-12-22
+### UI Improvements
+- **Dedicated ML Hub**: Extracted Machine Learning controls from "Soil" inspector into a new, dedicated "Machine Learning Hub" inspector.
+- **Toolbar Update**: Added specific button for "ML Service" (Purple) to elevate its visibility in the interface.
+- **Refactor**: Cleaned up Soil Inspector to focus solely on Pedology and DDD patterns.
+
 ## [v4.3.8] - 2025-12-22
 ### Documentation
 - **ML Integration Manual**: Created `docs/manual_tecnico_ml.md` detailing the "Hub & Spoke" architecture and model catalog.

@@ -115,8 +115,9 @@ void UiLayer::drawMenuBar(UiFrameContext& ctx) {
         if (ImGui::BeginMenu("Views")) {
              if (ImGui::MenuItem("Terrain & Environment", nullptr, activeTool_ == ActiveTool::Terrain)) activeTool_ = ActiveTool::Terrain;
              if (ImGui::MenuItem("Hydrology Tools", nullptr, activeTool_ == ActiveTool::Hydro)) activeTool_ = ActiveTool::Hydro;
-             if (ImGui::MenuItem("Soil & ML Hub", nullptr, activeTool_ == ActiveTool::SoilML)) activeTool_ = ActiveTool::SoilML;
+             if (ImGui::MenuItem("Soil Inspector", nullptr, activeTool_ == ActiveTool::Soil)) activeTool_ = ActiveTool::Soil;
              if (ImGui::MenuItem("Vegetation Tools", nullptr, activeTool_ == ActiveTool::Vegetation)) activeTool_ = ActiveTool::Vegetation;
+             if (ImGui::MenuItem("ML Service Hub", nullptr, activeTool_ == ActiveTool::MLHub)) activeTool_ = ActiveTool::MLHub;
              ImGui::Separator();
              ImGui::MenuItem("Minimap", nullptr, &showMinimap_);
              ImGui::MenuItem("Camera Controls", nullptr, &showCamControls_);
@@ -474,10 +475,12 @@ void UiLayer::drawToolbar(UiFrameContext& ctx) {
 
         ImGui::SameLine();
         
-        // Soil/ML Mode
-        bool isSoil = (activeTool_ == ActiveTool::SoilML);
+        ImGui::SameLine();
+        
+        // Soil Mode
+        bool isSoil = (activeTool_ == ActiveTool::Soil);
         if (isSoil) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.4f, 0.2f, 1.0f));
-        if (ImGui::Button("Soil & ML", btnSize)) activeTool_ = ActiveTool::SoilML;
+        if (ImGui::Button("Soil", btnSize)) activeTool_ = ActiveTool::Soil;
         if (isSoil) ImGui::PopStyleColor();
 
         ImGui::SameLine();
@@ -487,6 +490,14 @@ void UiLayer::drawToolbar(UiFrameContext& ctx) {
         if (isVeg) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
         if (ImGui::Button("Vegetation", btnSize)) activeTool_ = ActiveTool::Vegetation;
         if (isVeg) ImGui::PopStyleColor();
+        
+        ImGui::SameLine();
+
+        // ML Hub Mode
+        bool isML = (activeTool_ == ActiveTool::MLHub);
+        if (isML) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.2f, 0.8f, 1.0f)); // Purple
+        if (ImGui::Button("ML Service", btnSize)) activeTool_ = ActiveTool::MLHub;
+        if (isML) ImGui::PopStyleColor();
         
         ImGui::SameLine();
         ImGui::Separator();
@@ -543,8 +554,9 @@ void UiLayer::drawInspector(UiFrameContext& ctx) {
     const char* title = "Inspector";
     if (activeTool_ == ActiveTool::Terrain) title = "Terrain Inspector";
     if (activeTool_ == ActiveTool::Hydro) title = "Hydrology Inspector";
-    if (activeTool_ == ActiveTool::SoilML) title = "Soil & ML Inspector";
+    if (activeTool_ == ActiveTool::Soil) title = "Pedology Inspector";
     if (activeTool_ == ActiveTool::Vegetation) title = "Vegetation Inspector";
+    if (activeTool_ == ActiveTool::MLHub) title = "Machine Learning Hub";
 
     // Allow resizing and moving (Removed NoResize | NoMove)
     if (ImGui::Begin(title, nullptr)) {
@@ -556,11 +568,14 @@ void UiLayer::drawInspector(UiFrameContext& ctx) {
             case ActiveTool::Hydro:
                 drawHydrologyInspector(ctx);
                 break;
-            case ActiveTool::SoilML:
-                drawSoilMLInspector(ctx);
+            case ActiveTool::Soil:
+                drawSoilInspector(ctx);
                 break;
             case ActiveTool::Vegetation:
                 drawVegetationInspector(ctx);
+                break;
+            case ActiveTool::MLHub:
+                drawMLInspector(ctx);
                 break;
             default: break;
         }
@@ -762,7 +777,8 @@ void UiLayer::drawHydrologyInspector(UiFrameContext& ctx) {
     }
 }
 
-void UiLayer::drawSoilMLInspector(UiFrameContext& ctx) {
+// Renamed from drawSoilMLInspector
+void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
     // --- Soil Map ---
     ImGui::Checkbox("Show Soil Map", &ctx.showSoilVis);
     if (ctx.showSoilVis) {
@@ -937,52 +953,87 @@ void UiLayer::drawSoilMLInspector(UiFrameContext& ctx) {
          }
     }
     
+    // ML Hub Moved to drawMLInspector
+}
+
+// New Dedicated ML Inspector (v4.3.9)
+void UiLayer::drawMLInspector(UiFrameContext& ctx) {
+    ImGui::TextWrapped("The ML Service acts as a central intelligence hub connecting Soil, Hydro, and Vegetation systems.");
     ImGui::Separator();
+
+    // Global Status
+    if (ctx.isTraining) {
+        ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f), "STATUS: TRAINING IN PROGRESS...");
+        ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(0.0f,0.0f)); // Indeterminate animation
+    } else {
+        ImGui::TextColored(ImVec4(0.2f,1.0f,0.2f,1.0f), "STATUS: IDLE (Ready)");
+    }
     
-    // --- ML Hub ---
-    ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Machine Learning Hub");
-    if (ctx.isTraining) ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f), "TRAINING IN PROGRESS...");
-    
-    ImGui::PushItemWidth(100);
-    ImGui::InputInt("Epochs", &ctx.mlTrainingEpochs); ImGui::SameLine();
-    ImGui::InputFloat("LR", &ctx.mlLearningRate); ImGui::SameLine();
-    ImGui::InputInt("Samples", &ctx.mlSampleCount);
+    ImGui::Separator();
+    ImGui::Text("Hyperparameters (Shared):");
+    ImGui::PushItemWidth(120);
+    ImGui::InputInt("Epochs", &ctx.mlTrainingEpochs); 
+    ImGui::InputFloat("Learning Rate", &ctx.mlLearningRate, 0.001f, 0.01f, "%.4f"); 
+    ImGui::InputInt("Sample Batch", &ctx.mlSampleCount);
     ImGui::PopItemWidth();
     
-    if (ImGui::CollapsingHeader("Models", ImGuiTreeNodeFlags_DefaultOpen)) {
-            // Soil Color
-            if (ImGui::TreeNode("Soil Color")) {
-                ImGui::Checkbox("Use ML Prediction", &ctx.showMLSoil);
-                ImGui::Text("Dataset: %zu samples", ctx.mlDatasetSize);
-                if (ImGui::Button("Collect")) callbacks_.mlCollectData(ctx.mlSampleCount);
-                ImGui::SameLine();
-                if (ImGui::Button("Train")) callbacks_.mlTrainModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
-                ImGui::TreePop();
-            }
-            // Runoff
-            if (ImGui::TreeNode("Hydro Runoff")) {
-                ImGui::Text("Dataset: %zu samples", ctx.mlHydroDatasetSize);
-                if (ImGui::Button("Collect")) callbacks_.mlCollectHydroData(ctx.mlSampleCount);
-                ImGui::SameLine();
-                if (ImGui::Button("Train")) callbacks_.mlTrainHydroModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
-                ImGui::TreePop();
-            }
-            // Fire
-            if (ImGui::TreeNode("Fire Risk")) {
-                ImGui::Text("Dataset: %zu samples", ctx.mlFireDatasetSize);
-                if (ImGui::Button("Collect")) callbacks_.mlCollectFireData(ctx.mlSampleCount);
-                ImGui::SameLine();
-                if (ImGui::Button("Train")) callbacks_.mlTrainFireModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
-                ImGui::TreePop();
-            }
-            // Growth
-            if (ImGui::TreeNode("Biomass Growth")) {
-                ImGui::Text("Dataset: %zu samples", ctx.mlGrowthDatasetSize);
-                if (ImGui::Button("Collect")) callbacks_.mlCollectGrowthData(ctx.mlSampleCount);
-                ImGui::SameLine();
-                if (ImGui::Button("Train")) callbacks_.mlTrainGrowthModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
-                ImGui::TreePop();
-            }
+    ImGui::Separator();
+    ImGui::Text("Model Registry:");
+
+    if (ImGui::CollapsingHeader("1. Soil Color (Pedology)", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::Checkbox("Use ML for Visualization", &ctx.showMLSoil);
+        ImGui::SameLine();
+        ImGui::TextDisabled("(Takes over texture generation)");
+        
+        ImGui::Text("Dataset: %zu samples", ctx.mlDatasetSize);
+        if (ImGui::Button("Collect Samples##Soil")) callbacks_.mlCollectData(ctx.mlSampleCount);
+        ImGui::SameLine();
+        if (ctx.mlDatasetSize > 0) {
+            if (ImGui::Button("Train Model##Soil")) callbacks_.mlTrainModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
+        } else {
+             ImGui::BeginDisabled();
+             ImGui::Button("Train Model##Soil");
+             ImGui::EndDisabled();
+        }
+    }
+
+    if (ImGui::CollapsingHeader("2. Hydro Runoff (Hydrology)")) {
+        ImGui::Text("Dataset: %zu samples", ctx.mlHydroDatasetSize);
+        if (ImGui::Button("Collect Samples##Hydro")) callbacks_.mlCollectHydroData(ctx.mlSampleCount);
+        ImGui::SameLine();
+        if (ctx.mlHydroDatasetSize > 0) {
+            if (ImGui::Button("Train Model##Hydro")) callbacks_.mlTrainHydroModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
+        } else {
+             ImGui::BeginDisabled();
+             ImGui::Button("Train Model##Hydro");
+             ImGui::EndDisabled();
+        }
+    }
+
+    if (ImGui::CollapsingHeader("3. Fire Risk (Vegetation)")) {
+        ImGui::Text("Dataset: %zu samples", ctx.mlFireDatasetSize);
+        if (ImGui::Button("Collect Samples##Fire")) callbacks_.mlCollectFireData(ctx.mlSampleCount);
+        ImGui::SameLine();
+         if (ctx.mlFireDatasetSize > 0) {
+            if (ImGui::Button("Train Model##Fire")) callbacks_.mlTrainFireModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
+         } else {
+             ImGui::BeginDisabled();
+             ImGui::Button("Train Model##Fire");
+             ImGui::EndDisabled();
+         }
+    }
+
+    if (ImGui::CollapsingHeader("4. Biomass Growth (Vegetation)")) {
+        ImGui::Text("Dataset: %zu samples", ctx.mlGrowthDatasetSize);
+        if (ImGui::Button("Collect Samples##Growth")) callbacks_.mlCollectGrowthData(ctx.mlSampleCount);
+        ImGui::SameLine();
+         if (ctx.mlGrowthDatasetSize > 0) {
+            if (ImGui::Button("Train Model##Growth")) callbacks_.mlTrainGrowthModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
+         } else {
+             ImGui::BeginDisabled();
+             ImGui::Button("Train Model##Growth");
+             ImGui::EndDisabled();
+         }
     }
 }
 
