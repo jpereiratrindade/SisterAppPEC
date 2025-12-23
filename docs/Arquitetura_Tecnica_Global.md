@@ -15,14 +15,22 @@ graph TD
     
     subgraph "Simulation Engine (CPU)"
         App --> World["World Container"]
-        World --> Terrain["Terrain System (Geometria)"]
         
-        World --> Hydro["Hydro System (Água)"]
-        World --> Soil["Soil System (Solo/SCORPAN)"]
-        World --> Veg["Vegetation System (Bio)"]
+        subgraph "namespace terrain"
+            World --> Terrain["Terrain System (Geometria)"]
+        end
         
-        Terrain -->|"Declividade"| Hydro
-        Hydro -->|"Fluxo/Erosão"| Soil
+        subgraph "namespace landscape"
+            World --> Drainage["Sistema Drenagem (Hydro)"]
+            World --> Soil["Sistema Solo (SCORPAN)"]
+        end
+        
+        subgraph "namespace vegetation"
+            World --> Veg["Sistema Vegetação (Bio)"]
+        end
+        
+        Terrain -->|"Declividade"| Drainage
+        Drainage -->|"Fluxo/Erosão"| Soil
         Soil -->|"Umidade/Nutrientes"| Veg
         Veg -->|"Biomassa/Proteção"| Soil
     end
@@ -32,7 +40,7 @@ graph TD
         Terrain -->|"Mesh Data"| Renderer
         Soil -->|"Soil Colors"| Renderer
         Veg -->|"Instance Data"| Renderer
-        Hydro -->|"Water Layer"| Renderer
+        Drainage -->|"Water Layer"| Renderer
     end
 ```
 
