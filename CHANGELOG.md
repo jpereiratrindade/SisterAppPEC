@@ -5,6 +5,14 @@
 - **Soil Regeneration Mismatch**: Fixed a bug where regenerating the terrain in "Simulation Mode" (SCORPAN) would revert the underlying data to default/legacy types while the UI Probe showed correct types. The generator now correctly classifies the refreshed map using SiBCS types immediately.
 - **Probe vs Visual Consistency**: Resolved an enum mismatch (Legacy vs SiBCS) in `TerrainGenerator` that caused visual "grey" soil artifacts despite valid physics.
 
+### Features
+- **SiBCS Level 2 (Suborders)**: Implemented the second taxonomic level of the Brazilian Soil Classification System.
+    - **New Data Structure**: `SoilGrid` now stores `suborder` per pixel.
+    - **Classification Logic**: Added rules for *Latossolo Vermelho* (Iron-rich), *Latossolo Amarelo* (Goethitic), *Neossolo Litólico* (Shallow), etc.
+    - **Inspector Update**: Added full SiBCS Color Legend in the Soil Dialog.
+    - **Probe Update**: Clicking the terrain now reveals the full classification (Order + Suborder).
+    - **Documentation**: Added `docs/SiBCS.md` detailing the implemented taxons and logic.
+
 ## [v4.5.0] - 2025-12-23
 ### Visual & Verification
 - **Soil Palette Revert**: Restored the "Realistic" soil color palette as the default, replacing the experimental "Vibrant" palette to align with scientific visualization goals.

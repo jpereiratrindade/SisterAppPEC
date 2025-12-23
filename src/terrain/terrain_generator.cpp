@@ -285,27 +285,45 @@ void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
             float om = grid->labile_carbon[idx] + grid->recalcitrant_carbon[idx];
 
             SoilType type = SoilType::Rocha;
+            SoilSubOrder sub = SoilSubOrder::None; // v4.5.1
 
             if (depth < 0.2f) {
                 type = SoilType::Rocha; // Or Neossolo Litolico if rocky
+                sub = SoilSubOrder::Litolico;
             } else if (depth < 0.6f) {
                 type = SoilType::Neossolo_Litolico;
+                sub = SoilSubOrder::Litolico;
             } else {
                 // Deeper soils, classify by texture and organic content
                 if (clay > 0.35f) {
                     type = SoilType::Argissolo; // Clay rich B horizon
+                    // Suborder Logic for Argissolo
+                    if (depth > 1.5f || clay > 0.6f) sub = SoilSubOrder::Vermelho;
+                    else sub = SoilSubOrder::Vermelho_Amarelo;
+
                 } else if (clay > 0.20f && sand < 0.5f) {
                     type = SoilType::Cambissolo; // Incipient B
+                    sub = SoilSubOrder::Haplic;
                 } else if (om > 0.15f || depth < 0.0f) { // Arbitrary target for "rich" or waterlogged
                     type = SoilType::Gleissolo; 
+                    if (om > 0.3f) sub = SoilSubOrder::Melanico;
+                    else sub = SoilSubOrder::Haplic;
+
                 } else if (sand > 0.7f) {
                     type = SoilType::Neossolo_Quartzarenico;
+                    sub = SoilSubOrder::Quartzarenico;
                 } else {
                     type = SoilType::Latossolo; // Deep, weathered
+                     // Latossolo Suborders based on Parent Material (Simulated)
+                    if (sand > 0.4f) sub = SoilSubOrder::Vermelho_Amarelo;
+                    else if (sand < 0.2f) sub = SoilSubOrder::Vermelho; // Clayey = Usually Red
+                    else sub = SoilSubOrder::Amarelo;
                 }
             }
 
             map.setSoil(x, z, type);
+            // Direct write to suborder vector (bypassing setSoil which only handles type)
+            if (grid) grid->suborder[idx] = static_cast<uint8_t>(sub);
         }
     }
     

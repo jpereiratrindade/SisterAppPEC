@@ -29,6 +29,19 @@ namespace landscape {
         Organossolo = 16
     };
 
+    // v4.5.1: SiBCS Level 2 (Suborders)
+    enum class SoilSubOrder : uint8_t {
+        None = 0,         // Modal / Default
+        Vermelho = 1,     // High Fe2O3 (Hematite) - Good Drainage
+        Amarelo = 2,      // High FeOOH (Goethite) - Moist/Acidic
+        Vermelho_Amarelo = 3, // Mixed
+        Haplic = 4,       // Simple / No specific trait
+        Litolico = 5,     // Shallow / Rocky contact
+        Quartzarenico = 6,// High sand content
+        Melanico = 7,     // High Organic Matter (Dark)
+        Tiomorfico = 8    // Sulfidic (Mangrove) - Reserved
+    };
+
     /**
      * @brief Structure-of-Arrays (SoA) for Soil State.
      * Represents the physical and biological potential of the substrate.
@@ -41,6 +54,7 @@ namespace landscape {
      */
     // v4.4.0: Geology Layer
     using LithologyID = uint8_t;
+    using SubOrderID = uint8_t; // v4.5.1
 
     struct SoilGrid {
         int width = 0;
@@ -57,6 +71,7 @@ namespace landscape {
 
         // Classification & Geology
         std::vector<uint8_t> soil_type;    // Maps to SoilType
+        std::vector<SubOrderID> suborder;  // Maps to SoilSubOrder (v4.5.1)
         std::vector<LithologyID> lithology_id; // v4.4.0: ID of Parent Material
 
         // Extended State for Reference Logic
@@ -80,6 +95,7 @@ namespace landscape {
             organic_matter.assign(size, 0.05f);  // Realistic organic matter (5%)
             propagule_bank.assign(size, 1.0f);  // Full regenerative potential
             soil_type.assign(size, static_cast<uint8_t>(SoilType::Silt_Loam));
+            suborder.assign(size, static_cast<uint8_t>(SoilSubOrder::Haplic)); // Default Suborder
             lithology_id.assign(size, 0);       // Default Lithology (0 = Generic)
 
             // Extended Logic State

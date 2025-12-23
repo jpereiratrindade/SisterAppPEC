@@ -656,14 +656,30 @@ void Application::processEvents(double dt) {
                                  // Reconstruct State for Classification
                                  // v4.5.8: Probe Logic - Pure SiBCS (No USDA)
                                  auto storedType = static_cast<const landscape::SoilType>(soil->soil_type[idx]);
+                                 // v4.5.1: Level 2 - Suborder
+                                 auto storedSub = static_cast<const landscape::SoilSubOrder>(soil->suborder[idx]);
+                                 std::string subStr = ""; // Modal by default
+
+                                 switch(storedSub) {
+                                    case landscape::SoilSubOrder::Vermelho: subStr = "Vermelho"; break;
+                                    case landscape::SoilSubOrder::Amarelo: subStr = "Amarelo"; break;
+                                    case landscape::SoilSubOrder::Vermelho_Amarelo: subStr = "Vermelho-Amarelo"; break;
+                                    case landscape::SoilSubOrder::Haplic: subStr = "Haplic (Modal)"; break;
+                                    case landscape::SoilSubOrder::Litolico: subStr = "Litolico"; break;
+                                    case landscape::SoilSubOrder::Quartzarenico: subStr = "Quartzarenico"; break;
+                                    case landscape::SoilSubOrder::Melanico: subStr = "Melanico"; break;
+                                    case landscape::SoilSubOrder::Tiomorfico: subStr = "Tiomorfico"; break;
+                                    default: subStr = ""; break;
+                                 }
+
                                  switch(storedType) {
-                                     case landscape::SoilType::Latossolo: soilType = "Latossolo"; break;
-                                     case landscape::SoilType::Argissolo: soilType = "Argissolo"; break;
-                                     case landscape::SoilType::Cambissolo: soilType = "Cambissolo"; break;
-                                     case landscape::SoilType::Neossolo_Litolico: soilType = "Neossolo Litolico"; break;
-                                     case landscape::SoilType::Neossolo_Quartzarenico: soilType = "Neossolo Quartzarenico"; break;
-                                     case landscape::SoilType::Gleissolo: soilType = "Gleissolo"; break;
-                                     case landscape::SoilType::Organossolo: soilType = "Organossolo"; break;
+                                     case landscape::SoilType::Latossolo: soilType = "Latossolo " + subStr; break;
+                                     case landscape::SoilType::Argissolo: soilType = "Argissolo " + subStr; break;
+                                     case landscape::SoilType::Cambissolo: soilType = "Cambissolo " + subStr; break;
+                                     case landscape::SoilType::Neossolo_Litolico: soilType = "Neossolo " + subStr; break;
+                                     case landscape::SoilType::Neossolo_Quartzarenico: soilType = "Neossolo " + subStr; break;
+                                     case landscape::SoilType::Gleissolo: soilType = "Gleissolo " + subStr; break;
+                                     case landscape::SoilType::Organossolo: soilType = "Organossolo " + subStr; break;
                                      default: soilType = "Indefinido (SiBCS)"; break; 
                                  }
                              } else {

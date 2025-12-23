@@ -949,17 +949,17 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
 
     // Only show SCORPAN Results for Simulation Mode
 	    if (ctx.showSoilVis && ctx.soilClassificationMode == 1) {
-	        ImGui::Text("SiBCS Classification (SCORPAN Derived)");
+	        ImGui::Text("SiBCS Classification (Level 2: Suborders)");
 	        ImGui::Indent();
-	        ImGui::TextWrapped("Discrete soil classes emerging from continuous properties.");
+	        ImGui::TextWrapped("Classification derived from S (SCORPAN) vectors.");
 	
 	        if (ctx.showMLSoil) {
 	            ImGui::TextColored(ImVec4(1.0f, 0.85f, 0.2f, 1.0f),
-	                               "ML visualization is active: map colors show ML prediction, not SiBCS classes.");
+	                               "ML visualization active. Colors show prediction confidence, not SiBCS.");
 	        }
 	        
 	        ImGui::Separator();
-	        ImGui::TextDisabled("Legend:");
+	        ImGui::TextDisabled("Legend (SiBCS Colors):");
         
         // Helper to draw color box
         auto LegendItem = [](const char* name, float r, float g, float b) {
@@ -968,13 +968,25 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
             ImGui::Text("%s", name);
         };
 
-        LegendItem("Latossolo (Vermelho)", 0.63f, 0.24f, 0.16f);
-        LegendItem("Argissolo (Amarelo/Vermelho)", 0.71f, 0.39f, 0.24f);
-        LegendItem("Cambissolo (Marrom)", 0.55f, 0.43f, 0.27f);
-        LegendItem("Neossolo Lit. (Cinza)", 0.47f, 0.47f, 0.39f);
-        LegendItem("Neossolo Quartz. (Areia)", 0.86f, 0.82f, 0.71f);
-        LegendItem("Gleissolo (Azul)", 0.31f, 0.39f, 0.47f);
-        LegendItem("Organossolo (Preto)", 0.16f, 0.12f, 0.12f);
+        // Latossolos (Vermelho vs Amarelo vs Misto)
+        LegendItem("Latossolo Vermelho", 0.65f, 0.15f, 0.15f);
+        LegendItem("Latossolo Vermelho-Amarelo", 0.75f, 0.45f, 0.15f);
+        LegendItem("Latossolo Amarelo", 0.85f, 0.75f, 0.25f);
+        
+        ImGui::Dummy(ImVec2(0,2)); // Spacer
+        
+        LegendItem("Argissolo Vermelho/Amarelo", 0.71f, 0.39f, 0.24f); 
+        LegendItem("Cambissolo Haplico", 0.55f, 0.43f, 0.27f);
+        
+        ImGui::Dummy(ImVec2(0,2));
+
+        LegendItem("Neossolo Litolico", 0.55f, 0.52f, 0.48f);
+        LegendItem("Neossolo Quartzarenico", 0.90f, 0.88f, 0.82f);
+        
+        ImGui::Dummy(ImVec2(0,2));
+
+        LegendItem("Gleissolo Haplico", 0.35f, 0.45f, 0.55f);
+        LegendItem("Gleissolo Melanico", 0.15f, 0.15f, 0.20f);
         
         ImGui::Unindent();
         
