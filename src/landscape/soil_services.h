@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#include "landscape_types.h"
 
 namespace landscape {
 
@@ -98,12 +99,6 @@ enum class TextureClass {
   kSiltLoam,
   kUnknown
 };
-
-// SiBCS Result Structure kept here or moved? 
-// If SoilSystem needs it, it should be in header.
-// Ideally it should be in landscape_types.h too but let's keep it here for now if it compiles.
-// But we need to include landscape_types.h
-#include "landscape_types.h"
 
 // Unified Result Structure (Hierarchical)
 struct SiBCSResult {

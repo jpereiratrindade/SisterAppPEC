@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <cstdint>
 #include <vector>
@@ -5,6 +7,7 @@
 namespace landscape {
 
     // Soil Types (Simplified Classification)
+    enum class SoilType : uint8_t {
         Sandy_Loam = 0, // High infiltration, low retention
         Clay_Loam = 1,  // Low infiltration, high retention
         Silt_Loam = 2,  // Balanced
