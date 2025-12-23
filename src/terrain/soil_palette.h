@@ -8,23 +8,23 @@ namespace terrain {
 class SoilPalette {
 public:
     // Helper to get RGB components [0-255]
-    static void getColor(SoilType type, landscape::SoilSubOrder sub, uint8_t& r, uint8_t& g, uint8_t& b) {
+    static void getColor(SoilType type, landscape::SiBCSSubOrder sub, uint8_t& r, uint8_t& g, uint8_t& b) {
         // 1. Suborder overrides (Level 2) are order-dependent.
         // Avoid global overrides that make "Argissolo Vermelho" look like "Latossolo Vermelho".
-        if (sub != landscape::SoilSubOrder::None && sub != landscape::SoilSubOrder::Haplic) {
+        if (sub != landscape::SiBCSSubOrder::kNone && sub != landscape::SiBCSSubOrder::kHaplic) {
             switch (type) {
                 case SoilType::Latossolo:
                     switch (sub) {
-                        case landscape::SoilSubOrder::Vermelho:         r=166; g=38;  b=38;  return; // UI legend match
-                        case landscape::SoilSubOrder::Amarelo:          r=217; g=191; b=64;  return;
-                        case landscape::SoilSubOrder::Vermelho_Amarelo: r=191; g=115; b=38;  return;
+                        case landscape::SiBCSSubOrder::kVermelho:         r=166; g=38;  b=38;  return; // UI legend match
+                        case landscape::SiBCSSubOrder::kAmarelo:          r=217; g=191; b=64;  return;
+                        case landscape::SiBCSSubOrder::kVermelhoAmarelo: r=191; g=115; b=38;  return;
                         default: break;
                     }
                     break;
                 case SoilType::Argissolo:
                     // SiBCS legend uses a brownish tone for Argissolos regardless of "Vermelho/Amarelo" nuance here.
                     // Keep both Vermelho and Vermelho_Amarelo mapped to the same family to prevent confusion.
-                    if (sub == landscape::SoilSubOrder::Vermelho || sub == landscape::SoilSubOrder::Vermelho_Amarelo || sub == landscape::SoilSubOrder::Amarelo) {
+                    if (sub == landscape::SiBCSSubOrder::kVermelho || sub == landscape::SiBCSSubOrder::kVermelhoAmarelo || sub == landscape::SiBCSSubOrder::kAmarelo) {
                         r=181; g=99; b=61; return; // UI legend match
                     }
                     break;
@@ -34,9 +34,9 @@ public:
 
             // Cross-order suborders
             switch (sub) {
-                case landscape::SoilSubOrder::Litolico:      r=120; g=115; b=110; return; // Grey-Brown (Rocky)
-                case landscape::SoilSubOrder::Quartzarenico: r=230; g=224; b=209; return; // Pale Sand
-                case landscape::SoilSubOrder::Melanico:      r=38;  g=38;  b=51;  return; // Dark (UI legend match)
+                case landscape::SiBCSSubOrder::kLitolico:      r=120; g=115; b=110; return; // Grey-Brown (Rocky)
+                case landscape::SiBCSSubOrder::kQuartzarenico: r=230; g=224; b=209; return; // Pale Sand
+                case landscape::SiBCSSubOrder::kMelanico:      r=38;  g=38;  b=51;  return; // Dark (UI legend match)
                 default: break;
             }
         }
@@ -66,18 +66,18 @@ public:
     
     // Legacy overload for backward compatibility
     static void getColor(SoilType type, uint8_t& r, uint8_t& g, uint8_t& b) {
-        getColor(type, landscape::SoilSubOrder::None, r, g, b);
+        getColor(type, landscape::SiBCSSubOrder::kNone, r, g, b);
     }
 
     // Helper to get Packed Color for ImGui (0xAABBGGRR - Little Endian)
-    static uint32_t getPackedColor(SoilType type, landscape::SoilSubOrder sub = landscape::SoilSubOrder::None, uint8_t alpha = 255) {
+    static uint32_t getPackedColor(SoilType type, landscape::SiBCSSubOrder sub = landscape::SiBCSSubOrder::kNone, uint8_t alpha = 255) {
         uint8_t r, g, b;
         getColor(type, sub, r, g, b);
         return (uint32_t(alpha) << 24) | (uint32_t(b) << 16) | (uint32_t(g) << 8) | uint32_t(r);
     }
 
     // Helper to get Normalized Float Color (0.0 - 1.0)
-    static void getFloatColor(SoilType type, landscape::SoilSubOrder sub, float* rgb) {
+    static void getFloatColor(SoilType type, landscape::SiBCSSubOrder sub, float* rgb) {
         uint8_t r, g, b;
         getColor(type, sub, r, g, b);
         rgb[0] = r / 255.0f;
@@ -87,7 +87,7 @@ public:
     
     // Legacy overload for backward compatibility
     static void getFloatColor(SoilType type, float* rgb) {
-        getFloatColor(type, landscape::SoilSubOrder::None, rgb);
+        getFloatColor(type, landscape::SiBCSSubOrder::kNone, rgb);
     }
 };
 

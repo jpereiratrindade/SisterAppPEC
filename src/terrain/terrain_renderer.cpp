@@ -112,7 +112,7 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
                 // Copying logic is safer to avoid rebuilds of headers.
                 
                 // v4.5.1: Fix - Use Centralized Palette with Suborder Support
-                auto storedSub = static_cast<landscape::SoilSubOrder>(soil->suborder[idx]);
+                auto storedSub = static_cast<landscape::SiBCSSubOrder>(soil->suborder[idx]);
                 terrain::SoilPalette::getFloatColor(storedType, storedSub, rgb);
                 
                 v.color[0] = rgb[0];
