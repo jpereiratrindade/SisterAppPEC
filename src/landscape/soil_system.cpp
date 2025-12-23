@@ -186,6 +186,38 @@ namespace landscape {
                     case SiBCSOrder::kOrganossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Organossolo); break;
                     default: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Cambissolo); break;
                 }
+
+                // v4.5.1: Initialize Suborder consistently with the classifier output.
+                // This prevents mismatches where UI/probe says one SiBCS type but colors come from a different suborder.
+                landscape::SoilSubOrder sub = landscape::SoilSubOrder::None;
+
+                if (sibcs == SiBCSOrder::kGleissolo) {
+                    if (grid.organic_matter[i] > 0.03f) sub = landscape::SoilSubOrder::Melanico;
+                    else sub = landscape::SoilSubOrder::Haplic;
+                }
+                else if (sibcs == SiBCSOrder::kNeossoloLit) {
+                    sub = landscape::SoilSubOrder::Litolico;
+                }
+                else if (sibcs == SiBCSOrder::kNeossoloQuartz) {
+                    sub = landscape::SoilSubOrder::Quartzarenico;
+                }
+                else if (sibcs == SiBCSOrder::kArgissolo) {
+                    if (grid.depth[i] > 1.5f || grid.clay_fraction[i] > 0.6f) sub = landscape::SoilSubOrder::Vermelho;
+                    else sub = landscape::SoilSubOrder::Vermelho_Amarelo;
+                }
+                else if (sibcs == SiBCSOrder::kLatossolo) {
+                    if (grid.sand_fraction[i] > 0.4f) sub = landscape::SoilSubOrder::Vermelho_Amarelo;
+                    else if (grid.sand_fraction[i] < 0.2f) sub = landscape::SoilSubOrder::Vermelho;
+                    else sub = landscape::SoilSubOrder::Amarelo;
+                }
+                else if (sibcs == SiBCSOrder::kOrganossolo) {
+                    sub = landscape::SoilSubOrder::Melanico;
+                }
+                else {
+                    sub = landscape::SoilSubOrder::Haplic;
+                }
+
+                grid.suborder[i] = static_cast<uint8_t>(sub);
             }
         }
     }

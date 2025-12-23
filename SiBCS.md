@@ -230,6 +230,11 @@ As cores **não representam propriedades químicas diretas**, mas **classes taxo
   - Variação de **luminosidade**
   - Nunca mudança completa de matiz
 
+### Nota de Implementação (SisterAppPEC)
+Para evitar ambiguidades visuais no motor de simulação:
+- Subordens cromáticas como `Vermelho/Amarelo/Vermelho-Amarelo` são aplicadas **de forma dependente da Ordem** (ex.: em Latossolos).
+- Em Argissolos, a visualização mantém a **família cromática vermelho-amarelada/marrom** para não confundir *"Argissolo Vermelho"* com *"Latossolo Vermelho"*.
+
 ### Exemplos
 - Latossolo Vermelho → Vermelho puro  
 - Latossolo Amarelo → Vermelho com matiz deslocado ao amarelo  
@@ -269,4 +274,3 @@ soil_class:
 
 
 ## FIM DO DOCUMENTO
-

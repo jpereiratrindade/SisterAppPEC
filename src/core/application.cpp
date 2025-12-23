@@ -1052,10 +1052,32 @@ void Application::update(double dt) {
                  
                  // Update Slice
                  landscape::SoilSystem::update(*soil, static_cast<float>(dt), soilClimate_, soilOrganism_, soilParentMaterial_, *finiteMap_, currentSoilRow_, endRow);
+
+                 // Keep TerrainMap semantic soil buffer in sync with the evolving SiBCS classification.
+                 // This avoids probe/type vs minimap/other views drifting over time.
+                 if (soilClassificationMode_ == 1) {
+                     int w = finiteMap_->getWidth();
+                     auto& soilMap = finiteMap_->soilMap();
+                     for (int y = currentSoilRow_; y < endRow; ++y) {
+                         int rowBase = y * w;
+                         for (int x = 0; x < w; ++x) {
+                             int idx = rowBase + x;
+                             soilMap[idx] = soil->soil_type[idx];
+                         }
+                     }
+                 }
                  
                  // Advance Slice
                  currentSoilRow_ = endRow;
-                 if (currentSoilRow_ >= mapH) currentSoilRow_ = 0;
+                 if (currentSoilRow_ >= mapH) {
+                     currentSoilRow_ = 0;
+
+                     // If we're actively visualizing SiBCS (SCORPAN), refresh the mesh colors
+                     // after a full soil sweep to keep the rendered palette consistent with the probe.
+                     if (showSoilVis_ && soilClassificationMode_ == 1 && !showMLSoil_) {
+                         meshUpdateRequested_ = true;
+                     }
+                 }
              }
 
              // v3.9.1 Throttling: Run Vegetation/Hydro at 10Hz (0.1s)

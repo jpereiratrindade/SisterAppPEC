@@ -9,16 +9,35 @@ class SoilPalette {
 public:
     // Helper to get RGB components [0-255]
     static void getColor(SoilType type, landscape::SoilSubOrder sub, uint8_t& r, uint8_t& g, uint8_t& b) {
-        // 1. Check Suborder overrides first (Level 2)
+        // 1. Suborder overrides (Level 2) are order-dependent.
+        // Avoid global overrides that make "Argissolo Vermelho" look like "Latossolo Vermelho".
         if (sub != landscape::SoilSubOrder::None && sub != landscape::SoilSubOrder::Haplic) {
-            switch(sub) {
-                case landscape::SoilSubOrder::Vermelho:         r=160; g=40;  b=30;  return; // Deep Red (Hematite)
-                case landscape::SoilSubOrder::Amarelo:          r=220; g=180; b=60;  return; // Yellow-Orange (Goethite)
-                case landscape::SoilSubOrder::Vermelho_Amarelo: r=190; g=110; b=50;  return; // Orange-Mix
-                case landscape::SoilSubOrder::Litolico:         r=120; g=115; b=110; return; // Grey-Brown (Rocky)
-                case landscape::SoilSubOrder::Quartzarenico:    r=230; g=220; b=190; return; // White/Pale Sand
-                case landscape::SoilSubOrder::Melanico:         r=50;  g=40;  b=40;  return; // Black/Dark (Organic)
-                default: break; // Fallback to Order
+            switch (type) {
+                case SoilType::Latossolo:
+                    switch (sub) {
+                        case landscape::SoilSubOrder::Vermelho:         r=166; g=38;  b=38;  return; // UI legend match
+                        case landscape::SoilSubOrder::Amarelo:          r=217; g=191; b=64;  return;
+                        case landscape::SoilSubOrder::Vermelho_Amarelo: r=191; g=115; b=38;  return;
+                        default: break;
+                    }
+                    break;
+                case SoilType::Argissolo:
+                    // SiBCS legend uses a brownish tone for Argissolos regardless of "Vermelho/Amarelo" nuance here.
+                    // Keep both Vermelho and Vermelho_Amarelo mapped to the same family to prevent confusion.
+                    if (sub == landscape::SoilSubOrder::Vermelho || sub == landscape::SoilSubOrder::Vermelho_Amarelo || sub == landscape::SoilSubOrder::Amarelo) {
+                        r=181; g=99; b=61; return; // UI legend match
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            // Cross-order suborders
+            switch (sub) {
+                case landscape::SoilSubOrder::Litolico:      r=120; g=115; b=110; return; // Grey-Brown (Rocky)
+                case landscape::SoilSubOrder::Quartzarenico: r=230; g=224; b=209; return; // Pale Sand
+                case landscape::SoilSubOrder::Melanico:      r=38;  g=38;  b=51;  return; // Dark (UI legend match)
+                default: break;
             }
         }
 
@@ -37,7 +56,7 @@ public:
             case SoilType::Cambissolo:           r=140; g=110; b=70;  break;
             case SoilType::Neossolo_Litolico:    r=120; g=120; b=100; break;
             case SoilType::Neossolo_Quartzarenico: r=220; g=210; b=180; break;
-            case SoilType::Gleissolo:            r=100; g=120; b=140; break; // Grey-Blue
+            case SoilType::Gleissolo:            r=89;  g=115; b=140; break; // Grey-Blue (UI legend match)
             case SoilType::Organossolo:          r=40;  g=30;  b=30;  break;
             
             case SoilType::None:          r=255; g=0;   b=255; break;

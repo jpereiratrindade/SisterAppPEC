@@ -962,31 +962,33 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
 	        ImGui::TextDisabled("Legend (SiBCS Colors):");
         
         // Helper to draw color box
-        auto LegendItem = [](const char* name, float r, float g, float b) {
-            ImGui::ColorButton(name, ImVec4(r, g, b, 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
+        auto LegendItem = [](const char* name, terrain::SoilType type, landscape::SoilSubOrder sub) {
+            float c[3];
+            terrain::SoilPalette::getFloatColor(type, sub, c);
+            ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
             ImGui::SameLine();
             ImGui::Text("%s", name);
         };
 
         // Latossolos (Vermelho vs Amarelo vs Misto)
-        LegendItem("Latossolo Vermelho", 0.65f, 0.15f, 0.15f);
-        LegendItem("Latossolo Vermelho-Amarelo", 0.75f, 0.45f, 0.15f);
-        LegendItem("Latossolo Amarelo", 0.85f, 0.75f, 0.25f);
+        LegendItem("Latossolo Vermelho", terrain::SoilType::Latossolo, landscape::SoilSubOrder::Vermelho);
+        LegendItem("Latossolo Vermelho-Amarelo", terrain::SoilType::Latossolo, landscape::SoilSubOrder::Vermelho_Amarelo);
+        LegendItem("Latossolo Amarelo", terrain::SoilType::Latossolo, landscape::SoilSubOrder::Amarelo);
         
         ImGui::Dummy(ImVec2(0,2)); // Spacer
         
-        LegendItem("Argissolo Vermelho/Amarelo", 0.71f, 0.39f, 0.24f); 
-        LegendItem("Cambissolo Haplico", 0.55f, 0.43f, 0.27f);
+        LegendItem("Argissolo Vermelho/Amarelo", terrain::SoilType::Argissolo, landscape::SoilSubOrder::Vermelho_Amarelo); 
+        LegendItem("Cambissolo Haplico", terrain::SoilType::Cambissolo, landscape::SoilSubOrder::Haplic);
         
         ImGui::Dummy(ImVec2(0,2));
 
-        LegendItem("Neossolo Litolico", 0.55f, 0.52f, 0.48f);
-        LegendItem("Neossolo Quartzarenico", 0.90f, 0.88f, 0.82f);
+        LegendItem("Neossolo Litolico", terrain::SoilType::Neossolo_Litolico, landscape::SoilSubOrder::Litolico);
+        LegendItem("Neossolo Quartzarenico", terrain::SoilType::Neossolo_Quartzarenico, landscape::SoilSubOrder::Quartzarenico);
         
         ImGui::Dummy(ImVec2(0,2));
 
-        LegendItem("Gleissolo Haplico", 0.35f, 0.45f, 0.55f);
-        LegendItem("Gleissolo Melanico", 0.15f, 0.15f, 0.20f);
+        LegendItem("Gleissolo Haplico", terrain::SoilType::Gleissolo, landscape::SoilSubOrder::Haplic);
+        LegendItem("Gleissolo Melanico", terrain::SoilType::Gleissolo, landscape::SoilSubOrder::Melanico);
         
         ImGui::Unindent();
         

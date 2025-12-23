@@ -271,13 +271,21 @@ void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
     int h = map.getHeight();
 
     // SCORPAN Semantic Mapping
-    // S = f(C,O,R,P,A,N)
-    // Here we classify the emergent State S (grid) into SoilType enums
+    // Prefer the canonical SiBCS classification stored in landscape::SoilGrid (soil_system).
+    // Fallback to a lightweight heuristic only if SoilGrid is not in SiBCS range yet.
     #pragma omp parallel for collapse(2)
     for (int z = 0; z < h; ++z) {
         for (int x = 0; x < w; ++x) {
             int idx = z * w + x;
-            
+
+            // Fast path: already classified by SoilSystem/SiBCSClassifier.
+            uint8_t stored = grid->soil_type[idx];
+            if (stored >= static_cast<uint8_t>(landscape::SoilType::Latossolo) &&
+                stored <= static_cast<uint8_t>(landscape::SoilType::Organossolo)) {
+                map.setSoil(x, z, static_cast<SoilType>(stored));
+                continue;
+            }
+
             float depth = grid->depth[idx];
             float clay = grid->clay_fraction[idx];
             float sand = grid->sand_fraction[idx];
@@ -329,9 +337,12 @@ void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
                  type = SoilType::Organossolo;
                  sub = landscape::SoilSubOrder::Melanico;
             }
+
+            // Write back consistently to both terrain map (for minimap/legacy consumers)
+            // and landscape grid (for probe/renderer/palette).
             map.setSoil(x, z, type);
-            // Direct write to suborder vector (bypassing setSoil which only handles type)
-            if (grid) grid->suborder[idx] = static_cast<uint8_t>(sub);
+            grid->soil_type[idx] = static_cast<uint8_t>(type);
+            grid->suborder[idx] = static_cast<uint8_t>(sub);
         }
     }
     
