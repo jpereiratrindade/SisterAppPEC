@@ -2,7 +2,7 @@
 
 **Bounded Context:** `EcofunctionalLandscape`
 **Subdomínio:** Core Domain (Simulação Física & Ecológica)
-**Data:** 22 de Dezembro de 2025
+**Data:** 23 de Dezembro de 2025
 
 ---
 

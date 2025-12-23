@@ -184,6 +184,8 @@ void SoilPhysicsService::applyTopographyToTexture(SoilMineralState& mineral, con
 }
 
 SiBCSOrder SiBCSClassifier::classify(const SoilState& state, const Relief& relief) const {
+    const Relief topo = sanitize_relief(relief);
+
     // 1. Organossolo (High Carbon)
     // SiBCS: > 80g/kg (8%) Corg if clayey, or > 12-14% if sandy. Simplified to 8%.
     double total_carbon = state.organic.labile_carbon + state.organic.recalcitrant_carbon;
@@ -195,7 +197,7 @@ SiBCSOrder SiBCSClassifier::classify(const SoilState& state, const Relief& relie
     // Proxy: Water Content > 90% Field Capacity AND Slope < 3% AND Concave/Valley
     // Note: Water content fluctuates, so we rely on topography potential for glaciations.
     if (state.hydric.water_content >= state.hydric.field_capacity * 0.9 && 
-        relief.slope < 0.03 && relief.curvature > 0.0) {
+        topo.slope < 0.03 && topo.curvature > 0.0) {
         return SiBCSOrder::kGleissolo;
     }
 
@@ -203,23 +205,20 @@ SiBCSOrder SiBCSClassifier::classify(const SoilState& state, const Relief& relie
     // Litólico: Depth < 50cm
     // Quartzarênico: Sand > 90% (Deep)
     if (state.mineral.depth < 0.5) return SiBCSOrder::kNeossoloLit;
-    if (state.mineral.sand_fraction > 0.85 && state.mineral.depth > 0.5) return SiBCSOrder::kNeossoloQuartz;
+    if (state.mineral.sand_fraction > 0.85 && state.mineral.depth >= 0.5) return SiBCSOrder::kNeossoloQuartz;
 
-    // 4. Latossolo (Deep, Weathered)
-    // Depth > 100cm (often >> 2m)
-    // Advanced weathering (Low Silt/Clay ratio, but here we check weathering rate proxy or just depth/color)
-    // High Porosity/Infiltration usually.
-    if (state.mineral.depth > 1.5) {
-        return SiBCSOrder::kLatossolo;
+    // 4. Argissolo (Textural Gradient / Clay accumulation proxy)
+    // Needs enough depth to express a subsurface horizon.
+    if (state.mineral.depth >= 0.8 && state.mineral.clay_fraction > 0.28) {
+        return SiBCSOrder::kArgissolo;
     }
 
-    // 5. Argissolo (Textural Gradient)
-    // Ideally needs Bt horizon check (Clay_B / Clay_A > 1.2).
-    // We simulate this if we have moderate depth and are not Latossolo.
-    // Or if we specifically detect clay accumulation.
-    // For now, if Clay > 30% and not Latossolo/Glei.
-    if (state.mineral.clay_fraction > 0.30) {
-        return SiBCSOrder::kArgissolo;
+    // 5. Latossolo (Deep, Weathered)
+    // Require very deep + low-to-moderate clay and relatively stable relief so it doesn't dominate.
+    if (state.mineral.depth >= 1.5 &&
+        state.mineral.clay_fraction >= 0.12 && state.mineral.clay_fraction <= 0.28 &&
+        topo.slope <= 0.20) {
+        return SiBCSOrder::kLatossolo;
     }
 
     // Default: Cambissolo (Incipient B)

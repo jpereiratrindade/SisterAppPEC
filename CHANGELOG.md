@@ -1,5 +1,15 @@
 # Changelog
 
+## [v4.5.1] - 2025-12-23
+### Fixed
+- **Soil Regeneration Mismatch**: Fixed a bug where regenerating the terrain in "Simulation Mode" (SCORPAN) would revert the underlying data to default/legacy types while the UI Probe showed correct types. The generator now correctly classifies the refreshed map using SiBCS types immediately.
+- **Probe vs Visual Consistency**: Resolved an enum mismatch (Legacy vs SiBCS) in `TerrainGenerator` that caused visual "grey" soil artifacts despite valid physics.
+
+## [v4.5.0] - 2025-12-23
+### Visual & Verification
+- **Soil Palette Revert**: Restored the "Realistic" soil color palette as the default, replacing the experimental "Vibrant" palette to align with scientific visualization goals.
+- **Documentation Overhaul**: Comprehensive update of `manual_tecnico_modelos.md`, `manual_teorico_sistemas.md`, and DDD documents to reflect the unified Soil-Geology architecture (SCORPAN v2.0).
+
 ## [v4.4.2] - 2025-12-22
 ### Improvements
 - **Interactive Geology**: Added real-time sliders to customize Lithology Vectors (Weathering, Fertility, Texture Bias).

@@ -1,24 +1,24 @@
-# SisterApp Engine v4.3.0
+# SisterApp Engine v4.5.0
 Plataforma de Ecologia Computacional
 
-> **De Engine Gráfica para Laboratório Digital**: V4.3.0 consolida a plataforma com uma interface científica otimizada e feedback de aprendizado de máquina em tempo real.
+> **De Engine Gráfica para Laboratório Digital**: V4.5.0 consolida a arquitetura SCORPAN, ferramentas interativas de Geologia e validação de padrões ecofuncionais.
 
 SisterApp é uma **Plataforma de Ecologia Computacional** de alto desempenho (C++/Vulkan) focada em simular dinâmicas de paisagem (Hidrologia, Pedologia, Geomorfologia) e validar hipóteses ecológicas através de métricas espaciais rigorosas (LSI, CF, RCC).
 
 Desenvolvido por **José Pedro Trindade**.
 
-![Version](https://img.shields.io/badge/version-4.3.0-orange.svg)
+![Version](https://img.shields.io/badge/version-4.5.0-orange.svg)
 ![Vulkan](https://img.shields.io/badge/Vulkan-1.3-red.svg)
 ![Status](https://img.shields.io/badge/Status-Stable-green.svg)
 
 ---
 
-## 🎯 What's New (v4.3.0)
-- **Unified Inspector UI**: Transitioned from floating windows to a professional **Toolbar + Inspector** architecture.
-    - **Context-Aware**: Inspector content adapts dynamically to the selected domain tool (Terrain, Hydro, Soil, Veg).
+## 🎯 What's New (v4.5.0)
+- **Interactive Geology (SCORPAN P-Vector)**: User-defined "Parent Material" with real-time sliders for Weathering Rate, Base Fertility, and Texture Bias.
+- **Dual Soil Interface**: Seamless switching between "Geometric Mode" (Slope-based/Legacy) and "Simulation Mode" (SCORPAN Vector-based) for comparative analysis.
+- **Unified Inspector UI**: Professional **Toolbar + Inspector** architecture with context-aware controls for Terrain, Hydro, Soil, and Vegetation.
     - **Layout Control**: Resizeable and movable panels for custom workspace organization.
-- **ML Hub Feedback**: Real-time dataset size tracking and training status indicators for all integrated ML models.
-- **Improved Workflow**: Streamlined experience for rapid iteration on generated landscapes.
+- **Verification & Validation**: restored "Realistic" soil palette for accurate pedological visualization and refined "Pattern Integrity" metrics.
 
 ### 🌍 Integrated Ecofunctional Landscape Model
 The environment is now driven by the **SCORPAN Vector Architecture** ($S = f(s,c,o,r,p,a,n)$), where users define the inputs (Vectors) to generate complex soil and vegetation dynamics:

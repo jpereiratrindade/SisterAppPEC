@@ -26,10 +26,10 @@ public:
      * @brief Build the GPU mesh from the terrain map.
      * Use generateMeshData + uploadMesh for async loading.
      */
-    void buildMesh(const terrain::TerrainMap& map, float gridScale = 1.0f, const ml::MLService* mlService = nullptr, int soilMode = 0);
+    void buildMesh(const terrain::TerrainMap& map, float gridScale = 1.0f, const ml::MLService* mlService = nullptr, int soilMode = 0, bool useMLColor = false);
 
     // Async Support
-    static MeshData generateMeshData(const terrain::TerrainMap& map, float gridScale = 1.0f, const ml::MLService* mlService = nullptr, int soilMode = 0);
+    static MeshData generateMeshData(const terrain::TerrainMap& map, float gridScale = 1.0f, const ml::MLService* mlService = nullptr, int soilMode = 0, bool useMLColor = false);
     void uploadMesh(const MeshData& data);
 
     /**

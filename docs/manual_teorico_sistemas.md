@@ -1,7 +1,7 @@
 # Manual Teórico de Sistemas (SisterApp)
 
-**Versão:** 1.0 (Ref: v4.3.10)
-**Data:** 22 de Dezembro de 2025
+**Versão:** 1.2 (Ref: v4.5.0)
+**Data:** 23 de Dezembro de 2025
 
 Este documento detalha as bases teóricas e equações matemáticas implementadas nos subsistemas físicos do SisterApp. O objetivo é fornecer transparência sobre as aproximações e modelos científicos utilizados na simulação.
 
@@ -11,8 +11,10 @@ Este documento detalha as bases teóricas e equações matemáticas implementada
 
 O sistema de solos é responsável por definir as propriedades estáticas e dinâmicas da camada superficial. Em vez de simular processos geológicos de milhões de anos, utilizamos uma abordagem heurística baseada em **correlação topográfica** (Pedometria).
 
-## 1.1. Modelo Topográfico (Fator 'r' do *scorpan*)
-A distribuição dos solos é modelada primariamente em função do **Relevo** ($r$), especificamente a declividade local ($\text{slope}$). Implementamos uma heurística de diferença máxima de altura ($H$) entre os 4 vizinhos diretos (Von Neumann neighborhood).
+## 1.1. Modelo Topográfico e Interação Litológica ($P \times R$)
+Historicamente, a distribuição dos solos foi modelada primariamente em função do **Relevo** ($r$). Na versão SCORPAN v2.0, o sistema evolui para considerar a interação entre o relevo e o **Material de Origem** ($p$).
+
+Ainda assim, a **declividade local** ($\text{slope}$) permanece um driver fundamental da erosão e pedogênese. Implementamos uma heurística de diferença máxima de altura ($H$) entre os 4 vizinhos:
 
 $$
 \text{slope}(x,y) = \max_{k \in \{N,S,E,W\}} |H(x,y) - H(n_k)|

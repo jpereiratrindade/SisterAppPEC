@@ -15,7 +15,15 @@ enum class SoilType : uint8_t {
     Argila,
     BemDes,
     Raso,
-    Rocha
+    Rocha,
+    // SiBCS Types (v4.5.8) - Must match landscape::SoilType for casting
+    Latossolo = 10,
+    Argissolo = 11,
+    Cambissolo = 12,
+    Neossolo_Litolico = 13,
+    Neossolo_Quartzarenico = 14,
+    Gleissolo = 15,
+    Organossolo = 16
 };
 
 struct TerrainConfig {

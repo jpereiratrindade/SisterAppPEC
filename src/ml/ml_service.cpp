@@ -38,8 +38,29 @@ void MLService::init() {
         
         float output = predict("soil_color", input);
         
-        // Map scalar [0,1] to Color Gradient
-        return Eigen::Vector3f(1.0f - output, output, 0.2f); 
+        // Map scalar [0,1] to Color Gradient (Blue -> Yellow -> Red)
+        // 0.0 (Wet/Shallow) -> Blue
+        // 0.5 (Mesic) -> Yellow
+        // 1.0 (Dry/Deep) -> Red
+        
+        float t = std::clamp(output, 0.0f, 1.0f);
+        float r, g, b;
+        
+        if (t < 0.5f) {
+            // Blue (0,0,1) to Yellow (1,1,0)
+            float localT = t * 2.0f;
+            r = localT;
+            g = localT;
+            b = 1.0f - localT;
+        } else {
+            // Yellow (1,1,0) to Red (1,0,0)
+            float localT = (t - 0.5f) * 2.0f;
+            r = 1.0f;
+            g = 1.0f - localT;
+            b = 0.0f;
+        }
+        
+        return Eigen::Vector3f(r, g, b); 
     }
 
     // Runoff Wrapper

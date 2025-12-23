@@ -907,18 +907,6 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
         ImGui::TextWrapped("Derived from curvature/slope. Drives erosion/deposition.");
         
         ImGui::Spacing();
-        if (ImGui::TreeNode("Scenario Presets")) {
-            if (ImGui::Button("Arid (Generic)")) {
-                ctx.soilClimate.rain_intensity = 0.2;
-                ctx.soilClimate.seasonality = 0.8;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Wet (Generic)")) {
-                ctx.soilClimate.rain_intensity = 0.9;
-                ctx.soilClimate.seasonality = 0.2;
-            }
-            ImGui::TreePop();
-        }
     }
 
     ImGui::Separator();
@@ -960,26 +948,33 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
     }
 
     // Only show SCORPAN Results for Simulation Mode
-    if (ctx.showSoilVis && ctx.soilClassificationMode == 1) {
-        ImGui::Text("SCORPAN Results (Emergent State S)");
-        ImGui::Indent();
-        ImGui::TextWrapped("Visualization represents the continuous state vector S, evolved from factors P, R, C, O, A.");
+	    if (ctx.showSoilVis && ctx.soilClassificationMode == 1) {
+	        ImGui::Text("SiBCS Classification (SCORPAN Derived)");
+	        ImGui::Indent();
+	        ImGui::TextWrapped("Discrete soil classes emerging from continuous properties.");
+	
+	        if (ctx.showMLSoil) {
+	            ImGui::TextColored(ImVec4(1.0f, 0.85f, 0.2f, 1.0f),
+	                               "ML visualization is active: map colors show ML prediction, not SiBCS classes.");
+	        }
+	        
+	        ImGui::Separator();
+	        ImGui::TextDisabled("Legend:");
         
-        ImGui::Separator();
-        ImGui::TextDisabled("Color Interpretation:");
-        
-        // Gradient Legend Helpers
-        ImGui::ColorButton("##cDark", ImVec4(0.2f, 0.15f, 0.1f, 1.0f)); ImGui::SameLine(); 
-        ImGui::Text("Dark/Black: High Organic Matter (Biomass)");
-        
-        ImGui::ColorButton("##cRed", ImVec4(0.6f, 0.2f, 0.1f, 1.0f)); ImGui::SameLine(); 
-        ImGui::Text("Red/Orange: Oxidized/Clay (Weathering)");
-        
-        ImGui::ColorButton("##cLight", ImVec4(0.7f, 0.7f, 0.5f, 1.0f)); ImGui::SameLine(); 
-        ImGui::Text("Light/Grey: Sandy/Leached (Parent Material)");
-        
-        ImGui::ColorButton("##cBlue", ImVec4(0.0f, 0.3f, 0.5f, 1.0f)); ImGui::SameLine(); 
-        ImGui::Text("Blueish: Saturated/Gleyed (Reduction)");
+        // Helper to draw color box
+        auto LegendItem = [](const char* name, float r, float g, float b) {
+            ImGui::ColorButton(name, ImVec4(r, g, b, 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
+            ImGui::SameLine();
+            ImGui::Text("%s", name);
+        };
+
+        LegendItem("Latossolo (Vermelho)", 0.63f, 0.24f, 0.16f);
+        LegendItem("Argissolo (Amarelo/Vermelho)", 0.71f, 0.39f, 0.24f);
+        LegendItem("Cambissolo (Marrom)", 0.55f, 0.43f, 0.27f);
+        LegendItem("Neossolo Lit. (Cinza)", 0.47f, 0.47f, 0.39f);
+        LegendItem("Neossolo Quartz. (Areia)", 0.86f, 0.82f, 0.71f);
+        LegendItem("Gleissolo (Azul)", 0.31f, 0.39f, 0.47f);
+        LegendItem("Organossolo (Preto)", 0.16f, 0.12f, 0.12f);
         
         ImGui::Unindent();
         
@@ -1161,14 +1156,26 @@ void UiLayer::drawMLInspector(UiFrameContext& ctx) {
     ImGui::Separator();
     ImGui::Text("Model Registry:");
 
-    if (ImGui::CollapsingHeader("1. Soil Color (Pedology)", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGui::Checkbox("Use ML for Visualization", &ctx.showMLSoil);
-        ImGui::SameLine();
-        ImGui::TextDisabled("(Takes over texture generation)");
-        
-        ImGui::Text("Dataset: %zu samples", ctx.mlDatasetSize);
-        if (ImGui::Button("Collect Samples##Soil")) callbacks_.mlCollectData(ctx.mlSampleCount);
-        ImGui::SameLine();
+	    if (ImGui::CollapsingHeader("1. Soil Color (Pedology)", ImGuiTreeNodeFlags_DefaultOpen)) {
+	        ImGui::Checkbox("Use ML for Visualization", &ctx.showMLSoil);
+	        ImGui::SameLine();
+	        ImGui::TextDisabled("(Takes over texture generation)");
+	
+	        if (ctx.showMLSoil) {
+	            ImGui::TextDisabled("Legend (ML Gradient):");
+	            auto legendSwatch = [](const char* id, float r, float g, float b, const char* label) {
+	                ImGui::ColorButton(id, ImVec4(r, g, b, 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
+	                ImGui::SameLine();
+	                ImGui::TextUnformatted(label);
+	            };
+	            legendSwatch("##mlLow", 0.0f, 0.0f, 1.0f, "Low (blue)");
+	            legendSwatch("##mlMid", 1.0f, 1.0f, 0.0f, "Mid (yellow)");
+	            legendSwatch("##mlHigh", 1.0f, 0.0f, 0.0f, "High (red)");
+	        }
+	        
+	        ImGui::Text("Dataset: %zu samples", ctx.mlDatasetSize);
+	        if (ImGui::Button("Collect Samples##Soil")) callbacks_.mlCollectData(ctx.mlSampleCount);
+	        ImGui::SameLine();
         if (ctx.mlDatasetSize > 0) {
             if (ImGui::Button("Train Model##Soil")) callbacks_.mlTrainModel(ctx.mlTrainingEpochs, ctx.mlLearningRate);
         } else {

@@ -3,7 +3,7 @@
 **Contexto:** `SisterApp::Landscape::Soil`
 **Definição:** Sistema definido por Vetores de Dados Parametrizáveis.
 **Versão:** SCORPAN v2.0 (Consolidada)
-**Data:** 22 de Dezembro de 2025
+**Data:** 23 de Dezembro de 2025
 
 ---
 
@@ -99,6 +99,10 @@ Define a **Conectividade**.
  *   **Natureza:** Complexa e dinâmica. Resultado da equação $S = f(P, R, C, O, A, N)$.
  *   **Uso:** Análise ecossistêmica, validação de hipóteses e cenários de mudança climática.
  *   **Visualização:** O sistema renderiza o estado atual de $S$, que pode ou não coincidir com a geometria, dependendo do tempo de evolução ($A$).
+
+ ### 4.3 Estratégia de Cores (Palette Policy)
+ *   **Padrão:** "Realistic" (Cores desaturadas, baseadas em Munsell Soil Charts).
+ *   **Objetivo:** Evitar a "gamificação" da visualização científica. Latossolos são vermelhos ocre, não vermelho RGB puro. A paleta "Vibrant" foi depreciada na v4.5.0 em favor do rigor visual.
 
 ---
 

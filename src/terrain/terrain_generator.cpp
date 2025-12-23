@@ -287,19 +287,21 @@ void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
             SoilType type = SoilType::Rocha;
 
             if (depth < 0.2f) {
-                type = SoilType::Rocha;
+                type = SoilType::Rocha; // Or Neossolo Litolico if rocky
             } else if (depth < 0.6f) {
-                type = SoilType::Raso;
+                type = SoilType::Neossolo_Litolico;
             } else {
                 // Deeper soils, classify by texture and organic content
                 if (clay > 0.35f) {
-                    type = SoilType::Argila;
+                    type = SoilType::Argissolo; // Clay rich B horizon
                 } else if (clay > 0.20f && sand < 0.5f) {
-                    type = SoilType::BTextural;
-                } else if (om > 0.15f) { // Arbitrary target for "rich"
-                    type = SoilType::Hidromorfico; 
+                    type = SoilType::Cambissolo; // Incipient B
+                } else if (om > 0.15f || depth < 0.0f) { // Arbitrary target for "rich" or waterlogged
+                    type = SoilType::Gleissolo; 
+                } else if (sand > 0.7f) {
+                    type = SoilType::Neossolo_Quartzarenico;
                 } else {
-                    type = SoilType::BemDes;
+                    type = SoilType::Latossolo; // Deep, weathered
                 }
             }
 

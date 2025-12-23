@@ -19,12 +19,14 @@ namespace landscape {
         static void update(SoilGrid& grid, float dt);
 
         // v4.5.2: Evaluation with external drivers
+        // v4.5.2: Evaluation with external drivers (Time-Sliced)
         static void update(SoilGrid& grid, 
                            float dt, 
                            const Climate& climate, 
                            const OrganismPressure& pressure,
                            const ParentMaterial& parent,
-                           const terrain::TerrainMap& terrain);
+                           const terrain::TerrainMap& terrain,
+                           int startRow = -1, int endRow = -1);
     };
 
 } // namespace landscape

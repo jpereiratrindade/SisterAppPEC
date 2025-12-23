@@ -22,8 +22,8 @@ TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass 
     // Material initialized.
 
 // 1. Refactored buildMesh to use helper
-void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService, int soilMode) {
-    MeshData data = generateMeshData(map, gridScale, mlService, soilMode);
+void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService, int soilMode, bool useMLColor) {
+    MeshData data = generateMeshData(map, gridScale, mlService, soilMode, useMLColor);
     uploadMesh(data);
 }
 
@@ -32,7 +32,7 @@ void TerrainRenderer::uploadMesh(const MeshData& data) {
     mesh_ = std::make_unique<graphics::Mesh>(ctx_, data.vertices, data.indices);
 }
 
-TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService, int soilMode) {
+TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService, int soilMode, bool useMLColor) {
     int w = map.getWidth();
     int h = map.getHeight();
     
@@ -96,51 +96,39 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
                 float clay = soil->clay_fraction[idx]; // 0..1
                 float sand = soil->sand_fraction[idx]; // 0..1
                 
-                // Heuristic from Legend (4 Colors):
-                // 1. Textural Base (Sand vs Clay)
-                // Normalize texture: sand + clay + silt = 1.0 (approx)
-                float totalTex = sand + clay + 0.001f;
-                float rawClayRatio = clay / totalTex; // 0=Sand, 1=Clay
+                // v4.5.8: Force Semantic Coloring (SiBCS Map)
+                // The user explicitly requested to see the Classification, not the blend.
+                auto storedType = static_cast<terrain::SoilType>(soil->soil_type[idx]);
                 
-                // v4.5.5: Contrast Stretch (Sigmoid) to separate Sand/Clay visualy
-                // Center around 0.4 (typical Loam), stretch by 5x
-                float clayRatio = 1.0f / (1.0f + std::exp(-10.0f * (rawClayRatio - 0.4f)));
-
-                // Sand: (0.9, 0.85, 0.7) - Light Beige
-                // Clay: (0.8, 0.3, 0.2) - Strong Terracotta Red (More saturated)
-                float r = 0.9f * (1.0f - clayRatio) + 0.8f * clayRatio;
-                float g = 0.85f * (1.0f - clayRatio) + 0.3f * clayRatio;
-                float b = 0.7f * (1.0f - clayRatio) + 0.2f * clayRatio;
-
-                // 2. Organic Matter (Biomass) -> Darkening
-                // OM typically 0-10%. Boost visual impact massively.
-                // Anything > 2% should be visibly dark.
-                float omFactor = std::clamp(om * 20.0f, 0.0f, 0.9f); // Max 90% darkness
+                // Get Color from Palette (SiBCS definitions)
+                float rgb[3];
+                // using terrain::SoilPalette via absolute include or verify if included
+                // We need to verify include. If not present, we can't use SoilPalette static.
+                // Assuming we add the include or just hardcode the mapping here for safety/speed 
+                // to avoid include hell if TerrainRenderer doesn't know SoilPalette.
+                // But Renderer usually knows simple types.
+                // Let's assume we can include it. If not, I will add the include in a separate step or just copy logic.
+                // Copying logic is safer to avoid rebuilds of headers.
                 
-                // Non-linear dark: 
-                r *= (1.0f - omFactor);
-                g *= (1.0f - omFactor);
-                b *= (1.0f - omFactor);
-
-                // 3. Water (Reduction/Gleying) -> Blueish/Grey Tint
-                // Use water_content_soil if available in struct, else skip
-                float wetness = soil->water_content_soil[idx];
-                // Saturation usually > 0.3 (Field Capacity). 
-                float saturation = std::clamp((wetness - 0.1f) / 0.4f, 0.0f, 1.0f);
+                switch(storedType) {
+                    case terrain::SoilType::Latossolo:            rgb[0]=0.63f; rgb[1]=0.24f; rgb[2]=0.16f; break; // Deep Red
+                    case terrain::SoilType::Argissolo:            rgb[0]=0.71f; rgb[1]=0.39f; rgb[2]=0.24f; break; // Red-Yellow
+                    case terrain::SoilType::Cambissolo:           rgb[0]=0.55f; rgb[1]=0.43f; rgb[2]=0.27f; break; // Brown
+                    case terrain::SoilType::Neossolo_Litolico:    rgb[0]=0.47f; rgb[1]=0.47f; rgb[2]=0.39f; break; // Grey-Brown
+                    case terrain::SoilType::Neossolo_Quartzarenico: rgb[0]=0.86f; rgb[1]=0.82f; rgb[2]=0.71f; break; // Sand
+                    case terrain::SoilType::Gleissolo:            rgb[0]=0.31f; rgb[1]=0.39f; rgb[2]=0.47f; break; // Blue-Grey
+                    case terrain::SoilType::Organossolo:          rgb[0]=0.16f; rgb[1]=0.12f; rgb[2]=0.12f; break; // Black
+                    default: 
+                        rgb[0]=0.5f; rgb[1]=0.5f; rgb[2]=0.5f; break;
+                }
                 
-                // Wet Soil is Darker + Blue tint
-                // Target Blue-Grey: (0.1, 0.1, 0.3)
-                r = r * (1.0f - saturation * 0.4f) + 0.1f * (saturation * 0.4f);
-                g = g * (1.0f - saturation * 0.4f) + 0.1f * (saturation * 0.4f);
-                b = b * (1.0f - saturation * 0.4f) + 0.3f * (saturation * 0.4f);
-                
-                v.color[0] = std::clamp(r, 0.0f, 1.0f);
-                v.color[1] = std::clamp(g, 0.0f, 1.0f);
-                v.color[2] = std::clamp(b, 0.0f, 1.0f);
+                v.color[0] = rgb[0];
+                v.color[1] = rgb[1];
+                v.color[2] = rgb[2];
             }
             
             // v4.0.0 ML Override (Optional - takes precedence if active)
-            if (mlService && map.getLandscapeSoil()) {
+            if (mlService && useMLColor && map.getLandscapeSoil()) {
                 int idx = z * w + x;
                 auto* soil = map.getLandscapeSoil();
                 float d = soil->depth[idx];

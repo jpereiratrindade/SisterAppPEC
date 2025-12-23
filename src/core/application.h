@@ -210,9 +210,13 @@ namespace core {
         int vegetationMode_ = 1; // Default to Realistic (1)
         vegetation::DisturbanceRegime disturbanceParams_; // Default constructor has sensible defaults?
         
-        // v3.9.1 Throttle Vegetation Updates
-        Uint32 lastVegetationUpdateMs_ = 0;
-        Uint32 vegetationUpdateIntervalMs_ = 200; // 5Hz (conservative to break death spiral)
+        // v3.9.1 Throttle Vegetation Updates (Optimized for Large Maps)
+        float vegUpdateTimer_ = 0.0f; // Accumulator
+        float vegUpdateInterval_ = 0.1f; // 10Hz (0.1s)
+        
+        // v4.5.9 Time Slicing State
+        int currentSoilRow_ = 0;
+        const int constSoilSliceRows_ = 32; // Reduced from 128 to 32 for 2048+ maps
         
         // v4.0: Landscape Integration
         float rainIntensity_ = 50.0f; // mm/h (Heavy Rain for Testing)

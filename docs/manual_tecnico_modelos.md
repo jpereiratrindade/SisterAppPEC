@@ -1,13 +1,13 @@
-# SisterApp: Plataforma de Ecologia Computacional v4.2.1
+# SisterApp: Plataforma de Ecologia Computacional v4.5.0
 ## Manual Técnico de Modelos Computacionais
 
 **Autor:** José Pedro Trindade  
-**Data:** 19 de Dezembro de 2025
+**Data:** 23 de Dezembro de 2025
 
 ---
 
 # 1. Introdução
-O **SisterApp** evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão 3.8.0 consolida ferramentas de navegação, análise de paisagem e validação métrica. A versão 3.8.4 remove definitivamente o suporte a Voxel para focar em terrenos de alta fidelidade (Finite World). A versão atual **v4.2.0** introduz uma arquitetura genérica de Machine Learning e suporte a múltiplos modelos preditivos (Hidrologia e Pedologia).
+O **SisterApp** evoluiu de uma engine gráfica para uma plataforma científica robusta focada em ecologia computacional. A versão **v4.5.0** consolida a arquitetura **SCORPAN** como o núcleo de simulação, permitindo a definição interativa de vetores geológicos (P) e a alternância fluida entre modelos geométricos (legacy) e simulados. Além disso, introduz validação rigorosa de padrões espaciais e integração avançada de Machine Learning.
 
 
 # 2. Arquitetura do Sistema e Fluxo de Dados
@@ -337,68 +337,51 @@ O usuário pode ajustar o tamanho métrico de cada célula (pixel) da grade de s
 
 O sistema ajusta automaticamente a visualização e a lógica de interação (raycasting) para manter a coerência espacial independentemente da escala escolhida.
 
-# 11. Módulo de Análise de Solos (V3.7.3)
-O sistema inclui agora uma camada de pedologia probabilística baseada na declividade, conforme a tabela de relação Relevo-Solo definida pelo usuário.
+# 11. Módulo de Solos e Geologia (SCORPAN v2.0)
+A versão v4.5.0 reformula o sistema de solos utilizando a arquitetura **SCORPAN**, onde o solo não é apenas uma textura pintada, mas o resultado emergente de fatores de formação. O sistema oferece **Dois Modos de Operação** distintos para visualização e análise.
 
-## 10.1. Metodologia: Ruído Coerente e Métricas de Paisagem (v3.8.0)
-Para reproduzir os padrões espaciais descritos pelos índices de Ecologia da Paisagem (LSI, CF, RCC), o sistema substituiu a distribuição aleatória simples por um algoritmo de **Competição de Padrões** baseado em ruído procedural (Perlin/Simplex).
+## 11.1. Dual Soil Interface (Modos de Visualização)
+O usuário pode alternar em tempo de real (via Inspector) entre duas verdades epistemológicas:
 
-Cada tipo de solo possui um "perfil de ruído" configurado para mimetizar suas métricas (Ver Tabela 2):
-*   **Domain Warping (Distorção):** Simula o LSI. Solos com alto LSI sofrem forte distorção de coordenadas, criando bordas complexas.
-*   **Frequência e Rugosidade:** Simulam o CF. Solos com alto CF utilizam mais oitavas de ruído fractal.
-*   **Anisotropia (Estiramento):** Simula o RCC. Solos com baixo RCC são esticados em um eixo para criar formas alongadas.
+### A. Modo Geométrico (Legacy/Geometric)
+*   **Base:** Apenas topografia (Slope).
+*   **Regra:** Mapeamento direto `Declividade -> Classe`.
+*   **Uso:** Análise rápida de aptidão de terras ou cenários onde a geologia é homogênea/irrelevante.
+*   **Classes Fixas:** Plano, Suave, Ondulado, Forte, Montanhoso.
 
-O solo final em cada pixel é determinado por uma competição onde o tipo com maior "força" de padrão local vence. O resultado é posteriormente validado pelo **PatternIntegrityValidator** (Domínio Soberano) para garantir que as manchas resultantes respeitem os envelopes estruturais (Ver Seção 11).
+### B. Modo Simulação (SCORPAN Vector)
+*   **Base:** Interação entre Vetor P (Geologia) e Vetor R (Relevo).
+*   **Regra:** $S = f(P, R, C, \dots)$.
+*   **Uso:** Simulação ecossistêmica realista, onde a rocha mãe influencia a textura e fertilidade.
+*   **Exemplo:** Uma área plana (Slope < 3%) pode ser um *Neossolo Litólico* se a geologia for "Granito Resistente" com baixo intemperismo, algo impossível no modo Geométrico.
 
-## 10.2. Minimap e Navegação Interativa
-A versão 3.8.0 introduz um Minimapa e controles de câmera aprimorados para facilitar a navegação e a compreensão espacial.
-*   **Visualização Top-Down:** Renderiza o mapa de solos e relevo com neblina de guerra (Fog of War) simulada pela distância.
-*   **Símbolos (Alegorias):** Um algoritmo de detecção de picos identifica máximos locais na topografia e desenha pequenos triângulos brancos, fornecendo referências visuais "game-like" para orientação.
-*   **Nível da Água (Water Level):** Visualização configurável de zonas submersas (Azul), permitindo identificar depressões e lagos mesmo antes da simulação hidrológica.
-*   **Controles:**
-    *   **Zoom:** Roda do mouse ajusta o Campo de Visão (FOV) no modo voo livre.
-    *   **Minimap Zoom/Pan:** Roda do mouse e botão do meio dentro da janela do minimapa.
-    *   **Teleporte:** Clique com botão esquerdo no minimapa para viagem rápida.
+## 11.2. Interactive Geology (Vetor P)
+O usuário agora controla diretamente os atributos do **Material de Origem** na aba "Soil & Geology":
 
-## 10.3. Classes e Cores
-*   **Plano (0-3%):** Hidromórfico (Teal), B Textural (Laranja), Argila Expansiva (Roxo).
-*   **Suave (3-8%):** B Textural, Bem Desenvolvido (Terracota), Argila Expansiva.
-*   **Ondulado (8-20%):** B Textural, Argila Expansiva.
-*   **Forte (20-45%):** B Textural, Solo Raso (Amarelo).
-*   **Montanhoso (45-75%):** Solo Raso (Amarelo).
-*   **Escarpado ($>75\%$):** Afloramento Rochoso (Cinza).
+*   **Weathering Rate (0-1):** Facilidade da rocha em virar solo.
+    *   *Baixo:* Gera solos rasos e afloramentos rochosos.
+    *   *Alto:* Gera solos profundos (Latossolos) mesmo em declives moderados.
+*   **Base Fertility (0-1):** Reserva de nutrientes.
+    *   Afeta o crescimento vegetal (Vetor O).
+*   **Texture Bias (Sand/Clay):** Tendência granulométrica.
+    *   *Areia:* Alta infiltração, baixa retenção (Arenitos).
+    *   *Argila:* Baixa infiltração, alta retenção (Basaltos).
 
-### Tabela: Descritores de estrutura espacial das manchas de solo (Farina)
+## 11.3. Metodologia de Padrões Espaciais
+Para reproduzir os padrões espaciais descritos pelos índices de Ecologia da Paisagem (LSI, CF, RCC), o sistema utiliza um algoritmo de **Competição de Padrões** baseado em ruído procedural.
+
+### Tabela: Assinaturas Espaciais (Farina)
 
 | Tipo de Solo | LSI | CF | RCC |
 | :--- | :---: | :---: | :---: |
-| Solo Raso | 5434.91 | 2.49 | 0.66 |
-| Bem Desenvolvido | 2508.07 | 2.36 | 0.68 |
-| Hidromórfico | 3272.30 | 2.27 | 0.65 |
-| Argila Expansiva | 1827.24 | 2.84 | 0.64 |
-| B--Textural | 2766.09 | 3.36 | 0.66 |
+| Solo Raso | ~5.4 | ~2.5 | 0.66 |
+| Bem Desenvolvido | ~2.5 | ~2.4 | 0.68 |
+| Hidromórfico | ~3.3 | ~2.3 | 0.65 |
 
-**Nota:**
-LSI = Índice de Forma da Paisagem (_Landscape Shape Index_); CF = Complexidade da Forma; RCC = Coeficiente de Circularidade Relativa.
-
-### Descritores de forma das manchas
-
-A estrutura espacial das manchas de solo foi caracterizada por descritores clássicos da Ecologia da Paisagem, conforme proposto por Farina (1998, 2006).
-
-**Índice de Forma da Paisagem (LSI)**
-O LSI expressa a complexidade geométrica das manchas a partir da relação entre perímetro e área:
-$$ LSI = \frac{P}{2\sqrt{\pi A}} $$
-Valores próximos de 1 indicam formas simples.
-
-**Complexidade da Forma (CF)**
-Representa o grau de irregularidade geométrica:
-$$ CF = \frac{P}{A} $$
-Valores elevados indicam formas alongadas ou dendríticas.
-
-**Coeficiente de Circularidade Relativa (RCC)**
-Avalia a proximidade com um círculo perfeito:
-$$ RCC = \frac{4\pi A}{P^{2}} $$
-Varia entre 0 e 1 (1 = círculo).
+**Nota:** 
+*   **LSI (Landscape Shape Index)**: Complexidade (Perímetro/Área).
+*   **CF (Complexity Factor)**: Rugosidade Fractal.
+*   **RCC (Related Circumscribing Circle)**: Elongação/Isotropia.
 
 # 12. Validação de Integridade de Padrões de Manchas (DDD)
 Este domínio é **soberano** na definição e validação da integridade espacial dos padrões de manchas de solo. Ele não gera paisagens, mas delimita o espaço do possível ecológico.

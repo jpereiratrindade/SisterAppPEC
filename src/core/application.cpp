@@ -654,47 +654,17 @@ void Application::processEvents(double dt) {
                                  int idx = hitZ * finiteMap_->getWidth() + hitX;
                                  
                                  // Reconstruct State for Classification
-                                 landscape::SoilMineralState minState;
-                                 minState.sand_fraction = soil->sand_fraction[idx];
-                                 minState.clay_fraction = soil->clay_fraction[idx];
-                                 // Silt implied
-                                 
-                                 landscape::TextureClass tex = landscape::classify_texture(minState);
-                                 
-                                 switch(tex) {
-                                     case landscape::TextureClass::kSand: soilType = "Sand (Areia)"; break;
-                                     case landscape::TextureClass::kLoamySand: soilType = "Loamy Sand (Areia Franca)"; break;
-                                     case landscape::TextureClass::kSandyLoam: soilType = "Sandy Loam (Franco-Arenoso)"; break;
-                                     case landscape::TextureClass::kLoam: soilType = "Loam (Franco)"; break;
-                                     case landscape::TextureClass::kSiltLoam: soilType = "Silt Loam (Franco-Siltoso)"; break;
-                                     case landscape::TextureClass::kSilt: soilType = "Silt (Silte)"; break;
-                                     case landscape::TextureClass::kSandyClayLoam: soilType = "Sandy Clay Loam (Franco-Argilo-Arenoso)"; break;
-                                     case landscape::TextureClass::kClayLoam: soilType = "Clay Loam (Franco-Argiloso)"; break;
-                                     case landscape::TextureClass::kSiltyClayLoam: soilType = "Silty Clay Loam (Franco-Argilo-Siltoso)"; break;
-                                     case landscape::TextureClass::kSandyClay: soilType = "Sandy Clay (Argilo-Arenoso)"; break;
-                                     case landscape::TextureClass::kSiltyClay: soilType = "Silty Clay (Argilo-Siltoso)"; break;
-                                     case landscape::TextureClass::kClay: soilType = "Clay (Argila)"; break;
-                                     default: soilType = "Mixed (Misto)"; break;
-                                 }
-                                 
-                                 // v4.5.8: Append SiBCS Classification if available
-                                 // We cast the stored uint8_t back to SoilType to check if it's a SiBCS type
+                                 // v4.5.8: Probe Logic - Pure SiBCS (No USDA)
                                  auto storedType = static_cast<const landscape::SoilType>(soil->soil_type[idx]);
                                  switch(storedType) {
-                                     case landscape::SoilType::Latossolo: soilType += " [SiBCS: Latossolo]"; break;
-                                     case landscape::SoilType::Argissolo: soilType += " [SiBCS: Argissolo]"; break;
-                                     case landscape::SoilType::Cambissolo: soilType += " [SiBCS: Cambissolo]"; break;
-                                     case landscape::SoilType::Neossolo_Litolico: soilType += " [SiBCS: Neossolo Litólico]"; break;
-                                     case landscape::SoilType::Neossolo_Quartzarenico: soilType += " [SiBCS: Neossolo Quartzarênico]"; break;
-                                     case landscape::SoilType::Gleissolo: soilType += " [SiBCS: Gleissolo]"; break;
-                                     case landscape::SoilType::Organossolo: soilType += " [SiBCS: Organossolo]"; break;
-                                     default: break; // Keep texture name only
-                                 }
-                                 
-                                 // Append dominant feature if 'Unknown' but has bias
-                                 if (tex == landscape::TextureClass::kUnknown) {
-                                     if (minState.sand_fraction > 0.4) soilType += " - Sandy";
-                                     else if (minState.clay_fraction > 0.3) soilType += " - Clayey";
+                                     case landscape::SoilType::Latossolo: soilType = "Latossolo"; break;
+                                     case landscape::SoilType::Argissolo: soilType = "Argissolo"; break;
+                                     case landscape::SoilType::Cambissolo: soilType = "Cambissolo"; break;
+                                     case landscape::SoilType::Neossolo_Litolico: soilType = "Neossolo Litolico"; break;
+                                     case landscape::SoilType::Neossolo_Quartzarenico: soilType = "Neossolo Quartzarenico"; break;
+                                     case landscape::SoilType::Gleissolo: soilType = "Gleissolo"; break;
+                                     case landscape::SoilType::Organossolo: soilType = "Organossolo"; break;
+                                     default: soilType = "Indefinido (SiBCS)"; break; 
                                  }
                              } else {
                                  soilType = "SCORPAN (No Data)";
@@ -816,8 +786,8 @@ void Application::processEvents(double dt) {
                               auto* hydro = finiteMap_->getLandscapeHydro();
                               int idx = hitZ * finiteMap_->getWidth() + hitX;
                               if (idx >= 0 && idx < hydro->water_depth.size()) {
-                                  float dtSim = vegetationUpdateIntervalMs_ / 1000.0f;
-                                  if (dtSim <= 0.0001f) dtSim = 0.2f; // Safety
+                                  float dtSim = vegUpdateInterval_;
+                                  if (dtSim <= 0.0001f) dtSim = 0.1f; // Safety
                                   
                                   // Convert m/step to mm/h
                                   // flow_flux [m] / dt [s] = m/s
@@ -1049,59 +1019,65 @@ void Application::update(double dt) {
     // v3.9.0 Vegetation Simulation
     // v3.9.0 Vegetation & Landscape Simulation
     if (finiteMap_) {
-        // v3.9.1 Throttle Updates (Wall Clock to avoid dt spiral)
-        if (nowMs - lastVegetationUpdateMs_ >= vegetationUpdateIntervalMs_) {
-            lastVegetationUpdateMs_ = nowMs;
-            
             auto* veg = finiteMap_->getVegetation();
             auto* soil = finiteMap_->getLandscapeSoil();
             auto* hydro = finiteMap_->getLandscapeHydro();
-            
-            // Performance Profiling
-            Uint32 t0 = SDL_GetTicks();
-            
-            float dtSim = vegetationUpdateIntervalMs_ / 1000.0f;
 
-            // v4.0: Integrated Landscape Loop
-            // 1. Hydro (Rain -> Runoff -> Erosion) - Runs regardless of Veg Mode
-            if (soil && hydro && veg) {
-                landscape::HydroSystem::update(*hydro, *soil, *veg, rainIntensity_, dtSim);
-            }
-
-            // 2. Soil (Weathering/Evolution)
-            if (soil) {
-                landscape::SoilSystem::update(*soil, dtSim, soilClimate_, soilOrganism_, soilParentMaterial_, *finiteMap_);
-            }
+            // v3.9.1 Throttling: Run Simulation at 10Hz (0.1s)
+            // Reduced update frequency prevents CPU saturation on large maps (2048+)
+            vegUpdateTimer_ += static_cast<float>(dt);
             
-            // 3. Vegetation (Growth/Recovery) & Disturbance
-            // Only run detailed Vegetation Dynamics if we have a valid grid
-            if (veg && veg->isValid()) { // Ensure veg is valid
-                  // 0. Disturbance (Fire)
-                  if (disturbanceParams_.fireFrequency > 0.0f) {
-                      float prob = disturbanceParams_.fireFrequency * dtSim;
-                      if ((float)rand() / RAND_MAX < prob) {
-                          disturbanceParams_.type = vegetation::DisturbanceType::Fire;
-                          vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
-                          std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
-                      }
-                  }
+             // 1. Time-Sliced Soil Update (Reduces main thread load)
+             // We process a chunk of rows every frame instead of the whole map
+             if (soil) {
+                 int mapH = finiteMap_->getHeight();
+                 int endRow = currentSoilRow_ + constSoilSliceRows_;
+                 if (endRow > mapH) endRow = mapH;
+                 
+                 // Update Slice
+                 landscape::SoilSystem::update(*soil, static_cast<float>(dt), soilClimate_, soilOrganism_, soilParentMaterial_, *finiteMap_, currentSoilRow_, endRow);
+                 
+                 // Advance Slice
+                 currentSoilRow_ = endRow;
+                 if (currentSoilRow_ >= mapH) currentSoilRow_ = 0;
+             }
 
-                  // Growth
-                  vegetation::VegetationSystem::update(*veg, dtSim, disturbanceParams_, soil, hydro);
+             // v3.9.1 Throttling: Run Vegetation/Hydro at 10Hz (0.1s)
+             vegUpdateTimer_ += static_cast<float>(dt);
             
-                  // Upload to GPU if visualizing (or always? Keeps texture valid for probing)
-                  // Let's update always to safe-guard probing
-                  if (finiteRenderer_) {
-                      finiteRenderer_->updateVegetation(*veg);
-                  }
-                  Uint32 t2 = SDL_GetTicks();
-                  
-                  // Log if slow (>10ms)
-                  if (t2 - t0 > 10) {
-                       // std::cout << "[Perf] Sim Update: " << (t2-t0) << "ms" << std::endl;
-                  }
+             if (vegUpdateTimer_ >= vegUpdateInterval_) {
+                 float dtSim = vegUpdateTimer_; // Use actual time passed
+                 
+                 // 2. Hydro (Global Flow - needs consistent state, harder to slice)
+                 if (soil && hydro && veg) {
+                     landscape::HydroSystem::update(*hydro, *soil, *veg, rainIntensity_, dtSim);
+                 }
+     
+                 // Soil was handled by time-slice
+                 
+                 // 3. Vegetation (Growth/Recovery) & Disturbance
+                 if (veg && veg->isValid()) { 
+                       // Disturbance (Fire)
+                       if (disturbanceParams_.fireFrequency > 0.0f) {
+                           float prob = disturbanceParams_.fireFrequency * dtSim;
+                           if ((float)rand() / RAND_MAX < prob) {
+                               disturbanceParams_.type = vegetation::DisturbanceType::Fire;
+                               vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
+                               std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
+                           }
+                       }
+     
+                       // Growth
+                       vegetation::VegetationSystem::update(*veg, dtSim, disturbanceParams_, soil, hydro);
+                 
+                       // Upload to GPU - ONLY when simulation updated
+                       if (finiteRenderer_) {
+                           finiteRenderer_->updateVegetation(*veg);
+                       }
+                 }
+                 
+                 vegUpdateTimer_ = 0.0f;
             }
-        }
     }
 
     // Update animations
@@ -1287,6 +1263,12 @@ void Application::render(size_t frameIndex) {
          std::array<float, 16> mvpArray;
          std::copy(std::begin(mvp), std::end(mvp), mvpArray.begin());
 
+         // When visualizing SCORPAN/SiBCS soils, keep the soil palette visible by disabling vegetation overrides.
+         int vegetationModeForRender = vegetationMode_;
+         if (showSoilVis_ && soilClassificationMode_ == 1) {
+             vegetationModeForRender = 0;
+         }
+
          finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), 
           /* slope */ showSlopeAnalysis_,
     /* drainage */ showDrainage_, drainageIntensity_,
@@ -1295,7 +1277,7 @@ void Application::render(size_t frameIndex) {
     showSoilVis_ && (soilClassificationMode_ == 0),
     /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_, 
     /* visual */ sunAzimuth_, sunElevation_, fogDensity_, lightIntensity_,
-    /* vegetation */ uvScale, vegetationMode_); // v3.9.0
+    /* vegetation */ uvScale, vegetationModeForRender); // v3.9.0
     }
 
     ui::UiFrameContext uiCtx{
@@ -1474,7 +1456,7 @@ void Application::performMeshUpdate() {
     vkDeviceWaitIdle(ctx_->device());
 
     std::cout << "[SisterApp] Performing deferred mesh update..." << std::endl;
-    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_, showMLSoil_ ? mlService_.get() : nullptr, soilClassificationMode_);
+    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_, mlService_.get(), soilClassificationMode_, showMLSoil_);
     
     meshUpdateRequested_ = false;
 }
@@ -1510,13 +1492,19 @@ void Application::performRegeneration() {
             // v4.0.0: Initialize Landscape Systems
             gen->generateLandscape(*map);
 
+            // v4.5.11: Transform Vectors to Soil Types immediately if in SCORPAN mode
+            if (currentSoilMode == 1) {
+                gen->classifySoilFromSCORPAN(*map);
+            }
+
             // v3.9.0: Initialize Vegetation (Async)
             if (map->getVegetation()) {
                 vegetation::VegetationSystem::initialize(*map->getVegetation(), config.seed);
             }
 
             // 4. Prepare Mesh Data (CPU Heavy)
-            auto meshData = shape::TerrainRenderer::generateMeshData(*map, config.resolution, this->showMLSoil_ ? this->mlService_.get() : nullptr, currentSoilMode);
+            // v4.5.10: Explicitly pass showMLSoil to prevent unwanted color overrides
+            auto meshData = shape::TerrainRenderer::generateMeshData(*map, config.resolution, this->mlService_.get(), currentSoilMode, this->showMLSoil_);
 
             // 5. Output to Background Members (Thread Safe? No, member access needs care.)
             // Since main thread checks "future.valid/ready" and doesn't touch these until then, 

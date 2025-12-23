@@ -87,12 +87,18 @@ namespace landscape {
                 // Initial Pedogenesis Guess based on Rock + Slope
                 float weatheringPotential = rockDef.weathering_rate * (1.0f - std::min(1.0f, slope * 0.1f));
                 
-                // Depth logic
-                if (slope > 2.0f) { // Steep
-                     grid.depth[i] = 0.1f + dis(gen) * 0.2f;
-                } else {
-                     grid.depth[i] = (0.5f + weatheringPotential) * (1.0f + dis(gen)*0.5f);
-                }
+                // Depth logic (Continuous)
+                // Slope impacts depth exponentially. Flat -> Deep, Steep -> Shallow.
+                float maxDepth = (0.5f + weatheringPotential) * 2.5f; // Potential up to ~3m
+                float depthFactor = std::exp(-slope * 10.0f); // High sensitivity (matches 5 relief classes)
+                
+                // Add noise to depth
+                float depthNoise = 0.8f + dis(gen) * 0.4f; // +/- 20%
+                
+                grid.depth[i] = maxDepth * depthFactor * depthNoise;
+                
+                // Ensure Min/Max sanity
+                if (grid.depth[i] < 0.1f) grid.depth[i] = 0.1f;
 
                 // ---------------------------------------------------------
                 // 1. Base Texture Generation (SCORPAN)
@@ -200,14 +206,21 @@ namespace landscape {
                             const Climate& climate, 
                             const OrganismPressure& pressure,
                             const ParentMaterial& parent,
-                            const terrain::TerrainMap& terrain) {
+                            const terrain::TerrainMap& terrain,
+                            int startRow, int endRow) {
+        
         
         int w = grid.width;
         int h = grid.height;
+        
+        // Time Slicing Defaults
+        if (startRow < 0) startRow = 0;
+        if (endRow < 0 || endRow > h) endRow = h;
+        
         PedogenesisService pedogenesis;
 
         #pragma omp parallel for collapse(2)
-        for (int y = 0; y < h; ++y) {
+        for (int y = startRow; y < endRow; ++y) {
             for (int x = 0; x < w; ++x) {
                 int i = y * w + x;
                 
@@ -252,26 +265,35 @@ namespace landscape {
                 grid.organic_matter[i] = grid.labile_carbon[i] + grid.recalcitrant_carbon[i];
                 grid.infiltration[i] = grid.conductivity[i] * 1000.0f; // Scale approx
 
-                // Update Type
-                TextureClass tex = classify_texture(next.mineral);
-                switch(tex) {
-                    case TextureClass::kSand: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Sandy_Loam); break; // Approx? No, add Sand type?
-                    case TextureClass::kLoamySand: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Sandy_Loam); break;
-                    case TextureClass::kSandyLoam: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Sandy_Loam); break;
-                    case TextureClass::kLoam: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Silt_Loam); break; 
-                    case TextureClass::kSiltLoam: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Silt_Loam); break;
-                    case TextureClass::kSilt: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Silt_Loam); break;
+                // 3. Update Type Classification (SiBCS v4.5.8)
+                SiBCSClassifier sibcsClassifier;
+                
+                SoilState classifierState;
+                classifierState.mineral.depth = grid.depth[i];
+                classifierState.mineral.sand_fraction = grid.sand_fraction[i];
+                classifierState.mineral.clay_fraction = grid.clay_fraction[i];
+                
+                classifierState.organic.labile_carbon = grid.labile_carbon[i];
+                classifierState.organic.recalcitrant_carbon = grid.recalcitrant_carbon[i];
+                classifierState.hydric.water_content = grid.water_content_soil[i];
+                classifierState.hydric.field_capacity = grid.field_capacity[i];
 
-                    case TextureClass::kSandyClay: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Sandy_Clay); break;
-                    case TextureClass::kSiltyClay: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Silty_Clay); break;
-                    case TextureClass::kClay: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Clay); break;
-                    case TextureClass::kClayLoam: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Clay_Loam); break;
-                    case TextureClass::kSandyClayLoam: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Sandy_Clay_Loam); break;
-                    case TextureClass::kSiltyClayLoam: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Silty_Clay_Loam); break;
-                    default: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Silt_Loam); break;
+                SiBCSOrder sibcs = sibcsClassifier.classify(classifierState, relief);
+
+                switch(sibcs) {
+                    case SiBCSOrder::kLatossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Latossolo); break;
+                    case SiBCSOrder::kArgissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Argissolo); break;
+                    case SiBCSOrder::kCambissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Cambissolo); break;
+                    case SiBCSOrder::kNeossoloLit: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Litolico); break;
+                    case SiBCSOrder::kNeossoloQuartz: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Quartzarenico); break;
+                    case SiBCSOrder::kGleissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Gleissolo); break;
+                    case SiBCSOrder::kOrganossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Organossolo); break;
+                    default: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Cambissolo); break;
                 }
-                if (grid.depth[i] < 0.2f) grid.soil_type[i] = static_cast<uint8_t>(SoilType::Rocky);
-                if (grid.organic_matter[i] > 0.8f) grid.soil_type[i] = static_cast<uint8_t>(SoilType::Peat);
+                // Keep `soil_type` on the SiBCS namespace for SCORPAN mode (avoid mixing legacy IDs like Rocky/Peat).
+                // If needed, these edge cases should map to the closest SiBCS order.
+                if (grid.depth[i] < 0.2f) grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Litolico);
+                if (grid.organic_matter[i] > 0.8f) grid.soil_type[i] = static_cast<uint8_t>(SoilType::Organossolo);
 
             }
         }
