@@ -293,49 +293,46 @@ void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
             float om = grid->labile_carbon[idx] + grid->recalcitrant_carbon[idx];
 
             SoilType type = SoilType::Rocha;
-            landscape::SoilSubOrder sub = landscape::SoilSubOrder::None; // v4.5.1
+            landscape::SiBCSSubOrder sub = landscape::SiBCSSubOrder::kNone; // v4.5.1
 
             if (depth < 0.2f) {
-                type = SoilType::Rocha; // Or Neossolo Litolico if rocky
-                sub = landscape::SoilSubOrder::Litolico;
+                type = SoilType::Rocha;
+                sub = landscape::SiBCSSubOrder::kLitolico;
             } else if (depth < 0.6f) {
                 type = SoilType::Neossolo_Litolico;
-                sub = landscape::SoilSubOrder::Litolico;
+                sub = landscape::SiBCSSubOrder::kLitolico;
             } else {
                 // Deeper soils, classify by texture and organic content
                 if (clay > 0.35f) {
                     type = SoilType::Argissolo; // Clay rich B horizon
                     // Suborder Logic for Argissolo
-                    if (depth > 1.5f || clay > 0.6f) sub = landscape::SoilSubOrder::Vermelho;
-                    else sub = landscape::SoilSubOrder::Vermelho_Amarelo;
+                    if (depth > 1.5f || clay > 0.6f) sub = landscape::SiBCSSubOrder::kVermelho;
+                    else sub = landscape::SiBCSSubOrder::kVermelhoAmarelo;
 
                 } else if (clay > 0.20f && sand < 0.5f) {
                     type = SoilType::Cambissolo; // Incipient B
-                    sub = landscape::SoilSubOrder::Haplic;
-                } else if (om > 0.03f && depth < 0.0f) { // FIX: Use same threshold (0.03) and saturation check proxy
-                    // Note: Here "depth < 0.0f" is placeholder for water table check. 
-                    // To match System logic, we need to respect the "Gleissolo" override logic if implemented
-                    // But for initialization, let's keep it simple or align thresholds.
+                    sub = landscape::SiBCSSubOrder::kHaplic;
+                } else if (om > 0.03f && depth < 0.0f) { 
                     type = SoilType::Gleissolo; 
-                    if (om > 0.03f) sub = landscape::SoilSubOrder::Melanico;
-                    else sub = landscape::SoilSubOrder::Haplic;
+                    if (om > 0.03f) sub = landscape::SiBCSSubOrder::kMelanico;
+                    else sub = landscape::SiBCSSubOrder::kHaplic;
 
                 } else if (sand > 0.7f) {
                     type = SoilType::Neossolo_Quartzarenico;
-                    sub = landscape::SoilSubOrder::Quartzarenico;
+                    sub = landscape::SiBCSSubOrder::kQuartzarenico;
                 } else {
                     type = SoilType::Latossolo; // Deep, weathered
                      // Latossolo Suborders based on Parent Material (Simulated)
-                    if (sand > 0.4f) sub = landscape::SoilSubOrder::Vermelho_Amarelo;
-                    else if (sand < 0.2f) sub = landscape::SoilSubOrder::Vermelho; // Clayey = Usually Red
-                    else sub = landscape::SoilSubOrder::Amarelo;
+                    if (sand > 0.4f) sub = landscape::SiBCSSubOrder::kVermelhoAmarelo;
+                    else if (sand < 0.2f) sub = landscape::SiBCSSubOrder::kVermelho; // Clayey = Usually Red
+                    else sub = landscape::SiBCSSubOrder::kAmarelo;
                 }
             }
             
             // Override for strict consistency with System:
             if (om > 0.08f) { // Logic from SiBCSClassifier
                  type = SoilType::Organossolo;
-                 sub = landscape::SoilSubOrder::Melanico;
+                 sub = landscape::SiBCSSubOrder::kMelanico;
             }
 
             // Write back consistently to both terrain map (for minimap/legacy consumers)
