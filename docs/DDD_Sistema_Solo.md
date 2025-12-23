@@ -100,6 +100,22 @@ Define a **Conectividade**.
  *   **Uso:** Análise ecossistêmica, validação de hipóteses e cenários de mudança climática.
  *   **Visualização:** O sistema renderiza o estado atual de $S$, que pode ou não coincidir com a geometria, dependendo do tempo de evolução ($A$).
 
+ ### 4.3 Taxonomia SiBCS (Implementação v4.5.1)
+ O modelo SCORPAN alimenta um classificador taxonômico que traduz o Vetor S em classes do Sistema Brasileiro de Classificação de Solos (SiBCS), operando em dois níveis:
+
+ #### 1º Nível: Ordem (Estrutura)
+ *   **Latossolo:** $D > 1.0m$, Alta Drenagem.
+ *   **Argissolo:** $D > 0.5m$, B-Textural (Incremento de Argila).
+ *   **Neossolo:** $D < 0.2m$ (Litólico) ou Areia > 90% (Quartzarênico).
+ *   **Gleissolo:** Lençol freático superficial (Hidromorfia).
+
+ #### 2º Nível: Subordem (Mineralogia e Química)
+ *   **Vermelho:** Rico em Hematita ($Fe_2O_3$). Comum em Latossolos/Argissolos derivados de Basalto.
+ *   **Amarelo:** Rico em Goethita ($FeOOH$). Comum em ambientes úmidos ou rochas ácidas.
+ *   **Litólico:** Contato rochoso raso (< 50cm).
+ *   **Melânico:** Horizonte A rico em matéria orgânica e cor escura.
+ *   **Háplico:** Modal, sem atributos diferenciais marcantes.
+
  ### 4.3 Estratégia de Cores (Palette Policy)
  *   **Padrão:** "Realistic" (Cores desaturadas, baseadas em Munsell Soil Charts).
  *   **Objetivo:** Evitar a "gamificação" da visualização científica. Latossolos são vermelhos ocre, não vermelho RGB puro. A paleta "Vibrant" foi depreciada na v4.5.0 em favor do rigor visual.

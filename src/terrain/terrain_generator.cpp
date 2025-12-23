@@ -304,9 +304,12 @@ void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
                 } else if (clay > 0.20f && sand < 0.5f) {
                     type = SoilType::Cambissolo; // Incipient B
                     sub = landscape::SoilSubOrder::Haplic;
-                } else if (om > 0.15f || depth < 0.0f) { // Arbitrary target for "rich" or waterlogged
+                } else if (om > 0.03f && depth < 0.0f) { // FIX: Use same threshold (0.03) and saturation check proxy
+                    // Note: Here "depth < 0.0f" is placeholder for water table check. 
+                    // To match System logic, we need to respect the "Gleissolo" override logic if implemented
+                    // But for initialization, let's keep it simple or align thresholds.
                     type = SoilType::Gleissolo; 
-                    if (om > 0.3f) sub = landscape::SoilSubOrder::Melanico;
+                    if (om > 0.03f) sub = landscape::SoilSubOrder::Melanico;
                     else sub = landscape::SoilSubOrder::Haplic;
 
                 } else if (sand > 0.7f) {
@@ -320,7 +323,12 @@ void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
                     else sub = landscape::SoilSubOrder::Amarelo;
                 }
             }
-
+            
+            // Override for strict consistency with System:
+            if (om > 0.08f) { // Logic from SiBCSClassifier
+                 type = SoilType::Organossolo;
+                 sub = landscape::SoilSubOrder::Melanico;
+            }
             map.setSoil(x, z, type);
             // Direct write to suborder vector (bypassing setSoil which only handles type)
             if (grid) grid->suborder[idx] = static_cast<uint8_t>(sub);

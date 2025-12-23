@@ -355,6 +355,22 @@ O usuário pode alternar em tempo de real (via Inspector) entre duas verdades ep
 *   **Uso:** Simulação ecossistêmica realista, onde a rocha mãe influencia a textura e fertilidade.
 *   **Exemplo:** Uma área plana (Slope < 3%) pode ser um *Neossolo Litólico* se a geologia for "Granito Resistente" com baixo intemperismo, algo impossível no modo Geométrico.
 
+### 11.1.1. Injeção de Subordens (SiBCS Nível 2)
+A partir da versão v4.5.1, o classificador não pára na "Ordem" (ex: Latossolo). Ele analisa atributos secundários do Vetor S para determinar a **Subordem**:
+
+**Lógica de Decisão:**
+1.  **Ordem:** Determinada por $d_{soil}$ (espessura) e B-Textural.
+2.  **Subordem:** Refina a classificação baseada na Mineralogia ($P$) e Matéria Orgânica ($O$).
+
+**Fluxograma Simplificado:**
+*   `Latossolo` $\to$ Se Areia < 20% (Argiloso) $\to$ **Vermelho** (Hematítico).
+*   `Latossolo` $\to$ Se Areia > 40% (Franco) $\to$ **Vermelho-Amarelo** (Goethítico).
+*   `Neossolo` $\to$ Se $d_{soil} < 20cm$ $\to$ **Litólico**.
+*   `Neossolo` $\to$ Se Areia > 90% $\to$ **Quartzarênico**.
+*   `Gleissolo` $\to$ Se $C_{org} > 3\%$ $\to$ **Melânico** (Caso contrário, **Háplico**).
+
+Esta granularidade permite diferenciar visualmente um *Latossolo Vermelho* (fértil, basáltico) de um *Latossolo Amarelo* (ácido, sedimentar), enriquecendo a tomada de decisão agronômica simulada.
+
 ## 11.2. Interactive Geology (Vetor P)
 O usuário agora controla diretamente os atributos do **Material de Origem** na aba "Soil & Geology":
 
