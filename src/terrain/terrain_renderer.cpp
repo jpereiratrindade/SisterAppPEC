@@ -1,5 +1,6 @@
 #include "terrain_renderer.h"
 #include "../ml/ml_service.h"
+#include "soil_palette.h"
 #include "../graphics/geometry_utils.h"
 #include <iostream>
 #include <cstring>
@@ -110,17 +111,9 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
                 // Let's assume we can include it. If not, I will add the include in a separate step or just copy logic.
                 // Copying logic is safer to avoid rebuilds of headers.
                 
-                switch(storedType) {
-                    case terrain::SoilType::Latossolo:            rgb[0]=0.63f; rgb[1]=0.24f; rgb[2]=0.16f; break; // Deep Red
-                    case terrain::SoilType::Argissolo:            rgb[0]=0.71f; rgb[1]=0.39f; rgb[2]=0.24f; break; // Red-Yellow
-                    case terrain::SoilType::Cambissolo:           rgb[0]=0.55f; rgb[1]=0.43f; rgb[2]=0.27f; break; // Brown
-                    case terrain::SoilType::Neossolo_Litolico:    rgb[0]=0.47f; rgb[1]=0.47f; rgb[2]=0.39f; break; // Grey-Brown
-                    case terrain::SoilType::Neossolo_Quartzarenico: rgb[0]=0.86f; rgb[1]=0.82f; rgb[2]=0.71f; break; // Sand
-                    case terrain::SoilType::Gleissolo:            rgb[0]=0.31f; rgb[1]=0.39f; rgb[2]=0.47f; break; // Blue-Grey
-                    case terrain::SoilType::Organossolo:          rgb[0]=0.16f; rgb[1]=0.12f; rgb[2]=0.12f; break; // Black
-                    default: 
-                        rgb[0]=0.5f; rgb[1]=0.5f; rgb[2]=0.5f; break;
-                }
+                // v4.5.1: Fix - Use Centralized Palette with Suborder Support
+                auto storedSub = static_cast<landscape::SoilSubOrder>(soil->suborder[idx]);
+                terrain::SoilPalette::getFloatColor(storedType, storedSub, rgb);
                 
                 v.color[0] = rgb[0];
                 v.color[1] = rgb[1];

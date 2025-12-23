@@ -8,7 +8,21 @@ namespace terrain {
 class SoilPalette {
 public:
     // Helper to get RGB components [0-255]
-    static void getColor(SoilType type, uint8_t& r, uint8_t& g, uint8_t& b) {
+    static void getColor(SoilType type, landscape::SoilSubOrder sub, uint8_t& r, uint8_t& g, uint8_t& b) {
+        // 1. Check Suborder overrides first (Level 2)
+        if (sub != landscape::SoilSubOrder::None && sub != landscape::SoilSubOrder::Haplic) {
+            switch(sub) {
+                case landscape::SoilSubOrder::Vermelho:         r=160; g=40;  b=30;  return; // Deep Red (Hematite)
+                case landscape::SoilSubOrder::Amarelo:          r=220; g=180; b=60;  return; // Yellow-Orange (Goethite)
+                case landscape::SoilSubOrder::Vermelho_Amarelo: r=190; g=110; b=50;  return; // Orange-Mix
+                case landscape::SoilSubOrder::Litolico:         r=120; g=115; b=110; return; // Grey-Brown (Rocky)
+                case landscape::SoilSubOrder::Quartzarenico:    r=230; g=220; b=190; return; // White/Pale Sand
+                case landscape::SoilSubOrder::Melanico:         r=50;  g=40;  b=40;  return; // Black/Dark (Organic)
+                default: break; // Fallback to Order
+            }
+        }
+
+        // 2. Fallback to Order Defaults (Level 1)
         switch(type) {
             case SoilType::Raso:          r=178; g=178; b=51;  break; // Yellow-Green
             case SoilType::BemDes:        r=128; g=38;  b=25;  break; // Reddish Brown
@@ -17,34 +31,44 @@ public:
             case SoilType::BTextural:     r=178; g=89;  b=13;  break; // Orange
             case SoilType::Rocha:         r=51;  g=51;  b=51;  break; // Dark Gray
             
-            // SiBCS Colors
-            case SoilType::Latossolo:            r=160; g=60;  b=40;  break; // Deep Red (Oxidized iron)
-            case SoilType::Argissolo:            r=180; g=100; b=60;  break; // Red-Yellow (Clay accumulation)
-            case SoilType::Cambissolo:           r=140; g=110; b=70;  break; // Brown (Incipient)
-            case SoilType::Neossolo_Litolico:    r=120; g=120; b=100; break; // Greyish-Brown (Shallow/Rocky)
-            case SoilType::Neossolo_Quartzarenico: r=220; g=210; b=180; break; // Pale Yellow/White (Sand)
-            case SoilType::Gleissolo:            r=80;  g=100; b=120; break; // Blue-Grey (Reduced iron)
-            case SoilType::Organossolo:          r=40;  g=30;  b=30;  break; // Very Dark Brown/Black
+            // SiBCS Colors (Generic fallback)
+            case SoilType::Latossolo:            r=170; g=80;  b=60;  break;
+            case SoilType::Argissolo:            r=180; g=100; b=60;  break;
+            case SoilType::Cambissolo:           r=140; g=110; b=70;  break;
+            case SoilType::Neossolo_Litolico:    r=120; g=120; b=100; break;
+            case SoilType::Neossolo_Quartzarenico: r=220; g=210; b=180; break;
+            case SoilType::Gleissolo:            r=100; g=120; b=140; break; // Grey-Blue
+            case SoilType::Organossolo:          r=40;  g=30;  b=30;  break;
             
-            case SoilType::None:          r=255; g=0;   b=255; break; // Magenta (Debug)
-            default:                      r=255; g=255; b=255; break; // White
+            case SoilType::None:          r=255; g=0;   b=255; break;
+            default:                      r=255; g=255; b=255; break;
         }
+    }
+    
+    // Legacy overload for backward compatibility
+    static void getColor(SoilType type, uint8_t& r, uint8_t& g, uint8_t& b) {
+        getColor(type, landscape::SoilSubOrder::None, r, g, b);
     }
 
     // Helper to get Packed Color for ImGui (0xAABBGGRR - Little Endian)
-    static uint32_t getPackedColor(SoilType type, uint8_t alpha = 255) {
+    static uint32_t getPackedColor(SoilType type, landscape::SoilSubOrder sub = landscape::SoilSubOrder::None, uint8_t alpha = 255) {
         uint8_t r, g, b;
-        getColor(type, r, g, b);
+        getColor(type, sub, r, g, b);
         return (uint32_t(alpha) << 24) | (uint32_t(b) << 16) | (uint32_t(g) << 8) | uint32_t(r);
     }
 
     // Helper to get Normalized Float Color (0.0 - 1.0)
-    static void getFloatColor(SoilType type, float* rgb) {
+    static void getFloatColor(SoilType type, landscape::SoilSubOrder sub, float* rgb) {
         uint8_t r, g, b;
-        getColor(type, r, g, b);
+        getColor(type, sub, r, g, b);
         rgb[0] = r / 255.0f;
         rgb[1] = g / 255.0f;
         rgb[2] = b / 255.0f;
+    }
+    
+    // Legacy overload for backward compatibility
+    static void getFloatColor(SoilType type, float* rgb) {
+        getFloatColor(type, landscape::SoilSubOrder::None, rgb);
     }
 };
 
