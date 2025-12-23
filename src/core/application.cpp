@@ -128,9 +128,20 @@ void Application::init() {
     graphics::createDistanceMarkers(markersVerts, markersIndices, 50, 10);
     distanceMarkersMesh_ = std::make_unique<graphics::Mesh>(*ctx_, markersVerts, markersIndices);
     
+    // v4.5.1 SCORPAN Defaults
+    soilClimate_.rain_intensity = 0.5;
+    soilClimate_.seasonality = 0.5;
+    soilOrganism_.max_cover = 0.6;
+    soilOrganism_.disturbance = 0.1;
+    soilParentMaterial_.weathering_rate = 0.3;
+    soilParentMaterial_.base_fertility = 0.5;
+    soilParentMaterial_.sand_bias = 0.4;
+    soilParentMaterial_.clay_bias = 0.2;
+    soilClassificationMode_ = 1; // Default to SCORPAN in new unified interface
+
     // --- V3.5.0: Finite World Initialization ---
     // Defaulting to Finite World
-    std::cout << "[SisterApp v4.1.1] Initializing Finite World (1024x1024)..." << std::endl;
+    std::cout << "[SisterApp v4.5.1] Initializing Unified Soil System (SCORPAN)..." << std::endl;
     finiteMap_ = std::make_unique<terrain::TerrainMap>(1024, 1024);
     // v3.7.8: Use Config Seed
     finiteGenerator_ = std::make_unique<terrain::TerrainGenerator>(currentSeed_);
@@ -259,6 +270,15 @@ void Application::init() {
              // Reuse existing seed from config
              // Note: terrainConfig_ stores generation config.
              landscape::SoilSystem::initialize(*finiteMap_->getLandscapeSoil(), deferredConfig_.seed, *finiteMap_);
+             if (finiteGenerator_) {
+                 if (soilClassificationMode_ == 0) {
+                     terrain::TerrainConfig config = deferredConfig_;
+                     config.resolution = worldResolution_;
+                     finiteGenerator_->classifySoil(*finiteMap_, config);
+                 } else {
+                     finiteGenerator_->classifySoilFromSCORPAN(*finiteMap_);
+                 }
+             }
              
              // Update Visuals
              // We need to trigger mesh update to refresh colors/textures
@@ -269,6 +289,7 @@ void Application::init() {
         // v4.5.0 Dual Soil Interface
         [this](int mode) { // switchSoilMode
              // 0 = Geometric (Legacy), 1 = SCORPAN (Vector)
+             soilClassificationMode_ = mode;
              std::cout << "[App] Switching Soil Mode to: " << (mode == 0 ? "Geometric" : "SCORPAN") << std::endl;
              if (finiteGenerator_ && finiteMap_) {
                  // Update the generator/service configuration
@@ -283,37 +304,49 @@ void Application::init() {
                  // If Mode 1: Run classifySoilFromSCORPAN (New)
                  
                  if (mode == 0) {
-                     terrain::TerrainConfig config; // Helper config
-                     // Reuse current slope config?
-                     finiteGenerator_->classifySoil(*finiteMap_, config); 
+                     terrain::TerrainConfig config = deferredConfig_;
+                     config.resolution = worldResolution_;
+                     finiteGenerator_->classifySoil(*finiteMap_, config);
                  } else {
-                     // TODO: Implement classifySoilFromSCORPAN
-                     // For now, we will just use the current soil map but maybe visualize it differently?
-                     // No, "The user ENABLEs" means we overwrite the SoilMap (semantic).
-                     // finiteGenerator_->classifySoilFromSCORPAN(*finiteMap_);
-                     // Placeholder:
-                     std::cout << "[App] SCORPAN Classification not fully implemented yet." << std::endl;
+                     finiteGenerator_->classifySoilFromSCORPAN(*finiteMap_);
                  }
                  meshUpdateRequested_ = true;
              }
         },
         // v4.0.0 ML Hooks
-        // [this](int samples) { ... } // Replaced by switchSoilMode in struct but strict order matters?
-        // Wait, I replaced mlCollectData in struct definition.
-        // So I need to match the order here.
-        // The struct has: switchSoilMode, mlTrainModel.
-        // I need to be careful not to break the initialization list.
-        [this](int epochs, float lr) { // mlTrainModel
+        [this](int epochs, float lr) { // mlTrainModel (Soil Color) - MOVED UP to match ui_layer.h
              if(mlService_ && !isTraining_) {
                  isTraining_ = true;
                  std::cout << "[SisterApp] Starting Async Training 'soil_color'..." << std::endl;
                  
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
-                     mlService_->trainModel("soil_color", epochs, lr); // Added modelName
+                     mlService_->trainModel("soil_color", epochs, lr);
                      // isTraining_ = false; // MOVED to Main Thread Check
                  });
              }
         },
+        [this](int samples) { // mlCollectData (Soil Color) - MOVED DOWN
+             if (!finiteMap_ || !mlService_) return;
+             std::cout << "[SisterApp] Collecting " << samples << " samples for 'soil_color'..." << std::endl;
+             std::srand(std::time(nullptr));
+             int w = finiteMap_->getWidth();
+             int h = finiteMap_->getHeight();
+             
+             for(int i=0; i<samples; ++i) {
+                 int x = std::rand() % w;
+                 int z = std::rand() % h;
+                 float d = finiteMap_->getLandscapeSoil()->depth[z*w+x];
+                 float om = finiteMap_->getLandscapeSoil()->organic_matter[z*w+x];
+                 float inf = finiteMap_->getLandscapeSoil()->infiltration[z*w+x] / 100.0f;
+                 float comp = finiteMap_->getLandscapeSoil()->compaction[z*w+x];
+                 
+                 // Ground Truth Heuristic
+                 float target = 0.5f * (d/2.0f) + 0.3f * (om/5.0f) + 0.2f * (1.0f - comp);
+                 mlService_->collectTrainingSample("soil_color", {d, om, inf, comp}, std::clamp(target, 0.0f, 1.0f));
+             }
+             std::cout << "[SisterApp] Dataset: " << mlService_->datasetSize("soil_color") << std::endl;
+        },
+
         // v4.2.0 Hydro ML Implementation
         [this](int samples) { // mlCollectHydroData
              if (!finiteMap_ || !mlService_) return;
@@ -336,15 +369,8 @@ void Application::init() {
                  }
                  
                  // Physics Ground Truth (Same logic as HydroSystem)
-                 // effectiveInfil = base * (1 + 2*biomass)
                  float effInfil = infilBase * (1.0f + 2.0f * biomass);
                  float runoff = std::max(0.0f, rain - effInfil);
-                 float target = runoff; // Predict absolute runoff mm/h? Or Ratio? Let's try Ratio: runoff/rain?
-                 // Let's predict Normalized Output? 
-                 // If we predict absolute, we need to normalize inputs.
-                 // Input Rain 0-100 -> Normalize / 100.
-                 // Input Infil 0-100 -> Normalize / 100.
-                 // Target Runoff 0-100 -> Normalize / 100.
                  
                  mlService_->collectTrainingSample("hydro_runoff", 
                     {rain/100.0f, effInfil/100.0f, biomass}, 
@@ -358,7 +384,6 @@ void Application::init() {
                  std::cout << "[SisterApp] Training 'hydro_runoff'..." << std::endl;
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
                      mlService_->trainModel("hydro_runoff", epochs, lr);
-                     // isTraining_ = false;
                  });
              }
         },
@@ -368,16 +393,10 @@ void Application::init() {
              if (!finiteMap_ || !mlService_ || !finiteMap_->getVegetation()) return;
              std::cout << "[SisterApp] Collecting " << samples << " samples for 'fire_risk'..." << std::endl;
              
-             auto* veg = finiteMap_->getVegetation();
              int w = finiteMap_->getWidth();
              int h = finiteMap_->getHeight();
              
              for(int i=0; i<samples; ++i) {
-                 int idx = std::rand() % (w * h);
-                 // 1. Randomize Inputs or Sample from Map?
-                 // To learn the equation P = Pbase + alpha*F, we need diverse inputs.
-                 // Let's generate synthetic inputs covering the domain [0,1]
-                 
                  float cEI = static_cast<float>(std::rand()) / RAND_MAX;
                  float cES = static_cast<float>(std::rand()) / RAND_MAX;
                  float vEI = static_cast<float>(std::rand()) / RAND_MAX;
@@ -385,11 +404,6 @@ void Application::init() {
                  
                  // 2. Calculate Ground Truth (DDD 3.9.2)
                  float deltaES = std::max(0.0f, 1.0f - vES);
-                 // Note: ES contribution is zero if vigor > 0.5 (delta < 0.5)
-                 // Or logic: "contribution is null if delta < 0.5" -> means vigor > 0.5
-                 // Formula: F_i = C_ES * (2 * deltaES) + C_EI * 0.3 * (1 - vEI)
-                 // But manual says: "Contribution of ES is null if delta < 0.5" -> Implies clamping?
-                 // Let's implement literally:
                  float termES = (deltaES < 0.5f) ? 0.0f : (cES * 2.0f * deltaES);
                  float termEI = cEI * 0.3f * (1.0f - vEI);
                  
@@ -406,7 +420,6 @@ void Application::init() {
                  std::cout << "[SisterApp] Training 'fire_risk'..." << std::endl;
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
                      mlService_->trainModel("fire_risk", epochs, lr);
-                     // isTraining_ = false;
                  });
              }
         },
@@ -421,24 +434,13 @@ void Application::init() {
                  float K = static_cast<float>(std::rand()) / RAND_MAX;
                  float V = static_cast<float>(std::rand()) / RAND_MAX;
                  
-                 // Ground Truth (DDD 3.9.1)
-                 // dC/dt = r * (K - C) * V
-                 // Normalized r=1.0 for prediction target? Or predict absolute rate?
-                 // Let's predict the factor (K-C)*V. The rate 'r' is a scaling constant.
-                 // Target: The "Growth Potential" [0-1]
-                 // Wait, if C > K, growth is negative.
-                 // Perceptron (Sigmoid) output is [0,1]. It cannot predict negative growth!
-                 // Solution: Predict "Next Step Coverage" or "Logistic Term + 0.5"?
-                 // Or just predict the positive growth component?
-                 // Actually, DDD says: C += r * (K-C) * V. 
-                 // If K < C, term is negative.
-                 // Simplification for Phase 2: Predict Growth Rate assuming C < K (Recovery Phase).
-                 // We will clamp target to >= 0 or shift it.
-                 // Let's predict: Growth Potential = (K - C) * V
-                 // If K < C, target is 0. 
+                 // Ground Truth Heuristic: Growth = C + K*V + (1-C)*Rand
+                 float cTerm = C * 0.1f; 
+                 float kTerm = K * V;    
+                 float target = cTerm + kTerm; 
+                 target += ((static_cast<float>(std::rand())/RAND_MAX) - 0.5f) * 0.05f;
                  
-                 float potential = (K > C) ? (K - C) * V : 0.0f;
-                 mlService_->collectTrainingSample("biomass_growth", {C, K, V}, potential);
+                 mlService_->collectTrainingSample("biomass_growth", {C, K, V}, std::clamp(target, 0.0f, 1.0f));
              }
              std::cout << "[SisterApp] Growth Dataset: " << mlService_->datasetSize("biomass_growth") << std::endl;
         },
@@ -448,7 +450,6 @@ void Application::init() {
                  std::cout << "[SisterApp] Training 'biomass_growth'..." << std::endl;
                  trainingFuture_ = std::async(std::launch::async, [this, epochs, lr]() {
                      mlService_->trainModel("biomass_growth", epochs, lr);
-                     // isTraining_ = false;
                  });
              }
         }
@@ -646,36 +647,95 @@ void Application::processEvents(double dt) {
                              std::memcpy(lastSurfaceColor_, c, 12);
                          };
 
-                         switch (soilId) {
-                             case terrain::SoilType::Hidromorfico:
-                                 soilType = "Hidromorfico";
-                                 setColor(0.0f, 0.3f, 0.3f);
-                                 break;
-                             case terrain::SoilType::BTextural:
-                                 soilType = "Horizonte B textural";
-                                 setColor(0.7f, 0.35f, 0.05f);
-                                 break;
-                             case terrain::SoilType::Argila:
-                                 soilType = "Presenca de argila expansiva";
-                                 setColor(0.4f, 0.0f, 0.5f);
-                                 break;
-                             case terrain::SoilType::BemDes:
-                                 soilType = "Solo bem desenvolvido";
-                                 setColor(0.5f, 0.15f, 0.1f);
-                                 break;
-                             case terrain::SoilType::Raso:
-                                 soilType = "Solo Raso";
-                                 setColor(0.7f, 0.7f, 0.2f);
-                                 break;
-                             case terrain::SoilType::Rocha:
-                                 soilType = "Afloramento rochoso";
-                                 setColor(0.2f, 0.2f, 0.2f);
-                                 break;
-                             default:
-                                 soilType = "Indefinido";
-                                 setColor(0.1f, 0.1f, 0.1f);
-                                 break;
-                         }
+                         // v4.5.1: Probe Logic depends on Mode
+                         if (soilClassificationMode_ == 1) {
+                             if (finiteMap_->getLandscapeSoil()) {
+                                 auto* soil = finiteMap_->getLandscapeSoil();
+                                 int idx = hitZ * finiteMap_->getWidth() + hitX;
+                                 
+                                 // Reconstruct State for Classification
+                                 landscape::SoilMineralState minState;
+                                 minState.sand_fraction = soil->sand_fraction[idx];
+                                 minState.clay_fraction = soil->clay_fraction[idx];
+                                 // Silt implied
+                                 
+                                 landscape::TextureClass tex = landscape::classify_texture(minState);
+                                 
+                                 switch(tex) {
+                                     case landscape::TextureClass::kSand: soilType = "Sand (Areia)"; break;
+                                     case landscape::TextureClass::kLoamySand: soilType = "Loamy Sand (Areia Franca)"; break;
+                                     case landscape::TextureClass::kSandyLoam: soilType = "Sandy Loam (Franco-Arenoso)"; break;
+                                     case landscape::TextureClass::kLoam: soilType = "Loam (Franco)"; break;
+                                     case landscape::TextureClass::kSiltLoam: soilType = "Silt Loam (Franco-Siltoso)"; break;
+                                     case landscape::TextureClass::kSilt: soilType = "Silt (Silte)"; break;
+                                     case landscape::TextureClass::kSandyClayLoam: soilType = "Sandy Clay Loam (Franco-Argilo-Arenoso)"; break;
+                                     case landscape::TextureClass::kClayLoam: soilType = "Clay Loam (Franco-Argiloso)"; break;
+                                     case landscape::TextureClass::kSiltyClayLoam: soilType = "Silty Clay Loam (Franco-Argilo-Siltoso)"; break;
+                                     case landscape::TextureClass::kSandyClay: soilType = "Sandy Clay (Argilo-Arenoso)"; break;
+                                     case landscape::TextureClass::kSiltyClay: soilType = "Silty Clay (Argilo-Siltoso)"; break;
+                                     case landscape::TextureClass::kClay: soilType = "Clay (Argila)"; break;
+                                     default: soilType = "Mixed (Misto)"; break;
+                                 }
+                                 
+                                 // v4.5.8: Append SiBCS Classification if available
+                                 // We cast the stored uint8_t back to SoilType to check if it's a SiBCS type
+                                 auto storedType = static_cast<const landscape::SoilType>(soil->soil_type[idx]);
+                                 switch(storedType) {
+                                     case landscape::SoilType::Latossolo: soilType += " [SiBCS: Latossolo]"; break;
+                                     case landscape::SoilType::Argissolo: soilType += " [SiBCS: Argissolo]"; break;
+                                     case landscape::SoilType::Cambissolo: soilType += " [SiBCS: Cambissolo]"; break;
+                                     case landscape::SoilType::Neossolo_Litolico: soilType += " [SiBCS: Neossolo Litólico]"; break;
+                                     case landscape::SoilType::Neossolo_Quartzarenico: soilType += " [SiBCS: Neossolo Quartzarênico]"; break;
+                                     case landscape::SoilType::Gleissolo: soilType += " [SiBCS: Gleissolo]"; break;
+                                     case landscape::SoilType::Organossolo: soilType += " [SiBCS: Organossolo]"; break;
+                                     default: break; // Keep texture name only
+                                 }
+                                 
+                                 // Append dominant feature if 'Unknown' but has bias
+                                 if (tex == landscape::TextureClass::kUnknown) {
+                                     if (minState.sand_fraction > 0.4) soilType += " - Sandy";
+                                     else if (minState.clay_fraction > 0.3) soilType += " - Clayey";
+                                 }
+                             } else {
+                                 soilType = "SCORPAN (No Data)";
+                             }
+                             
+                             // In SCORPAN mode, color is dynamic, handled by shader.
+                             // Just set a placeholder color for the UI box if used
+                             setColor(0.6f, 0.5f, 0.4f); 
+                         } else {
+                             // Legacy Geometric Classes
+                             switch (soilId) {
+                                 case terrain::SoilType::Hidromorfico:
+                                     soilType = "Hidromorfico";
+                                     setColor(0.0f, 0.3f, 0.3f);
+                                     break;
+                                 case terrain::SoilType::BTextural:
+                                     soilType = "Horizonte B textural";
+                                     setColor(0.7f, 0.35f, 0.05f);
+                                     break;
+                                 case terrain::SoilType::Argila:
+                                     soilType = "Presenca de argila expansiva";
+                                     setColor(0.4f, 0.0f, 0.5f);
+                                     break;
+                                 case terrain::SoilType::BemDes:
+                                     soilType = "Solo bem desenvolvido";
+                                     setColor(0.5f, 0.15f, 0.1f);
+                                     break;
+                                 case terrain::SoilType::Raso:
+                                     soilType = "Solo Raso";
+                                     setColor(0.7f, 0.7f, 0.2f);
+                                     break;
+                                 case terrain::SoilType::Rocha:
+                                     soilType = "Afloramento rochoso";
+                                     setColor(0.2f, 0.2f, 0.2f);
+                                     break;
+                                 default:
+                                     soilType = "Indefinido";
+                                     setColor(0.1f, 0.1f, 0.1f);
+                                     break;
+                             }
+                        }
                          
                          // v3.7.1: Expanded Probe Data
                          float elevation = finiteMap_->getHeight(hitX, hitZ);
@@ -697,6 +757,59 @@ void Application::processEvents(double dt) {
                               if (idx >= 0 && idx < soil->depth.size()) {
                                   ss << "Solo Depth: " << std::fixed << std::setprecision(2) << soil->depth[idx] << " m\n";
                                   ss << "Mat. Org: " << std::setprecision(2) << soil->organic_matter[idx] * 100.0f << "%\n";
+                                  
+                                  // v4.5.3: SCORPAN Debug View (Requested by User)
+                                  if (soilClassificationMode_ == 1 || true) { // Always show for now if available
+                                      ss << "\n--- SCORPAN FACTORS ---\n";
+                                      
+                                      // S - Soil (State)
+                                      ss << "[S] Soil State:\n";
+                                      ss << "  Sand: " << std::setprecision(2) << soil->sand_fraction[idx] * 100.0f << "%\n";
+                                      ss << "  Clay: " << soil->clay_fraction[idx] * 100.0f << "%\n";
+                                      ss << "  Compaction: " << soil->compaction[idx] * 100.0f << "%\n";
+                                      ss << "  Infiltration: " << soil->infiltration[idx] << " mm/h\n";
+
+                                      // C - Climate (Global Driver)
+                                      ss << "[C] Climate:\n";
+                                      ss << "  Rain Intensity: " << soilClimate_.rain_intensity << "\n";
+                                      ss << "  Seasonality: " << soilClimate_.seasonality << "\n";
+
+                                      // O - Organisms (Biotic)
+                                      ss << "[O] Organisms:\n";
+                                      ss << "  Pressure: " << soilOrganism_.max_cover << "\n";
+                                      ss << "  Disturbance: " << soilOrganism_.disturbance << "\n";
+                                      // Get actual Veg state if avail
+                                      if (finiteMap_->getVegetation() && finiteMap_->getVegetation()->isValid()) {
+                                          int vIdx = idx; // Same resolution assumed
+                                          if (vIdx < finiteMap_->getVegetation()->getSize()) {
+                                               float biomass = finiteMap_->getVegetation()->ei_coverage[vIdx] + finiteMap_->getVegetation()->es_coverage[vIdx];
+                                               ss << "  Local Biomass: " << biomass * 100.0f << "%\n";
+                                          }
+                                      }
+
+                                      // R - Relief (Topography)
+                                      ss << "[R] Relief:\n";
+                                      ss << "  Slope: " << slopePct << "%\n";
+                                      float aspect = std::atan2(dz_dz, dz_dx) * 180.0f / 3.14159f;
+                                      ss << "  Aspect: " << std::fixed << std::setprecision(1) << aspect << " deg\n";
+                                      ss << "  Elevation: " << elevation << "m\n";
+
+                                      // P - Parent Material (Lithology)
+                                      ss << "[P] Parent Material:\n";
+                                      int lithId = soil->lithology_id[idx];
+                                      ss << "  Lithology ID: " << lithId << "\n";
+                                      ss << "  Weathering Rate: " << soilParentMaterial_.weathering_rate << "\n";
+                                      ss << "  Base Fertility: " << soilParentMaterial_.base_fertility << "\n";
+
+                                      // A - Age (Time)
+                                      ss << "[A] Age:\n";
+                                      ss << "  Time: Mature (Steady State)\n"; // Placeholder
+
+                                      // N - Space (Position)
+                                      ss << "[N] Space:\n";
+                                      ss << "  Coord: (" << hitX << ", " << hitZ << ")\n";
+                                      ss << "---------------------------\n";
+                                  }
                               }
                          }
                          if (finiteMap_->getLandscapeHydro()) {
@@ -955,9 +1068,9 @@ void Application::update(double dt) {
                 landscape::HydroSystem::update(*hydro, *soil, *veg, rainIntensity_, dtSim);
             }
 
-            // 2. Soil (Compaction/Weathering)
+            // 2. Soil (Weathering/Evolution)
             if (soil) {
-                landscape::SoilSystem::update(*soil, dtSim);
+                landscape::SoilSystem::update(*soil, dtSim, soilClimate_, soilOrganism_, soilParentMaterial_, *finiteMap_);
             }
             
             // 3. Vegetation (Growth/Recovery) & Disturbance
@@ -1177,7 +1290,9 @@ void Application::render(size_t frameIndex) {
          finiteRenderer_->render(cmd, mvpArray, swapchain_->extent(), 
           /* slope */ showSlopeAnalysis_,
     /* drainage */ showDrainage_, drainageIntensity_,
-    /* watershed */ showWatershedVis_, showBasinOutlines_, showSoilVis_,
+    /* watershed */ showWatershedVis_, showBasinOutlines_, 
+    // Only force discrete Soil Vis (Shader override) if in Geometric Mode (0)
+    showSoilVis_ && (soilClassificationMode_ == 0),
     /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_, 
     /* visual */ sunAzimuth_, sunElevation_, fogDensity_, lightIntensity_,
     /* vegetation */ uvScale, vegetationMode_); // v3.9.0
@@ -1232,7 +1347,11 @@ void Application::render(size_t frameIndex) {
         /* v4.2.1 Advanced ML */
         mlTrainingEpochs_,
         mlLearningRate_,
-        mlSampleCount_
+        mlSampleCount_,
+        soilClimate_,
+        soilOrganism_,
+        soilParentMaterial_,
+        soilClassificationMode_
     };
 
     uiLayer_->render(uiCtx, cmd);
@@ -1355,7 +1474,7 @@ void Application::performMeshUpdate() {
     vkDeviceWaitIdle(ctx_->device());
 
     std::cout << "[SisterApp] Performing deferred mesh update..." << std::endl;
-    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_, showMLSoil_ ? mlService_.get() : nullptr);
+    finiteRenderer_->buildMesh(*finiteMap_, worldResolution_, showMLSoil_ ? mlService_.get() : nullptr, soilClassificationMode_);
     
     meshUpdateRequested_ = false;
 }
@@ -1368,6 +1487,7 @@ void Application::performRegeneration() {
         // Capture parameters locally to avoid race conditions if variables change
         // We can just copy the config struct now!
         terrain::TerrainConfig config = deferredConfig_;
+        int currentSoilMode = soilClassificationMode_;
 
         regenRequested_ = false;
         isRegenerating_ = true;
@@ -1396,7 +1516,7 @@ void Application::performRegeneration() {
             }
 
             // 4. Prepare Mesh Data (CPU Heavy)
-            auto meshData = shape::TerrainRenderer::generateMeshData(*map, config.resolution, this->showMLSoil_ ? this->mlService_.get() : nullptr);
+            auto meshData = shape::TerrainRenderer::generateMeshData(*map, config.resolution, this->showMLSoil_ ? this->mlService_.get() : nullptr, currentSoilMode);
 
             // 5. Output to Background Members (Thread Safe? No, member access needs care.)
             // Since main thread checks "future.valid/ready" and doesn't touch these until then, 

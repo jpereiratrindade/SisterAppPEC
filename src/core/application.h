@@ -21,6 +21,7 @@
 #include "../terrain/terrain_generator.h"
 #include "../terrain/terrain_renderer.h"
 #include "../vegetation/vegetation_types.h"
+#include "../landscape/soil_services.h" // v4.5.1
 #include <vector>
 #include <memory>
 #include <future>
@@ -235,6 +236,12 @@ namespace core {
         int mlTrainingEpochs_ = 50;
         float mlLearningRate_ = 0.1f;
         int mlSampleCount_ = 1000;
+
+        // v4.5.1 SCORPAN Parameters
+        landscape::Climate soilClimate_;
+        landscape::OrganismPressure soilOrganism_;
+        landscape::ParentMaterial soilParentMaterial_;
+        int soilClassificationMode_ = 0; // 0=Geometric, 1=SCORPAN
         
     };
 

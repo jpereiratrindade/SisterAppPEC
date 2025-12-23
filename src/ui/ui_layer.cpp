@@ -476,16 +476,6 @@ void UiLayer::drawToolbar(UiFrameContext& ctx) {
 
         ImGui::SameLine();
         
-        ImGui::SameLine();
-        
-        // Geology Mode
-        bool isGeo = (activeTool_ == ActiveTool::Geology);
-        if (isGeo) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.4f, 0.4f, 1.0f)); // Red/Clay
-        if (ImGui::Button("Geology", btnSize)) activeTool_ = ActiveTool::Geology;
-        if (isGeo) ImGui::PopStyleColor();
-
-        ImGui::SameLine();
-
         // Soil Mode
         bool isSoil = (activeTool_ == ActiveTool::Soil);
         if (isSoil) ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.4f, 0.2f, 1.0f));
@@ -580,9 +570,6 @@ void UiLayer::drawInspector(UiFrameContext& ctx) {
             case ActiveTool::Soil:
                 drawSoilInspector(ctx);
                 break;
-            case ActiveTool::Geology:
-                drawGeologyInspector(ctx); // v4.4.0
-                break;
             case ActiveTool::Vegetation:
                 drawVegetationInspector(ctx);
                 break;
@@ -607,7 +594,19 @@ void UiLayer::drawTerrainInspector(UiFrameContext& ctx) {
 
     // --- Analysis Tools ---
     ImGui::Separator();
-    ImGui::Checkbox("Show Slope Analysis", &ctx.showSlopeAnalysis);
+    // --- Analysis Tools ---
+    ImGui::Separator();
+    
+    // 1. Slope Analysis
+    if (ImGui::Checkbox("Show Slope Analysis", &ctx.showSlopeAnalysis)) {
+        if (ctx.showSlopeAnalysis) {
+             ctx.showDrainage = false;
+             ctx.showWatershedVis = false;
+             ctx.showSoilVis = false;
+        }
+    }
+    
+    // Legend for Slope
     if (ctx.showSlopeAnalysis) {
          ImGui::Indent();
          ImGui::TextColored(ImVec4(0.2f,0.4f,0.8f,1.0f), "0-3%%: Flat");
@@ -617,11 +616,36 @@ void UiLayer::drawTerrainInspector(UiFrameContext& ctx) {
          ImGui::TextColored(ImVec4(1.0f,0.5f,0.0f,1.0f), "45-75%%: V.Steep");
          ImGui::TextColored(ImVec4(0.8f,0.0f,0.0f,1.0f), ">75%%: Extreme");
          ImGui::Unindent();
-         
-         // Mutual Exclusion
-         if (ctx.showDrainage) ctx.showDrainage = false;
-         if (ctx.showWatershedVis) ctx.showWatershedVis = false;
-         if (ctx.showSoilVis) ctx.showSoilVis = false;
+    }
+
+    // 2. Soil Types (Geometric)
+    bool showGeometric = ctx.showSoilVis && (ctx.soilClassificationMode == 0);
+    if (ImGui::Checkbox("Soil Types (Geometric)", &showGeometric)) {
+         ctx.showSoilVis = showGeometric;
+         if (showGeometric) {
+             ctx.soilClassificationMode = 0;
+             if (callbacks_.switchSoilMode) callbacks_.switchSoilMode(0);
+             
+             // Mutual Exclusion
+             ctx.showSlopeAnalysis = false;
+             ctx.showDrainage = false;
+             ctx.showWatershedVis = false;
+         }
+    }
+
+    // 3. SCORPAN Model
+    bool showScorpan = ctx.showSoilVis && (ctx.soilClassificationMode == 1);
+    if (ImGui::Checkbox("SCORPAN Model (Simulation)", &showScorpan)) {
+        ctx.showSoilVis = showScorpan;
+        if (showScorpan) {
+             ctx.soilClassificationMode = 1;
+             if (callbacks_.switchSoilMode) callbacks_.switchSoilMode(1);
+
+             // Mutual Exclusion
+             ctx.showSlopeAnalysis = false;
+             ctx.showDrainage = false;
+             ctx.showWatershedVis = false;
+         }
     }
 
     // --- Generation Config ---
@@ -789,49 +813,17 @@ void UiLayer::drawHydrologyInspector(UiFrameContext& ctx) {
     }
 }
 
-// v4.4.0: Geology Painting
-void UiLayer::drawGeologyInspector(UiFrameContext& ctx) {
-    ImGui::Text("Lithology (Parent Material):");
-    ImGui::Separator();
+// drawGeologyInspector removed - merged into Soil Inspector v4.5.1
+
+
+void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
+    // v4.5.1: Unified SCORPAN Interface
+    ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.3f, 1.0f), "Soil System (SCORPAN)");
+    ImGui::TextWrapped("The soil state (S) emerges from environmental factors (C,O,R,P,A,N).");
     
-    static int selectedRock = 0;
-    const char* rocks[] = { "Generic", "Basalto", "Granito", "Arenito" };
-    
-    // Geology Palette
-    for (int i = 0; i < 4; ++i) {
-        if (ImGui::RadioButton(rocks[i], selectedRock == i)) {
-            selectedRock = i;
-        }
-        ImGui::SameLine();
-        const auto& def = landscape::LithologyRegistry::instance().get(i);
-        ImGui::ColorButton("##rockColor", ImVec4(def.r, def.g, def.b, 1.0f), ImGuiColorEditFlags_NoTooltip);
-        if ((i+1) % 2 == 0) ImGui::NewLine(); else ImGui::SameLine();
-    }
-    
-    ImGui::Separator();
-    ImGui::Text("Properties (%s):", rocks[selectedRock]);
-    
-    // Get mutable copy or update via registry
-    landscape::LithologyDef currentDef = landscape::LithologyRegistry::instance().get(selectedRock);
-    bool changed = false;
-    
-    // v4.4.1: User-Defined Vectors (Parametrization)
-    // The user "Chooses the Model" by defining these coefficients.
-    if (ImGui::SliderFloat("Weathering Rate", &currentDef.weathering_rate, 0.0f, 2.0f, "%.2f")) changed = true;
-    if (ImGui::SliderFloat("Base Fertility", &currentDef.base_fertility, 0.0f, 1.0f, "%.2f")) changed = true;
-    
-    ImGui::TextDisabled("Texture Bias (Vector p):");
-    if (ImGui::SliderFloat("Sand Bias", &currentDef.sand_bias, 0.0f, 1.0f, "%.2f")) changed = true;
-    if (ImGui::SliderFloat("Clay Bias", &currentDef.clay_bias, 0.0f, 1.0f, "%.2f")) changed = true;
-    
-    if (changed) {
-         landscape::LithologyRegistry::instance().registerLithology(selectedRock, currentDef);
-    }
-    
-    ImGui::Dummy(ImVec2(0.0f, 10.0f)); 
-    // v4.4.2: Explicit Apply Button
+    ImGui::Dummy(ImVec2(0.0f, 5.0f));
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
-    if (ImGui::Button("Apply Changes (Recalculate Soil)", ImVec2(-1, 0))) {
+    if (ImGui::Button("Recalculate Soil Initial State", ImVec2(-1, 0))) {
         if (callbacks_.recomputeSoil) {
             callbacks_.recomputeSoil();
         }
@@ -839,92 +831,166 @@ void UiLayer::drawGeologyInspector(UiFrameContext& ctx) {
     ImGui::PopStyleColor();
     
     ImGui::Separator();
-    
-    // Explanation for User
-    ImGui::TextColored(ImVec4(0.5f, 1.0f, 0.5f, 1.0f), "Result: Generates Soil (s)");
-    ImGui::TextWrapped("These parameters drive the physical pedogenesis model. High Weathering + Flat Slope -> Deep Soil.");
-
     ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "Painting Tool");
-    ImGui::TextWrapped("Hold LMB to paint on terrain.");
-    static float brushSize = 50.0f;
-    ImGui::SliderFloat("Brush Size", &brushSize, 10.0f, 500.0f);
+    ImGui::Text("Active Visualization Model:");
     
-    // Painting Logic (Placeholder for future Input System)
-    // if (ImGui::IsMouseDown(0) && !ImGui::GetIO().WantCaptureMouse) {
-    //      Command::PaintGeology(ctx.cursorPos, selectedRock, brushSize);
-    // }
-}
-
-void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
-    // v4.5.0: Dual Interface Toggle
-    ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.3f, 1.0f), "Classification Logic");
+    // Explicit Buttons for Model Switching
+    bool isGeo = ctx.showSoilVis && (ctx.soilClassificationMode == 0);
+    bool isSco = ctx.showSoilVis && (ctx.soilClassificationMode == 1);
     
-    // We need to store this state. Ideally in ctx or uiLayer member.
-    // For now, using a static for immediate UI feedback.
-    static int soilMode = 0; // 0 = Geometric, 1 = SCORPAN
-    
-    bool changed = false;
-    if (ImGui::RadioButton("Geometric (Slope-Only)", &soilMode, 0)) changed = true;
+    if (ImGui::RadioButton("Off", !isGeo && !isSco)) {
+        ctx.showSoilVis = false; 
+    }
     ImGui::SameLine();
-    if (ImGui::RadioButton("SCORPAN (Vector)", &soilMode, 1)) changed = true;
-    
-    if (changed && callbacks_.switchSoilMode) {
-        callbacks_.switchSoilMode(soilMode);
+    if (ImGui::RadioButton("Geometric", isGeo)) {
+        ctx.showSoilVis = true;
+        ctx.soilClassificationMode = 0;
+        if (callbacks_.switchSoilMode) callbacks_.switchSoilMode(0);
+        ctx.showSlopeAnalysis = false;
+        ctx.showDrainage = false;
+        ctx.showWatershedVis = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("SCORPAN", isSco)) {
+        ctx.showSoilVis = true;
+        ctx.soilClassificationMode = 1;
+        if (callbacks_.switchSoilMode) callbacks_.switchSoilMode(1);
+        ctx.showSlopeAnalysis = false;
+        ctx.showDrainage = false;
+        ctx.showWatershedVis = false;
     }
     
-    ImGui::Separator();
+    ImGui::TextDisabled(isGeo ? "Legacy slope-based classification." : (isSco ? "Classification derived from S (SCORPAN)." : "Visualization disabled."));
+    
+    ImGui::Spacing();
+    if (ImGui::CollapsingHeader("Factors (Inputs / Loaded Data)", ImGuiTreeNodeFlags_DefaultOpen)) {
+        // Factor C (Climate)
+        ImGui::PushID("FactorC");
+        ImGui::TextColored(ImVec4(0.4f, 0.6f, 1.0f, 1.0f), "[C] Climate");
+        float rain = static_cast<float>(ctx.soilClimate.rain_intensity);
+        if (ImGui::SliderFloat("Rain Intensity", &rain, 0.0f, 1.0f)) {
+            ctx.soilClimate.rain_intensity = rain;
+            ctx.rainIntensity = rain * 100.0f; 
+        }
+        float seas = static_cast<float>(ctx.soilClimate.seasonality);
+        if (ImGui::SliderFloat("Seasonality", &seas, 0.0f, 1.0f)) ctx.soilClimate.seasonality = seas;
+        ImGui::PopID();
 
-    if (soilMode == 0) {
-        ImGui::TextWrapped("Legacy Model: Classes defined purely by geometric slope thresholds.");
-        ImGui::Text("Classes:");
-        ImGui::BulletText("Hidromorfico (Valley)");
-        ImGui::BulletText("B-Textural (Gentle)");
-        ImGui::BulletText("Rocha (Steep)");
-    } else {
-        ImGui::TextWrapped("SCORPAN Model: Classes emerge from P (Geology) + R (Relief) interactions.");
-        ImGui::Text("Driven by:");
-        ImGui::BulletText("Lithology (P): Weathering Rate");
-        ImGui::BulletText("Relief (R): Erosion Potential");
-        ImGui::BulletText("Climate (C): Rainfall Scenario");
-        
         ImGui::Separator();
-        ImGui::TextDisabled("Visualization: Shows S-Vector State (Depth, OM)");
+
+        // Factor O (Organisms)
+        ImGui::PushID("FactorO");
+        ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), "[O] Organisms");
+        float cover = static_cast<float>(ctx.soilOrganism.max_cover);
+        if (ImGui::SliderFloat("Potential Cover", &cover, 0.0f, 1.0f)) ctx.soilOrganism.max_cover = cover;
+        float dist = static_cast<float>(ctx.soilOrganism.disturbance);
+        if (ImGui::SliderFloat("Disturbance", &dist, 0.0f, 1.0f)) ctx.soilOrganism.disturbance = dist;
+        ImGui::PopID();
+
+        ImGui::Separator();
+
+        // Factor P (Parent Material)
+        ImGui::PushID("FactorP");
+        ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.4f, 1.0f), "[P] Parent Material");
+        const double min = 0.0;
+        const double max = 1.0;
+        ImGui::SliderScalar("Weathering Rate", ImGuiDataType_Double, &ctx.soilParentMaterial.weathering_rate, &min, &max, "%.3f");
+        ImGui::SliderScalar("Base Fertility", ImGuiDataType_Double, &ctx.soilParentMaterial.base_fertility, &min, &max, "%.3f");
+        ImGui::SliderScalar("Sand Bias", ImGuiDataType_Double, &ctx.soilParentMaterial.sand_bias, &min, &max, "%.3f");
+        ImGui::SliderScalar("Clay Bias", ImGuiDataType_Double, &ctx.soilParentMaterial.clay_bias, &min, &max, "%.3f");
+        ImGui::PopID();
+
+        ImGui::Separator();
+
+        // Factor R (Relief)
+        ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.2f, 1.0f), "[R] Relief");
+        ImGui::TextWrapped("Derived from curvature/slope. Drives erosion/deposition.");
+        
+        ImGui::Spacing();
+        if (ImGui::TreeNode("Scenario Presets")) {
+            if (ImGui::Button("Arid (Generic)")) {
+                ctx.soilClimate.rain_intensity = 0.2;
+                ctx.soilClimate.seasonality = 0.8;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Wet (Generic)")) {
+                ctx.soilClimate.rain_intensity = 0.9;
+                ctx.soilClimate.seasonality = 0.2;
+            }
+            ImGui::TreePop();
+        }
     }
+
+    ImGui::Separator();
+    ImGui::TextColored(ImVec4(0.8f, 0.5f, 0.8f, 1.0f), "Emergent State (S - Calculated)");
+    ImGui::TextWrapped("System state evolves continuously relative to factors.");
+    ImGui::BulletText("Physical: Depth, Sand/Clay fractions");
+    ImGui::BulletText("Chemical: Organic Carbon content");
+    ImGui::BulletText("Hydric: Water Storage, Field Capacity");
     
     ImGui::Separator();
 
     // --- Soil Map ---
-    ImGui::Checkbox("Show Soil Map", &ctx.showSoilVis);
-    if (ctx.showSoilVis) {
-            ImGui::Indent();
-            ImGui::TextDisabled("Legend:");
-            float c[3];
-            terrain::SoilPalette::getFloatColor(terrain::SoilType::Hidromorfico, c); ImGui::ColorButton("##cHidro", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Hidromorfico");
-            terrain::SoilPalette::getFloatColor(terrain::SoilType::BTextural, c);    ImGui::ColorButton("##cBText", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("B-Textural");
-            terrain::SoilPalette::getFloatColor(terrain::SoilType::Argila, c);       ImGui::ColorButton("##cArgila", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Argila");
-            terrain::SoilPalette::getFloatColor(terrain::SoilType::BemDes, c);       ImGui::ColorButton("##cBemDes", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Bem Des.");
-            terrain::SoilPalette::getFloatColor(terrain::SoilType::Raso, c);         ImGui::ColorButton("##cRaso",   ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Raso");
-            terrain::SoilPalette::getFloatColor(terrain::SoilType::Rocha, c);        ImGui::ColorButton("##cRocha",  ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Rocha");
-            
-            ImGui::Text("Soil Whitelist:");
-            ImGui::BeginGroup(); // Columns hack
-            ImGui::Checkbox("Hidro", &ctx.soilHidroAllowed); ImGui::SameLine();
-            ImGui::Checkbox("Textural", &ctx.soilBTextAllowed); ImGui::SameLine();
-            ImGui::Checkbox("Argila", &ctx.soilArgilaAllowed);
-            ImGui::Checkbox("BemDes", &ctx.soilBemDesAllowed); ImGui::SameLine();
-            ImGui::Checkbox("Raso", &ctx.soilRasoAllowed); ImGui::SameLine();
-            ImGui::Checkbox("Rocha", &ctx.soilRochaAllowed);
-            ImGui::EndGroup();
-            ImGui::Unindent();
-            
-            if (ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
+    // --- Soil Map ---
+    // Only show Legend for Geometric Mode (Classes)
+    if (ctx.showSoilVis && ctx.soilClassificationMode == 0) {
+        ImGui::Text("Map Legend (Geometric Classes)");
+        ImGui::Indent();
+        ImGui::TextDisabled("Legend:");
+        float c[3];
+        terrain::SoilPalette::getFloatColor(terrain::SoilType::Hidromorfico, c); ImGui::ColorButton("##cHidro", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Hidromorfico");
+        terrain::SoilPalette::getFloatColor(terrain::SoilType::BTextural, c);    ImGui::ColorButton("##cBText", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("B-Textural");
+        terrain::SoilPalette::getFloatColor(terrain::SoilType::Argila, c);       ImGui::ColorButton("##cArgila", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Argila");
+        terrain::SoilPalette::getFloatColor(terrain::SoilType::BemDes, c);       ImGui::ColorButton("##cBemDes", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Bem Des.");
+        terrain::SoilPalette::getFloatColor(terrain::SoilType::Raso, c);         ImGui::ColorButton("##cRaso",   ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Raso");
+        terrain::SoilPalette::getFloatColor(terrain::SoilType::Rocha, c);        ImGui::ColorButton("##cRocha",  ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Rocha");
+        
+        ImGui::Text("Soil Whitelist:");
+        ImGui::BeginGroup(); // Columns hack
+        ImGui::Checkbox("Hidro", &ctx.soilHidroAllowed); ImGui::SameLine();
+        ImGui::Checkbox("Textural", &ctx.soilBTextAllowed); ImGui::SameLine();
+        ImGui::Checkbox("Argila", &ctx.soilArgilaAllowed);
+        ImGui::Checkbox("BemDes", &ctx.soilBemDesAllowed); ImGui::SameLine();
+        ImGui::Checkbox("Raso", &ctx.soilRasoAllowed); ImGui::SameLine();
+        ImGui::Checkbox("Rocha", &ctx.soilRochaAllowed);
+        ImGui::EndGroup();
+        ImGui::Unindent();
+        
+        if (ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
+    }
+
+    // Only show SCORPAN Results for Simulation Mode
+    if (ctx.showSoilVis && ctx.soilClassificationMode == 1) {
+        ImGui::Text("SCORPAN Results (Emergent State S)");
+        ImGui::Indent();
+        ImGui::TextWrapped("Visualization represents the continuous state vector S, evolved from factors P, R, C, O, A.");
+        
+        ImGui::Separator();
+        ImGui::TextDisabled("Color Interpretation:");
+        
+        // Gradient Legend Helpers
+        ImGui::ColorButton("##cDark", ImVec4(0.2f, 0.15f, 0.1f, 1.0f)); ImGui::SameLine(); 
+        ImGui::Text("Dark/Black: High Organic Matter (Biomass)");
+        
+        ImGui::ColorButton("##cRed", ImVec4(0.6f, 0.2f, 0.1f, 1.0f)); ImGui::SameLine(); 
+        ImGui::Text("Red/Orange: Oxidized/Clay (Weathering)");
+        
+        ImGui::ColorButton("##cLight", ImVec4(0.7f, 0.7f, 0.5f, 1.0f)); ImGui::SameLine(); 
+        ImGui::Text("Light/Grey: Sandy/Leached (Parent Material)");
+        
+        ImGui::ColorButton("##cBlue", ImVec4(0.0f, 0.3f, 0.5f, 1.0f)); ImGui::SameLine(); 
+        ImGui::Text("Blueish: Saturated/Gleyed (Reduction)");
+        
+        ImGui::Unindent();
+        
+        if (ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
     }
     
     ImGui::Separator();
 
     // v4.3.0: DDD Pattern Integrity Validator
-     if (ImGui::CollapsingHeader("Pattern Integrity (DDD)", ImGuiTreeNodeFlags_DefaultOpen)) {
+    // Only valid for Geometric Classes
+     if (ctx.soilClassificationMode == 0 && ImGui::CollapsingHeader("Pattern Integrity (DDD)", ImGuiTreeNodeFlags_DefaultOpen)) {
           if (ctx.finiteMap) {
               // Refactored to member v4.3.5
               double now = ImGui::GetTime();

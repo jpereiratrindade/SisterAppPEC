@@ -12,7 +12,21 @@ namespace landscape {
         Clay_Loam = 1,  // Low infiltration, high retention
         Silt_Loam = 2,  // Balanced
         Rocky = 3,      // Very low depth, high runoff
-        Peat = 4        // High organic, high retention
+        Peat = 4,        // High organic, high retention
+        // v4.5.7 Extended Types
+        Sandy_Clay = 5,
+        Silty_Clay = 6,
+        Clay = 7,
+        Sandy_Clay_Loam = 8,
+        Silty_Clay_Loam = 9,
+        // SiBCS Types (v4.5.8)
+        Latossolo = 10,
+        Argissolo = 11,
+        Cambissolo = 12,
+        Neossolo_Litolico = 13,
+        Neossolo_Quartzarenico = 14,
+        Gleissolo = 15,
+        Organossolo = 16
     };
 
     /**
@@ -45,6 +59,16 @@ namespace landscape {
         std::vector<uint8_t> soil_type;    // Maps to SoilType
         std::vector<LithologyID> lithology_id; // v4.4.0: ID of Parent Material
 
+        // Extended State for Reference Logic
+        std::vector<float> sand_fraction;
+        std::vector<float> clay_fraction;
+        std::vector<float> labile_carbon;
+        std::vector<float> recalcitrant_carbon;
+        std::vector<float> dead_biomass;
+        std::vector<float> water_content_soil;
+        std::vector<float> field_capacity;
+        std::vector<float> conductivity;
+
         void resize(int w, int h) {
             width = w;
             height = h;
@@ -53,10 +77,20 @@ namespace landscape {
             depth.assign(size, 1.0f);           // Default 1m depth
             infiltration.assign(size, 50.0f);   // Default 50mm/h (Loam)
             compaction.assign(size, 0.0f);      // No compaction
-            organic_matter.assign(size, 0.5f);  // Moderate organic matter
+            organic_matter.assign(size, 0.05f);  // Realistic organic matter (5%)
             propagule_bank.assign(size, 1.0f);  // Full regenerative potential
             soil_type.assign(size, static_cast<uint8_t>(SoilType::Silt_Loam));
             lithology_id.assign(size, 0);       // Default Lithology (0 = Generic)
+
+            // Extended Logic State
+            sand_fraction.assign(size, 0.4f);
+            clay_fraction.assign(size, 0.2f);
+            labile_carbon.assign(size, 0.1f);
+            recalcitrant_carbon.assign(size, 0.05f);
+            dead_biomass.assign(size, 0.02f);
+            water_content_soil.assign(size, 0.2f); // Renamed to avoid confusion with HydroGrid water_depth
+            field_capacity.assign(size, 0.3f);
+            conductivity.assign(size, 0.05f);
         }
 
         size_t getSize() const { return depth.size(); }

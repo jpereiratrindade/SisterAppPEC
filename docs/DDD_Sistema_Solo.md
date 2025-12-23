@@ -84,19 +84,21 @@ Define a **Conectividade**.
 
 ---
 
-## 4. Interfaces de Visualização (Dual View)
-
-O SisterApp oferece duas formas de "Ler" o solo, mas apenas uma de "Gerar":
-
-### 4.1 Modo Geométrico (Legacy/Fast)
-Uma heurística simplificada que mapeia Slope $\to$ Tipo de Solo diretamente.
-*   **Uso:** Visualização rápida de aptidão agrícola teórica baseada apenas em topografia.
-*   **Classes:** 5 Fixas (Hidromórfico... Rocha).
-
-### 4.2 Modo SCORPAN (Simulation)
-A visualização real do Vetor S.
-*   **Uso:** Análise ecossistêmica e validação científica.
-*   **Saída:** Gradientes contínuos ou classificação emergente baseada nas propriedades de S.
+## 4. Interfaces de Visualização (Modelos Distintos)
+ 
+ O SisterApp reconhece **dois modelos de verdade distintos** para a visualização do terreno, que não devem ser confundidos:
+ 
+ ### 4.1 Modelo Geométrico (Legacy/Fast)
+ *   **Definição:** Uma heurística direta que mapeia `Slope/Altitude -> Classe de Solo`.
+ *   **Natureza:** Determinística e simplificada. Ignora inputs climáticos ou biológicos.
+ *   **Uso:** Visualização rápida de aptidão agrícola teórica ("Terras Altas" vs "Várzea").
+ *   **Classes:** 5 Fixas (Hidromórfico... Rocha).
+ 
+ ### 4.2 Modelo SCORPAN (Simulation)
+ *   **Definição:** A visualização do Vetor de Estado $S$ emergente.
+ *   **Natureza:** Complexa e dinâmica. Resultado da equação $S = f(P, R, C, O, A, N)$.
+ *   **Uso:** Análise ecossistêmica, validação de hipóteses e cenários de mudança climática.
+ *   **Visualização:** O sistema renderiza o estado atual de $S$, que pode ou não coincidir com a geometria, dependendo do tempo de evolução ($A$).
 
 ---
 

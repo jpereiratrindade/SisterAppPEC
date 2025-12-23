@@ -22,8 +22,8 @@ TerrainRenderer::TerrainRenderer(const core::GraphicsContext& ctx, VkRenderPass 
     // Material initialized.
 
 // 1. Refactored buildMesh to use helper
-void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService) {
-    MeshData data = generateMeshData(map, gridScale, mlService);
+void TerrainRenderer::buildMesh(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService, int soilMode) {
+    MeshData data = generateMeshData(map, gridScale, mlService, soilMode);
     uploadMesh(data);
 }
 
@@ -32,7 +32,7 @@ void TerrainRenderer::uploadMesh(const MeshData& data) {
     mesh_ = std::make_unique<graphics::Mesh>(ctx_, data.vertices, data.indices);
 }
 
-TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService) {
+TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::TerrainMap& map, float gridScale, const ml::MLService* mlService, int soilMode) {
     int w = map.getWidth();
     int h = map.getHeight();
     
@@ -75,7 +75,7 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
             v.normal[2] = nz / len;
 
             // Visualization Colors
-            // Slope-based coloring
+            // Slope-based coloring (Default / Base)
             float slope = 1.0f - v.normal[1]; // 0 = flat, 1 = vertical
             
             if (slope < 0.15f) { // Flat (Soil/Dirt)
@@ -86,7 +86,60 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
                 v.color[0] = 0.4f; v.color[1] = 0.4f; v.color[2] = 0.45f; // Blue-Grey Rock
             }
             
-            // v4.0.0 ML Override
+            // v4.5.1: SCORPAN Continuous Visualization (Mode 1)
+            // Overrides slope color with S-Vector derived color
+            if (soilMode == 1 && map.getLandscapeSoil()) {
+                int idx = z * w + x;
+                auto* soil = map.getLandscapeSoil();
+                float depth = soil->depth[idx];
+                float om = soil->organic_matter[idx]; // 0..1
+                float clay = soil->clay_fraction[idx]; // 0..1
+                float sand = soil->sand_fraction[idx]; // 0..1
+                
+                // Heuristic from Legend (4 Colors):
+                // 1. Textural Base (Sand vs Clay)
+                // Normalize texture: sand + clay + silt = 1.0 (approx)
+                float totalTex = sand + clay + 0.001f;
+                float rawClayRatio = clay / totalTex; // 0=Sand, 1=Clay
+                
+                // v4.5.5: Contrast Stretch (Sigmoid) to separate Sand/Clay visualy
+                // Center around 0.4 (typical Loam), stretch by 5x
+                float clayRatio = 1.0f / (1.0f + std::exp(-10.0f * (rawClayRatio - 0.4f)));
+
+                // Sand: (0.9, 0.85, 0.7) - Light Beige
+                // Clay: (0.8, 0.3, 0.2) - Strong Terracotta Red (More saturated)
+                float r = 0.9f * (1.0f - clayRatio) + 0.8f * clayRatio;
+                float g = 0.85f * (1.0f - clayRatio) + 0.3f * clayRatio;
+                float b = 0.7f * (1.0f - clayRatio) + 0.2f * clayRatio;
+
+                // 2. Organic Matter (Biomass) -> Darkening
+                // OM typically 0-10%. Boost visual impact massively.
+                // Anything > 2% should be visibly dark.
+                float omFactor = std::clamp(om * 20.0f, 0.0f, 0.9f); // Max 90% darkness
+                
+                // Non-linear dark: 
+                r *= (1.0f - omFactor);
+                g *= (1.0f - omFactor);
+                b *= (1.0f - omFactor);
+
+                // 3. Water (Reduction/Gleying) -> Blueish/Grey Tint
+                // Use water_content_soil if available in struct, else skip
+                float wetness = soil->water_content_soil[idx];
+                // Saturation usually > 0.3 (Field Capacity). 
+                float saturation = std::clamp((wetness - 0.1f) / 0.4f, 0.0f, 1.0f);
+                
+                // Wet Soil is Darker + Blue tint
+                // Target Blue-Grey: (0.1, 0.1, 0.3)
+                r = r * (1.0f - saturation * 0.4f) + 0.1f * (saturation * 0.4f);
+                g = g * (1.0f - saturation * 0.4f) + 0.1f * (saturation * 0.4f);
+                b = b * (1.0f - saturation * 0.4f) + 0.3f * (saturation * 0.4f);
+                
+                v.color[0] = std::clamp(r, 0.0f, 1.0f);
+                v.color[1] = std::clamp(g, 0.0f, 1.0f);
+                v.color[2] = std::clamp(b, 0.0f, 1.0f);
+            }
+            
+            // v4.0.0 ML Override (Optional - takes precedence if active)
             if (mlService && map.getLandscapeSoil()) {
                 int idx = z * w + x;
                 auto* soil = map.getLandscapeSoil();

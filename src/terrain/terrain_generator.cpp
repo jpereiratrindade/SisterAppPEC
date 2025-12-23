@@ -263,6 +263,53 @@ void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config
     }
 }
 
+void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
+    auto* grid = map.getLandscapeSoil();
+    if (!grid) return;
+
+    int w = map.getWidth();
+    int h = map.getHeight();
+
+    // SCORPAN Semantic Mapping
+    // S = f(C,O,R,P,A,N)
+    // Here we classify the emergent State S (grid) into SoilType enums
+    #pragma omp parallel for collapse(2)
+    for (int z = 0; z < h; ++z) {
+        for (int x = 0; x < w; ++x) {
+            int idx = z * w + x;
+            
+            float depth = grid->depth[idx];
+            float clay = grid->clay_fraction[idx];
+            float sand = grid->sand_fraction[idx];
+            // Org Matter: Labile + Recalcitrant
+            float om = grid->labile_carbon[idx] + grid->recalcitrant_carbon[idx];
+
+            SoilType type = SoilType::Rocha;
+
+            if (depth < 0.2f) {
+                type = SoilType::Rocha;
+            } else if (depth < 0.6f) {
+                type = SoilType::Raso;
+            } else {
+                // Deeper soils, classify by texture and organic content
+                if (clay > 0.35f) {
+                    type = SoilType::Argila;
+                } else if (clay > 0.20f && sand < 0.5f) {
+                    type = SoilType::BTextural;
+                } else if (om > 0.15f) { // Arbitrary target for "rich"
+                    type = SoilType::Hidromorfico; 
+                } else {
+                    type = SoilType::BemDes;
+                }
+            }
+
+            map.setSoil(x, z, type);
+        }
+    }
+    
+    std::cout << "[TerrainGenerator] SCORPAN Vector Classification applied to Map." << std::endl;
+}
+
 float TerrainGenerator::calculateSoilPattern(float x, float z, const SoilPatchConfig& cfg) const {
     // 1. Anisotropy (RCC): Scale coordinates
     float nx = x * 0.01f * cfg.frequency;

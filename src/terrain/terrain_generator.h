@@ -13,6 +13,8 @@ public:
     void generateBaseTerrain(TerrainMap& map, const TerrainConfig& config);
     // v3.7.3: Semantic Soil Classification (CPU Authority)
     void classifySoil(TerrainMap& map, const TerrainConfig& config);
+    // v4.5.0: SCORPAN Vector Classification (Placeholder)
+    void classifySoilFromSCORPAN(TerrainMap& map);
     // v4.0: Integrated Landscape Generation
     void generateLandscape(TerrainMap& map);
     

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "landscape_types.h"
+#include "soil_services.h" // Logic Layer
 
 // Forward declaration to avoid circular dependency
 namespace terrain {
@@ -16,6 +17,14 @@ namespace landscape {
 
         // Update loop (Compaction, Erosion integration placeholder)
         static void update(SoilGrid& grid, float dt);
+
+        // v4.5.2: Evaluation with external drivers
+        static void update(SoilGrid& grid, 
+                           float dt, 
+                           const Climate& climate, 
+                           const OrganismPressure& pressure,
+                           const ParentMaterial& parent,
+                           const terrain::TerrainMap& terrain);
     };
 
 } // namespace landscape

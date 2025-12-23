@@ -1,13 +1,13 @@
 #pragma once
 
 #include "../graphics/camera.h"
-#include "../graphics/camera.h"
 // VoxelTerrain removed
 #include "../terrain/terrain_map.h" // v3.5.0
 #include "../terrain/landscape_metrics.h" // v4.3.5
 #include "../vegetation/vegetation_types.h" // v3.9.0
 #include "../graphics/animation.h"
 #include "../math/math_types.h"
+#include "../landscape/soil_services.h" // v4.5.1
 #include "bookmark.h"
 
 #include <functional>
@@ -87,6 +87,12 @@ struct UiFrameContext {
     int& mlTrainingEpochs;
     float& mlLearningRate;
     int& mlSampleCount;
+
+    // v4.5.1 SCORPAN Parameters
+    landscape::Climate& soilClimate;
+    landscape::OrganismPressure& soilOrganism;
+    landscape::ParentMaterial& soilParentMaterial;
+    int& soilClassificationMode; // 0=Geometric, 1=SCORPAN
 };
 
 struct Callbacks {
@@ -109,6 +115,9 @@ struct Callbacks {
     // v4.5.0 Dual Soil Interface
     std::function<void(int)> switchSoilMode; // 0=Geometric, 1=SCORPAN
     std::function<void(int, float)> mlTrainModel;
+
+    // v4.0.0 ML Hooks (Restored)
+    std::function<void(int)> mlCollectData;
 
     // v4.2.0 Hydro ML
     std::function<void(int)> mlCollectHydroData;
@@ -149,21 +158,17 @@ private:
     // Inspector Content Providers
     void drawTerrainInspector(UiFrameContext& ctx);
     void drawHydrologyInspector(UiFrameContext& ctx);
-    void drawSoilInspector(UiFrameContext& ctx); // Renamed from drawSoilMLInspector
-    void drawGeologyInspector(UiFrameContext& ctx); // v4.4.0 New
-    void drawMLInspector(UiFrameContext& ctx);   // New dedicated inspector
+    void drawSoilInspector(UiFrameContext& ctx);
+    void drawMLInspector(UiFrameContext& ctx);   
     void drawVegetationInspector(UiFrameContext& ctx); 
-    void drawCrosshair(UiFrameContext& ctx); // v3.8.1 
+    void drawCrosshair(UiFrameContext& ctx);
 
     Theme currentTheme_ = Theme::Dark;
     bool showStatsOverlay_ = true;
     bool showBookmarks_ = false;
-    // v3.8.0
-    // v3.8.0
     bool showMinimap_ = true;
-    // v3.8.1: Views Toggles
-    // Toolbar State
-    enum class ActiveTool { None, Terrain, Hydro, Geology, Soil, Vegetation, MLHub }; // Added Geology
+
+    enum class ActiveTool { None, Terrain, Hydro, Soil, Vegetation, MLHub }; // Removed Geology
     ActiveTool activeTool_ = ActiveTool::Terrain; // Default to Terrain
     bool showCamControls_ = true;
     bool showResetCamera_ = true;

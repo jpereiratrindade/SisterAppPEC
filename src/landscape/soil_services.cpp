@@ -1,0 +1,229 @@
+#include "soil_services.h"
+
+#include <algorithm>
+#include <cmath>
+
+namespace landscape {
+
+namespace {
+
+ParentMaterial sanitize_parent_material(const ParentMaterial& parent_material) {
+  ParentMaterial sanitized = parent_material;
+  sanitized.weathering_rate = clamp01(sanitized.weathering_rate);
+  sanitized.base_fertility = clamp01(sanitized.base_fertility);
+  sanitized.sand_bias = clamp01(sanitized.sand_bias);
+  sanitized.clay_bias = clamp01(sanitized.clay_bias);
+  return sanitized;
+}
+
+Relief sanitize_relief(const Relief& relief) {
+  Relief sanitized = relief;
+  sanitized.slope = clamp_range(sanitized.slope, 0.0, 1.0);
+  sanitized.curvature = clamp_range(sanitized.curvature, -1.0, 1.0);
+  sanitized.slope_sensitivity = clamp01(sanitized.slope_sensitivity);
+  sanitized.curvature_weight = clamp01(sanitized.curvature_weight);
+  return sanitized;
+}
+
+Climate sanitize_climate(const Climate& climate) {
+  Climate sanitized = climate;
+  sanitized.rain_intensity = clamp01(sanitized.rain_intensity);
+  sanitized.seasonality = clamp01(sanitized.seasonality);
+  return sanitized;
+}
+
+OrganismPressure sanitize_organism_pressure(const OrganismPressure& pressure) {
+  OrganismPressure sanitized = pressure;
+  sanitized.max_cover = clamp01(sanitized.max_cover);
+  sanitized.disturbance = clamp01(sanitized.disturbance);
+  return sanitized;
+}
+
+}  // namespace
+
+SoilState PedogenesisService::evolve(const SoilState& current,
+                                    const ParentMaterial& parent_material,
+                                    const Relief& relief,
+                                    const Climate& climate,
+                                    const OrganismPressure& organism_pressure,
+                                    double dt) const {
+  const ParentMaterial material = sanitize_parent_material(parent_material);
+  const Relief topo = sanitize_relief(relief);
+  const Climate climate_state = sanitize_climate(climate);
+  const OrganismPressure pressure = sanitize_organism_pressure(organism_pressure);
+
+  SoilState next = current;
+
+  const double weathering = material.weathering_rate * (0.5 + climate_state.seasonality) * dt;
+  const double curvature_factor = 0.5 + topo.curvature_weight * (0.5 - topo.curvature);
+  const double erosion = topo.slope_sensitivity * topo.slope * climate_state.rain_intensity *
+                         curvature_factor * dt;
+
+  next.mineral.depth = std::max(0.0, current.mineral.depth + weathering - erosion);
+
+  double target_sand = clamp01(material.sand_bias + 0.1 * (1.0 - topo.slope));
+  double target_clay = clamp01(material.clay_bias + 0.1 * climate_state.seasonality +
+                               0.05 * topo.curvature_weight);
+  const double sum = target_sand + target_clay;
+  if (sum > 1.0) {
+    target_sand /= sum;
+    target_clay /= sum;
+  }
+
+  const double blend = clamp01(dt) * 0.3;
+  next.mineral.sand_fraction = lerp(current.mineral.sand_fraction, target_sand, blend);
+  next.mineral.clay_fraction = lerp(current.mineral.clay_fraction, target_clay, blend);
+
+  // v4.5.3: Reduced Litter Input to equate equilibrium at ~5% OM
+  // Old: 0.2 base. New: 0.005 base.
+  const double litter_input = pressure.max_cover * (0.005 + 0.01 * climate_state.seasonality) * dt;
+  const double disturbance_loss = pressure.disturbance * dt;
+  const double decomposition =
+      (0.05 + 0.1 * (1.0 - climate_state.seasonality)) * current.organic.labile_carbon * dt;
+
+  next.organic.labile_carbon = std::max(
+      0.0, current.organic.labile_carbon + litter_input - decomposition - disturbance_loss);
+  next.organic.recalcitrant_carbon = std::max(
+      0.0, current.organic.recalcitrant_carbon +
+                0.02 * current.organic.labile_carbon * dt -
+                0.01 * current.organic.recalcitrant_carbon * dt);
+  next.organic.dead_biomass = std::max(
+      0.0, current.organic.dead_biomass + disturbance_loss -
+                0.03 * current.organic.dead_biomass * dt);
+
+  const double capacity = 0.1 + 0.4 * next.mineral.clay_fraction +
+                          0.2 * next.organic.recalcitrant_carbon;
+  next.hydric.field_capacity = std::max(0.05, capacity);
+  next.hydric.conductivity = clamp_range(
+      0.05 + 0.3 * next.mineral.sand_fraction - 0.2 * next.mineral.clay_fraction, 0.01, 1.0);
+
+  const double infiltration = climate_state.rain_intensity *
+                              (1.0 - topo.slope * topo.slope_sensitivity) * dt;
+  const double evaporation = (0.02 + 0.05 * (1.0 - climate_state.seasonality)) * dt;
+  next.hydric.water_content = clamp_range(
+      current.hydric.water_content + infiltration - evaporation, 0.0, next.hydric.field_capacity);
+
+  return next;
+}
+
+OrganismState EcologicalService::evolve(const OrganismState& current,
+                                        const SoilState& soil_state,
+                                        const Climate& climate,
+                                        const OrganismPressure& organism_pressure,
+                                        double dt) const {
+  const Climate climate_state = sanitize_climate(climate);
+  const OrganismPressure pressure = sanitize_organism_pressure(organism_pressure);
+
+  OrganismState next = current;
+
+  const double capacity = std::max(pressure.max_cover, kEpsilon);
+  const double water_factor = clamp01(soil_state.hydric.water_content /
+                                      std::max(soil_state.hydric.field_capacity, kEpsilon));
+  const double fertility = clamp01(soil_state.organic.labile_carbon +
+                                   soil_state.organic.recalcitrant_carbon);
+  const double growth = water_factor * (0.5 + 0.5 * fertility) * (0.6 + 0.4 * climate_state.seasonality);
+
+  const double grass_target = capacity * 0.6;
+  const double shrub_target = capacity * 0.4;
+
+  next.biomass_grass = clamp_range(
+      current.biomass_grass + (grass_target - current.biomass_grass) * growth * dt -
+          pressure.disturbance * dt,
+      0.0,
+      capacity);
+  next.biomass_shrub = clamp_range(
+      current.biomass_shrub + (shrub_target - current.biomass_shrub) * growth * dt -
+          pressure.disturbance * 0.5 * dt,
+      0.0,
+      capacity);
+
+  const double total_biomass = next.biomass_grass + next.biomass_shrub;
+  next.roots_density = clamp01(total_biomass / capacity);
+
+  return next;
+}
+
+ParentMaterial DataInjectionService::inject_parent_material(const ParentMaterial& current,
+                                                            const ParentMaterial& incoming) const {
+  (void)current;
+  return sanitize_parent_material(incoming);
+}
+
+} // namespace landscape
+
+// Implementation of New Services
+
+namespace landscape {
+
+void SoilPhysicsService::applyTopographyToTexture(SoilMineralState& mineral, const Relief& relief) const {
+    // Logic: 
+    // Steep slopes (High erosion) -> Lose fines (Clay/Silt) -> Relatively Sandier.
+    // Concave/Flat (Deposition) -> Accumulate fines -> Relatively Clayier.
+
+    double slopeMod = clamp_range(relief.slope * 0.3, 0.0, 0.3); // Max +30% Sand on very steep
+    double curvatureMod = clamp_range(relief.curvature * -5.0, -0.2, 0.2); // Concave(+c) -> Deposition(-Sand), Convex(-c) -> Erosion(+Sand)
+
+    // Note: Curvature definition varies. 
+    // Here assuming: Positive Curvature = Concave (Valley) -> Accumulates Clay -> Reduce Sand.
+    // Negative Curvature = Convex (Ridge) -> Erodes -> Increase Sand.
+    
+    // Apply changes primarily to Sand (Residue) vs Clay (Transportable)
+    double targetSand = mineral.sand_fraction + slopeMod - curvatureMod;
+    double targetClay = mineral.clay_fraction - slopeMod + curvatureMod;
+    
+    mineral.sand_fraction = clamp_range(targetSand, 0.05, 0.95);
+    mineral.clay_fraction = clamp_range(targetClay, 0.05, 0.95);
+
+    // Normalize
+    double sum = mineral.sand_fraction + mineral.clay_fraction;
+    if (sum > 0.95) {
+        double scale = 0.95 / sum;
+        mineral.sand_fraction *= scale;
+        mineral.clay_fraction *= scale;
+    }
+}
+
+SiBCSOrder SiBCSClassifier::classify(const SoilState& state, const Relief& relief) const {
+    // 1. Organossolo (High Carbon)
+    // SiBCS: > 80g/kg (8%) Corg if clayey, or > 12-14% if sandy. Simplified to 8%.
+    double total_carbon = state.organic.labile_carbon + state.organic.recalcitrant_carbon;
+    if (total_carbon > 0.08) return SiBCSOrder::kOrganossolo;
+
+    // 2. Gleissolo (Hydromorphic)
+    // SiBCS: Gley horizon within 50cm. Simulated by high saturation + flat terrain.
+    // If water remains near saturation for long periods.
+    // Proxy: Water Content > 90% Field Capacity AND Slope < 3% AND Concave/Valley
+    // Note: Water content fluctuates, so we rely on topography potential for glaciations.
+    if (state.hydric.water_content >= state.hydric.field_capacity * 0.9 && 
+        relief.slope < 0.03 && relief.curvature > 0.0) {
+        return SiBCSOrder::kGleissolo;
+    }
+
+    // 3. Neossolo (Young/Shallow)
+    // Litólico: Depth < 50cm
+    // Quartzarênico: Sand > 90% (Deep)
+    if (state.mineral.depth < 0.5) return SiBCSOrder::kNeossoloLit;
+    if (state.mineral.sand_fraction > 0.85 && state.mineral.depth > 0.5) return SiBCSOrder::kNeossoloQuartz;
+
+    // 4. Latossolo (Deep, Weathered)
+    // Depth > 100cm (often >> 2m)
+    // Advanced weathering (Low Silt/Clay ratio, but here we check weathering rate proxy or just depth/color)
+    // High Porosity/Infiltration usually.
+    if (state.mineral.depth > 1.5) {
+        return SiBCSOrder::kLatossolo;
+    }
+
+    // 5. Argissolo (Textural Gradient)
+    // Ideally needs Bt horizon check (Clay_B / Clay_A > 1.2).
+    // We simulate this if we have moderate depth and are not Latossolo.
+    // Or if we specifically detect clay accumulation.
+    // For now, if Clay > 30% and not Latossolo/Glei.
+    if (state.mineral.clay_fraction > 0.30) {
+        return SiBCSOrder::kArgissolo;
+    }
+
+    // Default: Cambissolo (Incipient B)
+    return SiBCSOrder::kCambissolo;
+}
+
+} // namespace landscape
