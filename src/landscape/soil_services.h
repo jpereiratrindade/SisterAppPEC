@@ -99,23 +99,22 @@ enum class TextureClass {
   kUnknown
 };
 
-// SiBCS Types (Sistema Brasileiro de Classificação de Solos - 5ª Edição, 2018)
-enum class SiBCSOrder {
-    kLatossolo = 0,
-    kArgissolo = 1,
-    kCambissolo = 2,
-    kNeossoloLit = 3,  // Litolico
-    kNeossoloQuartz = 4, // Quartzarenico
-    kGleissolo = 5,
-    kOrganossolo = 6,
-    kPlintossolo = 7,  // Optional
-    kEspodossolo = 8,  // Optional
-    kVertissolo = 9,   // Optional
-    kPlanossolo = 10,  // Optional
-    kChernossolo = 11, // Optional
-    kNitossolo = 12,    // Optional
-    kLuvissolo = 13,   // Optional
-    kNone = 255
+// SiBCS Result Structure kept here or moved? 
+// If SoilSystem needs it, it should be in header.
+// Ideally it should be in landscape_types.h too but let's keep it here for now if it compiles.
+// But we need to include landscape_types.h
+#include "landscape_types.h"
+
+// Unified Result Structure (Hierarchical)
+struct SiBCSResult {
+    SiBCSOrder order = SiBCSOrder::kNone;
+    SiBCSSubOrder suborder = SiBCSSubOrder::kNone;
+    SiBCSGreatGroup greatGroup = SiBCSGreatGroup::kNone;
+    SiBCSSubGroup subGroup = SiBCSSubGroup::kNone;
+    SiBCSFamily family = SiBCSFamily::kNone;
+    SiBCSSeries series = SiBCSSeries::kNone;
+
+    SiBCSLevel deepestLevel = SiBCSLevel::Order;
 };
 
 inline TextureClass classify_texture(const SoilMineralState& mineral) {
@@ -195,7 +194,15 @@ public:
  */
 class SiBCSClassifier {
 public:
-    SiBCSOrder classify(const SoilState& state, const Relief& relief) const;
+    SiBCSResult classify(const SoilState& state, const Relief& relief, SiBCSLevel targetLevel = SiBCSLevel::Suborder) const;
+
+private:
+    SiBCSOrder determineOrder(const SoilState& state, const Relief& relief) const;
+    SiBCSSubOrder determineSuborder(const SoilState& state, const Relief& relief, SiBCSOrder order) const;
+    SiBCSGreatGroup determineGreatGroup(const SoilState& state, const Relief& relief, SiBCSOrder order, SiBCSSubOrder suborder) const;
+    SiBCSSubGroup determineSubGroup(const SoilState& state, const Relief& relief, SiBCSOrder order, SiBCSSubOrder suborder, SiBCSGreatGroup greatGroup) const;
+    SiBCSFamily determineFamily(const SoilState& state) const; // Usually texture based
+    SiBCSSeries determineSeries(const SoilState& state) const; // Local variations
 };
 
 } // namespace landscape

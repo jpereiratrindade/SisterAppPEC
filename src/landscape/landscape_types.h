@@ -1,5 +1,3 @@
-#pragma once
-
 #include <vector>
 #include <cstdint>
 #include <vector>
@@ -7,7 +5,6 @@
 namespace landscape {
 
     // Soil Types (Simplified Classification)
-    enum class SoilType : uint8_t {
         Sandy_Loam = 0, // High infiltration, low retention
         Clay_Loam = 1,  // Low infiltration, high retention
         Silt_Loam = 2,  // Balanced
@@ -29,17 +26,83 @@ namespace landscape {
         Organossolo = 16
     };
 
+    // SiBCS Level 1: Order (Matches SoilType roughly but strict taxonomy)
+    enum class SiBCSOrder : uint8_t {
+         kLatossolo = 0,
+         kArgissolo = 1,
+         kCambissolo = 2,
+         kNeossoloLit = 3,
+         kNeossoloQuartz = 4,
+         kGleissolo = 5,
+         kOrganossolo = 6,
+         kPlintossolo = 7,
+         kEspodossolo = 8,
+         kVertissolo = 9,
+         kPlanossolo = 10,
+         kChernossolo = 11,
+         kNitossolo = 12,
+         kLuvissolo = 13,
+         kNone = 255
+    };
+
     // v4.5.1: SiBCS Level 2 (Suborders)
-    enum class SoilSubOrder : uint8_t {
-        None = 0,         // Modal / Default
-        Vermelho = 1,     // High Fe2O3 (Hematite) - Good Drainage
-        Amarelo = 2,      // High FeOOH (Goethite) - Moist/Acidic
-        Vermelho_Amarelo = 3, // Mixed
-        Haplic = 4,       // Simple / No specific trait
-        Litolico = 5,     // Shallow / Rocky contact
-        Quartzarenico = 6,// High sand content
-        Melanico = 7,     // High Organic Matter (Dark)
-        Tiomorfico = 8    // Sulfidic (Mangrove) - Reserved
+    // SiBCS Level 2: Suborder (Refined from landscape_types.h for internal logic)
+    enum class SiBCSSubOrder : uint8_t {
+        kNone = 0,
+        kVermelho,
+        kAmarelo,
+        kVermelhoAmarelo,
+        kHaplic,
+        kLitolico,
+        kQuartzarenico,
+        kMelanico,
+        kTiomorfico, // Mangrove
+        kHumico,     // High altitude organic
+        kGleico      // Hydromorphic features in other classes
+    };
+
+    // SiBCS Level 3: Great Group (Grande Grupo)
+    enum class SiBCSGreatGroup : uint8_t {
+        kNone = 0,
+        kEutrofico,  // High base saturation
+        kDistrofico, // Low base saturation
+        kAluminico,  // High Aluminum
+        kAcrico,     // Ultra-weathered (Low CEC)
+        kTipico
+    };
+
+    // SiBCS Level 4: Subgroup (Subgrupo)
+    enum class SiBCSSubGroup : uint8_t {
+        kNone = 0,
+        kTipico,
+        kLatossolico,
+        kArgissolico,
+        kCambissolico
+    };
+
+    // SiBCS Level 5: Family (Família)
+    enum class SiBCSFamily : uint8_t {
+        kNone = 0,
+        kTexturaMedia,
+        kTexturaArgilosa,
+        kTexturaMuitoArgilosa,
+        kTexturaArenosa
+    };
+
+    // SiBCS Level 6: Series (Série)
+    enum class SiBCSSeries : uint8_t {
+        kNone = 0,
+        kGeneric // Placeholder for user-defined local series
+    };
+
+    // Classification Depth Selector
+    enum class SiBCSLevel : uint8_t {
+        Order = 1,
+        Suborder = 2,
+        GreatGroup = 3,
+        SubGroup = 4,
+        Family = 5,
+        Series = 6
     };
 
     /**
@@ -55,6 +118,11 @@ namespace landscape {
     // v4.4.0: Geology Layer
     using LithologyID = uint8_t;
     using SubOrderID = uint8_t; // v4.5.1
+    // v4.5.10: Deep Levels
+    using GreatGroupID = uint8_t;
+    using SubGroupID = uint8_t;
+    using FamilyID = uint8_t;
+    using SeriesID = uint8_t;
 
     struct SoilGrid {
         int width = 0;
@@ -70,8 +138,13 @@ namespace landscape {
         std::vector<float> propagule_bank; // [0.0 - 1.0] Potential for regeneration (Seeds/Buds)
 
         // Classification & Geology
-        std::vector<uint8_t> soil_type;    // Maps to SoilType
-        std::vector<SubOrderID> suborder;  // Maps to SoilSubOrder (v4.5.1)
+        std::vector<uint8_t> soil_type;    // Maps to SoilType (SiBCS Order)
+        std::vector<SubOrderID> suborder;  // Maps to SiBCSSubOrder
+        std::vector<GreatGroupID> great_group; // Level 3
+        std::vector<SubGroupID> sub_group;     // Level 4
+        std::vector<FamilyID> family;          // Level 5
+        std::vector<SeriesID> series;          // Level 6
+        
         std::vector<LithologyID> lithology_id; // v4.4.0: ID of Parent Material
 
         // Extended State for Reference Logic
@@ -94,8 +167,14 @@ namespace landscape {
             compaction.assign(size, 0.0f);      // No compaction
             organic_matter.assign(size, 0.05f);  // Realistic organic matter (5%)
             propagule_bank.assign(size, 1.0f);  // Full regenerative potential
-            soil_type.assign(size, static_cast<uint8_t>(SoilType::Silt_Loam));
-            suborder.assign(size, static_cast<uint8_t>(SoilSubOrder::Haplic)); // Default Suborder
+            
+            soil_type.assign(size, 12); // Default Cambissolo
+            suborder.assign(size, 0);   // None
+            great_group.assign(size, 0);
+            sub_group.assign(size, 0);
+            family.assign(size, 0);
+            series.assign(size, 0);
+            
             lithology_id.assign(size, 0);       // Default Lithology (0 = Generic)
 
             // Extended Logic State

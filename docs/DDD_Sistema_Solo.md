@@ -100,21 +100,38 @@ Define a **Conectividade**.
  *   **Uso:** Análise ecossistêmica, validação de hipóteses e cenários de mudança climática.
  *   **Visualização:** O sistema renderiza o estado atual de $S$, que pode ou não coincidir com a geometria, dependendo do tempo de evolução ($A$).
 
- ### 4.3 Taxonomia SiBCS (Implementação v4.5.1)
- O modelo SCORPAN alimenta um classificador taxonômico que traduz o Vetor S em classes do Sistema Brasileiro de Classificação de Solos (SiBCS), operando em dois níveis:
+ ### 4.3 Taxonomia SiBCS Multi-Nível (v4.5.10)
+ O modelo SCORPAN alimenta um classificador taxonômico hierárquico que traduz o Vetor S em classes do SiBCS em até 6 níveis de detalhamento (configurável):
 
- #### 1º Nível: Ordem (Estrutura)
- *   **Latossolo:** $D > 1.0m$, Alta Drenagem.
- *   **Argissolo:** $D > 0.5m$, B-Textural (Incremento de Argila).
- *   **Neossolo:** $D < 0.2m$ (Litólico) ou Areia > 90% (Quartzarênico).
- *   **Gleissolo:** Lençol freático superficial (Hidromorfia).
+ #### Nível 1: Ordem (Estrutura)
+ *   **Latossolo:** $D > 1.5m$, $Argila < 28\%$, Relevo estável.
+ *   **Argissolo:** $D > 0.8m$, Gradiente Textural Significativo.
+ *   **Cambissolo:** Solo incipiente, mas com B estrutural.
+ *   **Neossolo:** Jovem, sem horizonte B diagnóstico (Litólico ou Quartzarênico).
+ *   **Gleissolo:** Hidromórfico (Saturação > 90%).
+ *   **Organossolo:** Carbono > 8%.
 
- #### 2º Nível: Subordem (Mineralogia e Química)
- *   **Vermelho:** Rico em Hematita ($Fe_2O_3$). Comum em Latossolos/Argissolos derivados de Basalto.
- *   **Amarelo:** Rico em Goethita ($FeOOH$). Comum em ambientes úmidos ou rochas ácidas.
- *   **Litólico:** Contato rochoso raso (< 50cm).
- *   **Melânico:** Horizonte A rico em matéria orgânica e cor escura.
- *   **Háplico:** Modal, sem atributos diferenciais marcantes.
+ #### Nível 2: Subordem (Mineralogia/Cor)
+ *   **Vermelho:** Rico em Hematita.
+ *   **Amarelo:** Rico em Goethita.
+ *   **Vermelho-Amarelo:** Misto.
+ *   **Háplico:** Modal.
+ *   **Melânico:** Rico em Matéria Orgânica escura.
+
+ #### Nível 3: Grande Grupo (Química - Saturção)
+ *   **Eutrófico:** Alta saturação por bases ($V\% > 50$).
+ *   **Distrófico:** Baixa saturação ($V\% < 50$, ácido).
+ *   **Alumínico:** Alta saturação por Alumínio (Tóxico).
+
+ #### Nível 4: Subgrupo (Transição)
+ *   **Típico:** Representante central da classe.
+ *   **Latossólico/Argissólico:** Transição com outras ordens.
+
+ #### Nível 5: Família (Textura)
+ *   Textura Média, Argilosa, Muito Argilosa, Arenosa.
+
+ #### Nível 6: Série (Local)
+ *   Unidade de mapeamento local definida pelo usuário.
 
  ### 4.3 Estratégia de Cores (Palette Policy)
  *   **Padrão:** "Realistic" (Cores desaturadas, baseadas em Munsell Soil Charts).

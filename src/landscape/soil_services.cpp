@@ -183,46 +183,119 @@ void SoilPhysicsService::applyTopographyToTexture(SoilMineralState& mineral, con
     }
 }
 
-SiBCSOrder SiBCSClassifier::classify(const SoilState& state, const Relief& relief) const {
+SiBCSResult SiBCSClassifier::classify(const SoilState& state, const Relief& relief, SiBCSLevel targetLevel) const {
+    SiBCSResult result;
+    result.deepestLevel = SiBCSLevel::Order;
+
+    // Level 1: Order
+    result.order = determineOrder(state, relief);
+    if (targetLevel == SiBCSLevel::Order) return result;
+
+    // Level 2: Suborder
+    result.suborder = determineSuborder(state, relief, result.order);
+    result.deepestLevel = SiBCSLevel::Suborder;
+    if (targetLevel == SiBCSLevel::Suborder) return result;
+
+    // Level 3: Great Group
+    result.greatGroup = determineGreatGroup(state, relief, result.order, result.suborder);
+    result.deepestLevel = SiBCSLevel::GreatGroup;
+    if (targetLevel == SiBCSLevel::GreatGroup) return result;
+
+    // Level 4: Subgroup
+    result.subGroup = determineSubGroup(state, relief, result.order, result.suborder, result.greatGroup);
+    result.deepestLevel = SiBCSLevel::SubGroup;
+    if (targetLevel == SiBCSLevel::SubGroup) return result;
+
+    // Level 5: Family
+    result.family = determineFamily(state);
+    result.deepestLevel = SiBCSLevel::Family;
+    if (targetLevel == SiBCSLevel::Family) return result;
+
+    // Level 6: Series
+    result.series = determineSeries(state);
+    result.deepestLevel = SiBCSLevel::Series;
+    
+    return result;
+}
+
+SiBCSOrder SiBCSClassifier::determineOrder(const SoilState& state, const Relief& relief) const {
     const Relief topo = sanitize_relief(relief);
 
     // 1. Organossolo (High Carbon)
-    // SiBCS: > 80g/kg (8%) Corg if clayey, or > 12-14% if sandy. Simplified to 8%.
     double total_carbon = state.organic.labile_carbon + state.organic.recalcitrant_carbon;
     if (total_carbon > 0.08) return SiBCSOrder::kOrganossolo;
 
     // 2. Gleissolo (Hydromorphic)
-    // SiBCS: Gley horizon within 50cm. Simulated by high saturation + flat terrain.
-    // If water remains near saturation for long periods.
-    // Proxy: Water Content > 90% Field Capacity AND Slope < 3% AND Concave/Valley
-    // Note: Water content fluctuates, so we rely on topography potential for glaciations.
     if (state.hydric.water_content >= state.hydric.field_capacity * 0.9 && 
         topo.slope < 0.03 && topo.curvature > 0.0) {
         return SiBCSOrder::kGleissolo;
     }
 
     // 3. Neossolo (Young/Shallow)
-    // Litólico: Depth < 50cm
-    // Quartzarênico: Sand > 90% (Deep)
     if (state.mineral.depth < 0.5) return SiBCSOrder::kNeossoloLit;
     if (state.mineral.sand_fraction > 0.85 && state.mineral.depth >= 0.5) return SiBCSOrder::kNeossoloQuartz;
 
-    // 4. Argissolo (Textural Gradient / Clay accumulation proxy)
-    // Needs enough depth to express a subsurface horizon.
+    // 4. Argissolo (Textural Gradient proxy)
     if (state.mineral.depth >= 0.8 && state.mineral.clay_fraction > 0.28) {
         return SiBCSOrder::kArgissolo;
     }
 
     // 5. Latossolo (Deep, Weathered)
-    // Require very deep + low-to-moderate clay and relatively stable relief so it doesn't dominate.
     if (state.mineral.depth >= 1.5 &&
         state.mineral.clay_fraction >= 0.12 && state.mineral.clay_fraction <= 0.28 &&
         topo.slope <= 0.20) {
         return SiBCSOrder::kLatossolo;
     }
 
-    // Default: Cambissolo (Incipient B)
     return SiBCSOrder::kCambissolo;
+}
+
+SiBCSSubOrder SiBCSClassifier::determineSuborder(const SoilState& state, const Relief& /*relief*/, SiBCSOrder order) const {
+    // Logic migrated from SoilSystem::initialize
+    if (order == SiBCSOrder::kGleissolo) {
+        double om = state.organic.labile_carbon + state.organic.recalcitrant_carbon;
+        if (om > 0.03) return SiBCSSubOrder::kMelanico;
+        return SiBCSSubOrder::kHaplic; // "Haplic" as Generic fallback for Gley
+    }
+    if (order == SiBCSOrder::kNeossoloLit) return SiBCSSubOrder::kLitolico;
+    if (order == SiBCSOrder::kNeossoloQuartz) return SiBCSSubOrder::kQuartzarenico;
+    
+    if (order == SiBCSOrder::kArgissolo) {
+        if (state.mineral.depth > 1.5 || state.mineral.clay_fraction > 0.6) return SiBCSSubOrder::kVermelho;
+        return SiBCSSubOrder::kVermelhoAmarelo;
+    }
+    
+    if (order == SiBCSOrder::kLatossolo) {
+        if (state.mineral.sand_fraction > 0.4) return SiBCSSubOrder::kVermelhoAmarelo;
+        if (state.mineral.sand_fraction < 0.2) return SiBCSSubOrder::kVermelho;
+        return SiBCSSubOrder::kAmarelo;
+    }
+
+    if (order == SiBCSOrder::kOrganossolo) return SiBCSSubOrder::kMelanico;
+
+    return SiBCSSubOrder::kHaplic;
+}
+
+SiBCSGreatGroup SiBCSClassifier::determineGreatGroup(const SoilState& /*state*/, const Relief& /*relief*/, SiBCSOrder /*order*/, SiBCSSubOrder suborder) const {
+    // Placeholder Logic
+    if (suborder == SiBCSSubOrder::kVermelho) return SiBCSGreatGroup::kEutrofico;
+    if (suborder == SiBCSSubOrder::kAmarelo) return SiBCSGreatGroup::kDistrofico;
+    return SiBCSGreatGroup::kTipico;
+}
+
+SiBCSSubGroup SiBCSClassifier::determineSubGroup(const SoilState& /*state*/, const Relief& /*relief*/, SiBCSOrder /*order*/, SiBCSSubOrder /*suborder*/, SiBCSGreatGroup /*greatGroup*/) const {
+    return SiBCSSubGroup::kTipico;
+}
+
+SiBCSFamily SiBCSClassifier::determineFamily(const SoilState& state) const {
+    if (state.mineral.clay_fraction > 0.60) return SiBCSFamily::kTexturaMuitoArgilosa;
+    if (state.mineral.clay_fraction > 0.35) return SiBCSFamily::kTexturaArgilosa;
+    if (state.mineral.sand_fraction > 0.70) return SiBCSFamily::kTexturaArenosa;
+    return SiBCSFamily::kTexturaMedia;
+}
+
+SiBCSSeries SiBCSClassifier::determineSeries(const SoilState& /*state*/) const {
+    return SiBCSSeries::kGeneric;
 }
 
 } // namespace landscape
