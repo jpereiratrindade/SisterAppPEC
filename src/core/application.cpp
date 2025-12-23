@@ -657,18 +657,18 @@ void Application::processEvents(double dt) {
                                  // v4.5.8: Probe Logic - Pure SiBCS (No USDA)
                                  auto storedType = static_cast<const landscape::SoilType>(soil->soil_type[idx]);
                                  // v4.5.1: Level 2 - Suborder
-                                 auto storedSub = static_cast<const landscape::SoilSubOrder>(soil->suborder[idx]);
+                                 auto storedSub = static_cast<const landscape::SiBCSSubOrder>(soil->suborder[idx]);
                                  std::string subStr = ""; // Modal by default
 
                                  switch(storedSub) {
-                                    case landscape::SoilSubOrder::Vermelho: subStr = "Vermelho"; break;
-                                    case landscape::SoilSubOrder::Amarelo: subStr = "Amarelo"; break;
-                                    case landscape::SoilSubOrder::Vermelho_Amarelo: subStr = "Vermelho-Amarelo"; break;
-                                    case landscape::SoilSubOrder::Haplic: subStr = "Haplic (Modal)"; break;
-                                    case landscape::SoilSubOrder::Litolico: subStr = "Litolico"; break;
-                                    case landscape::SoilSubOrder::Quartzarenico: subStr = "Quartzarenico"; break;
-                                    case landscape::SoilSubOrder::Melanico: subStr = "Melanico"; break;
-                                    case landscape::SoilSubOrder::Tiomorfico: subStr = "Tiomorfico"; break;
+                                    case landscape::SiBCSSubOrder::kVermelho: subStr = "Vermelho"; break;
+                                    case landscape::SiBCSSubOrder::kAmarelo: subStr = "Amarelo"; break;
+                                    case landscape::SiBCSSubOrder::kVermelhoAmarelo: subStr = "Vermelho-Amarelo"; break;
+                                    case landscape::SiBCSSubOrder::kHaplic: subStr = "Haplic (Modal)"; break;
+                                    case landscape::SiBCSSubOrder::kLitolico: subStr = "Litolico"; break;
+                                    case landscape::SiBCSSubOrder::kQuartzarenico: subStr = "Quartzarenico"; break;
+                                    case landscape::SiBCSSubOrder::kMelanico: subStr = "Melanico"; break;
+                                    case landscape::SiBCSSubOrder::kTiomorfico: subStr = "Tiomorfico"; break;
                                     default: subStr = ""; break;
                                  }
 
