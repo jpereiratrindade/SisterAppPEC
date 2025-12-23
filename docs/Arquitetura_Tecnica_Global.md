@@ -10,8 +10,8 @@ O **SisterAppPEC** é uma plataforma de simulação eco-hidrológica de alta fid
 ### 1.1 Diagrama de Blocos Macro
 ```mermaid
 graph TD
-    User([Usuário]) --> UI[Camada UI (ImGui)]
-    UI --> App[Application (Core)]
+    User(["Usuário"]) --> UI["Camada UI (ImGui)"]
+    UI --> App["Application (Core)"]
     
     subgraph "Simulation Engine (CPU)"
         App --> World[World Container]
