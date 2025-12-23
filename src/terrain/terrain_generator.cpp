@@ -285,39 +285,39 @@ void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
             float om = grid->labile_carbon[idx] + grid->recalcitrant_carbon[idx];
 
             SoilType type = SoilType::Rocha;
-            SoilSubOrder sub = SoilSubOrder::None; // v4.5.1
+            landscape::SoilSubOrder sub = landscape::SoilSubOrder::None; // v4.5.1
 
             if (depth < 0.2f) {
                 type = SoilType::Rocha; // Or Neossolo Litolico if rocky
-                sub = SoilSubOrder::Litolico;
+                sub = landscape::SoilSubOrder::Litolico;
             } else if (depth < 0.6f) {
                 type = SoilType::Neossolo_Litolico;
-                sub = SoilSubOrder::Litolico;
+                sub = landscape::SoilSubOrder::Litolico;
             } else {
                 // Deeper soils, classify by texture and organic content
                 if (clay > 0.35f) {
                     type = SoilType::Argissolo; // Clay rich B horizon
                     // Suborder Logic for Argissolo
-                    if (depth > 1.5f || clay > 0.6f) sub = SoilSubOrder::Vermelho;
-                    else sub = SoilSubOrder::Vermelho_Amarelo;
+                    if (depth > 1.5f || clay > 0.6f) sub = landscape::SoilSubOrder::Vermelho;
+                    else sub = landscape::SoilSubOrder::Vermelho_Amarelo;
 
                 } else if (clay > 0.20f && sand < 0.5f) {
                     type = SoilType::Cambissolo; // Incipient B
-                    sub = SoilSubOrder::Haplic;
+                    sub = landscape::SoilSubOrder::Haplic;
                 } else if (om > 0.15f || depth < 0.0f) { // Arbitrary target for "rich" or waterlogged
                     type = SoilType::Gleissolo; 
-                    if (om > 0.3f) sub = SoilSubOrder::Melanico;
-                    else sub = SoilSubOrder::Haplic;
+                    if (om > 0.3f) sub = landscape::SoilSubOrder::Melanico;
+                    else sub = landscape::SoilSubOrder::Haplic;
 
                 } else if (sand > 0.7f) {
                     type = SoilType::Neossolo_Quartzarenico;
-                    sub = SoilSubOrder::Quartzarenico;
+                    sub = landscape::SoilSubOrder::Quartzarenico;
                 } else {
                     type = SoilType::Latossolo; // Deep, weathered
                      // Latossolo Suborders based on Parent Material (Simulated)
-                    if (sand > 0.4f) sub = SoilSubOrder::Vermelho_Amarelo;
-                    else if (sand < 0.2f) sub = SoilSubOrder::Vermelho; // Clayey = Usually Red
-                    else sub = SoilSubOrder::Amarelo;
+                    if (sand > 0.4f) sub = landscape::SoilSubOrder::Vermelho_Amarelo;
+                    else if (sand < 0.2f) sub = landscape::SoilSubOrder::Vermelho; // Clayey = Usually Red
+                    else sub = landscape::SoilSubOrder::Amarelo;
                 }
             }
 
