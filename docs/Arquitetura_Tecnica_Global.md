@@ -14,10 +14,10 @@ graph TD
     UI --> App["Application (Core)"]
     
     subgraph "Simulation Engine (CPU)"
-        App --> World[World Container]
-        World --> Terrain[Terrain System (Geometria)]
-        World --> Land[Landscape System (Ciência)]
-        World --> Veg[Vegetation System (Bio)]
+        App --> World["World Container"]
+        World --> Terrain["Terrain System (Geometria)"]
+        World --> Land["Landscape System (Ciência)"]
+        World --> Veg["Vegetation System (Bio)"]
         
         Land -->|Erosão/Fluxo| Terrain
         Land -->|Água/Nutrientes| Veg
@@ -25,7 +25,7 @@ graph TD
     end
     
     subgraph "Render Engine (GPU)"
-        App --> Renderer[Terrain Renderer]
+        App --> Renderer["Terrain Renderer"]
         Terrain -->|Mesh Data| Renderer
         Land -->|Color Map (Soils)| Renderer
         Veg -->|Instance Data| Renderer
