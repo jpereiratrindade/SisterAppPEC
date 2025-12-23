@@ -19,16 +19,16 @@ graph TD
         World --> Land["Landscape System (Ciência)"]
         World --> Veg["Vegetation System (Bio)"]
         
-        Land -->|Erosão/Fluxo| Terrain
-        Land -->|Água/Nutrientes| Veg
-        Veg -->|Biomassa/Proteção| Land
+        Land -->|"Erosão/Fluxo"| Terrain
+        Land -->|"Água/Nutrientes"| Veg
+        Veg -->|"Biomassa/Proteção"| Land
     end
     
     subgraph "Render Engine (GPU)"
         App --> Renderer["Terrain Renderer"]
-        Terrain -->|Mesh Data| Renderer
-        Land -->|Color Map (Soils)| Renderer
-        Veg -->|Instance Data| Renderer
+        Terrain -->|"Mesh Data"| Renderer
+        Land -->|"Color Map (Soils)"| Renderer
+        Veg -->|"Instance Data"| Renderer
     end
 ```
 
