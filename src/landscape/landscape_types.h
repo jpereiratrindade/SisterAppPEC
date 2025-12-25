@@ -50,6 +50,7 @@ namespace landscape {
 
     // v4.5.1: SiBCS Level 2 (Suborders)
     // SiBCS Level 2: Suborder (Refined from landscape_types.h for internal logic)
+    // SiBCS Level 2: Suborder (Refined from landscape_types.h for internal logic)
     enum class SiBCSSubOrder : uint8_t {
         kNone = 0,
         kVermelho,
@@ -58,9 +59,12 @@ namespace landscape {
         kBruno,      // [NEW] Brown (Cool/Wet)
         kHaplic,
         kLitolico,
+        kRegolitico, // [NEW] Soft rock/Semidecomposed
+        kFluvico,    // [NEW] Allergial/Sedimentary
         kQuartzarenico,
         kMelanico,
-        kTiomorfico, // Mangrove
+        kTiomorfico, // [NEW] Sulfuric (Mangrove)
+        kSalico,     // [NEW] High Salt
         kHumico,     // High altitude organic
         kGleico      // Hydromorphic features in other classes
     };
@@ -68,12 +72,16 @@ namespace landscape {
     // SiBCS Level 3: Great Group (Grande Grupo)
     enum class SiBCSGreatGroup : uint8_t {
         kNone = 0,
-        kEutrofico,  // High base saturation
-        kDistrofico, // Low base saturation
-        kAluminico,  // High Aluminum
-        kAcrico,     // Ultra-weathered (Low CEC)
-        kFerrico,    // [NEW] Iron-rich (>18% Fe2O3)
-        kOrtico,     // [NEW] Standard/True (Orthic) - for Neossolos
+        kEutrofico,    // High base saturation
+        kDistrofico,   // Low base saturation
+        kTbEutrofico,  // [NEW] Low Activity Clay, Eutrophic
+        kTbDistrofico, // [NEW] Low Activity Clay, Dystrophic
+        kAluminico,    // High Aluminum
+        kAcrico,       // Ultra-weathered (Low CEC)
+        kFerrico,      // Iron-rich (>18% Fe2O3)
+        kDistroferrico,// [NEW] Dystrophic + High Iron
+        kOrtico,       // Standard/True (Orthic)
+        kHidromorfico, // [NEW] Waterlogged Neossolos
         kTipico
     };
 
@@ -84,9 +92,11 @@ namespace landscape {
         kLatossolico,
         kArgissolico,
         kCambissolico,
-        kPsamitico,    // [NEW] Sandy texture
-        kHumico,       // [NEW] High Carbon
-        kPetroplintico // [NEW] Concretions
+        kPsamitico,    // Sandy texture
+        kHumico,       // High Carbon
+        kPetroplintico,// Concretions
+        kSalico,       // [NEW] Saline character in others
+        kTiomorfico    // [NEW] Sulfuric character in others
     };
 
     // SiBCS Level 5: Family (Família)

@@ -150,9 +150,15 @@ public:
         // 1. Base Color (Levels 1 & 2)
         getFloatColor(type, sub, rgb);
         
-        // Handle "Bruno" Suborder override
+        // Handle Suborder modifiers (Level 2)
         if (sub == landscape::SiBCSSubOrder::kBruno) {
              rgb[0] = 0.55f; rgb[1] = 0.45f; rgb[2] = 0.35f; // Brownish
+        } else if (sub == landscape::SiBCSSubOrder::kTiomorfico) {
+             rgb[0] = 0.7f; rgb[1] = 0.7f; rgb[2] = 0.4f; // Sulphurous Yellowy-Grey
+        } else if (sub == landscape::SiBCSSubOrder::kRegolitico) {
+             rgb[0] = 0.6f; rgb[1] = 0.6f; rgb[2] = 0.5f; // Rock-like Grey
+        } else if (sub == landscape::SiBCSSubOrder::kFluvico) {
+             rgb[0] *= 0.9f; rgb[1] *= 0.9f; rgb[2] *= 1.1f; // Alluvial shift
         }
 
         if (viewLevel <= landscape::SiBCSLevel::Suborder) return;
@@ -164,12 +170,16 @@ public:
         // 2. Great Group Modifiers (Level 3)
         if (viewLevel >= landscape::SiBCSLevel::GreatGroup) {
             switch (group) {
-                case landscape::SiBCSGreatGroup::kEutrofico:  s *= 1.2f; v *= 0.9f; break; // Richer
-                case landscape::SiBCSGreatGroup::kDistrofico: s *= 0.8f; v *= 1.1f; break; // Paler
-                case landscape::SiBCSGreatGroup::kAluminico:  h += 20.0f; s *= 0.7f; break; // Blue/Grey shift
-                case landscape::SiBCSGreatGroup::kAcrico:     s *= 0.5f; v *= 1.2f; break; // Very pale (weathered)
-                case landscape::SiBCSGreatGroup::kFerrico:    h = 0.0f; s = 0.9f; v *= 0.8f; break; // Deep Red Saturation
-                case landscape::SiBCSGreatGroup::kOrtico:     /* Standard, no change */ break;
+                case landscape::SiBCSGreatGroup::kEutrofico:  s *= 1.2f; v *= 0.9f; break; 
+                case landscape::SiBCSGreatGroup::kDistrofico: s *= 0.8f; v *= 1.1f; break; 
+                case landscape::SiBCSGreatGroup::kAluminico:  h += 20.0f; s *= 0.7f; break; 
+                case landscape::SiBCSGreatGroup::kAcrico:     s *= 0.5f; v *= 1.2f; break;
+                case landscape::SiBCSGreatGroup::kFerrico:    h = 0.0f; s = 0.9f; v *= 0.8f; break; // Deep Red
+                case landscape::SiBCSGreatGroup::kDistroferrico: h = 350.0f; s = 0.7f; v *= 0.7f; break; // Darker, less vibrant Red
+                case landscape::SiBCSGreatGroup::kHidromorfico:  h = 200.0f; s *= 0.5f; break; // Blue shift
+                case landscape::SiBCSGreatGroup::kTbEutrofico:   v *= 0.9f; break; // Slight darken
+                case landscape::SiBCSGreatGroup::kTbDistrofico:  v *= 1.1f; break; // Slight lighten
+                case landscape::SiBCSGreatGroup::kOrtico:     break;
                 default: break;
             }
         }
@@ -180,8 +190,10 @@ public:
                 case landscape::SiBCSSubGroup::kLatossolico: s *= 1.1f; break; 
                 case landscape::SiBCSSubGroup::kArgissolico: v *= 0.95f; break;
                 case landscape::SiBCSSubGroup::kCambissolico: s *= 0.9f; break;
-                case landscape::SiBCSSubGroup::kPsamitico:    s *= 0.6f; v += 0.1f; break; // Sandy appearance (Pale/Desat)
-                case landscape::SiBCSSubGroup::kHumico:       v *= 0.7f; break; // Darker (Carbon)
+                case landscape::SiBCSSubGroup::kPsamitico:    s *= 0.6f; v += 0.1f; break; 
+                case landscape::SiBCSSubGroup::kHumico:       v *= 0.7f; break; 
+                case landscape::SiBCSSubGroup::kTiomorfico:   h = 60.0f; s = 0.5f; break; // Yellow tint
+                case landscape::SiBCSSubGroup::kSalico:       s = 0.1f; v = 0.95f; break; // Salt White
                 default: break;
             }
         }

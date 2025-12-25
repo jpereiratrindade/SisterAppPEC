@@ -251,20 +251,40 @@ SiBCSOrder SiBCSClassifier::determineOrder(const SoilState& state, const Relief&
 }
 
 SiBCSSubOrder SiBCSClassifier::determineSuborder(const SoilState& state, const Relief& /*relief*/, SiBCSOrder order) const {
-    // Logic migrated from SoilSystem::initialize
+    // 1. Special Handling for Gleissolos (Hydromorphic)
     if (order == SiBCSOrder::kGleissolo) {
+        // Tiomorfico/Salico (Coastal/Mangrove proxy - low elevation, high organic)
+        if (state.mineral.depth < 1.0 && state.hydric.water_content > 0.8) {
+             // Mocking salinity/sulfur via extreme water saturation + organic matter
+             if (state.organic.labile_carbon > 0.1) return SiBCSSubOrder::kTiomorfico;
+             // if (conductivity > high) return SiBCSSubOrder::kSalico; // (Requires conductivity state)
+        }
+        
         double om = state.organic.labile_carbon + state.organic.recalcitrant_carbon;
         if (om > 0.03) return SiBCSSubOrder::kMelanico;
-        return SiBCSSubOrder::kHaplic; // "Haplic" as Generic fallback for Gley
+        return SiBCSSubOrder::kHaplic;
     }
+
+    // 2. Neossolos (Lithic, Regolithic, Fluvic, Quartzarenic)
     if (order == SiBCSOrder::kNeossoloLit) return SiBCSSubOrder::kLitolico;
-    if (order == SiBCSOrder::kNeossoloQuartz) return SiBCSSubOrder::kQuartzarenico;
     
-    // Argissolos & Latossolos (Color/Process based)
+    if (order == SiBCSOrder::kNeossoloQuartz) {
+         // Identify Fluvic character in sands (Recurrent deposition)
+         // Proxy: High sand variability or specific location (valley bottom)
+         // For now, keep as Quartzarenico primary, but maybe Fluvico if texture is mixed?
+         return SiBCSSubOrder::kQuartzarenico;
+    }
+
+    // Logic for other Neossolos (generic container) -> Split into Regolitico vs Fluvico
+    if (state.mineral.depth < 0.5) return SiBCSSubOrder::kRegolitico; // Semi-weathered
+    if (state.mineral.depth > 1.0) return SiBCSSubOrder::kFluvico;    // Deep sediment (Fluvic)
+
+    
+    // 3. Argissolos & Latossolos (Color/Process based)
     if (order == SiBCSOrder::kArgissolo || order == SiBCSOrder::kLatossolo) {
         double om = state.organic.labile_carbon + state.organic.recalcitrant_carbon;
         
-        // Brown (Bruno) - High O.M. + Cooler/Wetter (implied by high Carbon retention)
+        // Brown (Bruno)
         if (om > 0.04) return SiBCSSubOrder::kBruno; 
         
         if (order == SiBCSOrder::kArgissolo) {
@@ -279,53 +299,75 @@ SiBCSSubOrder SiBCSClassifier::determineSuborder(const SoilState& state, const R
         }
     }
 
-    if (order == SiBCSOrder::kOrganossolo) return SiBCSSubOrder::kMelanico;
+    if (order == SiBCSOrder::kOrganossolo) {
+        // Tiomorfico check for organic soils too
+        if (state.hydric.water_content > 0.9) return SiBCSSubOrder::kTiomorfico;
+        return SiBCSSubOrder::kMelanico; // Default organic
+    }
 
     return SiBCSSubOrder::kHaplic;
 }
 
-SiBCSGreatGroup SiBCSClassifier::determineGreatGroup(const SoilState& state, const Relief& /*relief*/, SiBCSOrder order, SiBCSSubOrder /*suborder*/) const {
-    // 1. Neossolos - usually Orthic (Órtico)
-    if (order == SiBCSOrder::kNeossoloLit || order == SiBCSOrder::kNeossoloQuartz) {
+SiBCSGreatGroup SiBCSClassifier::determineGreatGroup(const SoilState& state, const Relief& /*relief*/, SiBCSOrder order, SiBCSSubOrder suborder) const {
+    // 1. Neossolos - Ortico vs Hidromorfico
+    if (order == SiBCSOrder::kNeossoloLit) return SiBCSGreatGroup::kOrtico;
+    if (order == SiBCSOrder::kNeossoloQuartz) {
+        if (state.hydric.water_content > 0.6) return SiBCSGreatGroup::kHidromorfico;
         return SiBCSGreatGroup::kOrtico;
     }
 
-    // 2. Férrico (High Iron) - Simulated by extremely high Clay (Oxide rich proxy) + Red Color
-    bool isRed = (state.mineral.clay_fraction > 0.5 && state.mineral.sand_fraction < 0.3); // Rough proxy
-    if (isRed && state.mineral.depth > 2.0) {
-       return SiBCSGreatGroup::kFerrico;
-    }
-
-    // 3. Fertility Index (Base Saturation)
+    // 2. Iron/Base Saturation Logic
+    bool isRed = (suborder == SiBCSSubOrder::kVermelho);
+    bool highIron = (state.mineral.clay_fraction > 0.5 && isRed); // Proxy for Fe oxides
+    
     double fertilityIndex = (state.mineral.clay_fraction * 0.5) + (state.organic.labile_carbon * 20.0); 
+    bool isEutrophic = (fertilityIndex > 0.7);
+    bool isDystrophic = !isEutrophic;
+
+    // Distroferrico vs Ferrico
+    if (highIron && isDystrophic) return SiBCSGreatGroup::kDistroferrico;
+    if (highIron && isEutrophic) return SiBCSGreatGroup::kFerrico; // Usually Eutrophic or just "Ferrico" generic if < 50% saturation but High Fe? 
+                                                                   // Actually SiBCS says Ferrico implies Eutrophic often or just High Fe. 
+                                                                   // Let's treat Ferrico as the Eutrophic counterpart to Distroferrico here.
     
-    if (fertilityIndex > 0.7) return SiBCSGreatGroup::kEutrofico;
-    
-    if (order == SiBCSOrder::kLatossolo && state.mineral.depth > 2.0 && state.mineral.clay_fraction > 0.6) {
-        return SiBCSGreatGroup::kAcrico; // Deep, weathered
-    }
-    
-    if (fertilityIndex < 0.3) {
-        return SiBCSGreatGroup::kAluminico;
+    // Tb Logic for Gleissolos (Low Activity Clay)
+    if (order == SiBCSOrder::kGleissolo) {
+        if (isEutrophic) return SiBCSGreatGroup::kTbEutrofico;
+        return SiBCSGreatGroup::kTbDistrofico;
     }
 
+    // Acric (Latossolos)
+    if (order == SiBCSOrder::kLatossolo && state.mineral.depth > 2.0 && state.mineral.clay_fraction > 0.6) {
+        return SiBCSGreatGroup::kAcrico; 
+    }
+    
+    // Aluminic
+    if (fertilityIndex < 0.2) return SiBCSGreatGroup::kAluminico;
+
+    // Base Saturation Defaults
+    if (isEutrophic) return SiBCSGreatGroup::kEutrofico;
     return SiBCSGreatGroup::kDistrofico;
 }
 
 SiBCSSubGroup SiBCSClassifier::determineSubGroup(const SoilState& state, const Relief& /*relief*/, SiBCSOrder order, SiBCSSubOrder /*suborder*/, SiBCSGreatGroup /*greatGroup*/) const {
     // 1. Psamítico (Sandy texture in non-sands)
-    // If NOT Neossolo Quartzarenico but has high sand
     if (order != SiBCSOrder::kNeossoloQuartz && state.mineral.sand_fraction > 0.65) {
         return SiBCSSubGroup::kPsamitico;
     }
 
-    // 2. Húmico (High Carbon in non-Organossolos)
+    // 2. Húmico (High Carbon)
     double om = state.organic.labile_carbon + state.organic.recalcitrant_carbon;
     if (order != SiBCSOrder::kOrganossolo && om > 0.035) {
         return SiBCSSubGroup::kHumico;
     }
 
-    // 3. Intergrades
+    // 3. Salico/Tiomorfico Intergrades
+    if (state.hydric.water_content > 0.8 && order != SiBCSOrder::kGleissolo) {
+        // Wet soil that isn't primarily Gley -> Gleyic/Tiomorphic character
+         return SiBCSSubGroup::kTiomorfico;
+    }
+
+    // 4. Intergrades
     if (order != SiBCSOrder::kLatossolo && state.mineral.depth > 1.2 && state.mineral.clay_fraction > 0.3) {
         return SiBCSSubGroup::kLatossolico;
     }
