@@ -276,14 +276,51 @@ SiBCSSubOrder SiBCSClassifier::determineSuborder(const SoilState& state, const R
     return SiBCSSubOrder::kHaplic;
 }
 
-SiBCSGreatGroup SiBCSClassifier::determineGreatGroup(const SoilState& /*state*/, const Relief& /*relief*/, SiBCSOrder /*order*/, SiBCSSubOrder suborder) const {
-    // Placeholder Logic
-    if (suborder == SiBCSSubOrder::kVermelho) return SiBCSGreatGroup::kEutrofico;
-    if (suborder == SiBCSSubOrder::kAmarelo) return SiBCSGreatGroup::kDistrofico;
-    return SiBCSGreatGroup::kTipico;
+SiBCSGreatGroup SiBCSClassifier::determineGreatGroup(const SoilState& state, const Relief& /*relief*/, SiBCSOrder order, SiBCSSubOrder /*suborder*/) const {
+    // 1. Estimation of Base Saturation (V%) proxy derived from Clay + Organic Matter vs Leaching Risk
+    // High Clay + High Organic usually retains more cations (Eutrophic)
+    // Low Clay or High Leaching -> Dystrophic/Aluminic
+    
+    double fertilityIndex = (state.mineral.clay_fraction * 0.5) + (state.organic.labile_carbon * 20.0); 
+    // Example: Clay 0.4 (0.2) + Carbon 0.02 (0.4) = 0.6 => Moderate
+    
+    // Eutrophic (High Fertility)
+    if (fertilityIndex > 0.7) return SiBCSGreatGroup::kEutrofico;
+    
+    // Acric (Extremely Weathered, low activity clay) - Common in deep Latossols
+    if (order == SiBCSOrder::kLatossolo && state.mineral.depth > 2.0 && state.mineral.clay_fraction > 0.6) {
+        return SiBCSGreatGroup::kAcrico;
+    }
+    
+    // Aluminic (High Al saturation, low pH)
+    // Often associated with yellow/red argisols or cambisols in humid areas
+    if (fertilityIndex < 0.3) {
+        return SiBCSGreatGroup::kAluminico;
+    }
+
+    // Default Dystrophic for most weathered soils
+    return SiBCSGreatGroup::kDistrofico;
 }
 
-SiBCSSubGroup SiBCSClassifier::determineSubGroup(const SoilState& /*state*/, const Relief& /*relief*/, SiBCSOrder /*order*/, SiBCSSubOrder /*suborder*/, SiBCSGreatGroup /*greatGroup*/) const {
+SiBCSSubGroup SiBCSClassifier::determineSubGroup(const SoilState& state, const Relief& /*relief*/, SiBCSOrder order, SiBCSSubOrder /*suborder*/, SiBCSGreatGroup /*greatGroup*/) const {
+    // Intergrades (Transition between orders)
+    
+    // Latossolico: Characteristics of Latossol (Deep, homogeneous) in other soils
+    if (order != SiBCSOrder::kLatossolo && state.mineral.depth > 1.2 && state.mineral.clay_fraction > 0.3) {
+        return SiBCSSubGroup::kLatossolico;
+    }
+    
+    // Argissolico: Characteristics of Argissol (Texture gradient) in other soils
+    if (order != SiBCSOrder::kArgissolo && state.mineral.clay_fraction > 0.35 && state.mineral.sand_fraction > 0.4) {
+        // Crude proxy for textural gradient
+        return SiBCSSubGroup::kArgissolico;
+    }
+    
+    // Cambissolico: Young development in older soils? Or vice versa.
+    if (state.mineral.depth < 0.8 && order != SiBCSOrder::kCambissolo && order != SiBCSOrder::kNeossoloLit) {
+        return SiBCSSubGroup::kCambissolico;
+    }
+    
     return SiBCSSubGroup::kTipico;
 }
 
