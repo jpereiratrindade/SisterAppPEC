@@ -148,8 +148,12 @@ public:
         float* rgb) 
     {
         // 1. Base Color (Levels 1 & 2)
-        // This handles Order + Suborder logic (already cumulative in v1)
         getFloatColor(type, sub, rgb);
+        
+        // Handle "Bruno" Suborder override
+        if (sub == landscape::SiBCSSubOrder::kBruno) {
+             rgb[0] = 0.55f; rgb[1] = 0.45f; rgb[2] = 0.35f; // Brownish
+        }
 
         if (viewLevel <= landscape::SiBCSLevel::Suborder) return;
 
@@ -158,23 +162,26 @@ public:
         RGBtoHSV(rgb[0], rgb[1], rgb[2], h, s, v);
 
         // 2. Great Group Modifiers (Level 3)
-        // Eutrophic -> Vibrant/Darker, Dystrophic -> Paler/Lighter, Acric -> Washed out
         if (viewLevel >= landscape::SiBCSLevel::GreatGroup) {
             switch (group) {
                 case landscape::SiBCSGreatGroup::kEutrofico:  s *= 1.2f; v *= 0.9f; break; // Richer
                 case landscape::SiBCSGreatGroup::kDistrofico: s *= 0.8f; v *= 1.1f; break; // Paler
                 case landscape::SiBCSGreatGroup::kAluminico:  h += 20.0f; s *= 0.7f; break; // Blue/Grey shift
                 case landscape::SiBCSGreatGroup::kAcrico:     s *= 0.5f; v *= 1.2f; break; // Very pale (weathered)
+                case landscape::SiBCSGreatGroup::kFerrico:    h = 0.0f; s = 0.9f; v *= 0.8f; break; // Deep Red Saturation
+                case landscape::SiBCSGreatGroup::kOrtico:     /* Standard, no change */ break;
                 default: break;
             }
         }
 
-        // 3. SubGroup Modifiers (Level 4) - Subtle Tints
+        // 3. SubGroup Modifiers (Level 4)
         if (viewLevel >= landscape::SiBCSLevel::SubGroup) {
              switch (subGroup) {
                 case landscape::SiBCSSubGroup::kLatossolico: s *= 1.1f; break; 
                 case landscape::SiBCSSubGroup::kArgissolico: v *= 0.95f; break;
                 case landscape::SiBCSSubGroup::kCambissolico: s *= 0.9f; break;
+                case landscape::SiBCSSubGroup::kPsamitico:    s *= 0.6f; v += 0.1f; break; // Sandy appearance (Pale/Desat)
+                case landscape::SiBCSSubGroup::kHumico:       v *= 0.7f; break; // Darker (Carbon)
                 default: break;
             }
         }

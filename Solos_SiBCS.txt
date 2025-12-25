@@ -1,0 +1,133 @@
+SISTEMA BRASILEIRO DE CLASSIFICAÇÃO DE SOLOS (SiBCS)
+ESTRUTURA HIERÁRQUICA CUMULATIVA
+
+==================================================
+NÍVEL 1 — ORDEM
+(Processo pedogenético dominante)
+==================================================
+
+- Latossolos
+- Argissolos
+- Cambissolos
+- Neossolos
+- Gleissolos
+- Planossolos
+- Plintossolos
+- Espodossolos
+- Vertissolos
+- Nitossolos
+- Chernossolos
+- Luvissolos
+- Organossolos
+
+==================================================
+NÍVEL 2 — SUBORDEM
+(Acrescenta condição dominante ao nível Ordem)
+==================================================
+
+Latossolos:
+- Latossolo Vermelho
+- Latossolo Vermelho-Amarelo
+- Latossolo Amarelo
+- Latossolo Bruno
+
+Argissolos:
+- Argissolo Vermelho
+- Argissolo Vermelho-Amarelo
+- Argissolo Amarelo
+- Argissolo Bruno
+
+Gleissolos:
+- Gleissolo Háplico
+- Gleissolo Melânico
+- Gleissolo Sálico
+- Gleissolo Tiomórfico
+
+Neossolos:
+- Neossolo Litólico
+- Neossolo Quartzarênico
+- Neossolo Flúvico
+- Neossolo Regolítico
+
+(… segue a mesma lógica para todas as Ordens)
+
+==================================================
+NÍVEL 3 — GRANDE GRUPO
+(Acrescenta diagnóstico morfológico/químico)
+==================================================
+
+Latossolo Vermelho:
+- Latossolo Vermelho Distrófico
+- Latossolo Vermelho Eutrófico
+- Latossolo Vermelho Distroférrico
+- Latossolo Vermelho Férrico
+
+Gleissolo Háplico:
+- Gleissolo Háplico Tb Distrófico
+- Gleissolo Háplico Tb Eutrófico
+
+Neossolo Quartzarênico:
+- Neossolo Quartzarênico Órtico
+- Neossolo Quartzarênico Hidromórfico
+
+==================================================
+NÍVEL 4 — SUBGRUPO
+(Expressa variações, transições e exceções)
+==================================================
+
+Latossolo Vermelho Distrófico:
+- Latossolo Vermelho Distrófico Típico
+- Latossolo Vermelho Distrófico húmico
+- Latossolo Vermelho Distrófico psamítico
+- Latossolo Vermelho Distrófico petroplíntico
+
+Gleissolo Háplico Tb Distrófico:
+- Gleissolo Háplico Tb Distrófico típico
+- Gleissolo Háplico Tb Distrófico sálico
+- Gleissolo Háplico Tb Distrófico tiomórfico
+
+==================================================
+NÍVEL 5 — FAMÍLIA
+(Propriedades físicas e mineralógicas)
+==================================================
+
+Critérios adicionados:
+- Classe textural (argilosa, média, arenosa)
+- Mineralogia da argila (caulinítica, esmectítica, mista)
+- Atividade da argila (Ta, Tb)
+- Profundidade efetiva
+- Relevo associado
+
+Exemplo:
+- Latossolo Vermelho Distrófico típico
+  Família: argilosa, caulinítica, Ta, muito profundo, relevo suave ondulado
+
+==================================================
+NÍVEL 6 — SÉRIE
+(Identidade local — escala de mapeamento)
+==================================================
+
+Inclui:
+- Nome local (topônimo)
+- Localização geográfica precisa
+- Material de origem específico
+- Uso predominante
+- Variações micromorfológicas
+
+Exemplo:
+- Série Santa Maria
+  (Latossolo Vermelho Distrófico típico,
+   argiloso, Ta, profundo, relevo suave ondulado,
+   material basáltico, uso pastoril)
+
+==================================================
+REGRA FUNDAMENTAL
+==================================================
+
+Cada nível:
+- Mantém TODOS os atributos do nível superior
+- Acrescenta novos critérios
+- Nunca contradiz os níveis anteriores
+
+Classificação = Acúmulo de restrições diagnósticas
+

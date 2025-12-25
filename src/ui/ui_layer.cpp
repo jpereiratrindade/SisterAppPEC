@@ -968,9 +968,9 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
             ImGui::TextDisabled("Cumulative Visualization: Base Color (Order) + Tints (Modifiers)");
             switch(ctx.soilClassificationMode) {
                 case 1: ImGui::TextWrapped("Level 1 (Base): Order identity (Latossolo vs Argissolo)."); break;
-                case 2: ImGui::TextWrapped("Level 2 (Base): Suborder traits (Red/Yellow/Melanic). Key visual identifier."); break;
-                case 3: ImGui::TextWrapped("Level 3 (Modifier): Great Group. Tint shifts for Fertility (Eutrophic=Rich, Acric=Pale)."); break;
-                case 4: ImGui::TextWrapped("Level 4 (Modifier): Subgroup. Subtle variations for intergrades."); break;
+                case 2: ImGui::TextWrapped("Level 2 (Base): Suborder tratis (Red/Yellow/Brown/Melanic). Key visual identifier."); break;
+                case 3: ImGui::TextWrapped("Level 3 (Modifier): Great Group. Chemical traits (Eutrophic, Dystrophic, Acric, Férrico)."); break;
+                case 4: ImGui::TextWrapped("Level 4 (Modifier): Subgroup. Transictions/Variations (Psamítico, Húmico, Latossólico)."); break;
                 case 5: ImGui::TextWrapped("Level 5 (Modifier): Family. Texture hints (Clay=Warm, Sand=Yellowish)."); break;
                 case 6: ImGui::TextWrapped("Level 6 (Specific): Series. Simulated Local Units (Ribeirão Preto, Várzea, Serra)."); break;
             }

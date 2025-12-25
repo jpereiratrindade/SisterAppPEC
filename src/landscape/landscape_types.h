@@ -55,6 +55,7 @@ namespace landscape {
         kVermelho,
         kAmarelo,
         kVermelhoAmarelo,
+        kBruno,      // [NEW] Brown (Cool/Wet)
         kHaplic,
         kLitolico,
         kQuartzarenico,
@@ -71,6 +72,8 @@ namespace landscape {
         kDistrofico, // Low base saturation
         kAluminico,  // High Aluminum
         kAcrico,     // Ultra-weathered (Low CEC)
+        kFerrico,    // [NEW] Iron-rich (>18% Fe2O3)
+        kOrtico,     // [NEW] Standard/True (Orthic) - for Neossolos
         kTipico
     };
 
@@ -80,7 +83,10 @@ namespace landscape {
         kTipico,
         kLatossolico,
         kArgissolico,
-        kCambissolico
+        kCambissolico,
+        kPsamitico,    // [NEW] Sandy texture
+        kHumico,       // [NEW] High Carbon
+        kPetroplintico // [NEW] Concretions
     };
 
     // SiBCS Level 5: Family (Família)
