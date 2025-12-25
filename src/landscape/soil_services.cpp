@@ -331,7 +331,26 @@ SiBCSFamily SiBCSClassifier::determineFamily(const SoilState& state) const {
     return SiBCSFamily::kTexturaMedia;
 }
 
-SiBCSSeries SiBCSClassifier::determineSeries(const SoilState& /*state*/) const {
+SiBCSSeries SiBCSClassifier::determineSeries(const SoilState& state) const {
+    // Synthetic Mapping for Visualization (Mocking local series)
+    
+    // 1. Hydromorphic Series
+    if (state.hydric.water_content > state.hydric.field_capacity * 0.9) return SiBCSSeries::kVarzea;
+    
+    // 2. Lithic Series
+    if (state.mineral.depth < 0.5) return SiBCSSeries::kSerra;
+    
+    // 3. Sandy Series
+    if (state.mineral.sand_fraction > 0.8) return SiBCSSeries::kAreias;
+    
+    // 4. Clayey Series
+    if (state.mineral.clay_fraction > 0.45) {
+        // High fertility -> Ribeirão Preto (Purple Terra Roxa notion)
+        double fertilityIndex = (state.mineral.clay_fraction * 0.5) + (state.organic.labile_carbon * 20.0);
+        if (fertilityIndex > 0.7) return SiBCSSeries::kRibeiraoPreto;
+        return SiBCSSeries::kCerradoNativo;
+    }
+    
     return SiBCSSeries::kGeneric;
 }
 

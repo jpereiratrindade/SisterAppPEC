@@ -189,6 +189,34 @@ public:
             }
         }
 
+        // 5. Series Modifiers (Level 6) - Specific local tinting/branding
+        if (viewLevel >= landscape::SiBCSLevel::Series) {
+             // To ensure Series are visually distinct from Level 5, we apply contrast/hue shifts
+             switch (series) {
+                case landscape::SiBCSSeries::kRibeiraoPreto: 
+                    // Tonal shift to "Roxo" (Purple/Dark Red)
+                    h = 340.0f; s = 0.8f; v *= 0.8f; // Deep Purple-Red
+                    break;
+                case landscape::SiBCSSeries::kCerradoNativo:
+                    // Ochre / Rusty
+                    h = 25.0f; s = 0.6f; v = 0.7f;
+                    break;
+                case landscape::SiBCSSeries::kAreias:
+                    // Bright White/Yellow
+                    h = 50.0f; s = 0.2f; v = 0.95f;
+                    break;
+                case landscape::SiBCSSeries::kVarzea:
+                    // Blueish Grey
+                    h = 200.0f; s = 0.3f; v = 0.6f;
+                    break;
+                case landscape::SiBCSSeries::kSerra:
+                    // Dark Grey Rock
+                    s = 0.1f; v = 0.4f;
+                    break;
+                default: break;
+            }
+        }
+
         // Re-clamp HSV
         if (h < 0.0f) h += 360.0f;
         if (h > 360.0f) h -= 360.0f;

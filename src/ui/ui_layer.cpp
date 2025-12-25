@@ -972,7 +972,7 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
                 case 3: ImGui::TextWrapped("Level 3 (Modifier): Great Group. Tint shifts for Fertility (Eutrophic=Rich, Acric=Pale)."); break;
                 case 4: ImGui::TextWrapped("Level 4 (Modifier): Subgroup. Subtle variations for intergrades."); break;
                 case 5: ImGui::TextWrapped("Level 5 (Modifier): Family. Texture hints (Clay=Warm, Sand=Yellowish)."); break;
-                case 6: ImGui::TextWrapped("Level 6 (Modifier): Series. Local variations."); break;
+                case 6: ImGui::TextWrapped("Level 6 (Specific): Series. Simulated Local Units (Ribeirão Preto, Várzea, Serra)."); break;
             }
 	
 	        if (ctx.showMLSoil) {

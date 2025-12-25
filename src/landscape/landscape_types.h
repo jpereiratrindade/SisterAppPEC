@@ -95,7 +95,12 @@ namespace landscape {
     // SiBCS Level 6: Series (Série)
     enum class SiBCSSeries : uint8_t {
         kNone = 0,
-        kGeneric // Placeholder for user-defined local series
+        kGeneric,
+        kRibeiraoPreto, // Deep Red Eutrophic
+        kCerradoNativo, // Deep Red/Yellow Dystrophic
+        kAreias,        // Sandy
+        kVarzea,        // Hydromorphic
+        kSerra          // Lithic/Shallow
     };
 
     // Classification Depth Selector
