@@ -6,7 +6,7 @@ namespace graphics {
 using namespace math;
 
 // Helper to add a quad (2 triangles)
-static void addQuad(std::vector<Vertex>& verts, std::vector<uint16_t>& indices, 
+static void [[maybe_unused]] addQuad(std::vector<Vertex>& verts, std::vector<uint16_t>& indices, 
              const Vec3& p0, const Vec3& p1, const Vec3& p2, const Vec3& p3, 
              const Vec3& color, const Vec3& normal) {
     uint16_t base = static_cast<uint16_t>(verts.size());
@@ -22,7 +22,7 @@ static void addQuad(std::vector<Vertex>& verts, std::vector<uint16_t>& indices,
 }
 
 // Helper to add a triangle
-static void addTri(std::vector<Vertex>& verts, std::vector<uint16_t>& indices, 
+static void [[maybe_unused]] addTri(std::vector<Vertex>& verts, std::vector<uint16_t>& indices, 
             const Vec3& p0, const Vec3& p1, const Vec3& p2, 
             const Vec3& color, const Vec3& normal) {
     uint16_t base = static_cast<uint16_t>(verts.size());

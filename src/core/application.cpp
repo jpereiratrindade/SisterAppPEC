@@ -328,17 +328,18 @@ void Application::init() {
         [this](int samples) { // mlCollectData (Soil Color) - MOVED DOWN
              if (!finiteMap_ || !mlService_) return;
              std::cout << "[SisterApp] Collecting " << samples << " samples for 'soil_color'..." << std::endl;
-             std::srand(std::time(nullptr));
+             std::srand(static_cast<unsigned int>(std::time(nullptr)));
              int w = finiteMap_->getWidth();
              int h = finiteMap_->getHeight();
              
              for(int i=0; i<samples; ++i) {
                  int x = std::rand() % w;
                  int z = std::rand() % h;
-                 float d = finiteMap_->getLandscapeSoil()->depth[z*w+x];
-                 float om = finiteMap_->getLandscapeSoil()->organic_matter[z*w+x];
-                 float inf = finiteMap_->getLandscapeSoil()->infiltration[z*w+x] / 100.0f;
-                 float comp = finiteMap_->getLandscapeSoil()->compaction[z*w+x];
+                 size_t idx = static_cast<size_t>(z * w + x);
+                 float d = finiteMap_->getLandscapeSoil()->depth[idx];
+                 float om = finiteMap_->getLandscapeSoil()->organic_matter[idx];
+                 float inf = finiteMap_->getLandscapeSoil()->infiltration[idx] / 100.0f;
+                 float comp = finiteMap_->getLandscapeSoil()->compaction[idx];
                  
                  // Ground Truth Heuristic
                  float target = 0.5f * (d/2.0f) + 0.3f * (om/5.0f) + 0.2f * (1.0f - comp);
@@ -362,11 +363,12 @@ void Application::init() {
                  
                  // Inputs: Rain (Randomized 0-100), Infil (Soil), Veg (Biomass)
                  float rain = static_cast<float>(std::rand() % 100); 
-                 float infilBase = finiteMap_->getLandscapeSoil()->infiltration[idx];
+                 float infilBase = finiteMap_->getLandscapeSoil()->infiltration[static_cast<size_t>(idx)];
                  float biomass = 0.0f;
                  if (finiteMap_->getVegetation()) {
-                     biomass = finiteMap_->getVegetation()->ei_coverage[idx] + finiteMap_->getVegetation()->es_coverage[idx];
+                     biomass = finiteMap_->getVegetation()->ei_coverage[static_cast<size_t>(idx)] + finiteMap_->getVegetation()->es_coverage[static_cast<size_t>(idx)];
                  }
+
                  
                  // Physics Ground Truth (Same logic as HydroSystem)
                  float effInfil = infilBase * (1.0f + 2.0f * biomass);
@@ -397,10 +399,10 @@ void Application::init() {
              int h = finiteMap_->getHeight();
              
              for(int i=0; i<samples; ++i) {
-                 float cEI = static_cast<float>(std::rand()) / RAND_MAX;
-                 float cES = static_cast<float>(std::rand()) / RAND_MAX;
-                 float vEI = static_cast<float>(std::rand()) / RAND_MAX;
-                 float vES = static_cast<float>(std::rand()) / RAND_MAX;
+                 float cEI = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                 float cES = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                 float vEI = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                 float vES = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
                  
                  // 2. Calculate Ground Truth (DDD 3.9.2)
                  float deltaES = std::max(0.0f, 1.0f - vES);
@@ -430,15 +432,15 @@ void Application::init() {
              
              for(int i=0; i<samples; ++i) {
                  // Synthetic Domain Sampling
-                 float C = static_cast<float>(std::rand()) / RAND_MAX;
-                 float K = static_cast<float>(std::rand()) / RAND_MAX;
-                 float V = static_cast<float>(std::rand()) / RAND_MAX;
+                 float C = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                 float K = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                 float V = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
                  
                  // Ground Truth Heuristic: Growth = C + K*V + (1-C)*Rand
                  float cTerm = C * 0.1f; 
                  float kTerm = K * V;    
                  float target = cTerm + kTerm; 
-                 target += ((static_cast<float>(std::rand())/RAND_MAX) - 0.5f) * 0.05f;
+                 target += ((static_cast<float>(std::rand())/static_cast<float>(RAND_MAX)) - 0.5f) * 0.05f;
                  
                  mlService_->collectTrainingSample("biomass_growth", {C, K, V}, std::clamp(target, 0.0f, 1.0f));
              }
@@ -1098,7 +1100,7 @@ void Application::update(double dt) {
                        // Disturbance (Fire)
                        if (disturbanceParams_.fireFrequency > 0.0f) {
                            float prob = disturbanceParams_.fireFrequency * dtSim;
-                           if ((float)rand() / RAND_MAX < prob) {
+                           if (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) < prob) {
                                disturbanceParams_.type = vegetation::DisturbanceType::Fire;
                                vegetation::VegetationSystem::applyDisturbance(*veg, disturbanceParams_);
                                std::cout << "[Vegetation] Fire Event Triggered!" << std::endl;
