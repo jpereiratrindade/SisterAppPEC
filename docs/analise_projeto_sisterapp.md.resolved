@@ -559,7 +559,7 @@ vkDeviceWaitIdle(device); // Bloqueio total da GPU
 
 **1. Finalização SCORPAN (v4.5-4.6)**
 - [ ] Implementar vetores C (Climate) e O (Organisms)
-- [ ] Interface dual (Geometric vs SCORPAN) completa
+- [x] Interface SCORPAN única (modo geométrico removido)
 - [ ] Classificação SiBCS (Sistema Brasileiro)
 
 **2. Scientific Visualization**

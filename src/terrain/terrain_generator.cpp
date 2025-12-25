@@ -263,87 +263,79 @@ void TerrainGenerator::classifySoil(TerrainMap& map, const TerrainConfig& config
     }
 }
 
-void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map) {
+void TerrainGenerator::classifySoilFromSCORPAN(TerrainMap& map, const landscape::SiBCSUserConfig* domain) {
     auto* grid = map.getLandscapeSoil();
     if (!grid) return;
 
+    if (!domain || !domain->applyConstraints) {
+        std::cout << "[TerrainGenerator] SCORPAN map sync skipped (no user domain applied)." << std::endl;
+        return;
+    }
+
+    if (domain->pendingChanges || !domain->domainConfirmed) {
+        std::cout << "[TerrainGenerator] SCORPAN map sync pending user confirmation. Nothing will run until Apply/Submit." << std::endl;
+        return;
+    }
+
+    std::vector<landscape::SiBCSOrder> allowedOrders;
+    for (const auto& sel : domain->selections) {
+        if (sel.order == landscape::SiBCSOrder::kNone) continue;
+        if (std::find(allowedOrders.begin(), allowedOrders.end(), sel.order) == allowedOrders.end()) {
+            allowedOrders.push_back(sel.order);
+        }
+    }
+    if (allowedOrders.empty()) {
+        for (auto order : domain->allowedOrders) {
+            if (std::find(allowedOrders.begin(), allowedOrders.end(), order) == allowedOrders.end()) {
+                allowedOrders.push_back(order);
+            }
+        }
+    }
+
+    if (allowedOrders.empty()) {
+        std::cout << "[TerrainGenerator] No user-selected SiBCS orders found. SCORPAN map sync aborted." << std::endl;
+        return;
+    }
+
+    auto orderFromSoilType = [](uint8_t stored) {
+        switch(static_cast<landscape::SoilType>(stored)) {
+            case landscape::SoilType::Latossolo: return landscape::SiBCSOrder::kLatossolo;
+            case landscape::SoilType::Argissolo: return landscape::SiBCSOrder::kArgissolo;
+            case landscape::SoilType::Cambissolo: return landscape::SiBCSOrder::kCambissolo;
+            case landscape::SoilType::Neossolo_Litolico: return landscape::SiBCSOrder::kNeossoloLit;
+            case landscape::SoilType::Neossolo_Quartzarenico: return landscape::SiBCSOrder::kNeossoloQuartz;
+            case landscape::SoilType::Gleissolo: return landscape::SiBCSOrder::kGleissolo;
+            case landscape::SoilType::Organossolo: return landscape::SiBCSOrder::kOrganossolo;
+            default: return landscape::SiBCSOrder::kNone;
+        }
+    };
+
     int w = map.getWidth();
     int h = map.getHeight();
+    long long applied = 0;
+    long long cleared = 0;
 
-    // SCORPAN Semantic Mapping
-    // Prefer the canonical SiBCS classification stored in landscape::SoilGrid (soil_system).
-    // Fallback to a lightweight heuristic only if SoilGrid is not in SiBCS range yet.
-    #pragma omp parallel for collapse(2)
+    #pragma omp parallel for reduction(+:applied, cleared) collapse(2)
     for (int z = 0; z < h; ++z) {
         for (int x = 0; x < w; ++x) {
-            int idx = z * w + x;
+            size_t idx = static_cast<size_t>(z * w + x);
+            auto order = orderFromSoilType(grid->soil_type[idx]);
+            bool inDomain = (order != landscape::SiBCSOrder::kNone) && 
+                            (std::find(allowedOrders.begin(), allowedOrders.end(), order) != allowedOrders.end());
 
-            // Fast path: already classified by SoilSystem/SiBCSClassifier.
-            uint8_t stored = grid->soil_type[idx];
-            if (stored >= static_cast<uint8_t>(landscape::SoilType::Latossolo) &&
-                stored <= static_cast<uint8_t>(landscape::SoilType::Organossolo)) {
-                map.setSoil(x, z, static_cast<SoilType>(stored));
+            if (!inDomain) {
+                map.setSoil(x, z, SoilType::None);
+                cleared += 1;
                 continue;
             }
 
-            float depth = grid->depth[idx];
-            float clay = grid->clay_fraction[idx];
-            float sand = grid->sand_fraction[idx];
-            // Org Matter: Labile + Recalcitrant
-            float om = grid->labile_carbon[idx] + grid->recalcitrant_carbon[idx];
-
-            SoilType type = SoilType::Rocha;
-            landscape::SiBCSSubOrder sub = landscape::SiBCSSubOrder::kNone; // v4.5.1
-
-            if (depth < 0.2f) {
-                type = SoilType::Rocha;
-                sub = landscape::SiBCSSubOrder::kLitolico;
-            } else if (depth < 0.6f) {
-                type = SoilType::Neossolo_Litolico;
-                sub = landscape::SiBCSSubOrder::kLitolico;
-            } else {
-                // Deeper soils, classify by texture and organic content
-                if (clay > 0.35f) {
-                    type = SoilType::Argissolo; // Clay rich B horizon
-                    // Suborder Logic for Argissolo
-                    if (depth > 1.5f || clay > 0.6f) sub = landscape::SiBCSSubOrder::kVermelho;
-                    else sub = landscape::SiBCSSubOrder::kVermelhoAmarelo;
-
-                } else if (clay > 0.20f && sand < 0.5f) {
-                    type = SoilType::Cambissolo; // Incipient B
-                    sub = landscape::SiBCSSubOrder::kHaplic;
-                } else if (om > 0.03f && depth < 0.0f) { 
-                    type = SoilType::Gleissolo; 
-                    if (om > 0.03f) sub = landscape::SiBCSSubOrder::kMelanico;
-                    else sub = landscape::SiBCSSubOrder::kHaplic;
-
-                } else if (sand > 0.7f) {
-                    type = SoilType::Neossolo_Quartzarenico;
-                    sub = landscape::SiBCSSubOrder::kQuartzarenico;
-                } else {
-                    type = SoilType::Latossolo; // Deep, weathered
-                     // Latossolo Suborders based on Parent Material (Simulated)
-                    if (sand > 0.4f) sub = landscape::SiBCSSubOrder::kVermelhoAmarelo;
-                    else if (sand < 0.2f) sub = landscape::SiBCSSubOrder::kVermelho; // Clayey = Usually Red
-                    else sub = landscape::SiBCSSubOrder::kAmarelo;
-                }
-            }
-            
-            // Override for strict consistency with System:
-            if (om > 0.08f) { // Logic from SiBCSClassifier
-                 type = SoilType::Organossolo;
-                 sub = landscape::SiBCSSubOrder::kMelanico;
-            }
-
-            // Write back consistently to both terrain map (for minimap/legacy consumers)
-            // and landscape grid (for probe/renderer/palette).
-            map.setSoil(x, z, type);
-            grid->soil_type[idx] = static_cast<uint8_t>(type);
-            grid->suborder[idx] = static_cast<uint8_t>(sub);
+            map.setSoil(x, z, static_cast<SoilType>(grid->soil_type[idx]));
+            applied += 1;
         }
     }
     
-    std::cout << "[TerrainGenerator] SCORPAN Vector Classification applied to Map." << std::endl;
+    std::cout << "[TerrainGenerator] SCORPAN classifications synced to map (" << applied 
+              << " in-domain cells, " << cleared << " cleared outside domain)." << std::endl;
 }
 
 float TerrainGenerator::calculateSoilPattern(float x, float z, const SoilPatchConfig& cfg) const {
@@ -389,7 +381,7 @@ void TerrainGenerator::generateLandscape(TerrainMap& map) {
 
     if (soil) {
          std::cout << "[TerrainGenerator] Initializing Landscape Soil System..." << std::endl;
-        landscape::SoilSystem::initialize(*soil, seed_, map);
+        landscape::SoilSystem::initialize(*soil, seed_, map, landscape::SiBCSLevel::Suborder, nullptr);
     }
 
     if (hydro) {

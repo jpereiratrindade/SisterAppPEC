@@ -264,19 +264,17 @@ void Application::init() {
         // v4.4.2: Interactive Soil Update
         [this]() { // recomputeSoil
              if (!finiteMap_) return;
-             std::cout << "[App] Recomputing Soil System (Vector Geology Update)..." << std::endl;
+             std::cout << "[App] Recomputing Soil System (user-confirmed domain)..." << std::endl;
              
-             // Re-run Soil Genesis with new Lithology Parameters
-             // Reuse existing seed from config
-             // Note: terrainConfig_ stores generation config.
-             landscape::SoilSystem::initialize(*finiteMap_->getLandscapeSoil(), deferredConfig_.seed, *finiteMap_);
              if (finiteGenerator_) {
-                 if (soilClassificationMode_ == 0) {
-                     terrain::TerrainConfig config = deferredConfig_;
-                     config.resolution = worldResolution_;
-                     finiteGenerator_->classifySoil(*finiteMap_, config);
+                 auto* soil = finiteMap_->getLandscapeSoil();
+                 if (!soil) {
+                     std::cout << "[App] No SoilGrid available; skipping SCORPAN recompute." << std::endl;
+                 } else if (!sibcsConfig_.applyConstraints || sibcsConfig_.pendingChanges || !sibcsConfig_.domainConfirmed) {
+                     std::cout << "[App] SCORPAN recompute blocked: user domain not confirmed/applied." << std::endl;
                  } else {
-                     finiteGenerator_->classifySoilFromSCORPAN(*finiteMap_);
+                     landscape::SoilSystem::initialize(*soil, currentSeed_, *finiteMap_, currentSiBCSLevel_, &sibcsConfig_);
+                     finiteGenerator_->classifySoilFromSCORPAN(*finiteMap_, &sibcsConfig_);
                  }
              }
              
@@ -286,29 +284,20 @@ void Application::init() {
              
              std::cout << "[App] Soil System Updated." << std::endl;
         },
-        // v4.5.0 Dual Soil Interface
+        // SCORPAN-only toggle (legacy geometric removed)
         [this](int mode) { // switchSoilMode
-             // 0 = Geometric (Legacy), 1 = SCORPAN (Vector)
-             soilClassificationMode_ = mode;
-             std::cout << "[App] Switching Soil Mode to: " << (mode == 0 ? "Geometric" : "SCORPAN") << std::endl;
+             (void)mode;
+             soilClassificationMode_ = 1; // Force SCORPAN
+             std::cout << "[App] Switching Soil Mode to: SCORPAN" << std::endl;
              if (finiteGenerator_ && finiteMap_) {
-                 // Update the generator/service configuration
-                 // Ideally this should be a state in TerrainConfig or SoilSystem
-                 // For now, let's trigger a re-classification with the new mode
-                 // But classifySoil currently takes a Config.
-                 // We need to extend the system to support this state.
-                 // Let's assume we toggle a flag in finiteGenerator or pass it.
-                 // Actually, we can just regenerate the Soil MAP based on the mode.
-                 
-                 // If Mode 0: Run classifySoil (Geometric)
-                 // If Mode 1: Run classifySoilFromSCORPAN (New)
-                 
-                 if (mode == 0) {
-                     terrain::TerrainConfig config = deferredConfig_;
-                     config.resolution = worldResolution_;
-                     finiteGenerator_->classifySoil(*finiteMap_, config);
+                 auto* soil = finiteMap_->getLandscapeSoil();
+                 if (!soil) {
+                     std::cout << "[App] No SoilGrid available; skipping SCORPAN sync." << std::endl;
+                 } else if (!sibcsConfig_.applyConstraints || sibcsConfig_.pendingChanges || !sibcsConfig_.domainConfirmed) {
+                     std::cout << "[App] SCORPAN sync blocked: user domain not confirmed/applied." << std::endl;
                  } else {
-                     finiteGenerator_->classifySoilFromSCORPAN(*finiteMap_);
+                     landscape::SoilSystem::initialize(*soil, currentSeed_, *finiteMap_, currentSiBCSLevel_, &sibcsConfig_);
+                     finiteGenerator_->classifySoilFromSCORPAN(*finiteMap_, &sibcsConfig_);
                  }
                  meshUpdateRequested_ = true;
              }
@@ -394,13 +383,9 @@ void Application::init() {
         [this](int samples) { // mlCollectFireData
              if (!finiteMap_ || !mlService_ || !finiteMap_->getVegetation()) return;
              std::cout << "[SisterApp] Collecting " << samples << " samples for 'fire_risk'..." << std::endl;
-             
-             int w = finiteMap_->getWidth();
-             int h = finiteMap_->getHeight();
-             
-             for(int i=0; i<samples; ++i) {
-                 float cEI = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-                 float cES = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+            for(int i=0; i<samples; ++i) {
+                float cEI = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                float cES = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
                  float vEI = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
                  float vES = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
                  
@@ -649,81 +634,45 @@ void Application::processEvents(double dt) {
                              std::memcpy(lastSurfaceColor_, c, 12);
                          };
 
-                         // v4.5.1: Probe Logic depends on Mode
-                         if (soilClassificationMode_ == 1) {
-                             if (finiteMap_->getLandscapeSoil()) {
-                                 auto* soil = finiteMap_->getLandscapeSoil();
-                                 int idx = hitZ * finiteMap_->getWidth() + hitX;
-                                 
-                                 // Reconstruct State for Classification
-                                 // v4.5.8: Probe Logic - Pure SiBCS (No USDA)
-                                 auto storedType = static_cast<const landscape::SoilType>(soil->soil_type[idx]);
-                                 // v4.5.1: Level 2 - Suborder
-                                 auto storedSub = static_cast<const landscape::SiBCSSubOrder>(soil->suborder[idx]);
-                                 std::string subStr = ""; // Modal by default
-
-                                 switch(storedSub) {
-                                    case landscape::SiBCSSubOrder::kVermelho: subStr = "Vermelho"; break;
-                                    case landscape::SiBCSSubOrder::kAmarelo: subStr = "Amarelo"; break;
-                                    case landscape::SiBCSSubOrder::kVermelhoAmarelo: subStr = "Vermelho-Amarelo"; break;
-                                    case landscape::SiBCSSubOrder::kHaplic: subStr = "Haplic (Modal)"; break;
-                                    case landscape::SiBCSSubOrder::kLitolico: subStr = "Litolico"; break;
-                                    case landscape::SiBCSSubOrder::kQuartzarenico: subStr = "Quartzarenico"; break;
-                                    case landscape::SiBCSSubOrder::kMelanico: subStr = "Melanico"; break;
-                                    case landscape::SiBCSSubOrder::kTiomorfico: subStr = "Tiomorfico"; break;
-                                    default: subStr = ""; break;
-                                 }
-
-                                 switch(storedType) {
-                                     case landscape::SoilType::Latossolo: soilType = "Latossolo " + subStr; break;
-                                     case landscape::SoilType::Argissolo: soilType = "Argissolo " + subStr; break;
-                                     case landscape::SoilType::Cambissolo: soilType = "Cambissolo " + subStr; break;
-                                     case landscape::SoilType::Neossolo_Litolico: soilType = "Neossolo " + subStr; break;
-                                     case landscape::SoilType::Neossolo_Quartzarenico: soilType = "Neossolo " + subStr; break;
-                                     case landscape::SoilType::Gleissolo: soilType = "Gleissolo " + subStr; break;
-                                     case landscape::SoilType::Organossolo: soilType = "Organossolo " + subStr; break;
-                                     default: soilType = "Indefinido (SiBCS)"; break; 
-                                 }
-                             } else {
-                                 soilType = "SCORPAN (No Data)";
-                             }
+                         // SCORPAN-only probe
+                         if (finiteMap_->getLandscapeSoil()) {
+                             auto* soil = finiteMap_->getLandscapeSoil();
+                             int idx = hitZ * finiteMap_->getWidth() + hitX;
                              
-                             // In SCORPAN mode, color is dynamic, handled by shader.
-                             // Just set a placeholder color for the UI box if used
-                             setColor(0.6f, 0.5f, 0.4f); 
-                         } else {
-                             // Legacy Geometric Classes
-                             switch (soilId) {
-                                 case terrain::SoilType::Hidromorfico:
-                                     soilType = "Hidromorfico";
-                                     setColor(0.0f, 0.3f, 0.3f);
-                                     break;
-                                 case terrain::SoilType::BTextural:
-                                     soilType = "Horizonte B textural";
-                                     setColor(0.7f, 0.35f, 0.05f);
-                                     break;
-                                 case terrain::SoilType::Argila:
-                                     soilType = "Presenca de argila expansiva";
-                                     setColor(0.4f, 0.0f, 0.5f);
-                                     break;
-                                 case terrain::SoilType::BemDes:
-                                     soilType = "Solo bem desenvolvido";
-                                     setColor(0.5f, 0.15f, 0.1f);
-                                     break;
-                                 case terrain::SoilType::Raso:
-                                     soilType = "Solo Raso";
-                                     setColor(0.7f, 0.7f, 0.2f);
-                                     break;
-                                 case terrain::SoilType::Rocha:
-                                     soilType = "Afloramento rochoso";
-                                     setColor(0.2f, 0.2f, 0.2f);
-                                     break;
-                                 default:
-                                     soilType = "Indefinido";
-                                     setColor(0.1f, 0.1f, 0.1f);
-                                     break;
+                             // Reconstruct State for Classification
+                             auto storedType = static_cast<const landscape::SoilType>(soil->soil_type[idx]);
+                             auto storedSub = static_cast<const landscape::SiBCSSubOrder>(soil->suborder[idx]);
+                             std::string subStr = "";
+
+                             switch(storedSub) {
+                                case landscape::SiBCSSubOrder::kVermelho: subStr = "Vermelho"; break;
+                                case landscape::SiBCSSubOrder::kAmarelo: subStr = "Amarelo"; break;
+                                case landscape::SiBCSSubOrder::kVermelhoAmarelo: subStr = "Vermelho-Amarelo"; break;
+                                case landscape::SiBCSSubOrder::kHaplic: subStr = "Haplic (Modal)"; break;
+                                case landscape::SiBCSSubOrder::kLitolico: subStr = "Litolico"; break;
+                                case landscape::SiBCSSubOrder::kQuartzarenico: subStr = "Quartzarenico"; break;
+                                case landscape::SiBCSSubOrder::kMelanico: subStr = "Melanico"; break;
+                                case landscape::SiBCSSubOrder::kTiomorfico: subStr = "Tiomorfico"; break;
+                                default: subStr = ""; break;
                              }
-                        }
+
+                             switch(storedType) {
+                                 case landscape::SoilType::Latossolo: soilType = "Latossolo " + subStr; break;
+                                 case landscape::SoilType::Argissolo: soilType = "Argissolo " + subStr; break;
+                                 case landscape::SoilType::Cambissolo: soilType = "Cambissolo " + subStr; break;
+                                 case landscape::SoilType::Neossolo_Litolico: soilType = "Neossolo " + subStr; break;
+                                 case landscape::SoilType::Neossolo_Quartzarenico: soilType = "Neossolo " + subStr; break;
+                                 case landscape::SoilType::Gleissolo: soilType = "Gleissolo " + subStr; break;
+                                 case landscape::SoilType::Organossolo: soilType = "Organossolo " + subStr; break;
+                                 default: soilType = "Indefinido (SiBCS)"; break; 
+                             }
+                         } else {
+                             soilType = "SCORPAN (No Data)";
+                         }
+                         
+                         // In SCORPAN mode, color is dynamic, handled by shader.
+                         // Just set a placeholder color for the UI box if used
+                         setColor(0.6f, 0.5f, 0.4f); 
                          
                          // v3.7.1: Expanded Probe Data
                          float elevation = finiteMap_->getHeight(hitX, hitZ);
@@ -1051,27 +1000,49 @@ void Application::update(double dt) {
                  int mapH = finiteMap_->getHeight();
                  int endRow = currentSoilRow_ + constSoilSliceRows_;
                  if (endRow > mapH) endRow = mapH;
-                 
-                 // Update Slice
-                 // Update Slice
-                 // v4.6.6: Pass user-selected SiBCS level for dynamic depth calculation
-                 landscape::SiBCSLevel targetLevel = landscape::SiBCSLevel::Suborder; // Default
-                 if (soilClassificationMode_ >= 1 && soilClassificationMode_ <= 6) {
-                     targetLevel = static_cast<landscape::SiBCSLevel>(soilClassificationMode_);
-                 }
 
-                 landscape::SoilSystem::update(*soil, static_cast<float>(dt), soilClimate_, soilOrganism_, soilParentMaterial_, *finiteMap_, currentSoilRow_, endRow, targetLevel);
-
-                 // Keep TerrainMap semantic soil buffer in sync with the evolving SiBCS classification.
-                 // This avoids probe/type vs minimap/other views drifting over time.
+                 bool allowSoilSimulation = true;
                  if (soilClassificationMode_ >= 1) {
-                     int w = finiteMap_->getWidth();
-                     auto& soilMap = finiteMap_->soilMap();
-                     for (int y = currentSoilRow_; y < endRow; ++y) {
+                     allowSoilSimulation = sibcsConfig_.applyConstraints && sibcsConfig_.domainConfirmed && !sibcsConfig_.pendingChanges;
+                 }
+                 
+                 if (allowSoilSimulation) {
+                     // Update Slice
+                     // v4.6.6: Pass user-selected SiBCS level for dynamic depth calculation
+                     landscape::SiBCSLevel targetLevel = landscape::SiBCSLevel::Suborder; // Default
+                     if (soilClassificationMode_ >= 1 && soilClassificationMode_ <= 6) {
+                         targetLevel = static_cast<landscape::SiBCSLevel>(soilClassificationMode_);
+                     }
+
+                     landscape::SoilSystem::update(*soil, static_cast<float>(dt), soilClimate_, soilOrganism_, soilParentMaterial_, *finiteMap_, currentSoilRow_, endRow, targetLevel);
+
+                     // Keep TerrainMap semantic soil buffer in sync with the evolving SiBCS classification.
+                     // This avoids probe/type vs minimap/other views drifting over time.
+                     if (soilClassificationMode_ >= 1) {
+                         int w = finiteMap_->getWidth();
+                         auto& soilMap = finiteMap_->soilMap();
+                         for (int y = currentSoilRow_; y < endRow; ++y) {
                          int rowBase = y * w;
                          for (int x = 0; x < w; ++x) {
                              int idx = rowBase + x;
-                             soilMap[idx] = soil->soil_type[idx];
+                             uint8_t value = soil->soil_type[idx];
+                             if (value > static_cast<uint8_t>(terrain::SoilType::Organossolo)) {
+                                 value = static_cast<uint8_t>(terrain::SoilType::None);
+                             }
+                             soilMap[idx] = value;
+                         }
+                     }
+                 }
+                 } else {
+                     // Passive state while the user edits the domain: keep visuals cleared.
+                     if (soilClassificationMode_ >= 1) {
+                         int w = finiteMap_->getWidth();
+                         auto& soilMap = finiteMap_->soilMap();
+                         for (int y = currentSoilRow_; y < endRow; ++y) {
+                             int rowBase = y * w;
+                             for (int x = 0; x < w; ++x) {
+                                 soilMap[rowBase + x] = static_cast<uint8_t>(terrain::SoilType::None);
+                             }
                          }
                      }
                  }
@@ -1083,7 +1054,7 @@ void Application::update(double dt) {
 
                      // If we're actively visualizing SiBCS (SCORPAN), refresh the mesh colors
                      // after a full soil sweep to keep the rendered palette consistent with the probe.
-                     if (showSoilVis_ && soilClassificationMode_ >= 1 && !showMLSoil_) {
+                     if (showSoilVis_ && soilClassificationMode_ >= 1 && !showMLSoil_ && allowSoilSimulation) {
                          meshUpdateRequested_ = true;
                      }
                  }
@@ -1320,8 +1291,8 @@ void Application::render(size_t frameIndex) {
           /* slope */ showSlopeAnalysis_,
     /* drainage */ showDrainage_, drainageIntensity_,
     /* watershed */ showWatershedVis_, showBasinOutlines_, 
-    // Only force discrete Soil Vis (Shader override) if in Geometric Mode (0)
-    showSoilVis_ && (soilClassificationMode_ == 0),
+    // Soil visualization toggle (SCORPAN)
+    showSoilVis_,
     /* soil whitelist */ soilHidroAllowed_, soilBTextAllowed_, soilArgilaAllowed_, soilBemDesAllowed_, soilRasoAllowed_, soilRochaAllowed_, 
     /* visual */ sunAzimuth_, sunElevation_, fogDensity_, lightIntensity_,
     /* vegetation */ uvScale, vegetationModeForRender); // v3.9.0
@@ -1380,7 +1351,8 @@ void Application::render(size_t frameIndex) {
         soilClimate_,
         soilOrganism_,
         soilParentMaterial_,
-        soilClassificationMode_
+        soilClassificationMode_,
+        &sibcsConfig_
     };
 
     uiLayer_->render(uiCtx, cmd);
@@ -1517,6 +1489,7 @@ void Application::performRegeneration() {
         // We can just copy the config struct now!
         terrain::TerrainConfig config = deferredConfig_;
         int currentSoilMode = soilClassificationMode_;
+        landscape::SiBCSUserConfig domainCopy = sibcsConfig_;
 
         regenRequested_ = false;
         isRegenerating_ = true;
@@ -1541,7 +1514,7 @@ void Application::performRegeneration() {
 
             // v4.5.11: Transform Vectors to Soil Types immediately if in SCORPAN mode
             if (currentSoilMode == 1) {
-                gen->classifySoilFromSCORPAN(*map);
+                gen->classifySoilFromSCORPAN(*map, &domainCopy);
             }
 
             // v3.9.0: Initialize Vegetation (Async)

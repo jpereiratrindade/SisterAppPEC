@@ -15,10 +15,10 @@ Desenvolvido por **José Pedro Trindade**.
 
 ## 🎯 What's New (v4.5.0)
 - **Interactive Geology (SCORPAN P-Vector)**: User-defined "Parent Material" with real-time sliders for Weathering Rate, Base Fertility, and Texture Bias.
-- **Dual Soil Interface**: Seamless switching between "Geometric Mode" (Slope-based/Legacy) and "Simulation Mode" (SCORPAN Vector-based) for comparative analysis.
+- **SCORPAN/SiBCS Only**: Soil visualization and simulation run solely on user-defined SiBCS domains (no automatic or geometric classification).
 - **Unified Inspector UI**: Professional **Toolbar + Inspector** architecture with context-aware controls for Terrain, Hydro, Soil, and Vegetation.
     - **Layout Control**: Resizeable and movable panels for custom workspace organization.
-- **Verification & Validation**: restored "Realistic" soil palette for accurate pedological visualization and refined "Pattern Integrity" metrics.
+- **User-Gated Simulation**: Soil stays idle until the SiBCS domain is explicitly applied; undefined cells remain unclassified (no auto-classification).
 
 ### 🌍 Integrated Ecofunctional Landscape Model
 The environment is now driven by the **SCORPAN Vector Architecture** ($S = f(s,c,o,r,p,a,n)$), where users define the inputs (Vectors) to generate complex soil and vegetation dynamics:

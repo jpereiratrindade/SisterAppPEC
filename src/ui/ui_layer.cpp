@@ -15,6 +15,7 @@
 #include <array>
 #include <iostream>
 #include <utility>
+#include <algorithm>
 
 namespace ui {
 
@@ -618,23 +619,8 @@ void UiLayer::drawTerrainInspector(UiFrameContext& ctx) {
          ImGui::Unindent();
     }
 
-    // 2. Soil Types (Geometric)
-    bool showGeometric = ctx.showSoilVis && (ctx.soilClassificationMode == 0);
-    if (ImGui::Checkbox("Soil Types (Geometric)", &showGeometric)) {
-         ctx.showSoilVis = showGeometric;
-         if (showGeometric) {
-             ctx.soilClassificationMode = 0;
-             if (callbacks_.switchSoilMode) callbacks_.switchSoilMode(0);
-             
-             // Mutual Exclusion
-             ctx.showSlopeAnalysis = false;
-             ctx.showDrainage = false;
-             ctx.showWatershedVis = false;
-         }
-    }
-
-    // 3. SCORPAN Model
-    bool showScorpan = ctx.showSoilVis && (ctx.soilClassificationMode == 1);
+    // 2. SCORPAN Model (only supported visualization)
+    bool showScorpan = ctx.showSoilVis && (ctx.soilClassificationMode >= 1);
     if (ImGui::Checkbox("SCORPAN Model (Simulation)", &showScorpan)) {
         ctx.showSoilVis = showScorpan;
         if (showScorpan) {
@@ -817,13 +803,268 @@ void UiLayer::drawHydrologyInspector(UiFrameContext& ctx) {
 
 
 void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
-    // v4.5.1: Unified SCORPAN Interface
-    ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.3f, 1.0f), "Soil System (SCORPAN)");
-    ImGui::TextWrapped("The soil state (S) emerges from environmental factors (C,O,R,P,A,N).");
+
+    // v4.5.1: Unified SCORPAN Interface + v4.6.0 Domain
+    ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.3f, 1.0f), "Soil System (SCORPAN + SiBCS)");
+    
+    // --- Domain Definition (v4.6.0) ---
+    if (ctx.sibcsConfig && ImGui::CollapsingHeader("Domain Definition (User)", ImGuiTreeNodeFlags_DefaultOpen)) {
+        auto& cfg = *ctx.sibcsConfig;
+        auto markDirty = [&](landscape::SiBCSUserConfig& c) {
+            c.pendingChanges = true;
+            c.domainConfirmed = false;
+        };
+
+        auto syncOrders = [&](landscape::SiBCSUserConfig& c) {
+            c.allowedOrders.clear();
+            for (const auto& sel : c.selections) {
+                if (sel.order == landscape::SiBCSOrder::kNone) continue;
+                if (std::find(c.allowedOrders.begin(), c.allowedOrders.end(), sel.order) == c.allowedOrders.end()) {
+                    c.allowedOrders.push_back(sel.order);
+                }
+            }
+        };
+
+        auto orderName = [](landscape::SiBCSOrder o)->const char* {
+            switch(o) {
+                case landscape::SiBCSOrder::kLatossolo: return "Latossolo";
+                case landscape::SiBCSOrder::kArgissolo: return "Argissolo";
+                case landscape::SiBCSOrder::kCambissolo: return "Cambissolo";
+                case landscape::SiBCSOrder::kNeossoloLit: return "Neossolo (Litolico)";
+                case landscape::SiBCSOrder::kNeossoloQuartz: return "Neossolo (Quartzarenico)";
+                case landscape::SiBCSOrder::kGleissolo: return "Gleissolo";
+                case landscape::SiBCSOrder::kOrganossolo: return "Organossolo";
+                case landscape::SiBCSOrder::kPlintossolo: return "Plintossolo";
+                case landscape::SiBCSOrder::kEspodossolo: return "Espodossolo";
+                case landscape::SiBCSOrder::kVertissolo: return "Vertissolo";
+                case landscape::SiBCSOrder::kPlanossolo: return "Planossolo";
+                case landscape::SiBCSOrder::kChernossolo: return "Chernossolo";
+                case landscape::SiBCSOrder::kNitossolo: return "Nitossolo";
+                case landscape::SiBCSOrder::kLuvissolo: return "Luvissolo";
+                default: return "(Nenhum)";
+            }
+        };
+
+        ImGui::Checkbox("Enforce Custom Domain", &cfg.applyConstraints);
+        if (ImGui::IsItemEdited()) {
+            if (!cfg.applyConstraints) {
+                cfg.domainConfirmed = false;
+                cfg.pendingChanges = false;
+            } else {
+                markDirty(cfg);
+            }
+        }
+
+        if (cfg.pendingChanges) {
+            ImGui::TextColored(ImVec4(0.9f, 0.6f, 0.2f, 1.0f), "Pending changes - soil simulation paused until Apply.");
+        } else if (cfg.domainConfirmed) {
+            ImGui::TextDisabled("Domain confirmed. Simulation allowed.");
+        } else {
+            ImGui::TextDisabled("Domain not confirmed.");
+        }
+        
+        if (cfg.applyConstraints) {
+            ImGui::Indent();
+            ImGui::TextDisabled("Select Orders (Level 1):");
+            
+            auto OrderCheckbox = [&](const char* label, landscape::SiBCSOrder order) {
+                bool active = std::any_of(cfg.selections.begin(), cfg.selections.end(), [&](const landscape::SiBCSUserSelection& sel) {
+                    return sel.order == order;
+                });
+                if (ImGui::Checkbox(label, &active)) {
+                    if (active) {
+                        landscape::SiBCSUserSelection sel;
+                        sel.order = order;
+                        cfg.selections.push_back(sel);
+                    } else {
+                        cfg.selections.erase(std::remove_if(cfg.selections.begin(), cfg.selections.end(), [&](const landscape::SiBCSUserSelection& sel) {
+                            return sel.order == order;
+                        }), cfg.selections.end());
+                    }
+                    syncOrders(cfg);
+                    markDirty(cfg);
+                }
+            };
+            
+            ImGui::Columns(2, "soil_cols", false);
+            OrderCheckbox("Latossolo", landscape::SiBCSOrder::kLatossolo);
+            OrderCheckbox("Argissolo", landscape::SiBCSOrder::kArgissolo);
+            OrderCheckbox("Cambissolo", landscape::SiBCSOrder::kCambissolo);
+            ImGui::NextColumn();
+            OrderCheckbox("Neossolo", landscape::SiBCSOrder::kNeossoloLit);
+            OrderCheckbox("Gleissolo", landscape::SiBCSOrder::kGleissolo);
+            OrderCheckbox("Organossolo", landscape::SiBCSOrder::kOrganossolo);
+            ImGui::Columns(1);
+
+            ImGui::Spacing();
+            ImGui::TextDisabled("Explicit SiBCS selection (no automatic combinations):");
+
+            // Selection builders (combos)
+            static int orderIdx = 0;
+            static int subIdx = 0;
+            static int groupIdx = 0;
+            static int subGroupIdx = 0;
+
+            const std::pair<const char*, landscape::SiBCSOrder> orderOpts[] = {
+                {"(Nenhum)", landscape::SiBCSOrder::kNone},
+                {"Latossolo", landscape::SiBCSOrder::kLatossolo},
+                {"Argissolo", landscape::SiBCSOrder::kArgissolo},
+                {"Cambissolo", landscape::SiBCSOrder::kCambissolo},
+                {"Neossolo (Litolico)", landscape::SiBCSOrder::kNeossoloLit},
+                {"Neossolo (Quartzarenico)", landscape::SiBCSOrder::kNeossoloQuartz},
+                {"Gleissolo", landscape::SiBCSOrder::kGleissolo},
+                {"Organossolo", landscape::SiBCSOrder::kOrganossolo},
+                {"Plintossolo", landscape::SiBCSOrder::kPlintossolo},
+                {"Espodossolo", landscape::SiBCSOrder::kEspodossolo},
+                {"Vertissolo", landscape::SiBCSOrder::kVertissolo},
+                {"Planossolo", landscape::SiBCSOrder::kPlanossolo},
+                {"Chernossolo", landscape::SiBCSOrder::kChernossolo},
+                {"Nitossolo", landscape::SiBCSOrder::kNitossolo},
+                {"Luvissolo", landscape::SiBCSOrder::kLuvissolo}
+            };
+
+            const std::pair<const char*, landscape::SiBCSSubOrder> subOpts[] = {
+                {"(Nenhum)", landscape::SiBCSSubOrder::kNone},
+                {"Vermelho", landscape::SiBCSSubOrder::kVermelho},
+                {"Amarelo", landscape::SiBCSSubOrder::kAmarelo},
+                {"Vermelho-Amarelo", landscape::SiBCSSubOrder::kVermelhoAmarelo},
+                {"Bruno", landscape::SiBCSSubOrder::kBruno},
+                {"Haplico", landscape::SiBCSSubOrder::kHaplic},
+                {"Litolico", landscape::SiBCSSubOrder::kLitolico},
+                {"Regolitico", landscape::SiBCSSubOrder::kRegolitico},
+                {"Fluvico", landscape::SiBCSSubOrder::kFluvico},
+                {"Quartzarenico", landscape::SiBCSSubOrder::kQuartzarenico},
+                {"Melanico", landscape::SiBCSSubOrder::kMelanico},
+                {"Tiomorfico", landscape::SiBCSSubOrder::kTiomorfico},
+                {"Salico", landscape::SiBCSSubOrder::kSalico},
+                {"Humico", landscape::SiBCSSubOrder::kHumico},
+                {"Gleico", landscape::SiBCSSubOrder::kGleico}
+            };
+
+            const std::pair<const char*, landscape::SiBCSGreatGroup> groupOpts[] = {
+                {"(Nenhum)", landscape::SiBCSGreatGroup::kNone},
+                {"Eutrofico", landscape::SiBCSGreatGroup::kEutrofico},
+                {"Distrofico", landscape::SiBCSGreatGroup::kDistrofico},
+                {"Tb Eutrofico", landscape::SiBCSGreatGroup::kTbEutrofico},
+                {"Tb Distrofico", landscape::SiBCSGreatGroup::kTbDistrofico},
+                {"Aluminico", landscape::SiBCSGreatGroup::kAluminico},
+                {"Acrico", landscape::SiBCSGreatGroup::kAcrico},
+                {"Ferrico", landscape::SiBCSGreatGroup::kFerrico},
+                {"Distroferrico", landscape::SiBCSGreatGroup::kDistroferrico},
+                {"Ortico", landscape::SiBCSGreatGroup::kOrtico},
+                {"Hidromorfico", landscape::SiBCSGreatGroup::kHidromorfico},
+                {"Tipico", landscape::SiBCSGreatGroup::kTipico}
+            };
+
+            const std::pair<const char*, landscape::SiBCSSubGroup> subGroupOpts[] = {
+                {"(Nenhum)", landscape::SiBCSSubGroup::kNone},
+                {"Tipico", landscape::SiBCSSubGroup::kTipico},
+                {"Latossolico", landscape::SiBCSSubGroup::kLatossolico},
+                {"Argissolico", landscape::SiBCSSubGroup::kArgissolico},
+                {"Cambissolico", landscape::SiBCSSubGroup::kCambissolico},
+                {"Psamitico", landscape::SiBCSSubGroup::kPsamitico},
+                {"Humico", landscape::SiBCSSubGroup::kHumico},
+                {"Petroplintico", landscape::SiBCSSubGroup::kPetroplintico},
+                {"Salico", landscape::SiBCSSubGroup::kSalico},
+                {"Tiomorfico", landscape::SiBCSSubGroup::kTiomorfico}
+            };
+
+            ImGui::Combo("Ordem", &orderIdx, [](void* data, int idx, const char** out_text){
+                auto* opts = static_cast<const std::pair<const char*, landscape::SiBCSOrder>*>(data);
+                *out_text = opts[idx].first;
+                return true;
+            }, (void*)orderOpts, IM_ARRAYSIZE(orderOpts));
+
+            ImGui::Combo("Subordem", &subIdx, [](void* data, int idx, const char** out_text){
+                auto* opts = static_cast<const std::pair<const char*, landscape::SiBCSSubOrder>*>(data);
+                *out_text = opts[idx].first;
+                return true;
+            }, (void*)subOpts, IM_ARRAYSIZE(subOpts));
+
+            ImGui::Combo("Grande Grupo", &groupIdx, [](void* data, int idx, const char** out_text){
+                auto* opts = static_cast<const std::pair<const char*, landscape::SiBCSGreatGroup>*>(data);
+                *out_text = opts[idx].first;
+                return true;
+            }, (void*)groupOpts, IM_ARRAYSIZE(groupOpts));
+
+            ImGui::Combo("Subgrupo", &subGroupIdx, [](void* data, int idx, const char** out_text){
+                auto* opts = static_cast<const std::pair<const char*, landscape::SiBCSSubGroup>*>(data);
+                *out_text = opts[idx].first;
+                return true;
+            }, (void*)subGroupOpts, IM_ARRAYSIZE(subGroupOpts));
+
+            if (ImGui::Button("Add Selection")) {
+                landscape::SiBCSUserSelection sel;
+                sel.order = orderOpts[orderIdx].second;
+                sel.suborder = subOpts[subIdx].second;
+                sel.greatGroup = groupOpts[groupIdx].second;
+                sel.subGroup = subGroupOpts[subGroupIdx].second;
+
+                if (sel.order != landscape::SiBCSOrder::kNone) {
+                    bool exists = std::any_of(cfg.selections.begin(), cfg.selections.end(), [&](const landscape::SiBCSUserSelection& existing) {
+                        return existing.order == sel.order &&
+                               existing.suborder == sel.suborder &&
+                               existing.greatGroup == sel.greatGroup &&
+                               existing.subGroup == sel.subGroup;
+                    });
+                    if (!exists) {
+                        cfg.selections.push_back(sel);
+                        syncOrders(cfg);
+                        markDirty(cfg);
+                    }
+                }
+            }
+
+            ImGui::Spacing();
+            ImGui::TextDisabled("Current selections:");
+            if (cfg.selections.empty()) {
+                ImGui::TextColored(ImVec4(0.9f, 0.4f, 0.2f, 1.0f), "None. Simulation will remain passive.");
+            } else {
+                for (size_t i = 0; i < cfg.selections.size(); ++i) {
+                    const auto& sel = cfg.selections[i];
+                    ImGui::BulletText("%s", orderName(sel.order));
+                    ImGui::SameLine();
+                    ImGui::TextDisabled("| Sub: %d | GG: %d | SG: %d", static_cast<int>(sel.suborder), static_cast<int>(sel.greatGroup), static_cast<int>(sel.subGroup));
+                    ImGui::SameLine();
+                    ImGui::PushID(static_cast<int>(i));
+                    if (ImGui::SmallButton("Remove")) {
+                        cfg.selections.erase(cfg.selections.begin() + static_cast<long>(i));
+                        syncOrders(cfg);
+                        markDirty(cfg);
+                        ImGui::PopID();
+                        break;
+                    }
+                    ImGui::PopID();
+                }
+                if (ImGui::Button("Clear All")) {
+                    cfg.selections.clear();
+                    syncOrders(cfg);
+                    markDirty(cfg);
+                }
+            }
+
+            ImGui::Unindent();
+        }
+        
+        ImGui::Dummy(ImVec2(0,5));
+        bool noDomain = (!cfg.applyConstraints) || (cfg.selections.empty() && cfg.allowedOrders.empty());
+        ImGui::BeginDisabled(noDomain);
+        if (ImGui::Button("Apply & Regenerate", ImVec2(-1, 0))) {
+            cfg.domainConfirmed = true;
+            cfg.pendingChanges = false;
+            if (callbacks_.recomputeSoil) callbacks_.recomputeSoil();
+        }
+        ImGui::EndDisabled();
+        ImGui::Separator();
+    }
     
     ImGui::Dummy(ImVec2(0.0f, 5.0f));
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
     if (ImGui::Button("Recalculate Soil Initial State", ImVec2(-1, 0))) {
+        if (ctx.sibcsConfig && ctx.sibcsConfig->applyConstraints) {
+            ctx.sibcsConfig->domainConfirmed = true;
+            ctx.sibcsConfig->pendingChanges = false;
+        }
         if (callbacks_.recomputeSoil) {
             callbacks_.recomputeSoil();
         }
@@ -832,26 +1073,15 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
     
     ImGui::Separator();
     ImGui::Separator();
-    ImGui::Text("Active Visualization Model:");
+    ImGui::Text("Visualization (SiBCS domain only):");
     
-    // Explicit Buttons for Model Switching
-    bool isGeo = ctx.showSoilVis && (ctx.soilClassificationMode == 0);
-    bool isSco = ctx.showSoilVis && (ctx.soilClassificationMode == 1);
-    
-    if (ImGui::RadioButton("Off", !isGeo && !isSco)) {
+    bool showSco = ctx.showSoilVis && (ctx.soilClassificationMode >= 1);
+    if (ImGui::RadioButton("Off", !showSco)) {
         ctx.showSoilVis = false; 
+        ctx.soilClassificationMode = 1; // SCORPAN is the only supported mode
     }
     ImGui::SameLine();
-    if (ImGui::RadioButton("Geometric", isGeo)) {
-        ctx.showSoilVis = true;
-        ctx.soilClassificationMode = 0;
-        if (callbacks_.switchSoilMode) callbacks_.switchSoilMode(0);
-        ctx.showSlopeAnalysis = false;
-        ctx.showDrainage = false;
-        ctx.showWatershedVis = false;
-    }
-    ImGui::SameLine();
-    if (ImGui::RadioButton("SCORPAN", isSco)) {
+    if (ImGui::RadioButton("SCORPAN (SiBCS)", showSco)) {
         ctx.showSoilVis = true;
         ctx.soilClassificationMode = 1;
         if (callbacks_.switchSoilMode) callbacks_.switchSoilMode(1);
@@ -860,7 +1090,10 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
         ctx.showWatershedVis = false;
     }
     
-    ImGui::TextDisabled(isGeo ? "Legacy slope-based classification." : (isSco ? "Classification derived from S (SCORPAN)." : "Visualization disabled."));
+    ImGui::TextDisabled(showSco ? "Visualization uses only the user-confirmed SiBCS domain." : "Visualization disabled.");
+    // Force SCORPAN depth to Order-only view (no level switching UI)
+    if (ctx.soilClassificationMode < 1) ctx.soilClassificationMode = 1;
+    if (ctx.soilClassificationMode > 1) ctx.soilClassificationMode = 1;
     
     ImGui::Spacing();
     if (ImGui::CollapsingHeader("Factors (Inputs / Loaded Data)", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -918,280 +1151,29 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
     
     ImGui::Separator();
 
-    // --- Soil Map ---
-    // --- Soil Map ---
-    // Only show Legend for Geometric Mode (Classes)
-    if (ctx.showSoilVis && ctx.soilClassificationMode == 0) {
-        ImGui::Text("Map Legend (Geometric Classes)");
+    // --- Soil Map (SCORPAN only) ---
+    if (ctx.showSoilVis && ctx.soilClassificationMode >= 1) {
+        ImGui::Text("Map Legend (SiBCS Order)");
         ImGui::Indent();
-        ImGui::TextDisabled("Legend:");
-        float c[3];
-        terrain::SoilPalette::getFloatColor(terrain::SoilType::Hidromorfico, c); ImGui::ColorButton("##cHidro", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Hidromorfico");
-        terrain::SoilPalette::getFloatColor(terrain::SoilType::BTextural, c);    ImGui::ColorButton("##cBText", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("B-Textural");
-        terrain::SoilPalette::getFloatColor(terrain::SoilType::Argila, c);       ImGui::ColorButton("##cArgila", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Argila");
-        terrain::SoilPalette::getFloatColor(terrain::SoilType::BemDes, c);       ImGui::ColorButton("##cBemDes", ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Bem Des.");
-        terrain::SoilPalette::getFloatColor(terrain::SoilType::Raso, c);         ImGui::ColorButton("##cRaso",   ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Raso");
-        terrain::SoilPalette::getFloatColor(terrain::SoilType::Rocha, c);        ImGui::ColorButton("##cRocha",  ImVec4(c[0], c[1], c[2], 1.0f)); ImGui::SameLine(); ImGui::Text("Rocha");
-        
-        ImGui::Text("Soil Whitelist:");
-        ImGui::BeginGroup(); // Columns hack
-        ImGui::Checkbox("Hidro", &ctx.soilHidroAllowed); ImGui::SameLine();
-        ImGui::Checkbox("Textural", &ctx.soilBTextAllowed); ImGui::SameLine();
-        ImGui::Checkbox("Argila", &ctx.soilArgilaAllowed);
-        ImGui::Checkbox("BemDes", &ctx.soilBemDesAllowed); ImGui::SameLine();
-        ImGui::Checkbox("Raso", &ctx.soilRasoAllowed); ImGui::SameLine();
-        ImGui::Checkbox("Rocha", &ctx.soilRochaAllowed);
-        ImGui::EndGroup();
+        auto LegendItem = [](const char* name, terrain::SoilType type) {
+            float c[3];
+            terrain::SoilPalette::getFloatColor(type, c);
+            ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
+            ImGui::SameLine(); ImGui::Text("%s", name);
+        };
+        LegendItem("Latossolo", terrain::SoilType::Latossolo);
+        LegendItem("Argissolo", terrain::SoilType::Argissolo);
+        LegendItem("Cambissolo", terrain::SoilType::Cambissolo);
+        LegendItem("Neossolo", terrain::SoilType::Neossolo_Litolico);
+        LegendItem("Gleissolo", terrain::SoilType::Gleissolo);
+        LegendItem("Organossolo", terrain::SoilType::Organossolo);
         ImGui::Unindent();
-        
-        if (ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
-    }
 
-    // Only show SCORPAN Results for Simulation Mode
-	    if (ctx.showSoilVis && ctx.soilClassificationMode >= 1) { // >= 1 for SiBCS Levels
-            // v4.6.6: SiBCS Level Selector
-            const char* items[] = { "Level 1: Order", "Level 2: Suborder", "Level 3: Great Group", "Level 4: Subgroup", "Level 5: Family", "Level 6: Series" };
-            // Map internal soilMode (1-6) to index (0-5)
-            int comboIndex = ctx.soilClassificationMode - 1; 
-            if (comboIndex < 0) comboIndex = 0;
-            if (comboIndex > 5) comboIndex = 5;
-
-            if (ImGui::Combo("Taxonomic Level", &comboIndex, items, IM_ARRAYSIZE(items))) {
-                ctx.soilClassificationMode = comboIndex + 1;
-                // Trigger re-classification if needed (handled by update loop reading this value)
-            }
-
-	        ImGui::Text("Current View: %s", items[ctx.soilClassificationMode - 1]);
-	        ImGui::Indent();
-            
-            // Dynamic Description (Cumulative)
-            ImGui::TextDisabled("Cumulative Visualization: Base Color (Order) + Tints (Modifiers)");
-            switch(ctx.soilClassificationMode) {
-                case 1: ImGui::TextWrapped("Level 1 (Base): Order identity (Latossolo vs Argissolo)."); break;
-                case 2: ImGui::TextWrapped("Level 2 (Base): Suborder tratis (Red/Yellow/Brown/Melanic). Key visual identifier."); break;
-                case 3: ImGui::TextWrapped("Level 3 (Modifier): Great Group. Chemical traits (Eutrophic, Dystrophic, Acric, Férrico)."); break;
-                case 4: ImGui::TextWrapped("Level 4 (Modifier): Subgroup. Transictions/Variations (Psamítico, Húmico, Latossólico)."); break;
-                case 5: ImGui::TextWrapped("Level 5 (Modifier): Family. Texture hints (Clay=Warm, Sand=Yellowish)."); break;
-                case 6: ImGui::TextWrapped("Level 6 (Specific): Series. Simulated Local Units (Ribeirão Preto, Várzea, Serra)."); break;
-            }
-	
-	        if (ctx.showMLSoil) {
-	            ImGui::TextColored(ImVec4(1.0f, 0.85f, 0.2f, 1.0f),
-	                               "ML visualization active. Colors show prediction confidence, not SiBCS.");
-	        }
-	        
-	        ImGui::Separator();
-            
-            // Dynamic Legend logic
-            if (ctx.soilClassificationMode == 1) {
-                ImGui::TextDisabled("Legend (Level 1: Order):");
-                auto LegendItem = [](const char* name, terrain::SoilType type) {
-                    float c[3];
-                    terrain::SoilPalette::getFloatColor(type, c);
-                    ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
-                    ImGui::SameLine(); ImGui::Text("%s", name);
-                };
-                LegendItem("Latossolo", terrain::SoilType::Latossolo);
-                LegendItem("Argissolo", terrain::SoilType::Argissolo);
-                LegendItem("Cambissolo", terrain::SoilType::Cambissolo);
-                LegendItem("Neossolo", terrain::SoilType::Neossolo_Litolico);
-                LegendItem("Gleissolo", terrain::SoilType::Gleissolo);
-            }
-            else if (ctx.soilClassificationMode == 2) {
-                ImGui::TextDisabled("Legend (Level 2: Suborder):");
-                auto LegendItem = [](const char* name, terrain::SoilType type, landscape::SiBCSSubOrder sub) {
-                    float c[3];
-                    terrain::SoilPalette::getFloatColor(type, sub, c);
-                    ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
-                    ImGui::SameLine(); ImGui::Text("%s", name);
-                };
-                LegendItem("Vermelho (Fe2O3)", terrain::SoilType::Latossolo, landscape::SiBCSSubOrder::kVermelho);
-                LegendItem("Amarelo (FeOOH)", terrain::SoilType::Latossolo, landscape::SiBCSSubOrder::kAmarelo);
-                LegendItem("Melanico (C)", terrain::SoilType::Gleissolo, landscape::SiBCSSubOrder::kMelanico);
-                LegendItem("Litolico", terrain::SoilType::Neossolo_Litolico, landscape::SiBCSSubOrder::kLitolico);
-            }
-            else if (ctx.soilClassificationMode == 3) {
-                ImGui::TextDisabled("Legend (Level 3: Great Group):");
-                auto LegendItem = [](const char* name, landscape::SiBCSGreatGroup group) {
-                    float c[3];
-                    terrain::SoilPalette::getFloatColor(group, c);
-                    ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
-                    ImGui::SameLine(); ImGui::Text("%s", name);
-                };
-                LegendItem("Eutrofico (High Fert)", landscape::SiBCSGreatGroup::kEutrofico);
-                LegendItem("Distrofico (Low Fert)", landscape::SiBCSGreatGroup::kDistrofico);
-                LegendItem("Aluminico (Toxic Al)", landscape::SiBCSGreatGroup::kAluminico);
-            }
-            else if (ctx.soilClassificationMode == 5) {
-                ImGui::TextDisabled("Legend (Level 5: Family):");
-                 auto LegendItem = [](const char* name, landscape::SiBCSFamily family) {
-                    float c[3];
-                    terrain::SoilPalette::getFloatColor(family, c);
-                    ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
-                    ImGui::SameLine(); ImGui::Text("%s", name);
-                };
-                LegendItem("Muito Argilosa (>60%)", landscape::SiBCSFamily::kTexturaMuitoArgilosa);
-                LegendItem("Argilosa (35-60%)", landscape::SiBCSFamily::kTexturaArgilosa);
-                LegendItem("Media (15-35%)", landscape::SiBCSFamily::kTexturaMedia);
-                LegendItem("Arenosa (<15% Clay)", landscape::SiBCSFamily::kTexturaArenosa);
-            }
-            else {
-                 ImGui::TextDisabled("(Legend not available for this level)");
-            }
-        
-        ImGui::Unindent();
-        
         if (ctx.showSlopeAnalysis) ctx.showSlopeAnalysis = false;
     }
     
     ImGui::Separator();
 
-    // v4.3.0: DDD Pattern Integrity Validator
-    // Only valid for Geometric Classes
-     if (ctx.soilClassificationMode == 0 && ImGui::CollapsingHeader("Pattern Integrity (DDD)", ImGuiTreeNodeFlags_DefaultOpen)) {
-          if (ctx.finiteMap) {
-              // Refactored to member v4.3.5
-              double now = ImGui::GetTime();
-              
-              // Recalculate every 2 seconds or if empty (to avoid heavy CPU every frame)
-              if (lastMetrics_.empty() || (now - lastMetricsCalcTime_ > 2.0)) {
-                  lastMetrics_ = terrain::LandscapeMetricCalculator::analyzeGlobal(*ctx.finiteMap, ctx.worldResolution);
-                  lastMetricsCalcTime_ = now;
-              }
-
-             ImGui::TextDisabled("(Updates every 2s)");
-             ImGui::SameLine();
-             
-             // v4.3.2: Auto-Fix Button
-             if (ImGui::SmallButton("Auto-Fix Stability")) {
-                 // Force "Stable" params
-                 genScale_ = 0.0010f; // Scale reduced for larger features (Less LSI)
-                 genPersistence_ = 0.40f; 
-                 
-                 terrain::TerrainConfig config;
-                 config.width = genSelectedSize_;
-                 config.height = genSelectedSize_;
-                 config.scaleXZ = 1.0f;
-                 config.resolution = genResolution_;
-                 config.noiseScale = genScale_;
-                 config.persistence = genPersistence_;
-                 config.minHeight = 0.0f;
-                 config.maxHeight = genAmplitude_;
-                 config.waterLevel = genWaterLvl_;
-                 config.seed = genSeedInput_;
-                 config.model = terrain::TerrainConfig::FiniteTerrainModel::Default; // Simple noise is best for stability
-                 
-                 if (callbacks_.regenerateFiniteWorld) {
-                     // v4.3.5: Force clear metrics
-                     lastMetrics_.clear();
-                     callbacks_.regenerateFiniteWorld(config);
-                 }
-                 // Reset metrics logic will handle refresh on next update
-             }
-             
-             if (ImGui::BeginTable("integrityTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
-                 ImGui::TableSetupColumn("Soil Class");
-                 ImGui::TableSetupColumn("Status");
-                 ImGui::TableHeadersRow();
-
-                 // Iterate known types
-                 std::vector<terrain::SoilType> types = {
-                     terrain::SoilType::Hidromorfico, terrain::SoilType::BTextural, 
-                     terrain::SoilType::Argila, terrain::SoilType::BemDes, 
-                     terrain::SoilType::Raso
-                 };
-                 
-                 for (auto t : types) {
-                     ImGui::TableNextRow();
-                     ImGui::TableSetColumnIndex(0);
-                     
-                     std::string name = "Unknown";
-                     if (t == terrain::SoilType::Hidromorfico) name = "Hidromorfico";
-                     if (t == terrain::SoilType::BTextural) name = "B-Textural";
-                     if (t == terrain::SoilType::Argila) name = "Argila";
-                     if (t == terrain::SoilType::BemDes) name = "Bem Des.";
-                     if (t == terrain::SoilType::Raso) name = "Raso";
-                     
-                     float rgb[3];
-                     terrain::SoilPalette::getFloatColor(t, rgb);
-                     
-                     ImGui::TextColored(ImVec4(rgb[0], rgb[1], rgb[2], 1.0f), "%s", name.c_str());
-                     
-                     ImGui::TableSetColumnIndex(1);
-                     if (lastMetrics_.count(t)) {
-                         auto state = terrain::PatternIntegrityValidator::validate(t, lastMetrics_[t]);
-                         float r, g, b;
-                         terrain::PatternIntegrityValidator::getStateColor(state, &r, &g, &b);
-                         ImGui::TextColored(ImVec4(r, g, b, 1.0f), "%s", terrain::PatternIntegrityValidator::getStateName(state).c_str());
-                         
-                         // v4.3.1: Show reason inline if not stable
-                         if (state != terrain::ValidationState::Stable) {
-                             ImGui::SameLine();
-                             ImGui::TextDisabled("(%s)", terrain::PatternIntegrityValidator::getViolationReason(t, lastMetrics_[t]).c_str());
-                         }
-                         
-                         // Tooltip with details
-                         if (ImGui::IsItemHovered()) {
-                             ImGui::BeginTooltip();
-                             ImGui::Text("LSI: %.2f", lastMetrics_[t].LSI);
-                             ImGui::Text("CF:  %.2f", lastMetrics_[t].CF);
-                             ImGui::Text("RCC: %.2f", lastMetrics_[t].RCC);
-                             ImGui::Separator();
-                             auto sig = terrain::PatternIntegrityValidator::getSignature(t);
-                             ImGui::TextDisabled("Target LSI: %.1f-%.1f", sig.minLSI, sig.maxLSI);
-                             ImGui::EndTooltip();
-                         }
-                     } else {
-                         ImGui::TextDisabled("No Data");
-                     }
-                 }
-                 ImGui::EndTable();
-             }
-             
-             // v4.3.3: Live Envelope Config
-             if (ImGui::TreeNode("Configure Envelopes (User Override)")) {
-                 std::vector<terrain::SoilType> types = {
-                     terrain::SoilType::Hidromorfico, terrain::SoilType::BTextural, 
-                     terrain::SoilType::Argila, terrain::SoilType::BemDes, 
-                     terrain::SoilType::Raso
-                 };
-                 
-                 for (auto t : types) {
-                     std::string name = "Unknown";
-                     if (t == terrain::SoilType::Hidromorfico) name = "Hidromorfico";
-                     if (t == terrain::SoilType::BTextural) name = "B-Textural";
-                     if (t == terrain::SoilType::Argila) name = "Argila";
-                     if (t == terrain::SoilType::BemDes) name = "Bem Des.";
-                     if (t == terrain::SoilType::Raso) name = "Raso";
-                     
-                     if (ImGui::TreeNode(name.c_str())) {
-                         auto sig = terrain::PatternIntegrityValidator::getSignature(t);
-                         bool changed = false;
-                         
-                         ImGui::TextDisabled("Shape Complexity (LSI)");
-                         if (ImGui::DragFloat2("LSI Range", &sig.minLSI, 0.1f, 0.0f, 100.0f)) changed = true;
-                         
-                         ImGui::TextDisabled("Compactness (CF)");
-                         if (ImGui::DragFloat2("CF Range", &sig.minCF, 0.1f, 0.0f, 10.0f)) changed = true;
-                         
-                         ImGui::TextDisabled("Circularity (RCC)");
-                         if (ImGui::DragFloat2("RCC Range", &sig.minRCC, 0.05f, 0.0f, 1.0f)) changed = true;
-                         
-                         if (changed) {
-                             terrain::PatternIntegrityValidator::setSignature(t, sig);
-                             lastMetrics_.clear(); // Force refresh
-                         }
-                         ImGui::TreePop();
-                     }
-                 }
-                 ImGui::TreePop();
-             }
-             
-         } else {
-             ImGui::TextDisabled("Waiting for Map...");
-         }
-    }
-    
     // ML Hub Moved to drawMLInspector
 }
 

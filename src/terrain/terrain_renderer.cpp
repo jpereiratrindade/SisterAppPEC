@@ -96,7 +96,11 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
                 landscape::SiBCSLevel viewLevel = static_cast<landscape::SiBCSLevel>(soilMode);
 
                 // Fetch full taxonomic context
-                auto type = static_cast<terrain::SoilType>(soil->soil_type[idx]);
+                uint8_t storedType = soil->soil_type[idx];
+                auto type = terrain::SoilType::None;
+                if (storedType <= static_cast<uint8_t>(terrain::SoilType::Organossolo)) {
+                    type = static_cast<terrain::SoilType>(storedType);
+                }
                 auto sub = static_cast<landscape::SiBCSSubOrder>(soil->suborder[idx]);
                 auto group = static_cast<landscape::SiBCSGreatGroup>(soil->great_group[idx]);
                 auto subGroup = static_cast<landscape::SiBCSSubGroup>(soil->sub_group[idx]);

@@ -1,186 +1,337 @@
 #include "soil_system.h"
 #include "lithology_registry.h"
 #include "../terrain/terrain_map.h"
-#include "../math/noise.h" // v4.5.4
 #include <cmath>
 #include <algorithm>
 #include <random>
+#include <vector>
+#include <iostream>
 
 namespace landscape {
 
-    // Helper: Simple slope calculation
-    float calculateSlope(int x, int y, const terrain::TerrainMap& terrain) {
-        int w = terrain.getWidth();
-        int h = terrain.getHeight();
-        float H = terrain.getHeight(x, y);
-        
-        float maxDiff = 0.0f;
-        // Check 4 neighbors
-        int dx[] = {1, -1, 0, 0};
-        int dy[] = {0, 0, 1, -1};
-        
-        for(int k=0; k<4; ++k) {
-            int nx = x + dx[k];
-            int ny = y + dy[k];
-            if(nx >=0 && nx < w && ny >= 0 && ny < h) {
-                float diff = std::abs(terrain.getHeight(nx, ny) - H);
-                if(diff > maxDiff) maxDiff = diff;
+    namespace {
+        // --- Candidate Profile Definition ---
+        struct CandidateProfile {
+            SiBCSResult classification;
+            std::string name; // Debugging
+        };
+
+        // --- Helpers ---
+
+        // Simple slope calculation (kept for update step)
+        float calculateSlope(int x, int y, const terrain::TerrainMap& terrain) {
+            int w = terrain.getWidth();
+            int h = terrain.getHeight();
+            float H = terrain.getHeight(x, y);
+            float maxDiff = 0.0f;
+            int dx[] = {1, -1, 0, 0};
+            int dy[] = {0, 0, 1, -1};
+            for(int k=0; k<4; ++k) {
+                int nx = x + dx[k];
+                int ny = y + dy[k];
+                if(nx >=0 && nx < w && ny >= 0 && ny < h) {
+                    float diff = std::abs(terrain.getHeight(nx, ny) - H);
+                    if(diff > maxDiff) maxDiff = diff;
+                }
+            }
+            return maxDiff; // Generic Units
+        }
+
+        // Curvature calculation (kept for update step)
+        float calculateCurvature(int x, int y, const terrain::TerrainMap& terrain) {
+            int w = terrain.getWidth();
+            int h = terrain.getHeight();
+            float H = terrain.getHeight(x, y);
+            
+            float sumH = 0.0f;
+            int count = 0;
+            int dx[] = {1, -1, 0, 0};
+            int dy[] = {0, 0, 1, -1};
+            
+            for(int k=0; k<4; ++k) {
+                int nx = x + dx[k];
+                int ny = y + dy[k];
+                if(nx >=0 && nx < w && ny >= 0 && ny < h) {
+                    sumH += terrain.getHeight(nx, ny);
+                    count++;
+                }
+            }
+            
+            if (count == 0) return 0.0f;
+            float avgNeighbor = sumH / static_cast<float>(count);
+            // Positive = Concave (Deposition), Negative = Convex (Erosion)
+            return (avgNeighbor - H); 
+        }
+
+        SiBCSResult toResult(const SiBCSUserSelection& sel) {
+            SiBCSResult r;
+            r.order = sel.order;
+            r.suborder = sel.suborder;
+            r.greatGroup = sel.greatGroup;
+            r.subGroup = sel.subGroup;
+            r.family = sel.family;
+            r.series = sel.series;
+            return r;
+        }
+
+        // Helper to determine if a stored classification matches a user selection.
+        bool matchesSelection(const SiBCSResult& selection, const SiBCSResult& cell) {
+            auto matchLevel = [](auto selected, auto value) {
+                using T = decltype(selected);
+                return selected == T::kNone || selected == value;
+            };
+
+            if (selection.order == SiBCSOrder::kNone || selection.order != cell.order) return false;
+            if (!matchLevel(selection.suborder, cell.suborder)) return false;
+            if (!matchLevel(selection.greatGroup, cell.greatGroup)) return false;
+            if (!matchLevel(selection.subGroup, cell.subGroup)) return false;
+            if (!matchLevel(selection.family, cell.family)) return false;
+            if (!matchLevel(selection.series, cell.series)) return false;
+            return true;
+        }
+
+        SiBCSOrder orderFromSoilType(uint8_t stored) {
+            switch(static_cast<SoilType>(stored)) {
+                case SoilType::Latossolo: return SiBCSOrder::kLatossolo;
+                case SoilType::Argissolo: return SiBCSOrder::kArgissolo;
+                case SoilType::Cambissolo: return SiBCSOrder::kCambissolo;
+                case SoilType::Neossolo_Litolico: return SiBCSOrder::kNeossoloLit;
+                case SoilType::Neossolo_Quartzarenico: return SiBCSOrder::kNeossoloQuartz;
+                case SoilType::Gleissolo: return SiBCSOrder::kGleissolo;
+                case SoilType::Organossolo: return SiBCSOrder::kOrganossolo;
+                default: return SiBCSOrder::kNone;
             }
         }
-        return maxDiff; // Approximation
-    }
 
-    // Helper: Curvature calculation (simple Laplacian)
-    float calculateCurvature(int x, int y, const terrain::TerrainMap& terrain) {
-        int w = terrain.getWidth();
-        int h = terrain.getHeight();
-        float H = terrain.getHeight(x, y);
-        
-        float sumH = 0.0f;
-        int count = 0;
-        int dx[] = {1, -1, 0, 0};
-        int dy[] = {0, 0, 1, -1};
-        
-        for(int k=0; k<4; ++k) {
-            int nx = x + dx[k];
-            int ny = y + dy[k];
-            if(nx >=0 && nx < w && ny >= 0 && ny < h) {
-                sumH += terrain.getHeight(nx, ny);
-                count++;
+        SiBCSResult readCellClassification(const SoilGrid& grid, size_t idx) {
+            SiBCSResult result;
+            result.order = orderFromSoilType(grid.soil_type[idx]);
+            result.suborder = static_cast<SiBCSSubOrder>(grid.suborder[idx]);
+            result.greatGroup = static_cast<SiBCSGreatGroup>(grid.great_group[idx]);
+            result.subGroup = static_cast<SiBCSSubGroup>(grid.sub_group[idx]);
+            result.family = static_cast<SiBCSFamily>(grid.family[idx]);
+            result.series = static_cast<SiBCSSeries>(grid.series[idx]);
+            return result;
+        }
+
+        // Build list of candidates based strictly on explicit user selections (no automatic combinations)
+        std::vector<CandidateProfile> generateCandidates(const SiBCSUserConfig& config) {
+            std::vector<CandidateProfile> candidates;
+
+            auto addCandidate = [&](const SiBCSResult& r) {
+                if (r.order == SiBCSOrder::kNone) return;
+                // Deduplicate identical selections
+                auto it = std::find_if(candidates.begin(), candidates.end(), [&](const CandidateProfile& c) {
+                    return c.classification.order == r.order &&
+                           c.classification.suborder == r.suborder &&
+                           c.classification.greatGroup == r.greatGroup &&
+                           c.classification.subGroup == r.subGroup &&
+                           c.classification.family == r.family &&
+                           c.classification.series == r.series;
+                });
+                if (it == candidates.end()) {
+                    CandidateProfile p;
+                    p.classification = r;
+                    candidates.push_back(p);
+                }
+            };
+
+            // Prefer explicit selections
+            for (const auto& sel : config.selections) {
+                addCandidate(toResult(sel));
+            }
+
+            // Fallback: legacy allowedOrders acts as a set of explicit Order-only selections.
+            if (candidates.empty()) {
+                for (auto order : config.allowedOrders) {
+                    SiBCSResult r;
+                    r.order = order;
+                    addCandidate(r);
+                }
+            }
+
+            return candidates;
+        }
+
+        // Apply initialized properties based on the decided Classification
+        // This is INVERSE of the old system: We set properties TO MATCH the class.
+        void applyProfileEffects(SoilGrid& grid, int i_int, const CandidateProfile& profile, std::mt19937& rng) {
+            size_t i = static_cast<size_t>(i_int);
+            std::uniform_real_distribution<float> noise(0.9f, 1.1f);
+            
+            // Defaults (Cambissolo-ish)
+            float depth = 1.0f;
+            float clay = 0.3f;
+            float sand = 0.4f;
+            float om = 0.03f;
+            float water = 0.2f;
+
+            switch(profile.classification.order) {
+                 case SiBCSOrder::kLatossolo:
+                    depth = 2.5f; 
+                    clay = 0.45f;
+                    sand = 0.30f;
+                    break;
+                 case SiBCSOrder::kArgissolo:
+                    depth = 1.5f;
+                    clay = 0.35f; // B Horizon average
+                    sand = 0.40f;
+                    break;
+                 case SiBCSOrder::kCambissolo:
+                    depth = 0.8f;
+                    clay = 0.25f;
+                    sand = 0.45f;
+                    break;
+                 case SiBCSOrder::kNeossoloLit:
+                    depth = 0.2f;
+                    clay = 0.10f;
+                    sand = 0.60f;
+                    break;
+                 case SiBCSOrder::kNeossoloQuartz:
+                    depth = 1.8f;
+                    clay = 0.05f;
+                    sand = 0.90f;
+                    break;
+                 case SiBCSOrder::kGleissolo:
+                    depth = 1.2f;
+                    clay = 0.40f;
+                    sand = 0.20f;
+                    water = 0.9f; // Saturated
+                    om = 0.08f;
+                    break;
+                 case SiBCSOrder::kOrganossolo:
+                    depth = 0.6f;
+                    om = 0.40f;
+                    water = 0.8f;
+                    break;
+                 default: break;
+            }
+
+            // Suborder mods
+            if (profile.classification.suborder == SiBCSSubOrder::kVermelho) {
+                // Chemical implication: Fe2O3. Physically: often well drained.
+                water *= 0.8f; 
+            }
+            if (profile.classification.suborder == SiBCSSubOrder::kTiomorfico) {
+                om += 0.05f;
+                water = 0.95f; 
+            }
+
+            // Apply to Grid with Noise
+            grid.depth[i] = depth * noise(rng);
+            grid.sand_fraction[i] = std::clamp(sand * noise(rng), 0.05f, 0.95f);
+            grid.clay_fraction[i] = std::clamp(clay * noise(rng), 0.05f, 0.95f);
+            
+            // Normalize Texture
+            if (grid.sand_fraction[i] + grid.clay_fraction[i] > 0.98f) {
+                float s = 0.98f / (grid.sand_fraction[i] + grid.clay_fraction[i]);
+                grid.sand_fraction[i] *= s;
+                grid.clay_fraction[i] *= s;
+            }
+
+            grid.organic_matter[i] = om * noise(rng);
+            grid.labile_carbon[i] = grid.organic_matter[i] * 0.5f;
+            grid.recalcitrant_carbon[i] = grid.organic_matter[i] * 0.5f;
+            
+            grid.water_content_soil[i] = water;
+            grid.field_capacity[i] = 0.1f + grid.clay_fraction[i] * 0.3f + grid.organic_matter[i] * 0.2f;
+            grid.conductivity[i] = 0.05f + (grid.sand_fraction[i] * 0.2f);
+            grid.infiltration[i] = grid.conductivity[i] * 1000.0f; // Mock conversion
+            
+            // Set Classification Indices
+            switch(profile.classification.order) {
+                case SiBCSOrder::kLatossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Latossolo); break;
+                case SiBCSOrder::kArgissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Argissolo); break;
+                case SiBCSOrder::kCambissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Cambissolo); break;
+                case SiBCSOrder::kNeossoloLit: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Litolico); break;
+                case SiBCSOrder::kNeossoloQuartz: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Quartzarenico); break;
+                case SiBCSOrder::kGleissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Gleissolo); break;
+                case SiBCSOrder::kOrganossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Organossolo); break;
+                default: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Undefined); break;
+            }
+
+            if (profile.classification.suborder != SiBCSSubOrder::kNone) {
+                grid.suborder[i] = static_cast<uint8_t>(profile.classification.suborder);
+            }
+            if (profile.classification.greatGroup != SiBCSGreatGroup::kNone) {
+                grid.great_group[i] = static_cast<uint8_t>(profile.classification.greatGroup);
+            }
+            if (profile.classification.subGroup != SiBCSSubGroup::kNone) {
+                grid.sub_group[i] = static_cast<uint8_t>(profile.classification.subGroup);
             }
         }
-        
-        if (count == 0) return 0.0f;
-        float avgNeighbor = sumH / static_cast<float>(count);
-        return (avgNeighbor - H); // Positive = Concave (Deposition), Negative = Convex (Erosion)
     }
 
-    void SoilSystem::initialize(SoilGrid& grid, int seed, const terrain::TerrainMap& terrain, SiBCSLevel targetLevel) {
+    void SoilSystem::initialize(SoilGrid& grid, int seed, const terrain::TerrainMap& terrain, SiBCSLevel targetLevel, const landscape::SiBCSUserConfig* constraints) {
         if (!grid.isValid()) return;
+        (void)targetLevel;
+        (void)terrain; // Terrain no longer drives classification, only physics.
+
+        if (!constraints || !constraints->applyConstraints) {
+            std::cout << "[SoilSystem] No user constraints applied. Soil initialization is idle until the user submits a domain." << std::endl;
+            return; 
+        }
+
+        if (constraints->pendingChanges || !constraints->domainConfirmed) {
+            std::cout << "[SoilSystem] User domain is not confirmed. Waiting for explicit Apply/Submit before simulating." << std::endl;
+            return;
+        }
+
+        // 1. Generate Allowed Domain (explicit selections only)
+        std::vector<CandidateProfile> candidates = generateCandidates(*constraints);
         
+        if (candidates.empty()) {
+            std::cout << "[SoilSystem] User constraints resulted in NO valid profiles. Check selections." << std::endl;
+            return;
+        }
+
         int w = grid.width;
         int h = grid.height;
-        std::mt19937 gen(static_cast<unsigned int>(seed));
-        std::uniform_real_distribution<float> dis(0.0f, 1.0f);
-        
-        // v4.5.4: Use Spatial Noise for Soil Variation
-        math::PerlinNoise noise(static_cast<unsigned int>(seed) + 54321u);
-        math::PerlinNoise noiseGeo(static_cast<unsigned int>(seed) + 98765u);
-        
-        const auto& lithologyRegistry = LithologyRegistry::instance();
 
-        // Instantiate Domain Services
-        SoilPhysicsService physicsService;
-        SiBCSClassifier sibcsClassifier;
+        long long applied = 0;
+        long long skippedUndefined = 0;
+        long long skippedOutOfDomain = 0;
 
-        #pragma omp parallel for collapse(2)
+        // 2. Apply only on cells already classified by the user and inside the domain
+        #pragma omp parallel for reduction(+:applied, skippedUndefined, skippedOutOfDomain) collapse(2)
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
-                int i = y * w + x;
-                float slope = calculateSlope(x, y, terrain);
-                float curvature = calculateCurvature(x, y, terrain);
-                float elevation = terrain.getHeight(x, y);
+                int i_int = y * w + x;
+                size_t i = static_cast<size_t>(i_int);
                 
-                // Get Parent Material Properties
-                const auto& rockDef = lithologyRegistry.get(grid.lithology_id[i]);
-
-                // Initial Pedogenesis Guess based on Rock + Slope
-                float weatheringPotential = rockDef.weathering_rate * (1.0f - std::min(1.0f, slope * 0.1f));
-                
-                // Depth logic (Continuous)
-                float maxDepth = (0.5f + weatheringPotential) * 2.5f; // Potential up to ~3m
-                float depthFactor = std::exp(-slope * 10.0f); 
-                float depthNoise = 0.8f + dis(gen) * 0.4f; // +/- 20%
-                grid.depth[i] = maxDepth * depthFactor * depthNoise;
-                if (grid.depth[i] < 0.1f) grid.depth[i] = 0.1f;
-
-                // 1. Base Texture Generation (SCORPAN)
-                float sx = static_cast<float>(x) * 0.005f;
-                float sz = static_cast<float>(y) * 0.005f;
-                float texNoise = noiseGeo.octaveNoise(sx, sz, 3, 0.5f); 
-                
-                float sandBase = rockDef.sand_bias + (texNoise - 0.5f) * 0.6f; 
-                float clayBase = rockDef.clay_bias - (texNoise - 0.5f) * 0.5f; 
-                
-                grid.sand_fraction[i] = std::clamp(sandBase, 0.05f, 0.95f);
-                grid.clay_fraction[i] = std::clamp(clayBase, 0.05f, 0.95f);
-                
-                // Normalize
-                float sum = grid.sand_fraction[i] + grid.clay_fraction[i];
-                if(sum > 0.95f) {
-                    float s = 0.95f/sum;
-                    grid.sand_fraction[i] *= s;
-                    grid.clay_fraction[i] *= s;
+                SiBCSResult cellClass = readCellClassification(grid, i);
+                if (cellClass.order == SiBCSOrder::kNone) {
+                    skippedUndefined += 1;
+                    continue; // Not classified by user
                 }
 
-                // 2. Apply Topography (Mechanistic Step)
-                SoilMineralState mineralState;
-                mineralState.sand_fraction = grid.sand_fraction[i];
-                mineralState.clay_fraction = grid.clay_fraction[i];
-                mineralState.depth = grid.depth[i]; 
-
-                Relief relief;
-                relief.slope = slope;
-                relief.curvature = curvature;
-                relief.elevation = elevation;
-
-                physicsService.applyTopographyToTexture(mineralState, relief);
-
-                grid.sand_fraction[i] = static_cast<float>(mineralState.sand_fraction);
-                grid.clay_fraction[i] = static_cast<float>(mineralState.clay_fraction);
-
-                // 3. Organic Matter & Hydrology
-                float ox = static_cast<float>(x) * 0.01f;
-                float oz = static_cast<float>(y) * 0.01f;
-                float bioNoise = noise.octaveNoise(ox, oz, 2, 0.5f);
-                float topoBonus = (curvature > 0) ? curvature * 10.0f : 0.0f; 
-
-                grid.labile_carbon[i] = 0.01f + bioNoise * 0.04f + std::min(0.05f, topoBonus); 
-                grid.recalcitrant_carbon[i] = 0.01f;
-                grid.dead_biomass[i] = 0.0f;
-                grid.organic_matter[i] = grid.labile_carbon[i] + grid.recalcitrant_carbon[i];
-                
-                grid.water_content_soil[i] = 0.1f + std::max(0.0f, curvature * 50.0f);
-                grid.field_capacity[i] = 0.2f + grid.clay_fraction[i] * 0.2f; 
-                grid.infiltration[i] = 50.0f * (1.0f + grid.sand_fraction[i] - grid.clay_fraction[i]);
-
-                // 4. SiBCS Classification (Unified Multi-Level)
-                SoilState currentState;
-                currentState.mineral = mineralState;
-                currentState.organic.labile_carbon = grid.labile_carbon[i];
-                currentState.organic.recalcitrant_carbon = grid.recalcitrant_carbon[i];
-                currentState.hydric.water_content = grid.water_content_soil[i];
-                currentState.hydric.field_capacity = grid.field_capacity[i];
-
-                SiBCSResult result = sibcsClassifier.classify(currentState, relief, targetLevel);
-
-                // legacy Mapping: SiBCS Order -> SoilType (for compatibility)
-                switch(result.order) {
-                    case SiBCSOrder::kLatossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Latossolo); break;
-                    case SiBCSOrder::kArgissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Argissolo); break;
-                    case SiBCSOrder::kCambissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Cambissolo); break;
-                    case SiBCSOrder::kNeossoloLit: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Litolico); break;
-                    case SiBCSOrder::kNeossoloQuartz: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Quartzarenico); break;
-                    case SiBCSOrder::kGleissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Gleissolo); break;
-                    case SiBCSOrder::kOrganossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Organossolo); break;
-                    default: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Cambissolo); break;
+                int matchIdx = -1;
+                for (size_t c = 0; c < candidates.size(); ++c) {
+                    if (matchesSelection(candidates[c].classification, cellClass)) {
+                        matchIdx = static_cast<int>(c);
+                        break;
+                    }
                 }
 
-                // Map results to grid
-                grid.suborder[i] = static_cast<uint8_t>(result.suborder);
-                grid.great_group[i] = static_cast<uint8_t>(result.greatGroup);
-                grid.sub_group[i] = static_cast<uint8_t>(result.subGroup);
-                grid.family[i] = static_cast<uint8_t>(result.family);
-                grid.series[i] = static_cast<uint8_t>(result.series);
-                
-                // Legacy Fallback for SCORPAN mode safety (e.g. renderers expecting basic Lithic logic)
-                if (grid.depth[i] < 0.2f) grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Litolico);
+                if (matchIdx < 0) {
+                    grid.soil_type[i] = static_cast<uint8_t>(SoilType::Undefined);
+                    skippedOutOfDomain += 1;
+                    continue;
+                }
+
+                std::mt19937 localRng(static_cast<unsigned long>(seed + i_int)); 
+                applyProfileEffects(grid, i_int, candidates[static_cast<size_t>(matchIdx)], localRng);
+                applied += 1;
             }
         }
+
+        std::cout << "[SoilSystem] Applied profiles to " << applied << " cells. "
+                  << skippedOutOfDomain << " cells skipped (out of domain), "
+                  << skippedUndefined << " cells unclassified." << std::endl;
     }
 
-    void SoilSystem::update(SoilGrid& /*grid*/, float /*dt*/) {
-        // Legacy/Empty update
+    void SoilSystem::update(SoilGrid& grid, float dt) {
+        (void)grid; (void)dt;
     }
 
     void SoilSystem::update(SoilGrid& grid, 
@@ -192,24 +343,23 @@ namespace landscape {
                             int startRow, int endRow,
                             SiBCSLevel targetLevel) {
         
+        (void)targetLevel;
+
         int w = grid.width;
         int h = grid.height;
-        
-        // Time Slicing Defaults
         if (startRow < 0) startRow = 0;
         if (endRow < 0 || endRow > h) endRow = h;
-        
+
         PedogenesisService pedogenesis;
-        SiBCSClassifier sibcsClassifier; 
 
         #pragma omp parallel for collapse(2)
         for (int y = startRow; y < endRow; ++y) {
             for (int x = 0; x < w; ++x) {
-                int i = y * w + x;
+                int i_int = y * w + x;
+                size_t i = static_cast<size_t>(i_int);
                 
                 // 1. Construct State objects
                 ParentMaterial mat = parent; 
-                
                 Relief relief;
                 relief.elevation = terrain.getHeight(x, y);
                 relief.slope = calculateSlope(x, y, terrain);
@@ -219,19 +369,18 @@ namespace landscape {
                 current.mineral.depth = grid.depth[i];
                 current.mineral.sand_fraction = grid.sand_fraction[i];
                 current.mineral.clay_fraction = grid.clay_fraction[i];
-                
                 current.organic.labile_carbon = grid.labile_carbon[i];
                 current.organic.recalcitrant_carbon = grid.recalcitrant_carbon[i];
                 current.organic.dead_biomass = grid.dead_biomass[i];
-
                 current.hydric.water_content = grid.water_content_soil[i];
                 current.hydric.field_capacity = grid.field_capacity[i];
                 current.hydric.conductivity = grid.conductivity[i];
 
-                // 2. Evolve
+                // 2. Evolve (SCORPAN Processes)
                 SoilState next = pedogenesis.evolve(current, mat, relief, climate, pressure, dt);
 
                 // 3. Write Back
+                
                 grid.depth[i] = static_cast<float>(next.mineral.depth);
                 grid.sand_fraction[i] = static_cast<float>(next.mineral.sand_fraction);
                 grid.clay_fraction[i] = static_cast<float>(next.mineral.clay_fraction);
@@ -244,39 +393,10 @@ namespace landscape {
                 grid.field_capacity[i] = static_cast<float>(next.hydric.field_capacity);
                 grid.conductivity[i] = static_cast<float>(next.hydric.conductivity);
 
-                // Update Derived / Simplified properties
                 grid.organic_matter[i] = grid.labile_carbon[i] + grid.recalcitrant_carbon[i];
                 grid.infiltration[i] = grid.conductivity[i] * 1000.0f; 
 
-                // 4. Update Type Classification (Unified)
-                SoilState classifierState;
-                classifierState.mineral.depth = grid.depth[i];
-                classifierState.mineral.sand_fraction = grid.sand_fraction[i];
-                classifierState.mineral.clay_fraction = grid.clay_fraction[i];
-                classifierState.organic.labile_carbon = grid.labile_carbon[i];
-                classifierState.organic.recalcitrant_carbon = grid.recalcitrant_carbon[i];
-                classifierState.hydric.water_content = grid.water_content_soil[i];
-                classifierState.hydric.field_capacity = grid.field_capacity[i];
-
-                SiBCSResult result = sibcsClassifier.classify(classifierState, relief, targetLevel);
-
-                // Legacy Mapping
-                 switch(result.order) {
-                    case SiBCSOrder::kLatossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Latossolo); break;
-                    case SiBCSOrder::kArgissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Argissolo); break;
-                    case SiBCSOrder::kCambissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Cambissolo); break;
-                    case SiBCSOrder::kNeossoloLit: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Litolico); break;
-                    case SiBCSOrder::kNeossoloQuartz: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Neossolo_Quartzarenico); break;
-                    case SiBCSOrder::kGleissolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Gleissolo); break;
-                    case SiBCSOrder::kOrganossolo: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Organossolo); break;
-                    default: grid.soil_type[i] = static_cast<uint8_t>(SoilType::Cambissolo); break;
-                }
-
-                grid.suborder[i] = static_cast<uint8_t>(result.suborder);
-                grid.great_group[i] = static_cast<uint8_t>(result.greatGroup);
-                grid.sub_group[i] = static_cast<uint8_t>(result.subGroup);
-                grid.family[i] = static_cast<uint8_t>(result.family);
-                grid.series[i] = static_cast<uint8_t>(result.series);
+                // NO Classification Step.
             }
         }
     }

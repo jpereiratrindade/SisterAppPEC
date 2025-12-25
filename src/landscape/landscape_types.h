@@ -26,7 +26,8 @@ namespace landscape {
         Neossolo_Litolico = 13,
         Neossolo_Quartzarenico = 14,
         Gleissolo = 15,
-        Organossolo = 16
+        Organossolo = 16,
+        Undefined = 255 // v4.6.0: Sentinel for user-unclassified cells
     };
 
     // SiBCS Level 1: Order (Matches SoilType roughly but strict taxonomy)
@@ -147,6 +148,30 @@ namespace landscape {
     using SubGroupID = uint8_t;
     using FamilyID = uint8_t;
     using SeriesID = uint8_t;
+    // v4.6.0: User Constraints for SiBCS (Moved here for shared access)
+    struct SiBCSUserSelection {
+        SiBCSOrder order = SiBCSOrder::kNone;
+        SiBCSSubOrder suborder = SiBCSSubOrder::kNone;
+        SiBCSGreatGroup greatGroup = SiBCSGreatGroup::kNone;
+        SiBCSSubGroup subGroup = SiBCSSubGroup::kNone;
+        SiBCSFamily family = SiBCSFamily::kNone;
+        SiBCSSeries series = SiBCSSeries::kNone;
+    };
+
+    struct SiBCSUserConfig {
+        // Legacy flat lists (kept for backward UI compatibility)
+        std::vector<SiBCSOrder> allowedOrders;
+        std::vector<SiBCSSubOrder> allowedSubOrders;
+        std::vector<SiBCSGreatGroup> allowedGreatGroups;
+        std::vector<SiBCSSubGroup> allowedSubGroups;
+
+        // Explicit user-defined SiBCS selections (no automatic combinations)
+        std::vector<SiBCSUserSelection> selections;
+        
+        bool applyConstraints = false; 
+        bool domainConfirmed = false;     // Set only after explicit user action
+        bool pendingChanges = false;      // Blocks simulation until confirmed
+    };
 
     struct SoilGrid {
         int width = 0;
@@ -192,7 +217,7 @@ namespace landscape {
             organic_matter.assign(size, 0.05f);  // Realistic organic matter (5%)
             propagule_bank.assign(size, 1.0f);  // Full regenerative potential
             
-            soil_type.assign(size, 12); // Default Cambissolo
+            soil_type.assign(size, static_cast<uint8_t>(SoilType::Undefined)); // User must classify
             suborder.assign(size, 0);   // None
             great_group.assign(size, 0);
             sub_group.assign(size, 0);

@@ -13,7 +13,9 @@ namespace landscape {
     class SoilSystem {
     public:
         // Semantic initialization based on Terrain features (Slope, Height)
-        static void initialize(SoilGrid& grid, int seed, const terrain::TerrainMap& terrain, SiBCSLevel targetLevel = SiBCSLevel::Suborder);
+        // Semantic initialization based on Terrain features pattern
+        // v4.6.0: Added User Constraints support
+        static void initialize(SoilGrid& grid, int seed, const terrain::TerrainMap& terrain, SiBCSLevel targetLevel, const landscape::SiBCSUserConfig* constraints = nullptr);
 
         // Update loop (Compaction, Erosion integration placeholder)
         static void update(SoilGrid& grid, float dt);

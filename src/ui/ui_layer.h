@@ -92,7 +92,8 @@ struct UiFrameContext {
     landscape::Climate& soilClimate;
     landscape::OrganismPressure& soilOrganism;
     landscape::ParentMaterial& soilParentMaterial;
-    int& soilClassificationMode; // 0=Geometric, 1=SCORPAN
+    int& soilClassificationMode; // 1=SCORPAN (sole supported mode)
+    landscape::SiBCSUserConfig* sibcsConfig; // v4.6.0
 };
 
 struct Callbacks {
@@ -112,8 +113,8 @@ struct Callbacks {
     RequestMeshUpdateCallback updateMesh; // v3.6.3
     std::function<void()> recomputeSoil; // v4.4.2: Recalculate Soil System Only
     
-    // v4.5.0 Dual Soil Interface
-    std::function<void(int)> switchSoilMode; // 0=Geometric, 1=SCORPAN
+    // SCORPAN-only visualization toggle (int kept for API compatibility)
+    std::function<void(int)> switchSoilMode;
     std::function<void(int, float)> mlTrainModel;
 
     // v4.0.0 ML Hooks (Restored)

@@ -1,6 +1,7 @@
 #pragma once
 #include "terrain_map.h"
 #include "../math/noise.h"
+#include "../landscape/landscape_types.h"
 #include <memory>
 
 namespace terrain {
@@ -14,7 +15,7 @@ public:
     // v3.7.3: Semantic Soil Classification (CPU Authority)
     void classifySoil(TerrainMap& map, const TerrainConfig& config);
     // v4.5.0: SCORPAN Vector Classification (Placeholder)
-    void classifySoilFromSCORPAN(TerrainMap& map);
+    void classifySoilFromSCORPAN(TerrainMap& map, const landscape::SiBCSUserConfig* domain = nullptr);
     // v4.0: Integrated Landscape Generation
     void generateLandscape(TerrainMap& map);
     

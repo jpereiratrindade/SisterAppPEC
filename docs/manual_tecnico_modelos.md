@@ -338,25 +338,16 @@ O usuário pode ajustar o tamanho métrico de cada célula (pixel) da grade de s
 O sistema ajusta automaticamente a visualização e a lógica de interação (raycasting) para manter a coerência espacial independentemente da escala escolhida.
 
 # 11. Módulo de Solos e Geologia (SCORPAN v2.0)
-A versão v4.5.0 reformula o sistema de solos utilizando a arquitetura **SCORPAN**, onde o solo não é apenas uma textura pintada, mas o resultado emergente de fatores de formação. O sistema oferece **Dois Modos de Operação** distintos para visualização e análise.
+A versão v4.5.0 reformula o sistema de solos utilizando a arquitetura **SCORPAN**, onde o solo não é apenas uma textura pintada, mas o resultado emergente de fatores de formação. A interface agora é **exclusivamente SCORPAN/SiBCS**, não existindo mais o modo geométrico legado. Toda simulação e visualização respeita apenas o domínio pedológico explicitamente selecionado pelo usuário.
 
-## 11.1. Dual Soil Interface (Modos de Visualização)
-O usuário pode alternar em tempo de real (via Inspector) entre duas verdades epistemológicas:
-
-### A. Modo Geométrico (Legacy/Geometric)
-*   **Base:** Apenas topografia (Slope).
-*   **Regra:** Mapeamento direto `Declividade -> Classe`.
-*   **Uso:** Análise rápida de aptidão de terras ou cenários onde a geologia é homogênea/irrelevante.
-*   **Classes Fixas:** Plano, Suave, Ondulado, Forte, Montanhoso.
-
-### B. Modo Simulação (SCORPAN Vector)
-*   **Base:** Interação entre Vetor P (Geologia) e Vetor R (Relevo).
-*   **Regra:** $S = f(P, R, C, \dots)$.
-*   **Uso:** Simulação ecossistêmica realista, onde a rocha mãe influencia a textura e fertilidade.
-*   **Exemplo:** Uma área plana (Slope < 3%) pode ser um *Neossolo Litólico* se a geologia for "Granito Resistente" com baixo intemperismo, algo impossível no modo Geométrico.
+## 11.1. Domínio SiBCS definido pelo usuário
+- O usuário seleciona as Ordens (e, opcionalmente, Subordens/Grande Grupo/Subgrupo) que formam o domínio permitido.
+- Nenhuma simulação inicia enquanto o domínio não for confirmado (Apply/Regenerate).
+- Células sem classificação de entrada permanecem indefinidas (não há classificação automática).
+- A visualização de solos mostra apenas as Ordens SiBCS dentro do domínio confirmado.
 
 ### 11.1.1. Injeção de Subordens (SiBCS Nível 2)
-A partir da versão v4.5.1, o classificador não pára na "Ordem" (ex: Latossolo). Ele analisa atributos secundários do Vetor S para determinar a **Subordem**:
+A partir da versão v4.5.1 (mantido), o classificador não pára na "Ordem" (ex: Latossolo). Ele analisa atributos secundários do Vetor S para determinar a **Subordem**:
 
 **Lógica de Decisão:**
 1.  **Ordem:** Determinada por $d_{soil}$ (espessura) e B-Textural.

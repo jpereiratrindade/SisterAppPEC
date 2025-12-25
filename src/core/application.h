@@ -62,6 +62,11 @@ namespace core {
          */
         void run();
 
+        // v4.6.0 Accessors for UI
+        landscape::SiBCSUserConfig& getSiBCSConfig() { return sibcsConfig_; }
+        void setSiBCSLevel(landscape::SiBCSLevel level) { currentSiBCSLevel_ = level; }
+        landscape::SiBCSLevel getSiBCSLevel() const { return currentSiBCSLevel_; }
+
     private:
         /** @brief Initialize all subsystems (SDL, Vulkan, ImGui, Assets). */
         void init();
@@ -241,13 +246,15 @@ namespace core {
         float mlLearningRate_ = 0.1f;
         int mlSampleCount_ = 1000;
 
-        // v4.5.1 SCORPAN Parameters
         landscape::Climate soilClimate_;
         landscape::OrganismPressure soilOrganism_;
         landscape::ParentMaterial soilParentMaterial_;
-        int soilClassificationMode_ = 0; // 0=Geometric, 1=SCORPAN
+        int soilClassificationMode_ = 1; // SCORPAN (SiBCS)
         
+        // v4.6.0: SiBCS State
+        landscape::SiBCSLevel currentSiBCSLevel_ = landscape::SiBCSLevel::Suborder;
+        landscape::SiBCSUserConfig sibcsConfig_;
+
     };
 
 } // namespace core
-
