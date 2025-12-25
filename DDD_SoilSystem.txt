@@ -1,0 +1,104 @@
+DOCUMENTO DE DIRETRIZES
+CLASSIFICAÇÃO E SIMULAÇÃO DE SOLOS
+MODO SCORPAN–SiBCS
+
+==================================================
+1. PRINCÍPIO GERAL
+==================================================
+
+O sistema de simulação de solos adota o SiBCS como estrutura principal
+de definição do domínio pedológico.
+
+O modelo SCORPAN é utilizado exclusivamente para parametrização
+e simulação de processos do solo, não sendo utilizado para classificação
+automática de solos.
+
+==================================================
+2. PAPEL DO USUÁRIO
+==================================================
+
+A definição dos solos a serem simulados é responsabilidade exclusiva
+do usuário.
+
+O usuário deverá selecionar explicitamente os tipos de solo a serem
+simulados por meio dos níveis hierárquicos do SiBCS, podendo definir
+um ou mais níveis entre:
+
+- Ordem
+- Subordem
+- Grande Grupo
+- Subgrupo
+- Família
+- Série
+
+As seleções do usuário definem o domínio pedológico permitido para
+a simulação.
+
+==================================================
+3. REGRAS DE CLASSIFICAÇÃO
+==================================================
+
+O sistema NÃO deve:
+
+- Classificar solos automaticamente
+- Inferir níveis do SiBCS não selecionados pelo usuário
+- Gerar combinações de classes de solo
+- Enumerar todas as possibilidades do SiBCS
+- Criar ou assumir tipos de solo fora do domínio definido
+
+A classificação de solo é considerada uma ENTRADA do sistema,
+não uma saída.
+
+==================================================
+4. DOMÍNIO DE SIMULAÇÃO
+==================================================
+
+O domínio de simulação é restrito ao conjunto de solos explicitamente
+definido pelo usuário.
+
+Apenas solos compatíveis com as seleções realizadas nos níveis do
+SiBCS podem ser simulados.
+
+Qualquer solo fora desse domínio é considerado inexistente para
+efeitos de simulação.
+
+==================================================
+5. CONTROLE DE EXECUÇÃO
+==================================================
+
+Nenhuma simulação de solo deve ocorrer enquanto o usuário estiver
+apenas selecionando ou ajustando os níveis do SiBCS.
+
+A simulação somente poderá ser executada após uma ação explícita
+do usuário, como:
+
+- Aplicar
+- Submeter
+- Confirmar
+- Atualizar
+
+Antes dessa confirmação, o sistema deve permanecer em estado passivo.
+
+==================================================
+6. OBJETIVO DO MODELO
+==================================================
+
+O objetivo do sistema é simular a dinâmica física, química, hidrológica
+e ecológica de solos pertencentes a um domínio pedológico previamente
+definido pelo usuário.
+
+O sistema não tem como objetivo:
+
+- Descobrir solos
+- Prever classes pedológicas
+- Realizar levantamentos pedológicos automáticos
+
+==================================================
+7. REGRA FINAL (INVARIANTE DO SISTEMA)
+==================================================
+
+O sistema simula apenas solos que o usuário explicitamente escolheu
+simular, respeitando integralmente o recorte pedológico definido
+pelos níveis do SiBCS.
+
+Qualquer comportamento fora dessa regra é considerado inválido.
