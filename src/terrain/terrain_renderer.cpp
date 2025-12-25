@@ -101,9 +101,10 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
                 auto group = static_cast<landscape::SiBCSGreatGroup>(soil->great_group[idx]);
                 auto subGroup = static_cast<landscape::SiBCSSubGroup>(soil->sub_group[idx]);
                 auto family = static_cast<landscape::SiBCSFamily>(soil->family[idx]);
+                auto series = static_cast<landscape::SiBCSSeries>(soil->series[idx]);
                 
                 // Unified Call
-                terrain::SoilPalette::getCumulativeColor(viewLevel, type, sub, group, subGroup, family, rgb);
+                terrain::SoilPalette::getCumulativeColor(viewLevel, type, sub, group, subGroup, family, series, rgb);
                 
                 v.color[0] = rgb[0];
                 v.color[1] = rgb[1];

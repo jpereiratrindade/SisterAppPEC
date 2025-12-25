@@ -144,6 +144,7 @@ public:
         landscape::SiBCSGreatGroup group,
         landscape::SiBCSSubGroup subGroup,
         landscape::SiBCSFamily family,
+        landscape::SiBCSSeries series,
         float* rgb) 
     {
         // 1. Base Color (Levels 1 & 2)
