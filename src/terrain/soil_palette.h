@@ -89,6 +89,155 @@ public:
     static void getFloatColor(SoilType type, float* rgb) {
         getFloatColor(type, landscape::SiBCSSubOrder::kNone, rgb);
     }
+
+    // Level 3: Great Group
+    static void getFloatColor(landscape::SiBCSGreatGroup group, float* rgb) {
+        switch(group) {
+            case landscape::SiBCSGreatGroup::kEutrofico:  rgb[0]=0.5f; rgb[1]=0.2f; rgb[2]=0.2f; break; // Dark Red
+            case landscape::SiBCSGreatGroup::kDistrofico: rgb[0]=0.8f; rgb[1]=0.7f; rgb[2]=0.4f; break; // Yellowish
+            case landscape::SiBCSGreatGroup::kAluminico:  rgb[0]=0.7f; rgb[1]=0.7f; rgb[2]=0.8f; break; // Grey-Blue hint
+            case landscape::SiBCSGreatGroup::kAcrico:     rgb[0]=0.9f; rgb[1]=0.4f; rgb[2]=0.3f; break; // Pale Red
+            case landscape::SiBCSGreatGroup::kTipico:     rgb[0]=0.6f; rgb[1]=0.6f; rgb[2]=0.6f; break; // Grey
+            default:                                      rgb[0]=0.5f; rgb[1]=0.5f; rgb[2]=0.5f; break;
+        }
+    }
+
+    // Level 4: SubGroup
+    static void getFloatColor(landscape::SiBCSSubGroup sub, float* rgb) {
+        switch(sub) {
+            case landscape::SiBCSSubGroup::kTipico:       rgb[0]=0.6f; rgb[1]=0.6f; rgb[2]=0.6f; break; 
+            case landscape::SiBCSSubGroup::kLatossolico:  rgb[0]=0.7f; rgb[1]=0.3f; rgb[2]=0.2f; break;
+            case landscape::SiBCSSubGroup::kArgissolico:  rgb[0]=0.7f; rgb[1]=0.5f; rgb[2]=0.3f; break;
+            case landscape::SiBCSSubGroup::kCambissolico: rgb[0]=0.6f; rgb[1]=0.5f; rgb[2]=0.4f; break;
+            default:                                      rgb[0]=0.8f; rgb[1]=0.8f; rgb[2]=0.8f; break;
+        }
+    }
+
+    // Level 5: Family (Texture)
+    static void getFloatColor(landscape::SiBCSFamily family, float* rgb) {
+        switch(family) {
+            case landscape::SiBCSFamily::kTexturaMuitoArgilosa: rgb[0]=0.4f; rgb[1]=0.0f; rgb[2]=0.5f; break; // Deep Purple
+            case landscape::SiBCSFamily::kTexturaArgilosa:      rgb[0]=0.6f; rgb[1]=0.2f; rgb[2]=0.6f; break; // Purple
+            case landscape::SiBCSFamily::kTexturaMedia:         rgb[0]=0.8f; rgb[1]=0.6f; rgb[2]=0.2f; break; // Loam Color
+            case landscape::SiBCSFamily::kTexturaArenosa:       rgb[0]=0.9f; rgb[1]=0.9f; rgb[2]=0.6f; break; // Sand Color
+            default:                                            rgb[0]=0.5f; rgb[1]=0.5f; rgb[2]=0.5f; break;
+        }
+    }
+
+    // Level 6: Series
+    static void getFloatColor(landscape::SiBCSSeries series, float* rgb) {
+        if (series == landscape::SiBCSSeries::kGeneric) {
+            rgb[0]=0.4f; rgb[1]=0.7f; rgb[2]=0.4f; // Generic Greenish
+        } else {
+            rgb[0]=0.5f; rgb[1]=0.5f; rgb[2]=0.5f;
+        }
+    }
+
+    /**
+     * @brief Cumulative Visualization (Hierarchical)
+     * Applies modifiers from deeper taxonomic levels to the base Order/Suborder color.
+     */
+    static void getCumulativeColor(
+        landscape::SiBCSLevel viewLevel,
+        terrain::SoilType type,
+        landscape::SiBCSSubOrder sub,
+        landscape::SiBCSGreatGroup group,
+        landscape::SiBCSSubGroup subGroup,
+        landscape::SiBCSFamily family,
+        float* rgb) 
+    {
+        // 1. Base Color (Levels 1 & 2)
+        // This handles Order + Suborder logic (already cumulative in v1)
+        getFloatColor(type, sub, rgb);
+
+        if (viewLevel <= landscape::SiBCSLevel::Suborder) return;
+
+        // Convert to HSV for modifiers
+        float h, s, v;
+        RGBtoHSV(rgb[0], rgb[1], rgb[2], h, s, v);
+
+        // 2. Great Group Modifiers (Level 3)
+        // Eutrophic -> Vibrant/Darker, Dystrophic -> Paler/Lighter, Acric -> Washed out
+        if (viewLevel >= landscape::SiBCSLevel::GreatGroup) {
+            switch (group) {
+                case landscape::SiBCSGreatGroup::kEutrofico:  s *= 1.2f; v *= 0.9f; break; // Richer
+                case landscape::SiBCSGreatGroup::kDistrofico: s *= 0.8f; v *= 1.1f; break; // Paler
+                case landscape::SiBCSGreatGroup::kAluminico:  h += 20.0f; s *= 0.7f; break; // Blue/Grey shift
+                case landscape::SiBCSGreatGroup::kAcrico:     s *= 0.5f; v *= 1.2f; break; // Very pale (weathered)
+                default: break;
+            }
+        }
+
+        // 3. SubGroup Modifiers (Level 4) - Subtle Tints
+        if (viewLevel >= landscape::SiBCSLevel::SubGroup) {
+             switch (subGroup) {
+                case landscape::SiBCSSubGroup::kLatossolico: s *= 1.1f; break; 
+                case landscape::SiBCSSubGroup::kArgissolico: v *= 0.95f; break;
+                case landscape::SiBCSSubGroup::kCambissolico: s *= 0.9f; break;
+                default: break;
+            }
+        }
+
+        // 4. Family Modifiers (Level 5) - Texture hints
+        // Clayey -> Warm shift, Sandy -> Yellow shift
+        if (viewLevel >= landscape::SiBCSLevel::Family) {
+             switch (family) {
+                case landscape::SiBCSFamily::kTexturaMuitoArgilosa: h -= 5.0f; s *= 1.1f; break; // Redder, more sat
+                case landscape::SiBCSFamily::kTexturaArgilosa:      h -= 2.0f; break;
+                case landscape::SiBCSFamily::kTexturaArenosa:       h += 10.0f; s *= 0.8f; break; // Yellower, less sat
+                default: break;
+            }
+        }
+
+        // Re-clamp HSV
+        if (h < 0.0f) h += 360.0f;
+        if (h > 360.0f) h -= 360.0f;
+        s = (s > 1.0f) ? 1.0f : ((s < 0.0f) ? 0.0f : s);
+        v = (v > 1.0f) ? 1.0f : ((v < 0.0f) ? 0.0f : v);
+
+        HSVtoRGB(h, s, v, rgb[0], rgb[1], rgb[2]);
+    }
+
+private:
+   static void RGBtoHSV(float r, float g, float b, float& h, float& s, float& v) {
+        float min = (r < g) ? ((r < b) ? r : b) : ((g < b) ? g : b);
+        float max = (r > g) ? ((r > b) ? r : b) : ((g > b) ? g : b);
+        float delta = max - min;
+
+        v = max;
+        if (delta < 0.00001f) {
+            s = 0; h = 0; 
+            return;
+        }
+        s = delta / max;
+
+        if (r >= max) h = (g - b) / delta;
+        else if (g >= max) h = 2.0f + (b - r) / delta;
+        else h = 4.0f + (r - g) / delta;
+
+        h *= 60.0f;
+        if (h < 0.0f) h += 360.0f;
+    }
+
+    static void HSVtoRGB(float h, float s, float v, float& r, float& g, float& b) {
+        if (s <= 0.0f) { r = v; g = v; b = v; return; }
+        
+        h /= 60.0f;
+        int i = (int)h;
+        float f = h - static_cast<float>(i);
+        float p = v * (1.0f - s);
+        float q = v * (1.0f - s * f);
+        float t = v * (1.0f - s * (1.0f - f));
+
+        switch(i) {
+            case 0: r = v; g = t; b = p; break;
+            case 1: r = q; g = v; b = p; break;
+            case 2: r = p; g = v; b = t; break;
+            case 3: r = p; g = q; b = v; break;
+            case 4: r = t; g = p; b = v; break;
+            default: r = v; g = p; b = q; break;
+        }
+    }
 };
 
 } // namespace terrain

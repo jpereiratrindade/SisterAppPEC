@@ -87,33 +87,23 @@ TerrainRenderer::MeshData TerrainRenderer::generateMeshData(const terrain::Terra
                 v.color[0] = 0.4f; v.color[1] = 0.4f; v.color[2] = 0.45f; // Blue-Grey Rock
             }
             
-            // v4.5.1: SCORPAN Continuous Visualization (Mode 1)
-            // Overrides slope color with S-Vector derived color
-            if (soilMode == 1 && map.getLandscapeSoil()) {
+            // v4.6.6: Cumulative SiBCS Visualization (Hierarchical)
+            if (soilMode >= 1 && map.getLandscapeSoil()) {
                 int idx = z * w + x;
                 auto* soil = map.getLandscapeSoil();
-                float depth = soil->depth[idx];
-                float om = soil->organic_matter[idx]; // 0..1
-                float clay = soil->clay_fraction[idx]; // 0..1
-                float sand = soil->sand_fraction[idx]; // 0..1
+                float rgb[3] = {0.5f, 0.5f, 0.5f};
+
+                landscape::SiBCSLevel viewLevel = static_cast<landscape::SiBCSLevel>(soilMode);
+
+                // Fetch full taxonomic context
+                auto type = static_cast<terrain::SoilType>(soil->soil_type[idx]);
+                auto sub = static_cast<landscape::SiBCSSubOrder>(soil->suborder[idx]);
+                auto group = static_cast<landscape::SiBCSGreatGroup>(soil->great_group[idx]);
+                auto subGroup = static_cast<landscape::SiBCSSubGroup>(soil->sub_group[idx]);
+                auto family = static_cast<landscape::SiBCSFamily>(soil->family[idx]);
                 
-                // v4.5.8: Force Semantic Coloring (SiBCS Map)
-                // The user explicitly requested to see the Classification, not the blend.
-                auto storedType = static_cast<terrain::SoilType>(soil->soil_type[idx]);
-                
-                // Get Color from Palette (SiBCS definitions)
-                float rgb[3];
-                // using terrain::SoilPalette via absolute include or verify if included
-                // We need to verify include. If not present, we can't use SoilPalette static.
-                // Assuming we add the include or just hardcode the mapping here for safety/speed 
-                // to avoid include hell if TerrainRenderer doesn't know SoilPalette.
-                // But Renderer usually knows simple types.
-                // Let's assume we can include it. If not, I will add the include in a separate step or just copy logic.
-                // Copying logic is safer to avoid rebuilds of headers.
-                
-                // v4.5.1: Fix - Use Centralized Palette with Suborder Support
-                auto storedSub = static_cast<landscape::SiBCSSubOrder>(soil->suborder[idx]);
-                terrain::SoilPalette::getFloatColor(storedType, storedSub, rgb);
+                // Unified Call
+                terrain::SoilPalette::getCumulativeColor(viewLevel, type, sub, group, subGroup, family, rgb);
                 
                 v.color[0] = rgb[0];
                 v.color[1] = rgb[1];

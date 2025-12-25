@@ -1053,11 +1053,18 @@ void Application::update(double dt) {
                  if (endRow > mapH) endRow = mapH;
                  
                  // Update Slice
-                 landscape::SoilSystem::update(*soil, static_cast<float>(dt), soilClimate_, soilOrganism_, soilParentMaterial_, *finiteMap_, currentSoilRow_, endRow);
+                 // Update Slice
+                 // v4.6.6: Pass user-selected SiBCS level for dynamic depth calculation
+                 landscape::SiBCSLevel targetLevel = landscape::SiBCSLevel::Suborder; // Default
+                 if (soilClassificationMode_ >= 1 && soilClassificationMode_ <= 6) {
+                     targetLevel = static_cast<landscape::SiBCSLevel>(soilClassificationMode_);
+                 }
+
+                 landscape::SoilSystem::update(*soil, static_cast<float>(dt), soilClimate_, soilOrganism_, soilParentMaterial_, *finiteMap_, currentSoilRow_, endRow, targetLevel);
 
                  // Keep TerrainMap semantic soil buffer in sync with the evolving SiBCS classification.
                  // This avoids probe/type vs minimap/other views drifting over time.
-                 if (soilClassificationMode_ == 1) {
+                 if (soilClassificationMode_ >= 1) {
                      int w = finiteMap_->getWidth();
                      auto& soilMap = finiteMap_->soilMap();
                      for (int y = currentSoilRow_; y < endRow; ++y) {
@@ -1076,7 +1083,7 @@ void Application::update(double dt) {
 
                      // If we're actively visualizing SiBCS (SCORPAN), refresh the mesh colors
                      // after a full soil sweep to keep the rendered palette consistent with the probe.
-                     if (showSoilVis_ && soilClassificationMode_ == 1 && !showMLSoil_) {
+                     if (showSoilVis_ && soilClassificationMode_ >= 1 && !showMLSoil_) {
                          meshUpdateRequested_ = true;
                      }
                  }

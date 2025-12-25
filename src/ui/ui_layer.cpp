@@ -948,10 +948,32 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
     }
 
     // Only show SCORPAN Results for Simulation Mode
-	    if (ctx.showSoilVis && ctx.soilClassificationMode == 1) {
-	        ImGui::Text("SiBCS Classification (Level 2: Suborders)");
+	    if (ctx.showSoilVis && ctx.soilClassificationMode >= 1) { // >= 1 for SiBCS Levels
+            // v4.6.6: SiBCS Level Selector
+            const char* items[] = { "Level 1: Order", "Level 2: Suborder", "Level 3: Great Group", "Level 4: Subgroup", "Level 5: Family", "Level 6: Series" };
+            // Map internal soilMode (1-6) to index (0-5)
+            int comboIndex = ctx.soilClassificationMode - 1; 
+            if (comboIndex < 0) comboIndex = 0;
+            if (comboIndex > 5) comboIndex = 5;
+
+            if (ImGui::Combo("Taxonomic Level", &comboIndex, items, IM_ARRAYSIZE(items))) {
+                ctx.soilClassificationMode = comboIndex + 1;
+                // Trigger re-classification if needed (handled by update loop reading this value)
+            }
+
+	        ImGui::Text("Current View: %s", items[ctx.soilClassificationMode - 1]);
 	        ImGui::Indent();
-	        ImGui::TextWrapped("Classification derived from S (SCORPAN) vectors.");
+            
+            // Dynamic Description (Cumulative)
+            ImGui::TextDisabled("Cumulative Visualization: Base Color (Order) + Tints (Modifiers)");
+            switch(ctx.soilClassificationMode) {
+                case 1: ImGui::TextWrapped("Level 1 (Base): Order identity (Latossolo vs Argissolo)."); break;
+                case 2: ImGui::TextWrapped("Level 2 (Base): Suborder traits (Red/Yellow/Melanic). Key visual identifier."); break;
+                case 3: ImGui::TextWrapped("Level 3 (Modifier): Great Group. Tint shifts for Fertility (Eutrophic=Rich, Acric=Pale)."); break;
+                case 4: ImGui::TextWrapped("Level 4 (Modifier): Subgroup. Subtle variations for intergrades."); break;
+                case 5: ImGui::TextWrapped("Level 5 (Modifier): Family. Texture hints (Clay=Warm, Sand=Yellowish)."); break;
+                case 6: ImGui::TextWrapped("Level 6 (Modifier): Series. Local variations."); break;
+            }
 	
 	        if (ctx.showMLSoil) {
 	            ImGui::TextColored(ImVec4(1.0f, 0.85f, 0.2f, 1.0f),
@@ -959,36 +981,63 @@ void UiLayer::drawSoilInspector(UiFrameContext& ctx) {
 	        }
 	        
 	        ImGui::Separator();
-	        ImGui::TextDisabled("Legend (SiBCS Colors):");
-        
-        // Helper to draw color box
-        auto LegendItem = [](const char* name, terrain::SoilType type, landscape::SiBCSSubOrder sub) {
-            float c[3];
-            terrain::SoilPalette::getFloatColor(type, sub, c);
-            ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
-            ImGui::SameLine();
-            ImGui::Text("%s", name);
-        };
-
-        // Latossolos (Vermelho vs Amarelo vs Misto)
-        LegendItem("Latossolo Vermelho", terrain::SoilType::Latossolo, landscape::SiBCSSubOrder::kVermelho);
-        LegendItem("Latossolo Vermelho-Amarelo", terrain::SoilType::Latossolo, landscape::SiBCSSubOrder::kVermelhoAmarelo);
-        LegendItem("Latossolo Amarelo", terrain::SoilType::Latossolo, landscape::SiBCSSubOrder::kAmarelo);
-        
-        ImGui::Dummy(ImVec2(0,2)); // Spacer
-        
-        LegendItem("Argissolo Vermelho/Amarelo", terrain::SoilType::Argissolo, landscape::SiBCSSubOrder::kVermelhoAmarelo); 
-        LegendItem("Cambissolo Haplico", terrain::SoilType::Cambissolo, landscape::SiBCSSubOrder::kHaplic);
-        
-        ImGui::Dummy(ImVec2(0,2));
-
-        LegendItem("Neossolo Litolico", terrain::SoilType::Neossolo_Litolico, landscape::SiBCSSubOrder::kLitolico);
-        LegendItem("Neossolo Quartzarenico", terrain::SoilType::Neossolo_Quartzarenico, landscape::SiBCSSubOrder::kQuartzarenico);
-        
-        ImGui::Dummy(ImVec2(0,2));
-
-        LegendItem("Gleissolo Haplico", terrain::SoilType::Gleissolo, landscape::SiBCSSubOrder::kHaplic);
-        LegendItem("Gleissolo Melanico", terrain::SoilType::Gleissolo, landscape::SiBCSSubOrder::kMelanico);
+            
+            // Dynamic Legend logic
+            if (ctx.soilClassificationMode == 1) {
+                ImGui::TextDisabled("Legend (Level 1: Order):");
+                auto LegendItem = [](const char* name, terrain::SoilType type) {
+                    float c[3];
+                    terrain::SoilPalette::getFloatColor(type, c);
+                    ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
+                    ImGui::SameLine(); ImGui::Text("%s", name);
+                };
+                LegendItem("Latossolo", terrain::SoilType::Latossolo);
+                LegendItem("Argissolo", terrain::SoilType::Argissolo);
+                LegendItem("Cambissolo", terrain::SoilType::Cambissolo);
+                LegendItem("Neossolo", terrain::SoilType::Neossolo_Litolico);
+                LegendItem("Gleissolo", terrain::SoilType::Gleissolo);
+            }
+            else if (ctx.soilClassificationMode == 2) {
+                ImGui::TextDisabled("Legend (Level 2: Suborder):");
+                auto LegendItem = [](const char* name, terrain::SoilType type, landscape::SiBCSSubOrder sub) {
+                    float c[3];
+                    terrain::SoilPalette::getFloatColor(type, sub, c);
+                    ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
+                    ImGui::SameLine(); ImGui::Text("%s", name);
+                };
+                LegendItem("Vermelho (Fe2O3)", terrain::SoilType::Latossolo, landscape::SiBCSSubOrder::kVermelho);
+                LegendItem("Amarelo (FeOOH)", terrain::SoilType::Latossolo, landscape::SiBCSSubOrder::kAmarelo);
+                LegendItem("Melanico (C)", terrain::SoilType::Gleissolo, landscape::SiBCSSubOrder::kMelanico);
+                LegendItem("Litolico", terrain::SoilType::Neossolo_Litolico, landscape::SiBCSSubOrder::kLitolico);
+            }
+            else if (ctx.soilClassificationMode == 3) {
+                ImGui::TextDisabled("Legend (Level 3: Great Group):");
+                auto LegendItem = [](const char* name, landscape::SiBCSGreatGroup group) {
+                    float c[3];
+                    terrain::SoilPalette::getFloatColor(group, c);
+                    ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
+                    ImGui::SameLine(); ImGui::Text("%s", name);
+                };
+                LegendItem("Eutrofico (High Fert)", landscape::SiBCSGreatGroup::kEutrofico);
+                LegendItem("Distrofico (Low Fert)", landscape::SiBCSGreatGroup::kDistrofico);
+                LegendItem("Aluminico (Toxic Al)", landscape::SiBCSGreatGroup::kAluminico);
+            }
+            else if (ctx.soilClassificationMode == 5) {
+                ImGui::TextDisabled("Legend (Level 5: Family):");
+                 auto LegendItem = [](const char* name, landscape::SiBCSFamily family) {
+                    float c[3];
+                    terrain::SoilPalette::getFloatColor(family, c);
+                    ImGui::ColorButton(name, ImVec4(c[0], c[1], c[2], 1.0f), ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20));
+                    ImGui::SameLine(); ImGui::Text("%s", name);
+                };
+                LegendItem("Muito Argilosa (>60%)", landscape::SiBCSFamily::kTexturaMuitoArgilosa);
+                LegendItem("Argilosa (35-60%)", landscape::SiBCSFamily::kTexturaArgilosa);
+                LegendItem("Media (15-35%)", landscape::SiBCSFamily::kTexturaMedia);
+                LegendItem("Arenosa (<15% Clay)", landscape::SiBCSFamily::kTexturaArenosa);
+            }
+            else {
+                 ImGui::TextDisabled("(Legend not available for this level)");
+            }
         
         ImGui::Unindent();
         
