@@ -170,3 +170,9 @@ _Integrated Ecofunctional Landscape Modeling & Visualization_
 ---
 
 **Explore infinite procedural worlds in 3D! 🌍🎮**
+
+## Premissas de desenvolvimento
+
+**Simples, leve. Sempre pronto. Sempre incompleto!**
+
+[Significado e símbolos das premissas](docs/sister-principles/README.md).
